@@ -40,6 +40,9 @@ split or language loses more than 0.02 nDCG@5 against `results/run.json`.
   more words with their answers than real users' would. Compare systems, not raw scores, with other projects.
 - **The `limits` split is meant to fail.** Synonyms, typos, Traditional script and cross-lingual queries show
   where an agent must rephrase, because lexical search can't bridge them.
+- **`holdout-3` counts the other handbook's card as related.** Its blind writer graded the other team's
+  same-topic card 1 on 73 of 80 queries, which caps nDCG@5 for a system that never returns it. Read its
+  lines next to the same-team section of the summary, which drops those judgments.
 - **20 queries per group means wide intervals.** A difference decided by one or two queries can't settle a
   design question; the ledger says when that happened.
 

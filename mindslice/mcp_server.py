@@ -57,8 +57,8 @@ TOOLS: list[dict[str, Any]] = [
             "previews (address, role, coverage, score, title, 240-char summary, 1-hop [[wikilink]] neighbors). Hits on "
             "superseded cards are redirected to their replacement (see matched_via_superseded). Use read() on an "
             "address for full content. Search is lexical: unmatched_terms lists query words no card contains, and "
-            "did_you_mean offers close words that do occur (e.g. a typo's correction); when results are empty or weak, "
-            "rephrase with those or with the vocabulary of the cards you did find."
+            "did_you_mean offers close spellings that do occur (use one only when it is what you meant, e.g. a typo's "
+            "correction); when results are empty or weak, rephrase with those or with the vocabulary of the cards you did find."
         ),
         "inputSchema": {
             "type": "object",

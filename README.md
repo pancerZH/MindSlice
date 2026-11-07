@@ -184,6 +184,13 @@ Lexical search finds a card only by words it contains, so synonyms belong in eac
 (indexed just below the title). The [`slice-builder`](skills/slice-builder/SKILL.md) skill says what
 they should cover.
 
+On the evaluation's blind holdout ([`evals/retrieval`](evals/retrieval/PLAN.md), `holdout-3`), aliases
+written by an agent following that skill added 0.16 nDCG@5 on queries in the asker's own words, and 0.14
+overall. They also put about one card from the other language's handbook on every first page, which costs
+ordinary queries a little when only the asker's own handbook counts (-0.025). Treat `did_you_mean` as a
+hint: a small corpus lacks many ordinary words, so it also suggests `now` for `how`. Swapping in
+suggestions blindly fixed real typos but lost 0.004 nDCG@5 overall.
+
 Coverage-first ordering was tried and evaluated ([`evals/retrieval`](evals/retrieval/PLAN.md)). On a
 harder, multi-candidate holdout it trailed BM25 order by 0.026 nDCG@5 overall (0.065 in English) and
 gained only 0.002 on tiny corpora. In a small corpus, words that are rare but carry no topic ("do",
