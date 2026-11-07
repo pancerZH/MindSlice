@@ -29,9 +29,9 @@ split or language loses more than 0.02 nDCG@5 against `results/run.json`.
 | `data/tiny-en/`, `data/tiny-zh/` | Two 10-card overlay-only memories (an agent's first week on one project), with saturated vocabulary. Queries with `corpus = "tiny-en"` or `"tiny-zh"` run there |
 | `data/queries.toml` | Queries with graded judgments, by split (`dev`, `holdout`, `limits`, `holdout-2`), language, corpus and category |
 | `data/DIGESTS.json` | SHA-256 of the corpus and of each split, frozen before the first run |
-| `systems.py` | `mindslice`, plus versions of it that each undo one design decision: `bm25-order`, `unweighted-coverage`, `strict-phrase`, `v1-baseline` |
+| `systems.py` | `mindslice`, plus versions of it that each change one design decision: `coverage-first` (the reverted ordering), `unweighted-coverage`, `strict-phrase`, `v1-baseline` |
 | `metrics.py` | nDCG@5, Recall@10, MRR@10, the bootstrap, verdicts |
-| `results/` | `summary.md`, `per_query.jsonl` (every system's top 10 per query), `run.json` (environment, digests, numbers) |
+| `results/` | `summary.md`, `per_query.jsonl` (every system's top 10 per query), `run.json` (environment, digests, numbers). `archive/` keeps the record each past decision was read on |
 
 ## Reading the results
 

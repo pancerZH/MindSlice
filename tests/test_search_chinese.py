@@ -63,14 +63,15 @@ class ChineseRankingTests(WorkspaceTestCase):
         self.assertEqual(res["results"][0]["coverage"], 1.0)
         self.assertTrue(0 < res["results"][1]["coverage"] < 1)  # partial credit, never a silent miss
 
-    def test_verbatim_phrase_outranks_scattered_bigrams(self):
+    def test_verbatim_and_scattered_bigrams_are_both_found(self):
         add_filler(self.ws)
         self.ws.write("scattered", title="时间到了就过期 期时不候", summary="无关的说明。")  # all bigrams, no phrase
         self.ws.write("verbatim", title="令牌说明", summary="令牌的过期时间是十五分钟。")
         res = self.ws.search("过期时间")
-        self.assertEqual(self.addresses(res), ["@overlay/verbatim", "@overlay/scattered"])
-        self.assertEqual([r["coverage"] for r in res["results"]], [1.0, 1.0])
-        self.assertGreater(res["results"][1]["score"], res["results"][0]["score"])
+        self.assertEqual(sorted(self.addresses(res)), ["@overlay/scattered", "@overlay/verbatim"])
+        self.assertEqual([r["coverage"] for r in res["results"]], [1.0, 1.0])  # both contain every bigram
+        scores = [r["score"] for r in res["results"]]
+        self.assertEqual(scores, sorted(scores, reverse=True))  # ordered by BM25 (title weight)
 
     def test_spaced_words_coverage(self):
         add_filler(self.ws)

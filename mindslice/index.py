@@ -106,12 +106,13 @@ class Hit:
 
     row: sqlite3.Row
     score: float  # -bm25(...) > 0 (0.0 for filter-only listings)
-    coverage: float  # share of query units matched, in [0, 1]
-    phrases: int  # CJK query runs (3+ chars) matched verbatim
+    coverage: float  # IDF-weighted share of the query matched, in [0, 1] (reported, not used to order)
+    phrases: int  # unspaced query runs (3+ units) matched verbatim (reported, not used to order)
 
     def rank_key(self) -> tuple:
+        """BM25 score, then mount precedence, then address (deterministic)."""
         r = self.row
-        return (-self.coverage, -self.phrases, -self.score, -r["precedence"], r["mount"], r["path"])
+        return (-self.score, -r["precedence"], r["mount"], r["path"])
 
 
 def mount_signature(table: MountTable) -> str:
@@ -427,13 +428,12 @@ class Index:
     def search(
         self, query: str, sources: Iterable[str] | None = None, tags: Iterable[str] | None = None
     ) -> list[Hit]:
-        """All matches (overviews excluded), best first.
+        """All matches (overviews excluded), best first: ``score = -bm25(...)``, then precedence.
 
-        Ranking is coverage-first: the IDF-weighted share of query units a card matches (a
-        word counts by how rare it is in the corpus, so filler words like "the" or "for"
-        barely count; an unspaced run earns the weighted share of its bigrams present, or
-        full credit when matched verbatim), then the number of runs matched verbatim, then
-        ``score = -bm25(...)``, then mount precedence.
+        Each hit also carries ``coverage``: the IDF-weighted share of the query it matches (an
+        unspaced run earns the weighted share of its bigrams, or full credit when matched
+        verbatim). It is reported for callers and does not order results: on the retrieval
+        evaluation, coverage-first ordering lost to BM25 order (evals/retrieval/PLAN.md).
         An empty query with ``tags`` lists that facet (score and coverage 0).
         """
         plan = analyze_query(query)

@@ -1,9 +1,9 @@
 {
   "environment": {
     "mindslice": "0.1.0",
-    "engine_commit": "a41bb82",
+    "engine_commit": "dfa4d0f",
     "engine_dirty": true,
-    "engine_digest": "d4de322ebd6bdb16528464c5090c4c5fc00add21ac4d69d6297e2e7a94da3959",
+    "engine_digest": "631ab34d3b4a3ad48ff0c7ea506fc707fca05ea5113f179cb243ebb62f473b74",
     "python": "3.12.3",
     "sqlite": "3.45.1",
     "unicode": "15.0.0",
@@ -31,7 +31,7 @@
   ],
   "systems": [
     "mindslice",
-    "bm25-order",
+    "coverage-first",
     "unweighted-coverage",
     "strict-phrase",
     "v1-baseline"
@@ -42,8 +42,8 @@
       "systems": {
         "mindslice": {
           "ndcg@5": {
-            "mean": 0.9809,
-            "low": 0.9523,
+            "mean": 0.976,
+            "low": 0.94,
             "high": 1.0
           },
           "recall@10": {
@@ -57,16 +57,16 @@
             "high": 1.0
           }
         },
-        "bm25-order": {
+        "coverage-first": {
           "ndcg@5": {
-            "mean": 0.976,
-            "low": 0.94,
+            "mean": 0.9809,
+            "low": 0.9523,
             "high": 1.0
           },
           "ndcg@5 baseline minus this": {
-            "mean": 0.0049,
-            "low": -0.0075,
-            "high": 0.0221
+            "mean": -0.0049,
+            "low": -0.0221,
+            "high": 0.0075
           },
           "recall@10": {
             "mean": 1.0,
@@ -96,9 +96,9 @@
             "high": 1.0
           },
           "ndcg@5 baseline minus this": {
-            "mean": 0.0074,
+            "mean": 0.0025,
             "low": 0.0,
-            "high": 0.0221
+            "high": 0.0075
           },
           "recall@10": {
             "mean": 1.0,
@@ -123,8 +123,8 @@
         },
         "strict-phrase": {
           "ndcg@5": {
-            "mean": 0.9809,
-            "low": 0.9523,
+            "mean": 0.976,
+            "low": 0.94,
             "high": 1.0
           },
           "ndcg@5 baseline minus this": {
@@ -160,9 +160,9 @@
             "high": 1.0
           },
           "ndcg@5 baseline minus this": {
-            "mean": 0.0045,
-            "low": -0.0197,
-            "high": 0.0291
+            "mean": -0.0003,
+            "low": -0.0221,
+            "high": 0.021
           },
           "recall@10": {
             "mean": 1.0,
@@ -192,8 +192,8 @@
       "systems": {
         "mindslice": {
           "ndcg@5": {
-            "mean": 0.9964,
-            "low": 0.9903,
+            "mean": 0.9943,
+            "low": 0.985,
             "high": 1.0
           },
           "recall@10": {
@@ -207,16 +207,16 @@
             "high": 1.0
           }
         },
-        "bm25-order": {
+        "coverage-first": {
           "ndcg@5": {
-            "mean": 0.9943,
-            "low": 0.985,
+            "mean": 0.9964,
+            "low": 0.9903,
             "high": 1.0
           },
           "ndcg@5 baseline minus this": {
-            "mean": 0.0022,
-            "low": -0.0075,
-            "high": 0.0139
+            "mean": -0.0022,
+            "low": -0.0139,
+            "high": 0.0075
           },
           "recall@10": {
             "mean": 1.0,
@@ -246,9 +246,9 @@
             "high": 1.0
           },
           "ndcg@5 baseline minus this": {
-            "mean": 0.0046,
+            "mean": 0.0025,
             "low": 0.0,
-            "high": 0.0139
+            "high": 0.0075
           },
           "recall@10": {
             "mean": 1.0,
@@ -278,9 +278,9 @@
             "high": 0.6403
           },
           "ndcg@5 baseline minus this": {
-            "mean": 0.5704,
-            "low": 0.35,
-            "high": 0.7704
+            "mean": 0.5682,
+            "low": 0.3519,
+            "high": 0.766
           },
           "recall@10": {
             "mean": 0.4,
@@ -310,9 +310,9 @@
             "high": 0.35
           },
           "ndcg@5 baseline minus this": {
-            "mean": 0.8464,
+            "mean": 0.8443,
             "low": 0.65,
-            "high": 0.995
+            "high": 0.9907
           },
           "recall@10": {
             "mean": 0.15,
@@ -342,8 +342,8 @@
       "systems": {
         "mindslice": {
           "ndcg@5": {
-            "mean": 0.9552,
-            "low": 0.9063,
+            "mean": 0.9621,
+            "low": 0.9157,
             "high": 0.995
           },
           "recall@10": {
@@ -357,16 +357,16 @@
             "high": 1.0
           }
         },
-        "bm25-order": {
+        "coverage-first": {
           "ndcg@5": {
-            "mean": 0.9621,
-            "low": 0.9157,
+            "mean": 0.9552,
+            "low": 0.9063,
             "high": 0.995
           },
           "ndcg@5 baseline minus this": {
-            "mean": -0.0069,
-            "low": -0.0206,
-            "high": 0.0
+            "mean": 0.0069,
+            "low": 0.0,
+            "high": 0.0206
           },
           "recall@10": {
             "mean": 0.975,
@@ -396,8 +396,8 @@
             "high": 0.995
           },
           "ndcg@5 baseline minus this": {
-            "mean": -0.0069,
-            "low": -0.0206,
+            "mean": 0.0,
+            "low": 0.0,
             "high": 0.0
           },
           "recall@10": {
@@ -423,8 +423,8 @@
         },
         "strict-phrase": {
           "ndcg@5": {
-            "mean": 0.9552,
-            "low": 0.9063,
+            "mean": 0.9621,
+            "low": 0.9157,
             "high": 0.995
           },
           "ndcg@5 baseline minus this": {
@@ -460,8 +460,8 @@
             "high": 0.9936
           },
           "ndcg@5 baseline minus this": {
-            "mean": -0.0055,
-            "low": -0.024,
+            "mean": 0.0014,
+            "low": -0.0033,
             "high": 0.0075
           },
           "recall@10": {
@@ -492,9 +492,9 @@
       "systems": {
         "mindslice": {
           "ndcg@5": {
-            "mean": 0.9386,
-            "low": 0.8494,
-            "high": 0.995
+            "mean": 0.9411,
+            "low": 0.8505,
+            "high": 1.0
           },
           "recall@10": {
             "mean": 1.0,
@@ -507,16 +507,16 @@
             "high": 1.0
           }
         },
-        "bm25-order": {
+        "coverage-first": {
           "ndcg@5": {
-            "mean": 0.9411,
-            "low": 0.8505,
-            "high": 1.0
+            "mean": 0.9386,
+            "low": 0.8494,
+            "high": 0.995
           },
           "ndcg@5 baseline minus this": {
-            "mean": -0.0025,
-            "low": -0.0075,
-            "high": 0.0
+            "mean": 0.0025,
+            "low": 0.0,
+            "high": 0.0075
           },
           "recall@10": {
             "mean": 1.0,
@@ -546,8 +546,8 @@
             "high": 1.0
           },
           "ndcg@5 baseline minus this": {
-            "mean": -0.0025,
-            "low": -0.0075,
+            "mean": 0.0,
+            "low": 0.0,
             "high": 0.0
           },
           "recall@10": {
@@ -578,9 +578,9 @@
             "high": 0.6339
           },
           "ndcg@5 baseline minus this": {
-            "mean": 0.5059,
+            "mean": 0.5084,
             "low": 0.3,
-            "high": 0.7198
+            "high": 0.7268
           },
           "recall@10": {
             "mean": 0.5,
@@ -610,9 +610,9 @@
             "high": 0.236
           },
           "ndcg@5 baseline minus this": {
-            "mean": 0.8456,
-            "low": 0.6911,
-            "high": 0.9849
+            "mean": 0.8481,
+            "low": 0.6942,
+            "high": 0.9899
           },
           "recall@10": {
             "mean": 0.1,
@@ -657,7 +657,7 @@
             "high": 0.8667
           }
         },
-        "bm25-order": {
+        "coverage-first": {
           "ndcg@5": {
             "mean": 0.5,
             "low": 0.1,
@@ -807,7 +807,7 @@
             "high": 0.4
           }
         },
-        "bm25-order": {
+        "coverage-first": {
           "ndcg@5": {
             "mean": 0.2524,
             "low": 0.0,
@@ -942,9 +942,9 @@
       "systems": {
         "mindslice": {
           "ndcg@5": {
-            "mean": 0.8136,
-            "low": 0.7285,
-            "high": 0.889
+            "mean": 0.878,
+            "low": 0.8259,
+            "high": 0.9258
           },
           "recall@10": {
             "mean": 0.9167,
@@ -952,21 +952,21 @@
             "high": 0.975
           },
           "mrr@10": {
-            "mean": 0.8308,
-            "low": 0.6925,
-            "high": 0.9583
+            "mean": 0.8417,
+            "low": 0.7083,
+            "high": 0.9503
           }
         },
-        "bm25-order": {
+        "coverage-first": {
           "ndcg@5": {
-            "mean": 0.878,
-            "low": 0.8259,
-            "high": 0.9258
+            "mean": 0.8136,
+            "low": 0.7285,
+            "high": 0.889
           },
           "ndcg@5 baseline minus this": {
-            "mean": -0.0645,
-            "low": -0.1052,
-            "high": -0.0269
+            "mean": 0.0645,
+            "low": 0.0269,
+            "high": 0.1052
           },
           "recall@10": {
             "mean": 0.9167,
@@ -979,14 +979,14 @@
             "high": 0.0
           },
           "mrr@10": {
-            "mean": 0.8417,
-            "low": 0.7083,
-            "high": 0.9503
+            "mean": 0.8308,
+            "low": 0.6925,
+            "high": 0.9583
           },
           "mrr@10 baseline minus this": {
-            "mean": -0.0108,
-            "low": -0.0817,
-            "high": 0.0683
+            "mean": 0.0108,
+            "low": -0.0683,
+            "high": 0.0817
           }
         },
         "unweighted-coverage": {
@@ -996,9 +996,9 @@
             "high": 0.8946
           },
           "ndcg@5 baseline minus this": {
-            "mean": -0.0225,
-            "low": -0.0629,
-            "high": 0.0118
+            "mean": 0.042,
+            "low": 0.0134,
+            "high": 0.0755
           },
           "recall@10": {
             "mean": 0.9167,
@@ -1016,16 +1016,16 @@
             "high": 0.9375
           },
           "mrr@10 baseline minus this": {
-            "mean": 0.0208,
-            "low": -0.0125,
-            "high": 0.075
+            "mean": 0.0317,
+            "low": 0.0,
+            "high": 0.0817
           }
         },
         "strict-phrase": {
           "ndcg@5": {
-            "mean": 0.8136,
-            "low": 0.7285,
-            "high": 0.889
+            "mean": 0.878,
+            "low": 0.8259,
+            "high": 0.9258
           },
           "ndcg@5 baseline minus this": {
             "mean": 0.0,
@@ -1043,9 +1043,9 @@
             "high": 0.0
           },
           "mrr@10": {
-            "mean": 0.8308,
-            "low": 0.6925,
-            "high": 0.9583
+            "mean": 0.8417,
+            "low": 0.7083,
+            "high": 0.9503
           },
           "mrr@10 baseline minus this": {
             "mean": 0.0,
@@ -1060,9 +1060,9 @@
             "high": 0.9417
           },
           "ndcg@5 baseline minus this": {
-            "mean": -0.0774,
-            "low": -0.1254,
-            "high": -0.0338
+            "mean": -0.0129,
+            "low": -0.0301,
+            "high": 0.0023
           },
           "recall@10": {
             "mean": 0.9167,
@@ -1080,9 +1080,9 @@
             "high": 0.9503
           },
           "mrr@10 baseline minus this": {
-            "mean": -0.0233,
-            "low": -0.0984,
-            "high": 0.06
+            "mean": -0.0125,
+            "low": -0.0333,
+            "high": 0.0
           }
         }
       }
@@ -1092,8 +1092,8 @@
       "systems": {
         "mindslice": {
           "ndcg@5": {
-            "mean": 0.9791,
-            "low": 0.9506,
+            "mean": 0.9769,
+            "low": 0.9481,
             "high": 1.0
           },
           "recall@10": {
@@ -1107,16 +1107,16 @@
             "high": 1.0
           }
         },
-        "bm25-order": {
+        "coverage-first": {
           "ndcg@5": {
-            "mean": 0.9769,
-            "low": 0.9481,
+            "mean": 0.9791,
+            "low": 0.9506,
             "high": 1.0
           },
           "ndcg@5 baseline minus this": {
-            "mean": 0.0022,
-            "low": 0.0,
-            "high": 0.0066
+            "mean": -0.0022,
+            "low": -0.0066,
+            "high": 0.0
           },
           "recall@10": {
             "mean": 1.0,
@@ -1146,8 +1146,8 @@
             "high": 1.0
           },
           "ndcg@5 baseline minus this": {
-            "mean": 0.0,
-            "low": 0.0,
+            "mean": -0.0022,
+            "low": -0.0066,
             "high": 0.0
           },
           "recall@10": {
@@ -1173,8 +1173,8 @@
         },
         "strict-phrase": {
           "ndcg@5": {
-            "mean": 0.9791,
-            "low": 0.9506,
+            "mean": 0.9769,
+            "low": 0.9481,
             "high": 1.0
           },
           "ndcg@5 baseline minus this": {
@@ -1210,9 +1210,9 @@
             "high": 1.0
           },
           "ndcg@5 baseline minus this": {
-            "mean": 0.0022,
+            "mean": 0.0,
             "low": 0.0,
-            "high": 0.0066
+            "high": 0.0
           },
           "recall@10": {
             "mean": 1.0,
@@ -1242,9 +1242,9 @@
       "systems": {
         "mindslice": {
           "ndcg@5": {
-            "mean": 0.8129,
-            "low": 0.6857,
-            "high": 0.9142
+            "mean": 0.8292,
+            "low": 0.7083,
+            "high": 0.9272
           },
           "recall@10": {
             "mean": 0.8542,
@@ -1252,21 +1252,21 @@
             "high": 0.9542
           },
           "mrr@10": {
-            "mean": 0.7975,
-            "low": 0.6475,
-            "high": 0.925
+            "mean": 0.7833,
+            "low": 0.6498,
+            "high": 0.9083
           }
         },
-        "bm25-order": {
+        "coverage-first": {
           "ndcg@5": {
-            "mean": 0.8292,
-            "low": 0.7083,
-            "high": 0.9272
+            "mean": 0.8129,
+            "low": 0.6857,
+            "high": 0.9142
           },
           "ndcg@5 baseline minus this": {
-            "mean": -0.0163,
-            "low": -0.0469,
-            "high": 0.0104
+            "mean": 0.0163,
+            "low": -0.0104,
+            "high": 0.0469
           },
           "recall@10": {
             "mean": 0.8542,
@@ -1279,14 +1279,14 @@
             "high": 0.0
           },
           "mrr@10": {
-            "mean": 0.7833,
-            "low": 0.6498,
-            "high": 0.9083
+            "mean": 0.7975,
+            "low": 0.6475,
+            "high": 0.925
           },
           "mrr@10 baseline minus this": {
-            "mean": 0.0142,
-            "low": -0.0242,
-            "high": 0.0708
+            "mean": -0.0142,
+            "low": -0.0708,
+            "high": 0.0242
           }
         },
         "unweighted-coverage": {
@@ -1296,8 +1296,8 @@
             "high": 0.9301
           },
           "ndcg@5 baseline minus this": {
-            "mean": -0.0215,
-            "low": -0.0494,
+            "mean": -0.0052,
+            "low": -0.0155,
             "high": 0.0
           },
           "recall@10": {
@@ -1316,8 +1316,8 @@
             "high": 0.9333
           },
           "mrr@10 baseline minus this": {
-            "mean": -0.0108,
-            "low": -0.0275,
+            "mean": -0.025,
+            "low": -0.075,
             "high": 0.0
           }
         },
@@ -1328,9 +1328,9 @@
             "high": 0.0
           },
           "ndcg@5 baseline minus this": {
-            "mean": 0.8129,
-            "low": 0.6857,
-            "high": 0.9142
+            "mean": 0.8292,
+            "low": 0.7083,
+            "high": 0.9272
           },
           "recall@10": {
             "mean": 0.0,
@@ -1348,9 +1348,9 @@
             "high": 0.0
           },
           "mrr@10 baseline minus this": {
-            "mean": 0.7975,
-            "low": 0.6475,
-            "high": 0.925
+            "mean": 0.7833,
+            "low": 0.6498,
+            "high": 0.9083
           }
         },
         "v1-baseline": {
@@ -1360,9 +1360,9 @@
             "high": 0.0
           },
           "ndcg@5 baseline minus this": {
-            "mean": 0.8129,
-            "low": 0.6857,
-            "high": 0.9142
+            "mean": 0.8292,
+            "low": 0.7083,
+            "high": 0.9272
           },
           "recall@10": {
             "mean": 0.0,
@@ -1380,9 +1380,9 @@
             "high": 0.0
           },
           "mrr@10 baseline minus this": {
-            "mean": 0.7975,
-            "low": 0.6475,
-            "high": 0.925
+            "mean": 0.7833,
+            "low": 0.6498,
+            "high": 0.9083
           }
         }
       }
@@ -1392,8 +1392,8 @@
       "systems": {
         "mindslice": {
           "ndcg@5": {
-            "mean": 0.973,
-            "low": 0.9489,
+            "mean": 0.9713,
+            "low": 0.9461,
             "high": 0.9924
           },
           "recall@10": {
@@ -1407,16 +1407,16 @@
             "high": 1.0
           }
         },
-        "bm25-order": {
+        "coverage-first": {
           "ndcg@5": {
-            "mean": 0.9713,
-            "low": 0.9461,
+            "mean": 0.973,
+            "low": 0.9489,
             "high": 0.9924
           },
           "ndcg@5 baseline minus this": {
-            "mean": 0.0017,
-            "low": 0.0,
-            "high": 0.005
+            "mean": -0.0017,
+            "low": -0.005,
+            "high": 0.0
           },
           "recall@10": {
             "mean": 1.0,
@@ -1446,8 +1446,8 @@
             "high": 0.9924
           },
           "ndcg@5 baseline minus this": {
-            "mean": 0.0,
-            "low": 0.0,
+            "mean": -0.0017,
+            "low": -0.005,
             "high": 0.0
           },
           "recall@10": {
@@ -1478,9 +1478,9 @@
             "high": 0.2521
           },
           "ndcg@5 baseline minus this": {
-            "mean": 0.8889,
-            "low": 0.7239,
-            "high": 0.9882
+            "mean": 0.8873,
+            "low": 0.7222,
+            "high": 0.9877
           },
           "recall@10": {
             "mean": 0.0667,
@@ -1510,9 +1510,9 @@
             "high": 0.1916
           },
           "ndcg@5 baseline minus this": {
-            "mean": 0.9091,
-            "low": 0.7843,
-            "high": 0.9882
+            "mean": 0.9074,
+            "low": 0.7827,
+            "high": 0.9877
           },
           "recall@10": {
             "mean": 0.0333,
@@ -1542,9 +1542,9 @@
       "systems": {
         "mindslice": {
           "ndcg@5": {
-            "mean": 0.8675,
-            "low": 0.8111,
-            "high": 0.9164
+            "mean": 0.8938,
+            "low": 0.8455,
+            "high": 0.9333
           },
           "recall@10": {
             "mean": 0.9236,
@@ -1552,21 +1552,21 @@
             "high": 0.9667
           },
           "mrr@10": {
-            "mean": 0.8761,
-            "low": 0.803,
-            "high": 0.94
+            "mean": 0.875,
+            "low": 0.8042,
+            "high": 0.9361
           }
         },
-        "bm25-order": {
+        "coverage-first": {
           "ndcg@5": {
-            "mean": 0.8938,
-            "low": 0.8455,
-            "high": 0.9333
+            "mean": 0.8675,
+            "low": 0.8111,
+            "high": 0.9164
           },
           "ndcg@5 baseline minus this": {
-            "mean": -0.0263,
-            "low": -0.0458,
-            "high": -0.0101
+            "mean": 0.0263,
+            "low": 0.0101,
+            "high": 0.0458
           },
           "recall@10": {
             "mean": 0.9236,
@@ -1579,14 +1579,14 @@
             "high": 0.0
           },
           "mrr@10": {
-            "mean": 0.875,
-            "low": 0.8042,
-            "high": 0.9361
+            "mean": 0.8761,
+            "low": 0.803,
+            "high": 0.94
           },
           "mrr@10 baseline minus this": {
-            "mean": 0.0011,
-            "low": -0.0261,
-            "high": 0.0306
+            "mean": -0.0011,
+            "low": -0.0306,
+            "high": 0.0261
           }
         },
         "unweighted-coverage": {
@@ -1596,9 +1596,9 @@
             "high": 0.9248
           },
           "ndcg@5 baseline minus this": {
-            "mean": -0.0147,
-            "low": -0.033,
-            "high": -0.001
+            "mean": 0.0116,
+            "low": 0.0006,
+            "high": 0.0247
           },
           "recall@10": {
             "mean": 0.9236,
@@ -1616,21 +1616,21 @@
             "high": 0.9347
           },
           "mrr@10 baseline minus this": {
-            "mean": 0.0033,
-            "low": -0.01,
-            "high": 0.0236
+            "mean": 0.0022,
+            "low": -0.0228,
+            "high": 0.025
           }
         },
         "strict-phrase": {
           "ndcg@5": {
-            "mean": 0.4484,
-            "low": 0.3375,
-            "high": 0.5634
+            "mean": 0.4695,
+            "low": 0.3547,
+            "high": 0.583
           },
           "ndcg@5 baseline minus this": {
-            "mean": 0.4191,
-            "low": 0.3078,
-            "high": 0.5348
+            "mean": 0.4243,
+            "low": 0.3117,
+            "high": 0.5395
           },
           "recall@10": {
             "mean": 0.4833,
@@ -1643,14 +1643,14 @@
             "high": 0.5611
           },
           "mrr@10": {
-            "mean": 0.4603,
-            "low": 0.3394,
+            "mean": 0.4639,
+            "low": 0.3417,
             "high": 0.5833
           },
           "mrr@10 baseline minus this": {
-            "mean": 0.4158,
-            "low": 0.3,
-            "high": 0.5367
+            "mean": 0.4111,
+            "low": 0.2972,
+            "high": 0.5278
           }
         },
         "v1-baseline": {
@@ -1660,9 +1660,9 @@
             "high": 0.5855
           },
           "ndcg@5 baseline minus this": {
-            "mean": 0.397,
-            "low": 0.2784,
-            "high": 0.5187
+            "mean": 0.4233,
+            "low": 0.3085,
+            "high": 0.541
           },
           "recall@10": {
             "mean": 0.4778,
@@ -1680,9 +1680,9 @@
             "high": 0.5875
           },
           "mrr@10 baseline minus this": {
-            "mean": 0.4081,
-            "low": 0.29,
-            "high": 0.5325
+            "mean": 0.4069,
+            "low": 0.2917,
+            "high": 0.525
           }
         }
       }
@@ -1695,8 +1695,8 @@
       "metric": "ndcg@5",
       "line": 0.8,
       "claim": "English nDCG@5 at least 0.80",
-      "point": 0.9552,
-      "low": 0.9063,
+      "point": 0.9621,
+      "low": 0.9157,
       "high": 0.995,
       "verdict": "confirmed"
     },
@@ -1706,9 +1706,9 @@
       "metric": "ndcg@5",
       "line": 0.8,
       "claim": "Chinese nDCG@5 at least 0.80",
-      "point": 0.9386,
-      "low": 0.8494,
-      "high": 0.995,
+      "point": 0.9411,
+      "low": 0.8505,
+      "high": 1.0,
       "verdict": "confirmed"
     },
     {
@@ -1740,9 +1740,9 @@
       "versus": "v1-baseline",
       "line": 0.3,
       "claim": "Script-aware analysis adds at least 0.30 Chinese nDCG@5 over v1",
-      "point": 0.8456,
-      "low": 0.6911,
-      "high": 0.9849,
+      "point": 0.8481,
+      "low": 0.6942,
+      "high": 0.9899,
       "verdict": "confirmed"
     },
     {
@@ -1752,34 +1752,10 @@
       "versus": "strict-phrase",
       "line": 0.0,
       "claim": "OR-ed bigrams are no worse than strict phrases (Chinese)",
-      "point": 0.5059,
+      "point": 0.5084,
       "low": 0.3,
-      "high": 0.7198,
+      "high": 0.7268,
       "verdict": "confirmed"
-    },
-    {
-      "id": "L7",
-      "group": "holdout/en",
-      "metric": "ndcg@5",
-      "versus": "bm25-order",
-      "line": 0.0,
-      "claim": "Coverage-first ranking is no worse than BM25 order (English)",
-      "point": -0.0069,
-      "low": -0.0206,
-      "high": 0.0,
-      "verdict": "miss"
-    },
-    {
-      "id": "L8",
-      "group": "holdout/zh",
-      "metric": "ndcg@5",
-      "versus": "bm25-order",
-      "line": 0.0,
-      "claim": "Coverage-first ranking is no worse than BM25 order (Chinese)",
-      "point": -0.0025,
-      "low": -0.0075,
-      "high": 0.0,
-      "verdict": "miss"
     },
     {
       "id": "L9",
@@ -1787,9 +1763,9 @@
       "metric": "ndcg@5",
       "line": 0.7,
       "claim": "Harder English nDCG@5 at least 0.70",
-      "point": 0.8136,
-      "low": 0.7285,
-      "high": 0.889,
+      "point": 0.878,
+      "low": 0.8259,
+      "high": 0.9258,
       "verdict": "confirmed"
     },
     {
@@ -1798,10 +1774,10 @@
       "metric": "ndcg@5",
       "line": 0.7,
       "claim": "Harder Chinese nDCG@5 at least 0.70",
-      "point": 0.8129,
-      "low": 0.6857,
-      "high": 0.9142,
-      "verdict": "point pass"
+      "point": 0.8292,
+      "low": 0.7083,
+      "high": 0.9272,
+      "verdict": "confirmed"
     },
     {
       "id": "L11",
@@ -1809,8 +1785,8 @@
       "metric": "ndcg@5",
       "line": 0.7,
       "claim": "Tiny English nDCG@5 at least 0.70",
-      "point": 0.9791,
-      "low": 0.9506,
+      "point": 0.9769,
+      "low": 0.9481,
       "high": 1.0,
       "verdict": "confirmed"
     },
@@ -1820,70 +1796,10 @@
       "metric": "ndcg@5",
       "line": 0.7,
       "claim": "Tiny Chinese nDCG@5 at least 0.70",
-      "point": 0.973,
-      "low": 0.9489,
+      "point": 0.9713,
+      "low": 0.9461,
       "high": 0.9924,
       "verdict": "confirmed"
-    },
-    {
-      "id": "L13",
-      "group": "holdout-2/en",
-      "metric": "ndcg@5",
-      "versus": "bm25-order",
-      "line": 0.0,
-      "claim": "Coverage-first no worse than BM25 order (harder English)",
-      "point": -0.0645,
-      "low": -0.1052,
-      "high": -0.0269,
-      "verdict": "miss"
-    },
-    {
-      "id": "L14",
-      "group": "holdout-2/zh",
-      "metric": "ndcg@5",
-      "versus": "bm25-order",
-      "line": 0.0,
-      "claim": "Coverage-first no worse than BM25 order (harder Chinese)",
-      "point": -0.0163,
-      "low": -0.0469,
-      "high": 0.0104,
-      "verdict": "miss"
-    },
-    {
-      "id": "L15",
-      "group": "holdout-2/en/tiny",
-      "metric": "ndcg@5",
-      "versus": "bm25-order",
-      "line": 0.0,
-      "claim": "Coverage-first no worse than BM25 order (tiny English)",
-      "point": 0.0022,
-      "low": 0.0,
-      "high": 0.0066,
-      "verdict": "confirmed"
-    },
-    {
-      "id": "L16",
-      "group": "holdout-2/zh/tiny",
-      "metric": "ndcg@5",
-      "versus": "bm25-order",
-      "line": 0.0,
-      "claim": "Coverage-first no worse than BM25 order (tiny Chinese)",
-      "point": 0.0017,
-      "low": 0.0,
-      "high": 0.005,
-      "verdict": "confirmed"
-    },
-    {
-      "id": "L17",
-      "group": "holdout-2/all",
-      "metric": "ndcg@5",
-      "versus": "bm25-order",
-      "line": 0.0,
-      "claim": "Decision line: coverage-first no worse than BM25 order, all 60 holdout-2 queries",
-      "point": -0.0263,
-      "low": -0.0458,
-      "high": -0.0101,
-      "verdict": "miss"
     }
   ]
 }

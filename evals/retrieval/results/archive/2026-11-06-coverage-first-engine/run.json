@@ -1,0 +1,1889 @@
+{
+  "environment": {
+    "mindslice": "0.1.0",
+    "engine_commit": "a41bb82",
+    "engine_dirty": true,
+    "engine_digest": "d4de322ebd6bdb16528464c5090c4c5fc00add21ac4d69d6297e2e7a94da3959",
+    "python": "3.12.3",
+    "sqlite": "3.45.1",
+    "unicode": "15.0.0",
+    "analyzer": "1:unicode-15.0.0",
+    "k": 10,
+    "bootstrap": {
+      "replicates": 2000,
+      "seed": 20261106
+    }
+  },
+  "digests": {
+    "corpus": "6a4238a74e9d376792f58fe806e28ac8e5438e003611ed5358aa1438c6d8e6c3",
+    "corpus-tiny-en": "91c77aaad4fb97a4f69e007fc8a7283ff4e63357edfb67d6d9fe4c738df56967",
+    "corpus-tiny-zh": "7eb65839c3b09f620dad1011b771b68905b01cfa3fb3c213ff6cd62696bbba7e",
+    "dev": "272302ea4b46dd92967e2b800e8ed5f3724dd94d89b2a74e30637319261dcc6f",
+    "holdout": "121d592e4b12beac2748ce1fb1eadf85aa0c9bb6f15d8a36656908d08421c441",
+    "limits": "8490ac6d5e4c7565e6312ed581dcf781319c44f2e3ad5c26342e171b6c59781b",
+    "holdout-2": "1e439e475174d158584bc37a455460d47e3aae412f3259dc9b0f4cc9e5f70e8b"
+  },
+  "splits": [
+    "dev",
+    "holdout",
+    "limits",
+    "holdout-2"
+  ],
+  "systems": [
+    "mindslice",
+    "bm25-order",
+    "unweighted-coverage",
+    "strict-phrase",
+    "v1-baseline"
+  ],
+  "summary": {
+    "dev/en": {
+      "queries": 20,
+      "systems": {
+        "mindslice": {
+          "ndcg@5": {
+            "mean": 0.9809,
+            "low": 0.9523,
+            "high": 1.0
+          },
+          "recall@10": {
+            "mean": 1.0,
+            "low": 1.0,
+            "high": 1.0
+          },
+          "mrr@10": {
+            "mean": 1.0,
+            "low": 1.0,
+            "high": 1.0
+          }
+        },
+        "bm25-order": {
+          "ndcg@5": {
+            "mean": 0.976,
+            "low": 0.94,
+            "high": 1.0
+          },
+          "ndcg@5 baseline minus this": {
+            "mean": 0.0049,
+            "low": -0.0075,
+            "high": 0.0221
+          },
+          "recall@10": {
+            "mean": 1.0,
+            "low": 1.0,
+            "high": 1.0
+          },
+          "recall@10 baseline minus this": {
+            "mean": 0.0,
+            "low": 0.0,
+            "high": 0.0
+          },
+          "mrr@10": {
+            "mean": 1.0,
+            "low": 1.0,
+            "high": 1.0
+          },
+          "mrr@10 baseline minus this": {
+            "mean": 0.0,
+            "low": 0.0,
+            "high": 0.0
+          }
+        },
+        "unweighted-coverage": {
+          "ndcg@5": {
+            "mean": 0.9735,
+            "low": 0.9376,
+            "high": 1.0
+          },
+          "ndcg@5 baseline minus this": {
+            "mean": 0.0074,
+            "low": 0.0,
+            "high": 0.0221
+          },
+          "recall@10": {
+            "mean": 1.0,
+            "low": 1.0,
+            "high": 1.0
+          },
+          "recall@10 baseline minus this": {
+            "mean": 0.0,
+            "low": 0.0,
+            "high": 0.0
+          },
+          "mrr@10": {
+            "mean": 1.0,
+            "low": 1.0,
+            "high": 1.0
+          },
+          "mrr@10 baseline minus this": {
+            "mean": 0.0,
+            "low": 0.0,
+            "high": 0.0
+          }
+        },
+        "strict-phrase": {
+          "ndcg@5": {
+            "mean": 0.9809,
+            "low": 0.9523,
+            "high": 1.0
+          },
+          "ndcg@5 baseline minus this": {
+            "mean": 0.0,
+            "low": 0.0,
+            "high": 0.0
+          },
+          "recall@10": {
+            "mean": 1.0,
+            "low": 1.0,
+            "high": 1.0
+          },
+          "recall@10 baseline minus this": {
+            "mean": 0.0,
+            "low": 0.0,
+            "high": 0.0
+          },
+          "mrr@10": {
+            "mean": 1.0,
+            "low": 1.0,
+            "high": 1.0
+          },
+          "mrr@10 baseline minus this": {
+            "mean": 0.0,
+            "low": 0.0,
+            "high": 0.0
+          }
+        },
+        "v1-baseline": {
+          "ndcg@5": {
+            "mean": 0.9764,
+            "low": 0.9457,
+            "high": 1.0
+          },
+          "ndcg@5 baseline minus this": {
+            "mean": 0.0045,
+            "low": -0.0197,
+            "high": 0.0291
+          },
+          "recall@10": {
+            "mean": 1.0,
+            "low": 1.0,
+            "high": 1.0
+          },
+          "recall@10 baseline minus this": {
+            "mean": 0.0,
+            "low": 0.0,
+            "high": 0.0
+          },
+          "mrr@10": {
+            "mean": 0.975,
+            "low": 0.925,
+            "high": 1.0
+          },
+          "mrr@10 baseline minus this": {
+            "mean": 0.025,
+            "low": 0.0,
+            "high": 0.075
+          }
+        }
+      }
+    },
+    "dev/zh": {
+      "queries": 20,
+      "systems": {
+        "mindslice": {
+          "ndcg@5": {
+            "mean": 0.9964,
+            "low": 0.9903,
+            "high": 1.0
+          },
+          "recall@10": {
+            "mean": 1.0,
+            "low": 1.0,
+            "high": 1.0
+          },
+          "mrr@10": {
+            "mean": 1.0,
+            "low": 1.0,
+            "high": 1.0
+          }
+        },
+        "bm25-order": {
+          "ndcg@5": {
+            "mean": 0.9943,
+            "low": 0.985,
+            "high": 1.0
+          },
+          "ndcg@5 baseline minus this": {
+            "mean": 0.0022,
+            "low": -0.0075,
+            "high": 0.0139
+          },
+          "recall@10": {
+            "mean": 1.0,
+            "low": 1.0,
+            "high": 1.0
+          },
+          "recall@10 baseline minus this": {
+            "mean": 0.0,
+            "low": 0.0,
+            "high": 0.0
+          },
+          "mrr@10": {
+            "mean": 1.0,
+            "low": 1.0,
+            "high": 1.0
+          },
+          "mrr@10 baseline minus this": {
+            "mean": 0.0,
+            "low": 0.0,
+            "high": 0.0
+          }
+        },
+        "unweighted-coverage": {
+          "ndcg@5": {
+            "mean": 0.9918,
+            "low": 0.981,
+            "high": 1.0
+          },
+          "ndcg@5 baseline minus this": {
+            "mean": 0.0046,
+            "low": 0.0,
+            "high": 0.0139
+          },
+          "recall@10": {
+            "mean": 1.0,
+            "low": 1.0,
+            "high": 1.0
+          },
+          "recall@10 baseline minus this": {
+            "mean": 0.0,
+            "low": 0.0,
+            "high": 0.0
+          },
+          "mrr@10": {
+            "mean": 1.0,
+            "low": 1.0,
+            "high": 1.0
+          },
+          "mrr@10 baseline minus this": {
+            "mean": 0.0,
+            "low": 0.0,
+            "high": 0.0
+          }
+        },
+        "strict-phrase": {
+          "ndcg@5": {
+            "mean": 0.426,
+            "low": 0.226,
+            "high": 0.6403
+          },
+          "ndcg@5 baseline minus this": {
+            "mean": 0.5704,
+            "low": 0.35,
+            "high": 0.7704
+          },
+          "recall@10": {
+            "mean": 0.4,
+            "low": 0.2,
+            "high": 0.625
+          },
+          "recall@10 baseline minus this": {
+            "mean": 0.6,
+            "low": 0.375,
+            "high": 0.8
+          },
+          "mrr@10": {
+            "mean": 0.45,
+            "low": 0.25,
+            "high": 0.7
+          },
+          "mrr@10 baseline minus this": {
+            "mean": 0.55,
+            "low": 0.3,
+            "high": 0.75
+          }
+        },
+        "v1-baseline": {
+          "ndcg@5": {
+            "mean": 0.15,
+            "low": 0.0,
+            "high": 0.35
+          },
+          "ndcg@5 baseline minus this": {
+            "mean": 0.8464,
+            "low": 0.65,
+            "high": 0.995
+          },
+          "recall@10": {
+            "mean": 0.15,
+            "low": 0.0,
+            "high": 0.35
+          },
+          "recall@10 baseline minus this": {
+            "mean": 0.85,
+            "low": 0.65,
+            "high": 1.0
+          },
+          "mrr@10": {
+            "mean": 0.15,
+            "low": 0.0,
+            "high": 0.35
+          },
+          "mrr@10 baseline minus this": {
+            "mean": 0.85,
+            "low": 0.65,
+            "high": 1.0
+          }
+        }
+      }
+    },
+    "holdout/en": {
+      "queries": 20,
+      "systems": {
+        "mindslice": {
+          "ndcg@5": {
+            "mean": 0.9552,
+            "low": 0.9063,
+            "high": 0.995
+          },
+          "recall@10": {
+            "mean": 0.975,
+            "low": 0.925,
+            "high": 1.0
+          },
+          "mrr@10": {
+            "mean": 0.975,
+            "low": 0.925,
+            "high": 1.0
+          }
+        },
+        "bm25-order": {
+          "ndcg@5": {
+            "mean": 0.9621,
+            "low": 0.9157,
+            "high": 0.995
+          },
+          "ndcg@5 baseline minus this": {
+            "mean": -0.0069,
+            "low": -0.0206,
+            "high": 0.0
+          },
+          "recall@10": {
+            "mean": 0.975,
+            "low": 0.925,
+            "high": 1.0
+          },
+          "recall@10 baseline minus this": {
+            "mean": 0.0,
+            "low": 0.0,
+            "high": 0.0
+          },
+          "mrr@10": {
+            "mean": 0.975,
+            "low": 0.925,
+            "high": 1.0
+          },
+          "mrr@10 baseline minus this": {
+            "mean": 0.0,
+            "low": 0.0,
+            "high": 0.0
+          }
+        },
+        "unweighted-coverage": {
+          "ndcg@5": {
+            "mean": 0.9621,
+            "low": 0.9157,
+            "high": 0.995
+          },
+          "ndcg@5 baseline minus this": {
+            "mean": -0.0069,
+            "low": -0.0206,
+            "high": 0.0
+          },
+          "recall@10": {
+            "mean": 0.975,
+            "low": 0.925,
+            "high": 1.0
+          },
+          "recall@10 baseline minus this": {
+            "mean": 0.0,
+            "low": 0.0,
+            "high": 0.0
+          },
+          "mrr@10": {
+            "mean": 0.975,
+            "low": 0.925,
+            "high": 1.0
+          },
+          "mrr@10 baseline minus this": {
+            "mean": 0.0,
+            "low": 0.0,
+            "high": 0.0
+          }
+        },
+        "strict-phrase": {
+          "ndcg@5": {
+            "mean": 0.9552,
+            "low": 0.9063,
+            "high": 0.995
+          },
+          "ndcg@5 baseline minus this": {
+            "mean": 0.0,
+            "low": 0.0,
+            "high": 0.0
+          },
+          "recall@10": {
+            "mean": 0.975,
+            "low": 0.925,
+            "high": 1.0
+          },
+          "recall@10 baseline minus this": {
+            "mean": 0.0,
+            "low": 0.0,
+            "high": 0.0
+          },
+          "mrr@10": {
+            "mean": 0.975,
+            "low": 0.925,
+            "high": 1.0
+          },
+          "mrr@10 baseline minus this": {
+            "mean": 0.0,
+            "low": 0.0,
+            "high": 0.0
+          }
+        },
+        "v1-baseline": {
+          "ndcg@5": {
+            "mean": 0.9607,
+            "low": 0.9143,
+            "high": 0.9936
+          },
+          "ndcg@5 baseline minus this": {
+            "mean": -0.0055,
+            "low": -0.024,
+            "high": 0.0075
+          },
+          "recall@10": {
+            "mean": 0.975,
+            "low": 0.925,
+            "high": 1.0
+          },
+          "recall@10 baseline minus this": {
+            "mean": 0.0,
+            "low": 0.0,
+            "high": 0.0
+          },
+          "mrr@10": {
+            "mean": 0.975,
+            "low": 0.925,
+            "high": 1.0
+          },
+          "mrr@10 baseline minus this": {
+            "mean": 0.0,
+            "low": 0.0,
+            "high": 0.0
+          }
+        }
+      }
+    },
+    "holdout/zh": {
+      "queries": 20,
+      "systems": {
+        "mindslice": {
+          "ndcg@5": {
+            "mean": 0.9386,
+            "low": 0.8494,
+            "high": 0.995
+          },
+          "recall@10": {
+            "mean": 1.0,
+            "low": 1.0,
+            "high": 1.0
+          },
+          "mrr@10": {
+            "mean": 0.9333,
+            "low": 0.8333,
+            "high": 1.0
+          }
+        },
+        "bm25-order": {
+          "ndcg@5": {
+            "mean": 0.9411,
+            "low": 0.8505,
+            "high": 1.0
+          },
+          "ndcg@5 baseline minus this": {
+            "mean": -0.0025,
+            "low": -0.0075,
+            "high": 0.0
+          },
+          "recall@10": {
+            "mean": 1.0,
+            "low": 1.0,
+            "high": 1.0
+          },
+          "recall@10 baseline minus this": {
+            "mean": 0.0,
+            "low": 0.0,
+            "high": 0.0
+          },
+          "mrr@10": {
+            "mean": 0.9333,
+            "low": 0.8333,
+            "high": 1.0
+          },
+          "mrr@10 baseline minus this": {
+            "mean": 0.0,
+            "low": 0.0,
+            "high": 0.0
+          }
+        },
+        "unweighted-coverage": {
+          "ndcg@5": {
+            "mean": 0.9411,
+            "low": 0.8505,
+            "high": 1.0
+          },
+          "ndcg@5 baseline minus this": {
+            "mean": -0.0025,
+            "low": -0.0075,
+            "high": 0.0
+          },
+          "recall@10": {
+            "mean": 1.0,
+            "low": 1.0,
+            "high": 1.0
+          },
+          "recall@10 baseline minus this": {
+            "mean": 0.0,
+            "low": 0.0,
+            "high": 0.0
+          },
+          "mrr@10": {
+            "mean": 0.9333,
+            "low": 0.8333,
+            "high": 1.0
+          },
+          "mrr@10 baseline minus this": {
+            "mean": 0.0,
+            "low": 0.0,
+            "high": 0.0
+          }
+        },
+        "strict-phrase": {
+          "ndcg@5": {
+            "mean": 0.4327,
+            "low": 0.2245,
+            "high": 0.6339
+          },
+          "ndcg@5 baseline minus this": {
+            "mean": 0.5059,
+            "low": 0.3,
+            "high": 0.7198
+          },
+          "recall@10": {
+            "mean": 0.5,
+            "low": 0.3,
+            "high": 0.7
+          },
+          "recall@10 baseline minus this": {
+            "mean": 0.5,
+            "low": 0.3,
+            "high": 0.7
+          },
+          "mrr@10": {
+            "mean": 0.4083,
+            "low": 0.2,
+            "high": 0.6083
+          },
+          "mrr@10 baseline minus this": {
+            "mean": 0.525,
+            "low": 0.325,
+            "high": 0.75
+          }
+        },
+        "v1-baseline": {
+          "ndcg@5": {
+            "mean": 0.093,
+            "low": 0.0,
+            "high": 0.236
+          },
+          "ndcg@5 baseline minus this": {
+            "mean": 0.8456,
+            "low": 0.6911,
+            "high": 0.9849
+          },
+          "recall@10": {
+            "mean": 0.1,
+            "low": 0.0,
+            "high": 0.25
+          },
+          "recall@10 baseline minus this": {
+            "mean": 0.9,
+            "low": 0.75,
+            "high": 1.0
+          },
+          "mrr@10": {
+            "mean": 0.075,
+            "low": 0.0,
+            "high": 0.2
+          },
+          "mrr@10 baseline minus this": {
+            "mean": 0.8583,
+            "low": 0.7081,
+            "high": 1.0
+          }
+        }
+      }
+    },
+    "limits/en": {
+      "queries": 5,
+      "systems": {
+        "mindslice": {
+          "ndcg@5": {
+            "mean": 0.5,
+            "low": 0.1,
+            "high": 0.9
+          },
+          "recall@10": {
+            "mean": 0.6,
+            "low": 0.2,
+            "high": 1.0
+          },
+          "mrr@10": {
+            "mean": 0.4667,
+            "low": 0.0667,
+            "high": 0.8667
+          }
+        },
+        "bm25-order": {
+          "ndcg@5": {
+            "mean": 0.5,
+            "low": 0.1,
+            "high": 0.9
+          },
+          "ndcg@5 baseline minus this": {
+            "mean": 0.0,
+            "low": 0.0,
+            "high": 0.0
+          },
+          "recall@10": {
+            "mean": 0.6,
+            "low": 0.2,
+            "high": 1.0
+          },
+          "recall@10 baseline minus this": {
+            "mean": 0.0,
+            "low": 0.0,
+            "high": 0.0
+          },
+          "mrr@10": {
+            "mean": 0.4667,
+            "low": 0.0667,
+            "high": 0.8667
+          },
+          "mrr@10 baseline minus this": {
+            "mean": 0.0,
+            "low": 0.0,
+            "high": 0.0
+          }
+        },
+        "unweighted-coverage": {
+          "ndcg@5": {
+            "mean": 0.5,
+            "low": 0.1,
+            "high": 0.9
+          },
+          "ndcg@5 baseline minus this": {
+            "mean": 0.0,
+            "low": 0.0,
+            "high": 0.0
+          },
+          "recall@10": {
+            "mean": 0.6,
+            "low": 0.2,
+            "high": 1.0
+          },
+          "recall@10 baseline minus this": {
+            "mean": 0.0,
+            "low": 0.0,
+            "high": 0.0
+          },
+          "mrr@10": {
+            "mean": 0.4667,
+            "low": 0.0667,
+            "high": 0.8667
+          },
+          "mrr@10 baseline minus this": {
+            "mean": 0.0,
+            "low": 0.0,
+            "high": 0.0
+          }
+        },
+        "strict-phrase": {
+          "ndcg@5": {
+            "mean": 0.5,
+            "low": 0.1,
+            "high": 0.9
+          },
+          "ndcg@5 baseline minus this": {
+            "mean": 0.0,
+            "low": 0.0,
+            "high": 0.0
+          },
+          "recall@10": {
+            "mean": 0.6,
+            "low": 0.2,
+            "high": 1.0
+          },
+          "recall@10 baseline minus this": {
+            "mean": 0.0,
+            "low": 0.0,
+            "high": 0.0
+          },
+          "mrr@10": {
+            "mean": 0.4667,
+            "low": 0.0667,
+            "high": 0.8667
+          },
+          "mrr@10 baseline minus this": {
+            "mean": 0.0,
+            "low": 0.0,
+            "high": 0.0
+          }
+        },
+        "v1-baseline": {
+          "ndcg@5": {
+            "mean": 0.5,
+            "low": 0.1,
+            "high": 0.9
+          },
+          "ndcg@5 baseline minus this": {
+            "mean": 0.0,
+            "low": 0.0,
+            "high": 0.0
+          },
+          "recall@10": {
+            "mean": 0.6,
+            "low": 0.2,
+            "high": 1.0
+          },
+          "recall@10 baseline minus this": {
+            "mean": 0.0,
+            "low": 0.0,
+            "high": 0.0
+          },
+          "mrr@10": {
+            "mean": 0.4667,
+            "low": 0.0667,
+            "high": 0.8667
+          },
+          "mrr@10 baseline minus this": {
+            "mean": 0.0,
+            "low": 0.0,
+            "high": 0.0
+          }
+        }
+      }
+    },
+    "limits/zh": {
+      "queries": 5,
+      "systems": {
+        "mindslice": {
+          "ndcg@5": {
+            "mean": 0.2524,
+            "low": 0.0,
+            "high": 0.5047
+          },
+          "recall@10": {
+            "mean": 0.4,
+            "low": 0.0,
+            "high": 0.8
+          },
+          "mrr@10": {
+            "mean": 0.2,
+            "low": 0.0,
+            "high": 0.4
+          }
+        },
+        "bm25-order": {
+          "ndcg@5": {
+            "mean": 0.2524,
+            "low": 0.0,
+            "high": 0.5047
+          },
+          "ndcg@5 baseline minus this": {
+            "mean": 0.0,
+            "low": 0.0,
+            "high": 0.0
+          },
+          "recall@10": {
+            "mean": 0.4,
+            "low": 0.0,
+            "high": 0.8
+          },
+          "recall@10 baseline minus this": {
+            "mean": 0.0,
+            "low": 0.0,
+            "high": 0.0
+          },
+          "mrr@10": {
+            "mean": 0.2,
+            "low": 0.0,
+            "high": 0.4
+          },
+          "mrr@10 baseline minus this": {
+            "mean": 0.0,
+            "low": 0.0,
+            "high": 0.0
+          }
+        },
+        "unweighted-coverage": {
+          "ndcg@5": {
+            "mean": 0.2524,
+            "low": 0.0,
+            "high": 0.5047
+          },
+          "ndcg@5 baseline minus this": {
+            "mean": 0.0,
+            "low": 0.0,
+            "high": 0.0
+          },
+          "recall@10": {
+            "mean": 0.4,
+            "low": 0.0,
+            "high": 0.8
+          },
+          "recall@10 baseline minus this": {
+            "mean": 0.0,
+            "low": 0.0,
+            "high": 0.0
+          },
+          "mrr@10": {
+            "mean": 0.2,
+            "low": 0.0,
+            "high": 0.4
+          },
+          "mrr@10 baseline minus this": {
+            "mean": 0.0,
+            "low": 0.0,
+            "high": 0.0
+          }
+        },
+        "strict-phrase": {
+          "ndcg@5": {
+            "mean": 0.0,
+            "low": 0.0,
+            "high": 0.0
+          },
+          "ndcg@5 baseline minus this": {
+            "mean": 0.2524,
+            "low": 0.0,
+            "high": 0.5047
+          },
+          "recall@10": {
+            "mean": 0.0,
+            "low": 0.0,
+            "high": 0.0
+          },
+          "recall@10 baseline minus this": {
+            "mean": 0.4,
+            "low": 0.0,
+            "high": 0.8
+          },
+          "mrr@10": {
+            "mean": 0.0,
+            "low": 0.0,
+            "high": 0.0
+          },
+          "mrr@10 baseline minus this": {
+            "mean": 0.2,
+            "low": 0.0,
+            "high": 0.4
+          }
+        },
+        "v1-baseline": {
+          "ndcg@5": {
+            "mean": 0.0,
+            "low": 0.0,
+            "high": 0.0
+          },
+          "ndcg@5 baseline minus this": {
+            "mean": 0.2524,
+            "low": 0.0,
+            "high": 0.5047
+          },
+          "recall@10": {
+            "mean": 0.0,
+            "low": 0.0,
+            "high": 0.0
+          },
+          "recall@10 baseline minus this": {
+            "mean": 0.4,
+            "low": 0.0,
+            "high": 0.8
+          },
+          "mrr@10": {
+            "mean": 0.0,
+            "low": 0.0,
+            "high": 0.0
+          },
+          "mrr@10 baseline minus this": {
+            "mean": 0.2,
+            "low": 0.0,
+            "high": 0.4
+          }
+        }
+      }
+    },
+    "holdout-2/en": {
+      "queries": 20,
+      "systems": {
+        "mindslice": {
+          "ndcg@5": {
+            "mean": 0.8136,
+            "low": 0.7285,
+            "high": 0.889
+          },
+          "recall@10": {
+            "mean": 0.9167,
+            "low": 0.8458,
+            "high": 0.975
+          },
+          "mrr@10": {
+            "mean": 0.8308,
+            "low": 0.6925,
+            "high": 0.9583
+          }
+        },
+        "bm25-order": {
+          "ndcg@5": {
+            "mean": 0.878,
+            "low": 0.8259,
+            "high": 0.9258
+          },
+          "ndcg@5 baseline minus this": {
+            "mean": -0.0645,
+            "low": -0.1052,
+            "high": -0.0269
+          },
+          "recall@10": {
+            "mean": 0.9167,
+            "low": 0.8458,
+            "high": 0.975
+          },
+          "recall@10 baseline minus this": {
+            "mean": 0.0,
+            "low": 0.0,
+            "high": 0.0
+          },
+          "mrr@10": {
+            "mean": 0.8417,
+            "low": 0.7083,
+            "high": 0.9503
+          },
+          "mrr@10 baseline minus this": {
+            "mean": -0.0108,
+            "low": -0.0817,
+            "high": 0.0683
+          }
+        },
+        "unweighted-coverage": {
+          "ndcg@5": {
+            "mean": 0.8361,
+            "low": 0.776,
+            "high": 0.8946
+          },
+          "ndcg@5 baseline minus this": {
+            "mean": -0.0225,
+            "low": -0.0629,
+            "high": 0.0118
+          },
+          "recall@10": {
+            "mean": 0.9167,
+            "low": 0.8458,
+            "high": 0.975
+          },
+          "recall@10 baseline minus this": {
+            "mean": 0.0,
+            "low": 0.0,
+            "high": 0.0
+          },
+          "mrr@10": {
+            "mean": 0.81,
+            "low": 0.6749,
+            "high": 0.9375
+          },
+          "mrr@10 baseline minus this": {
+            "mean": 0.0208,
+            "low": -0.0125,
+            "high": 0.075
+          }
+        },
+        "strict-phrase": {
+          "ndcg@5": {
+            "mean": 0.8136,
+            "low": 0.7285,
+            "high": 0.889
+          },
+          "ndcg@5 baseline minus this": {
+            "mean": 0.0,
+            "low": 0.0,
+            "high": 0.0
+          },
+          "recall@10": {
+            "mean": 0.9167,
+            "low": 0.8458,
+            "high": 0.975
+          },
+          "recall@10 baseline minus this": {
+            "mean": 0.0,
+            "low": 0.0,
+            "high": 0.0
+          },
+          "mrr@10": {
+            "mean": 0.8308,
+            "low": 0.6925,
+            "high": 0.9583
+          },
+          "mrr@10 baseline minus this": {
+            "mean": 0.0,
+            "low": 0.0,
+            "high": 0.0
+          }
+        },
+        "v1-baseline": {
+          "ndcg@5": {
+            "mean": 0.891,
+            "low": 0.8309,
+            "high": 0.9417
+          },
+          "ndcg@5 baseline minus this": {
+            "mean": -0.0774,
+            "low": -0.1254,
+            "high": -0.0338
+          },
+          "recall@10": {
+            "mean": 0.9167,
+            "low": 0.8458,
+            "high": 0.975
+          },
+          "recall@10 baseline minus this": {
+            "mean": 0.0,
+            "low": 0.0,
+            "high": 0.0
+          },
+          "mrr@10": {
+            "mean": 0.8542,
+            "low": 0.7333,
+            "high": 0.9503
+          },
+          "mrr@10 baseline minus this": {
+            "mean": -0.0233,
+            "low": -0.0984,
+            "high": 0.06
+          }
+        }
+      }
+    },
+    "holdout-2/en/tiny": {
+      "queries": 10,
+      "systems": {
+        "mindslice": {
+          "ndcg@5": {
+            "mean": 0.9791,
+            "low": 0.9506,
+            "high": 1.0
+          },
+          "recall@10": {
+            "mean": 1.0,
+            "low": 1.0,
+            "high": 1.0
+          },
+          "mrr@10": {
+            "mean": 1.0,
+            "low": 1.0,
+            "high": 1.0
+          }
+        },
+        "bm25-order": {
+          "ndcg@5": {
+            "mean": 0.9769,
+            "low": 0.9481,
+            "high": 1.0
+          },
+          "ndcg@5 baseline minus this": {
+            "mean": 0.0022,
+            "low": 0.0,
+            "high": 0.0066
+          },
+          "recall@10": {
+            "mean": 1.0,
+            "low": 1.0,
+            "high": 1.0
+          },
+          "recall@10 baseline minus this": {
+            "mean": 0.0,
+            "low": 0.0,
+            "high": 0.0
+          },
+          "mrr@10": {
+            "mean": 1.0,
+            "low": 1.0,
+            "high": 1.0
+          },
+          "mrr@10 baseline minus this": {
+            "mean": 0.0,
+            "low": 0.0,
+            "high": 0.0
+          }
+        },
+        "unweighted-coverage": {
+          "ndcg@5": {
+            "mean": 0.9791,
+            "low": 0.9506,
+            "high": 1.0
+          },
+          "ndcg@5 baseline minus this": {
+            "mean": 0.0,
+            "low": 0.0,
+            "high": 0.0
+          },
+          "recall@10": {
+            "mean": 1.0,
+            "low": 1.0,
+            "high": 1.0
+          },
+          "recall@10 baseline minus this": {
+            "mean": 0.0,
+            "low": 0.0,
+            "high": 0.0
+          },
+          "mrr@10": {
+            "mean": 1.0,
+            "low": 1.0,
+            "high": 1.0
+          },
+          "mrr@10 baseline minus this": {
+            "mean": 0.0,
+            "low": 0.0,
+            "high": 0.0
+          }
+        },
+        "strict-phrase": {
+          "ndcg@5": {
+            "mean": 0.9791,
+            "low": 0.9506,
+            "high": 1.0
+          },
+          "ndcg@5 baseline minus this": {
+            "mean": 0.0,
+            "low": 0.0,
+            "high": 0.0
+          },
+          "recall@10": {
+            "mean": 1.0,
+            "low": 1.0,
+            "high": 1.0
+          },
+          "recall@10 baseline minus this": {
+            "mean": 0.0,
+            "low": 0.0,
+            "high": 0.0
+          },
+          "mrr@10": {
+            "mean": 1.0,
+            "low": 1.0,
+            "high": 1.0
+          },
+          "mrr@10 baseline minus this": {
+            "mean": 0.0,
+            "low": 0.0,
+            "high": 0.0
+          }
+        },
+        "v1-baseline": {
+          "ndcg@5": {
+            "mean": 0.9769,
+            "low": 0.9481,
+            "high": 1.0
+          },
+          "ndcg@5 baseline minus this": {
+            "mean": 0.0022,
+            "low": 0.0,
+            "high": 0.0066
+          },
+          "recall@10": {
+            "mean": 1.0,
+            "low": 1.0,
+            "high": 1.0
+          },
+          "recall@10 baseline minus this": {
+            "mean": 0.0,
+            "low": 0.0,
+            "high": 0.0
+          },
+          "mrr@10": {
+            "mean": 1.0,
+            "low": 1.0,
+            "high": 1.0
+          },
+          "mrr@10 baseline minus this": {
+            "mean": 0.0,
+            "low": 0.0,
+            "high": 0.0
+          }
+        }
+      }
+    },
+    "holdout-2/zh": {
+      "queries": 20,
+      "systems": {
+        "mindslice": {
+          "ndcg@5": {
+            "mean": 0.8129,
+            "low": 0.6857,
+            "high": 0.9142
+          },
+          "recall@10": {
+            "mean": 0.8542,
+            "low": 0.7292,
+            "high": 0.9542
+          },
+          "mrr@10": {
+            "mean": 0.7975,
+            "low": 0.6475,
+            "high": 0.925
+          }
+        },
+        "bm25-order": {
+          "ndcg@5": {
+            "mean": 0.8292,
+            "low": 0.7083,
+            "high": 0.9272
+          },
+          "ndcg@5 baseline minus this": {
+            "mean": -0.0163,
+            "low": -0.0469,
+            "high": 0.0104
+          },
+          "recall@10": {
+            "mean": 0.8542,
+            "low": 0.7292,
+            "high": 0.9542
+          },
+          "recall@10 baseline minus this": {
+            "mean": 0.0,
+            "low": 0.0,
+            "high": 0.0
+          },
+          "mrr@10": {
+            "mean": 0.7833,
+            "low": 0.6498,
+            "high": 0.9083
+          },
+          "mrr@10 baseline minus this": {
+            "mean": 0.0142,
+            "low": -0.0242,
+            "high": 0.0708
+          }
+        },
+        "unweighted-coverage": {
+          "ndcg@5": {
+            "mean": 0.8344,
+            "low": 0.7124,
+            "high": 0.9301
+          },
+          "ndcg@5 baseline minus this": {
+            "mean": -0.0215,
+            "low": -0.0494,
+            "high": 0.0
+          },
+          "recall@10": {
+            "mean": 0.8542,
+            "low": 0.7292,
+            "high": 0.9542
+          },
+          "recall@10 baseline minus this": {
+            "mean": 0.0,
+            "low": 0.0,
+            "high": 0.0
+          },
+          "mrr@10": {
+            "mean": 0.8083,
+            "low": 0.6667,
+            "high": 0.9333
+          },
+          "mrr@10 baseline minus this": {
+            "mean": -0.0108,
+            "low": -0.0275,
+            "high": 0.0
+          }
+        },
+        "strict-phrase": {
+          "ndcg@5": {
+            "mean": 0.0,
+            "low": 0.0,
+            "high": 0.0
+          },
+          "ndcg@5 baseline minus this": {
+            "mean": 0.8129,
+            "low": 0.6857,
+            "high": 0.9142
+          },
+          "recall@10": {
+            "mean": 0.0,
+            "low": 0.0,
+            "high": 0.0
+          },
+          "recall@10 baseline minus this": {
+            "mean": 0.8542,
+            "low": 0.7292,
+            "high": 0.9542
+          },
+          "mrr@10": {
+            "mean": 0.0,
+            "low": 0.0,
+            "high": 0.0
+          },
+          "mrr@10 baseline minus this": {
+            "mean": 0.7975,
+            "low": 0.6475,
+            "high": 0.925
+          }
+        },
+        "v1-baseline": {
+          "ndcg@5": {
+            "mean": 0.0,
+            "low": 0.0,
+            "high": 0.0
+          },
+          "ndcg@5 baseline minus this": {
+            "mean": 0.8129,
+            "low": 0.6857,
+            "high": 0.9142
+          },
+          "recall@10": {
+            "mean": 0.0,
+            "low": 0.0,
+            "high": 0.0
+          },
+          "recall@10 baseline minus this": {
+            "mean": 0.8542,
+            "low": 0.7292,
+            "high": 0.9542
+          },
+          "mrr@10": {
+            "mean": 0.0,
+            "low": 0.0,
+            "high": 0.0
+          },
+          "mrr@10 baseline minus this": {
+            "mean": 0.7975,
+            "low": 0.6475,
+            "high": 0.925
+          }
+        }
+      }
+    },
+    "holdout-2/zh/tiny": {
+      "queries": 10,
+      "systems": {
+        "mindslice": {
+          "ndcg@5": {
+            "mean": 0.973,
+            "low": 0.9489,
+            "high": 0.9924
+          },
+          "recall@10": {
+            "mean": 1.0,
+            "low": 1.0,
+            "high": 1.0
+          },
+          "mrr@10": {
+            "mean": 1.0,
+            "low": 1.0,
+            "high": 1.0
+          }
+        },
+        "bm25-order": {
+          "ndcg@5": {
+            "mean": 0.9713,
+            "low": 0.9461,
+            "high": 0.9924
+          },
+          "ndcg@5 baseline minus this": {
+            "mean": 0.0017,
+            "low": 0.0,
+            "high": 0.005
+          },
+          "recall@10": {
+            "mean": 1.0,
+            "low": 1.0,
+            "high": 1.0
+          },
+          "recall@10 baseline minus this": {
+            "mean": 0.0,
+            "low": 0.0,
+            "high": 0.0
+          },
+          "mrr@10": {
+            "mean": 1.0,
+            "low": 1.0,
+            "high": 1.0
+          },
+          "mrr@10 baseline minus this": {
+            "mean": 0.0,
+            "low": 0.0,
+            "high": 0.0
+          }
+        },
+        "unweighted-coverage": {
+          "ndcg@5": {
+            "mean": 0.973,
+            "low": 0.9489,
+            "high": 0.9924
+          },
+          "ndcg@5 baseline minus this": {
+            "mean": 0.0,
+            "low": 0.0,
+            "high": 0.0
+          },
+          "recall@10": {
+            "mean": 1.0,
+            "low": 1.0,
+            "high": 1.0
+          },
+          "recall@10 baseline minus this": {
+            "mean": 0.0,
+            "low": 0.0,
+            "high": 0.0
+          },
+          "mrr@10": {
+            "mean": 1.0,
+            "low": 1.0,
+            "high": 1.0
+          },
+          "mrr@10 baseline minus this": {
+            "mean": 0.0,
+            "low": 0.0,
+            "high": 0.0
+          }
+        },
+        "strict-phrase": {
+          "ndcg@5": {
+            "mean": 0.084,
+            "low": 0.0,
+            "high": 0.2521
+          },
+          "ndcg@5 baseline minus this": {
+            "mean": 0.8889,
+            "low": 0.7239,
+            "high": 0.9882
+          },
+          "recall@10": {
+            "mean": 0.0667,
+            "low": 0.0,
+            "high": 0.2
+          },
+          "recall@10 baseline minus this": {
+            "mean": 0.9333,
+            "low": 0.8,
+            "high": 1.0
+          },
+          "mrr@10": {
+            "mean": 0.1,
+            "low": 0.0,
+            "high": 0.3
+          },
+          "mrr@10 baseline minus this": {
+            "mean": 0.9,
+            "low": 0.7,
+            "high": 1.0
+          }
+        },
+        "v1-baseline": {
+          "ndcg@5": {
+            "mean": 0.0639,
+            "low": 0.0,
+            "high": 0.1916
+          },
+          "ndcg@5 baseline minus this": {
+            "mean": 0.9091,
+            "low": 0.7843,
+            "high": 0.9882
+          },
+          "recall@10": {
+            "mean": 0.0333,
+            "low": 0.0,
+            "high": 0.1
+          },
+          "recall@10 baseline minus this": {
+            "mean": 0.9667,
+            "low": 0.9,
+            "high": 1.0
+          },
+          "mrr@10": {
+            "mean": 0.1,
+            "low": 0.0,
+            "high": 0.3
+          },
+          "mrr@10 baseline minus this": {
+            "mean": 0.9,
+            "low": 0.7,
+            "high": 1.0
+          }
+        }
+      }
+    },
+    "holdout-2/all": {
+      "queries": 60,
+      "systems": {
+        "mindslice": {
+          "ndcg@5": {
+            "mean": 0.8675,
+            "low": 0.8111,
+            "high": 0.9164
+          },
+          "recall@10": {
+            "mean": 0.9236,
+            "low": 0.8736,
+            "high": 0.9667
+          },
+          "mrr@10": {
+            "mean": 0.8761,
+            "low": 0.803,
+            "high": 0.94
+          }
+        },
+        "bm25-order": {
+          "ndcg@5": {
+            "mean": 0.8938,
+            "low": 0.8455,
+            "high": 0.9333
+          },
+          "ndcg@5 baseline minus this": {
+            "mean": -0.0263,
+            "low": -0.0458,
+            "high": -0.0101
+          },
+          "recall@10": {
+            "mean": 0.9236,
+            "low": 0.8736,
+            "high": 0.9667
+          },
+          "recall@10 baseline minus this": {
+            "mean": 0.0,
+            "low": 0.0,
+            "high": 0.0
+          },
+          "mrr@10": {
+            "mean": 0.875,
+            "low": 0.8042,
+            "high": 0.9361
+          },
+          "mrr@10 baseline minus this": {
+            "mean": 0.0011,
+            "low": -0.0261,
+            "high": 0.0306
+          }
+        },
+        "unweighted-coverage": {
+          "ndcg@5": {
+            "mean": 0.8822,
+            "low": 0.8331,
+            "high": 0.9248
+          },
+          "ndcg@5 baseline minus this": {
+            "mean": -0.0147,
+            "low": -0.033,
+            "high": -0.001
+          },
+          "recall@10": {
+            "mean": 0.9236,
+            "low": 0.8736,
+            "high": 0.9667
+          },
+          "recall@10 baseline minus this": {
+            "mean": 0.0,
+            "low": 0.0,
+            "high": 0.0
+          },
+          "mrr@10": {
+            "mean": 0.8728,
+            "low": 0.8042,
+            "high": 0.9347
+          },
+          "mrr@10 baseline minus this": {
+            "mean": 0.0033,
+            "low": -0.01,
+            "high": 0.0236
+          }
+        },
+        "strict-phrase": {
+          "ndcg@5": {
+            "mean": 0.4484,
+            "low": 0.3375,
+            "high": 0.5634
+          },
+          "ndcg@5 baseline minus this": {
+            "mean": 0.4191,
+            "low": 0.3078,
+            "high": 0.5348
+          },
+          "recall@10": {
+            "mean": 0.4833,
+            "low": 0.3639,
+            "high": 0.6014
+          },
+          "recall@10 baseline minus this": {
+            "mean": 0.4403,
+            "low": 0.325,
+            "high": 0.5611
+          },
+          "mrr@10": {
+            "mean": 0.4603,
+            "low": 0.3394,
+            "high": 0.5833
+          },
+          "mrr@10 baseline minus this": {
+            "mean": 0.4158,
+            "low": 0.3,
+            "high": 0.5367
+          }
+        },
+        "v1-baseline": {
+          "ndcg@5": {
+            "mean": 0.4705,
+            "low": 0.3548,
+            "high": 0.5855
+          },
+          "ndcg@5 baseline minus this": {
+            "mean": 0.397,
+            "low": 0.2784,
+            "high": 0.5187
+          },
+          "recall@10": {
+            "mean": 0.4778,
+            "low": 0.3583,
+            "high": 0.5944
+          },
+          "recall@10 baseline minus this": {
+            "mean": 0.4458,
+            "low": 0.3305,
+            "high": 0.5667
+          },
+          "mrr@10": {
+            "mean": 0.4681,
+            "low": 0.3458,
+            "high": 0.5875
+          },
+          "mrr@10 baseline minus this": {
+            "mean": 0.4081,
+            "low": 0.29,
+            "high": 0.5325
+          }
+        }
+      }
+    }
+  },
+  "lines": [
+    {
+      "id": "L1",
+      "group": "holdout/en",
+      "metric": "ndcg@5",
+      "line": 0.8,
+      "claim": "English nDCG@5 at least 0.80",
+      "point": 0.9552,
+      "low": 0.9063,
+      "high": 0.995,
+      "verdict": "confirmed"
+    },
+    {
+      "id": "L2",
+      "group": "holdout/zh",
+      "metric": "ndcg@5",
+      "line": 0.8,
+      "claim": "Chinese nDCG@5 at least 0.80",
+      "point": 0.9386,
+      "low": 0.8494,
+      "high": 0.995,
+      "verdict": "confirmed"
+    },
+    {
+      "id": "L3",
+      "group": "holdout/en",
+      "metric": "recall@10",
+      "line": 0.9,
+      "claim": "English Recall@10 at least 0.90",
+      "point": 0.975,
+      "low": 0.925,
+      "high": 1.0,
+      "verdict": "confirmed"
+    },
+    {
+      "id": "L4",
+      "group": "holdout/zh",
+      "metric": "recall@10",
+      "line": 0.9,
+      "claim": "Chinese Recall@10 at least 0.90",
+      "point": 1.0,
+      "low": 1.0,
+      "high": 1.0,
+      "verdict": "confirmed"
+    },
+    {
+      "id": "L5",
+      "group": "holdout/zh",
+      "metric": "ndcg@5",
+      "versus": "v1-baseline",
+      "line": 0.3,
+      "claim": "Script-aware analysis adds at least 0.30 Chinese nDCG@5 over v1",
+      "point": 0.8456,
+      "low": 0.6911,
+      "high": 0.9849,
+      "verdict": "confirmed"
+    },
+    {
+      "id": "L6",
+      "group": "holdout/zh",
+      "metric": "ndcg@5",
+      "versus": "strict-phrase",
+      "line": 0.0,
+      "claim": "OR-ed bigrams are no worse than strict phrases (Chinese)",
+      "point": 0.5059,
+      "low": 0.3,
+      "high": 0.7198,
+      "verdict": "confirmed"
+    },
+    {
+      "id": "L7",
+      "group": "holdout/en",
+      "metric": "ndcg@5",
+      "versus": "bm25-order",
+      "line": 0.0,
+      "claim": "Coverage-first ranking is no worse than BM25 order (English)",
+      "point": -0.0069,
+      "low": -0.0206,
+      "high": 0.0,
+      "verdict": "miss"
+    },
+    {
+      "id": "L8",
+      "group": "holdout/zh",
+      "metric": "ndcg@5",
+      "versus": "bm25-order",
+      "line": 0.0,
+      "claim": "Coverage-first ranking is no worse than BM25 order (Chinese)",
+      "point": -0.0025,
+      "low": -0.0075,
+      "high": 0.0,
+      "verdict": "miss"
+    },
+    {
+      "id": "L9",
+      "group": "holdout-2/en",
+      "metric": "ndcg@5",
+      "line": 0.7,
+      "claim": "Harder English nDCG@5 at least 0.70",
+      "point": 0.8136,
+      "low": 0.7285,
+      "high": 0.889,
+      "verdict": "confirmed"
+    },
+    {
+      "id": "L10",
+      "group": "holdout-2/zh",
+      "metric": "ndcg@5",
+      "line": 0.7,
+      "claim": "Harder Chinese nDCG@5 at least 0.70",
+      "point": 0.8129,
+      "low": 0.6857,
+      "high": 0.9142,
+      "verdict": "point pass"
+    },
+    {
+      "id": "L11",
+      "group": "holdout-2/en/tiny",
+      "metric": "ndcg@5",
+      "line": 0.7,
+      "claim": "Tiny English nDCG@5 at least 0.70",
+      "point": 0.9791,
+      "low": 0.9506,
+      "high": 1.0,
+      "verdict": "confirmed"
+    },
+    {
+      "id": "L12",
+      "group": "holdout-2/zh/tiny",
+      "metric": "ndcg@5",
+      "line": 0.7,
+      "claim": "Tiny Chinese nDCG@5 at least 0.70",
+      "point": 0.973,
+      "low": 0.9489,
+      "high": 0.9924,
+      "verdict": "confirmed"
+    },
+    {
+      "id": "L13",
+      "group": "holdout-2/en",
+      "metric": "ndcg@5",
+      "versus": "bm25-order",
+      "line": 0.0,
+      "claim": "Coverage-first no worse than BM25 order (harder English)",
+      "point": -0.0645,
+      "low": -0.1052,
+      "high": -0.0269,
+      "verdict": "miss"
+    },
+    {
+      "id": "L14",
+      "group": "holdout-2/zh",
+      "metric": "ndcg@5",
+      "versus": "bm25-order",
+      "line": 0.0,
+      "claim": "Coverage-first no worse than BM25 order (harder Chinese)",
+      "point": -0.0163,
+      "low": -0.0469,
+      "high": 0.0104,
+      "verdict": "miss"
+    },
+    {
+      "id": "L15",
+      "group": "holdout-2/en/tiny",
+      "metric": "ndcg@5",
+      "versus": "bm25-order",
+      "line": 0.0,
+      "claim": "Coverage-first no worse than BM25 order (tiny English)",
+      "point": 0.0022,
+      "low": 0.0,
+      "high": 0.0066,
+      "verdict": "confirmed"
+    },
+    {
+      "id": "L16",
+      "group": "holdout-2/zh/tiny",
+      "metric": "ndcg@5",
+      "versus": "bm25-order",
+      "line": 0.0,
+      "claim": "Coverage-first no worse than BM25 order (tiny Chinese)",
+      "point": 0.0017,
+      "low": 0.0,
+      "high": 0.005,
+      "verdict": "confirmed"
+    },
+    {
+      "id": "L17",
+      "group": "holdout-2/all",
+      "metric": "ndcg@5",
+      "versus": "bm25-order",
+      "line": 0.0,
+      "claim": "Decision line: coverage-first no worse than BM25 order, all 60 holdout-2 queries",
+      "point": -0.0263,
+      "low": -0.0458,
+      "high": -0.0101,
+      "verdict": "miss"
+    }
+  ]
+}

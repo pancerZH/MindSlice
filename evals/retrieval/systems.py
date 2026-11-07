@@ -4,13 +4,17 @@
 for the duration of a run on its own fresh workspace, so the paired difference measures what that
 choice is worth on this data:
 
-* ``bm25-order``    - coverage-first ranking undone: results ordered by BM25 score alone.
+* ``coverage-first`` - results ordered by IDF-weighted coverage, then verbatim runs, then BM25:
+                      the engine's ordering until the user reverted it on holdout-2's evidence.
+* ``unweighted-coverage`` - coverage-first with every query word counted equally (the ordering
+                      before the dev-informed IDF weighting; see PLAN.md's ledger).
 * ``strict-phrase`` - CJK query runs must match verbatim (adjacent bigrams as one FTS5 phrase),
-                      the approach basic-memory ships; OR-ed bigrams with coverage credit undone.
-* ``v1-baseline``   - the engine as of commit bc0e7ac: no script-aware analysis, no NFKC, raw
-                      ``unicode61`` tokens, BM25 ordering.
-* ``unweighted-coverage`` - coverage-first ranking with every query word counted equally (the
-                      ranking before the dev-informed IDF weighting; see PLAN.md's ledger).
+                      the approach basic-memory ships; OR-ed bigrams undone.
+* ``v1-baseline``   - the analysis as of commit bc0e7ac: no script-aware analysis, no NFKC, raw
+                      ``unicode61`` tokens (its ordering, BM25, is the engine's again).
+
+The record of the coverage-first engine, where ``mindslice`` was coverage-first and ``bm25-order``
+was today's ordering, is in ``results/archive/2026-11-06-coverage-first-engine/``.
 """
 
 from __future__ import annotations
@@ -21,17 +25,23 @@ from typing import Iterator
 from unittest import mock
 
 from mindslice import index as index_module
+from mindslice import query as query_module
 from mindslice.index import Hit
 from mindslice.lexical import QueryPlan, QueryUnit, analyze_query
 
-SYSTEMS = ("mindslice", "bm25-order", "unweighted-coverage", "strict-phrase", "v1-baseline")
+SYSTEMS = ("mindslice", "coverage-first", "unweighted-coverage", "strict-phrase", "v1-baseline")
 BASELINE = "mindslice"
 
 _V1_WORD = re.compile(r"\w+(\*)?", re.UNICODE)
 
 
-def _bm25_order_rank(self, plan: QueryPlan, rows) -> list[Hit]:
-    return [Hit(r, float(r["score"]) if plan.units else 0.0, 0.0, 0) for r in rows]
+def _coverage_first_hit_key(self: Hit) -> tuple:
+    r = self.row
+    return (-self.coverage, -self.phrases, -self.score, -r["precedence"], r["mount"], r["path"])
+
+
+def _coverage_first_result_order(address: str, group: dict, row) -> tuple:
+    return (-group["coverage"], -group["phrases"], -group["score"], -row["precedence"], address)
 
 
 def _unweighted_coverage_rank(self, plan: QueryPlan, rows) -> list[Hit]:
@@ -71,8 +81,9 @@ def system(name: str) -> Iterator[None]:
     if name not in SYSTEMS:
         raise ValueError(f"unknown system {name!r}; choose from {', '.join(SYSTEMS)}")
     with ExitStack() as stack:
-        if name in ("bm25-order", "v1-baseline"):
-            stack.enter_context(mock.patch.object(index_module.Index, "_rank", _bm25_order_rank))
+        if name in ("coverage-first", "unweighted-coverage"):
+            stack.enter_context(mock.patch.object(Hit, "rank_key", _coverage_first_hit_key))
+            stack.enter_context(mock.patch.object(query_module, "result_order", _coverage_first_result_order))
         if name == "unweighted-coverage":
             stack.enter_context(mock.patch.object(index_module.Index, "_rank", _unweighted_coverage_rank))
         if name == "strict-phrase":

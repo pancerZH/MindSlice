@@ -133,6 +133,22 @@ Lines, read on `holdout-2` only, with the same verdict rules:
 L13 to L16 say where any gain or loss comes from. The user makes the call either way; this fixes what the
 evidence recommends. On 60 queries the pooled interval is still wide, and that is said now.
 
+## Decision: BM25 order (2026-11-06)
+
+Following L17's miss and the rule above, the user reverted the engine to BM25 order: results are ordered by
+`score`, then precedence, then address. `coverage` stays in every preview as information only.
+
+- **Verified equivalent:** on all 150 queries, the reverted engine's top 10 equals the archived `bm25-order`
+  ranking, and the new `coverage-first` comparison system equals the archived engine. The evidence above is
+  therefore evidence about exactly this engine (source digest `631ab34d3b4a3ad48ff0c7ea506fc707fca05ea5113f179cb243ebb62f473b74`).
+- **Systems now:** `bm25-order` is the engine, so it is gone; `coverage-first` (the reverted ordering) takes its
+  place. `strict-phrase` and `v1-baseline` now differ from the engine only in analysis, as both orderings are BM25.
+- **Lines:** L7, L8 and L13 to L17 were decided on the archived engine and are retired. Their record is
+  `results/archive/2026-11-06-coverage-first-engine/`. L1 to L6 and L9 to L12 are re-read on this engine
+  and are no longer fresh evidence.
+- **Next ranking change:** `holdout` and `holdout-2` have both informed ranking. Judge any further ranking
+  change on a new split (`holdout-3`), frozen with its lines before it is scored.
+
 ## Ledger
 
 | Date | Run | What it informed |
@@ -144,3 +160,4 @@ evidence recommends. On 60 queries the pooled interval is still wide, and that i
 | 2026-11-06 | Exploratory, after the verdict: unweighted coverage on `dev` and `holdout` | IDF-weighted minus unweighted: +0.007 and +0.005 on `dev`, −0.007 and −0.002 on `holdout`. The ranking variants differ by one or two queries here, so this set can't separate them. This `holdout` has now informed the ranking question; deciding it needs a new, harder holdout |
 | 2026-11-06 | `holdout-2` written and frozen, its rules added above | Nothing scored on it yet |
 | 2026-11-06 | `holdout-2`, once, same engine | Quality: L9, L11, L12 **confirmed**, L10 **point pass**. Ranking: L13 **miss** (−0.065 [−0.105, −0.027]), L14 **miss** (−0.016 [−0.047, 0.010]), L15 and L16 **confirmed** (+0.002 on the tiny corpora), and decision line L17 **miss** (−0.026 [−0.046, −0.010]). **By the rule above, the evidence recommends reverting to BM25 order.** Coverage-first was worse on 12 of 60 queries and better on 3. Cause, diagnosed after the verdict: in a corpus this size, words that are rare but carry no topic ("do", "when", 修改) earn heavy coverage credit, IDF-weighted or not, while BM25's field weights and term saturation keep the topical card first. `unweighted-coverage` falls between (−0.015 pooled). The engine is unchanged; the decision is the user's |
+| 2026-11-06 | User decision: revert to BM25 order | Engine ordering changed; coverage kept as a reported field. Equivalence verified on all 150 queries (above). Record archived, L7, L8 and L13 to L17 retired, results and the regression floor regenerated on the new engine |

@@ -353,8 +353,8 @@ def _c_paginate(a: Agent) -> None:
     expect_eq(len(results), N_SERVICES, "one rollback runbook per service")
     expect_eq(len({r["address"] for r in results}), N_SERVICES, "no duplicates across pages")
     expect(all(r["address"].endswith("/runbook/rollback") for r in results), "only rollback runbooks")
-    keys = [(r["coverage"], r["score"]) for r in results]
-    expect(keys == sorted(keys, reverse=True), "pages are globally ordered")
+    scores = [r["score"] for r in results]
+    expect(scores == sorted(scores, reverse=True), "pages are globally ordered by BM25 score")
     scoped = a.search("rollback", source=["@svc-03", "@svc-04"])
     expect_eq(sorted(addresses(scoped)), ["@svc-03/runbook/rollback", "@svc-04/runbook/rollback"], "source filter")
 

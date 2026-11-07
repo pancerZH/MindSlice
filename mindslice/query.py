@@ -291,12 +291,7 @@ def search(
             if via and via not in group["via"]:
                 group["via"].append(via)
 
-        def sort_key(item: tuple[str, dict[str, Any]]):
-            address, group = item
-            row = ctx.row(address)
-            return (-group["coverage"], -group["phrases"], -group["score"], -row["precedence"], address)
-
-        ordered = sorted(groups.items(), key=sort_key)
+        ordered = sorted(groups.items(), key=lambda item: result_order(item[0], item[1], ctx.row(item[0])))
         total = len(ordered)
         results = [
             _preview(ctx, address, group, max_neighbors)
@@ -311,6 +306,11 @@ def search(
             "truncated": offset + k < total,
             "next_offset": _page(total, offset, k),
         }
+
+
+def result_order(address: str, group: dict[str, Any], row) -> tuple:
+    """Order of search results: BM25 score (the best of a redirected group), precedence, address."""
+    return (-group["score"], -row["precedence"], address)
 
 
 def _preview(ctx: _Ctx, address: str, group: dict[str, Any], max_neighbors: int) -> dict[str, Any]:

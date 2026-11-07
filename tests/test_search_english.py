@@ -80,17 +80,20 @@ class EnglishRankingTests(WorkspaceTestCase):
         self.assertEqual(self.addresses(self.ws.search("zephyr")),
                          ["@overlay/w/title", "@overlay/w/alias", "@overlay/w/tag", "@overlay/w/summary", "@overlay/w/body"])
 
-    def test_more_query_words_beat_higher_bm25(self):
-        for i in range(8):  # make "ttl" common (low IDF) so BM25 alone would favor the title-heavy card
+    def test_bm25_orders_and_coverage_is_reported(self):
+        # Results follow BM25 score, not coverage (coverage-first lost on evals/retrieval, see PLAN.md).
+        for i in range(8):  # make "ttl" common (low IDF) so the title-heavy card wins on BM25
             self.ws.write(f"filler/{i}", title=f"Filler {i}", summary=f"Gardening note {i} with a ttl.")
         self.ws.write("title-hit", title="Cache", summary="Cache cache cache.")
         self.ws.write("both", title="Notes", summary="Entries in the cache expire after the TTL elapses.")
-        res = {r["address"]: r for r in self.ws.search("cache ttl", k=20)["results"]}
-        top = self.ws.search("cache ttl")["results"][0]
-        self.assertEqual((top["address"], top["coverage"]), ("@overlay/both", 1.0))
+        results = self.ws.search("cache ttl", k=20)["results"]
+        scores = [r["score"] for r in results]
+        self.assertEqual(scores, sorted(scores, reverse=True))
+        self.assertEqual(results[0]["address"], "@overlay/title-hit")
+        by = {r["address"]: r for r in results}
+        self.assertEqual(by["@overlay/both"]["coverage"], 1.0)  # matched the whole query: reported
         # "cache" is rare and "ttl" is common, so matching "cache" alone is most of the query's weight.
-        self.assertTrue(0.5 < res["@overlay/title-hit"]["coverage"] < 1)
-        self.assertGreater(res["@overlay/title-hit"]["score"], top["score"])
+        self.assertTrue(0.5 < by["@overlay/title-hit"]["coverage"] < 1)
 
     def test_coverage_values_and_monotonic_order(self):
         add_filler(self.ws)

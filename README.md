@@ -164,26 +164,19 @@ depend on how SQLite was compiled:
   matches through its unigram. Supplementary-plane ideographs (e.g. `𠮷`) and iteration marks
   (`々`) are handled.
 - **Queries never fail silently on unspaced compounds.** An unspaced query run becomes its bigrams,
-  OR-ed like ordinary words. `雾凇拼音` still finds a card that only says `雾凇词库`; it just
-  ranks below cards that contain more of the query.
+  OR-ed like ordinary words. `雾凇拼音` still finds a card that only says `雾凇词库`, usually ranked
+  below cards that contain more of the query.
 
-Ranking is **coverage-first**, in this order:
+Results are ordered by `score = -bm25(...)`, then mount precedence, then address. Every preview
+also reports `coverage`: the share of the query the card matches, with each word weighted by how rare
+it is in the corpus (smoothed IDF). A CJK run earns the weighted share of its bigrams present, or full
+credit if the card contains it verbatim. Coverage tells an agent how much of its question a card
+covered; it does not order results.
 
-1. `coverage`: the share of the query a card matches, with each word weighted by how rare it is in
-   the corpus (smoothed IDF), so filler words like "the" or "for" barely count. A CJK run earns the
-   weighted share of its bigrams present, or full credit if the card contains it verbatim.
-2. The number of CJK runs matched verbatim.
-3. `score = -bm25(...)`.
-4. Mount precedence.
-
-So a card matching every query word outranks one that matches a single word many times in its
-title. Both `coverage` and `score` are returned in every preview.
-
-**Evaluation status:** the retrieval evaluation ([`evals/retrieval`](evals/retrieval/PLAN.md)) does not support
-this ordering yet. On its harder, multi-candidate holdout, coverage-first trails plain BM25 order by 0.026
-nDCG@5 overall (0.065 in English), and gains only 0.002 on tiny corpora. Words that are rare in a small
-corpus but carry no topic ("do", "when") earn too much coverage credit. The pre-registered rule recommends
-reverting to BM25 order; that decision is pending.
+Coverage-first ordering was tried and evaluated ([`evals/retrieval`](evals/retrieval/PLAN.md)). On a
+harder, multi-candidate holdout it trailed BM25 order by 0.026 nDCG@5 overall (0.065 in English) and
+gained only 0.002 on tiny corpora. In a small corpus, words that are rare but carry no topic ("do",
+"when") earned too much coverage credit. The engine went back to BM25 order.
 
 The analysis uses only Python's `unicodedata` and `re`, with SQLite's built-in FTS5 tokenizer: no
 jieba, no ICU, and no SQLite extension. The index records the analyzer and Unicode-database versions,
@@ -235,7 +228,7 @@ pass lines in advance. See [its README](evals/retrieval/README.md) and [plan](ev
 
 The design leaves a few details open. These are the choices v1 makes:
 
-- **Search query syntax.** Free-text words are OR-ed and ranked coverage-first (see
+- **Search query syntax.** Free-text words are OR-ed and ranked by BM25 (see
   [Search, ranking & multilingual text](#search-ranking--multilingual-text)). An empty query with
   `tags` lists that facet. `tags` filters are all-of. The card path is also indexed, alongside
   `aliases`.

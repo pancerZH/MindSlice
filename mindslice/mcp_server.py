@@ -53,7 +53,7 @@ TOOLS: list[dict[str, Any]] = [
         "name": "search",
         "description": (
             "Associative lexical search across all mounted slices (any language, including unspaced Chinese/Japanese/"
-            "Korean). Results are ranked by coverage (share of the query matched, rare words weighing more), then BM25 score. Returns card "
+            "Korean), ranked by BM25 score. Each card preview also reports coverage, the share of the query it matched. Returns card "
             "previews (address, role, coverage, score, title, 240-char summary, 1-hop [[wikilink]] neighbors). Hits on "
             "superseded cards are redirected to their replacement (see matched_via_superseded). Use read() on an "
             "address for full content."
@@ -61,7 +61,7 @@ TOOLS: list[dict[str, Any]] = [
         "inputSchema": {
             "type": "object",
             "properties": {
-                "query": {"type": "string", "description": "free text; words are OR-ed and ranked by coverage then BM25 (word* = prefix); CJK needs no spaces"},
+                "query": {"type": "string", "description": "free text; words are OR-ed and ranked by BM25 (word* = prefix); CJK needs no spaces"},
                 "source": {"type": ["string", "array"], "items": {"type": "string"}, "description": "restrict to mount alias(es), e.g. \"@project\""},
                 "tags": {"type": "array", "items": {"type": "string"}, "description": "cards must carry all of these tags"},
                 "k": _int(10, "max results"),
