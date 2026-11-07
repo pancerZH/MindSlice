@@ -6,6 +6,7 @@ Reference setup: @overlay (precedence=100, role="runtime"), @project (precedence
 from __future__ import annotations
 
 import json
+import tomllib
 import unittest
 
 from mindslice import ApplyConflictError, UnresolvedExportDependencyError, Workspace
@@ -152,6 +153,43 @@ class Scenario05ReplacementChain(WorkspaceTestCase):
         self.assertCountEqual([c["address"] for c in res["competing_replacements"]], ["@overlay/api/v2", "@overlay/api/v2b"])
 
 
+class Scenario05bTrustAcrossThreeMounts(WorkspaceTestCase):
+    """The trust policy is applied hop by hop: @base (baseline, 10) <- @curated (curated, 50) <- @overlay (runtime, 100)."""
+
+    def setUp(self):
+        super().setUp()
+        self.mount_slice("base-kb", {"a": card_text("Rate limits", "Anonymous clients are throttled at 100 requests.")},
+                         "@base", 10, "baseline")
+        self.mount_slice("curated-kb", {"b": card_text("Rate limits v2", "Clients get 300 requests.",
+                                                       supersedes=["@base/a"])}, "@curated", 50, "curated")
+
+    def test_untrusted_hop_stops_the_chain_mid_way(self):
+        self.ws.write("c", summary="Runtime guess: the quota was lifted.", supersedes=["@curated/b"])
+        res = self.ws.read("@base/a", follow_supersedes=["curated"])
+        self.assertEqual(res["address"], "@curated/b")
+        self.assertEqual(res["redirected_from"], "@base/a")
+        self.assertEqual(res["lineage_path"], ["@base/a", "@curated/b"])
+        self.assertEqual(res["superseded_by_untrusted"], ["@overlay/c"])
+        hits = self.ws.search("throttled", follow_supersedes=["curated"])
+        self.assertEqual(self.addresses(hits), ["@curated/b"])
+        self.assertEqual(hits["results"][0]["matched_via_superseded"], ["@base/a"])
+        self.assertEqual(hits["results"][0]["superseded_by_untrusted"], ["@overlay/c"])
+        self.assertNotIn("resolves_to", hits["results"][0])  # the untrusted hop is not followed onward
+        self.assertEqual(self.ws.read("@base/a")["address"], "@overlay/c")  # trusting everything walks on
+
+    def test_trust_filter_resolves_a_fork(self):
+        self.ws.write("c", summary="Runtime guess: the quota was lifted.", supersedes=["@base/a"])
+        forked = self.ws.read("@base/a", follow_supersedes=True)
+        self.assertEqual(forked["address"], "@base/a")
+        self.assertEqual(forked["status"], "competing_replacements")
+        self.assertEqual([c["address"] for c in forked["competing_replacements"]], ["@overlay/c", "@curated/b"])
+        self.assertNotIn("redirected_from", forked)
+        curated = self.ws.read("@base/a", follow_supersedes=["curated"])
+        self.assertEqual(curated["address"], "@curated/b")
+        self.assertEqual(curated["redirected_from"], "@base/a")
+        self.assertEqual(curated["status"], "active")
+
+
 class Scenario06UnrebasedExtension(WorkspaceTestCase):
     def setUp(self):
         super().setUp()
@@ -223,6 +261,28 @@ class Scenario06bTwoHopAndDeletedBaselines(WorkspaceTestCase):
         self.assertNotIn("missing_baselines", hit)
 
 
+class Scenario06cDiamondBaselines(WorkspaceTestCase):
+    """``D extends [B, C]``, ``B extends A``, ``C extends A``: the shared root is composed once."""
+
+    def setUp(self):
+        super().setUp()
+        self.ws.write("a", summary="Root policy.")
+        self.ws.write("b", summary="Branch B refines the root.", extends=["a"])
+        self.ws.write("c", summary="Branch C refines the root.", extends=["a"])
+        self.ws.write("d", summary="D joins both branches.", extends=["b", "c"])
+
+    def test_shared_baseline_listed_once_in_composition_order(self):
+        # Every baseline comes after the baselines it extends itself.
+        res = self.ws.read("d")
+        self.assertEqual([b["address"] for b in res["baselines"]], ["@overlay/a", "@overlay/b", "@overlay/c"])
+
+    def test_superseded_shared_root_flagged_once(self):
+        self.ws.write("r", summary="Root policy v2.", supersedes=["a"])
+        self.assertEqual(self.ws.read("d")["baseline_superseded_by"], ["@overlay/r"])
+        hit = {r["address"]: r for r in self.ws.search("joins both branches")["results"]}["@overlay/d"]
+        self.assertEqual(hit["baseline_superseded_by"], ["@overlay/r"])
+
+
 class Scenario07StagedOpTransition(WorkspaceTestCase):
     def test_tombstone_keeps_original_base_and_apply_aborts(self):
         file = self.put_overlay("api/a", card_text("A", "Card A.", ["one"]))
@@ -290,6 +350,36 @@ class Scenario09FilteredPackExcludedReference(WorkspaceTestCase):
         self.assertEqual(res["included_dependencies"], ["shared/prefs"])
         self.assertTrue((self.tmp / "team.slice/shared/prefs.md").exists())
         self.assertTrue(res["validation"]["ok"], res["validation"])
+
+
+class Scenario09bTransitiveAliasedDependencies(WorkspaceTestCase):
+    """``include_deps`` follows a multi-hop chain whose references are card aliases."""
+
+    def setUp(self):
+        super().setUp()
+        self.project({"legacy": card_text("Legacy", "Legacy retry policy.")})
+        self.ws.write("common/base", summary="Retry policy.", aliases=["base-alias"], supersedes=["@project/legacy"])
+        self.ws.write("common/mid", summary="Retry policy for batch jobs.", aliases=["mid-alias"],
+                      extends=["base-alias"])
+        self.ws.write("team/entry", summary="Team entry point.", content="- See [[@overlay/mid-alias#sec|Mid]].")
+
+    def test_pulls_chain_rewrites_alias_link_and_validates(self):
+        out = self.tmp / "team.slice"
+        res = self.ws.pack(out, prefix="team/", include_deps=True)
+        self.assertEqual(res["cards"], ["common/base", "common/mid", "team/entry"])
+        self.assertEqual(res["included_dependencies"], ["common/mid", "common/base"])
+        self.assertEqual(res["dependencies"], ["@project"])
+        self.assertEqual(res["warnings"], [])
+        self.assertEqual(res["validation"], {"ok": True, "errors": [], "warnings": 0})
+        entry = (out / "team/entry.md").read_text()
+        self.assertIn("[[common/mid#sec|Mid]]", entry)
+        self.assertNotIn("@overlay", entry)
+        # Slice-relative alias refs are kept verbatim: they still resolve inside the exported slice.
+        self.assertIn('extends = ["base-alias"]', (out / "common/mid.md").read_text())
+        self.assertIn('supersedes = ["@project/legacy"]', (out / "common/base.md").read_text())
+        self.assertEqual(tomllib.loads((out / "slice.toml").read_text())["dependencies"], ["@project"])
+        check = self.ws.validate(out)
+        self.assertEqual((check["errors"], check["warnings"]), ([], []))
 
 
 class Scenario10PackValidateMountRead(WorkspaceTestCase):
@@ -366,6 +456,41 @@ class Scenario11CrashDuringApply(WorkspaceTestCase):
         self.assertEqual(first["created"], ["@overlay/x"])
         self.assertEqual(second["created"], ["@overlay/x"])
         self.assertTrue(self.overlay_file("x").exists())
+
+    def test_replay_finishes_batch_without_clobbering_external_edits(self):
+        self.ws.write("b-edit", summary="B as applied.", content="- b1")
+        self.ws.write("c-gone", summary="C to delete.", content="- c1")
+        self.ws.write("a-new", summary="A staged.", content="- a1", stage=True)
+        self.ws.write("b-edit", op="replace", summary="B staged.", stage=True)
+        self.ws.write("c-gone", op="delete", stage=True)
+        staging = self.ws.staging
+        entries = staging.entries()
+        staged_b = staging.file("b-edit").read_bytes()
+        journal = {"version": 1, "overlay_root": str(self.ws.table().overlay.root), "actions": [
+            {"op": "move", "id": "a-new", "base_sha256": None,
+             "sha256": sha256_bytes(staging.file("a-new").read_bytes()), "change": "create"},
+            {"op": "move", "id": "b-edit", "base_sha256": entries["b-edit"]["base_sha256"],
+             "sha256": sha256_bytes(staged_b), "change": "modify"},
+            {"op": "delete", "id": "c-gone", "base_sha256": entries["c-gone"]["base_sha256"]},
+        ]}
+        staging.write_journal(journal)
+        staging.file("a-new").replace(self.overlay_file("a-new"))  # move #1 landed, then the crash
+        edited = {}
+        for path in ("b-edit", "c-gone"):  # a human edits both remaining targets before recovery
+            file = self.put_overlay(path, card_text(path, "Edited by a human mid-recovery."))
+            bump_mtime(file)
+            edited[path] = file.read_bytes()
+
+        with self.ws.lock.exclusive():
+            report = replay(self.ws, self.ws.table(), journal)
+        self.assertEqual((report["applied"], report["created"], report["modified"], report["deleted"]),
+                         (1, ["@overlay/a-new"], [], []))
+        self.assertEqual([s["address"] for s in report["skipped"]], ["@overlay/b-edit", "@overlay/c-gone"])
+        for path, data in edited.items():
+            self.assertEqual(self.overlay_file(path).read_bytes(), data)
+        self.assertEqual(staging.file("b-edit").read_bytes(), staged_b)  # kept for a human to reconcile
+        self.assertFalse(staging.journal_path.exists())
+        self.assertEqual(self.ws.read("a-new")["summary"], "A staged.")
 
 
 if __name__ == "__main__":

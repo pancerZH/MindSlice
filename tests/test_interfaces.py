@@ -11,6 +11,8 @@ import sys
 import unittest
 from pathlib import Path
 
+from mindslice import NotFoundError
+from mindslice.card import sha256_bytes
 from mindslice.cli import main
 from mindslice.mcp_server import TOOLS, MCPServer
 
@@ -204,21 +206,48 @@ with Workspace(root, lock_timeout=60) as ws:
 
 
 class ConcurrencyTests(WorkspaceTestCase):
-    def test_parallel_processes_lose_no_writes(self):
-        self.ws.write("shared/log", summary="Shared append log.")
+    def run_workers(self, n: int = 4) -> None:
         env = dict(os.environ, PYTHONPATH=str(REPO))
         procs = [
             subprocess.Popen([sys.executable, "-c", _WORKER, str(self.root), str(w)], env=env,
                              stdout=subprocess.PIPE, stderr=subprocess.PIPE, text=True)
-            for w in range(4)
+            for w in range(n)
         ]
         for p in procs:
             _, err = p.communicate(timeout=120)
             self.assertEqual(p.returncode, 0, err)
+
+    def test_parallel_processes_lose_no_writes(self):
+        self.ws.write("shared/log", summary="Shared append log.")
+        self.run_workers()
         self.assertEqual(self.ws.search("llamas", k=1)["total_matches"], 20)
         self.assertEqual(self.ws.read("shared/log")["body"].count("- entry"), 20)
         rebuilt = self.ws.validate(rebuild_index=True)["rebuilt_index"]
         self.assertEqual(rebuilt["added"], 21)
+
+    def test_parallel_processes_finish_an_inflight_apply(self):
+        self.ws.write("shared/log", summary="Shared append log.")
+        self.ws.write("doomed", summary="Card the interrupted batch deletes.")
+        self.ws.write("recovered/alpaca", summary="Journaled fact about alpacas.", stage=True)
+        self.ws.write("doomed", op="delete", stage=True)
+        staging = self.ws.staging
+        entries = staging.entries()
+        # Crash right after the journal was written: nothing has moved yet.
+        staging.write_journal({"version": 1, "overlay_root": str(self.ws.table().overlay.root), "actions": [
+            {"op": "delete", "id": "doomed", "base_sha256": entries["doomed"]["base_sha256"]},
+            {"op": "move", "id": "recovered/alpaca", "base_sha256": None,
+             "sha256": sha256_bytes(staging.file("recovered/alpaca").read_bytes()), "change": "create"},
+        ]})
+        self.run_workers()  # readers and writers race to find the journal; exactly one may replay it
+        self.assertFalse(staging.journal_path.exists())
+        self.assertIsNone(self.ws.last_recovery)  # a worker, not this process, finished the batch
+        self.assertEqual(self.ws.diff()["items"], [])
+        self.assertEqual(self.ws.read("recovered/alpaca")["summary"], "Journaled fact about alpacas.")
+        with self.assertRaises(NotFoundError):
+            self.ws.read("doomed")
+        self.assertEqual(self.ws.search("llamas", k=1)["total_matches"], 20)
+        self.assertEqual(self.ws.read("shared/log")["body"].count("- entry"), 20)
+        self.assertEqual(self.ws.validate(rebuild_index=True)["rebuilt_index"]["added"], 22)
 
 
 if __name__ == "__main__":

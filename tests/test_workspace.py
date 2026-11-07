@@ -12,6 +12,7 @@ import zipfile
 
 from mindslice import (
     AlreadyExistsError,
+    ApplyConflictError,
     FrontmatterError,
     LineageCycleError,
     LockTimeoutError,
@@ -373,6 +374,21 @@ class StagingTests(WorkspaceTestCase):
         with self.assertRaises(Exception) as ctx:
             self.ws.apply()
         self.assertEqual(ctx.exception.details["conflicts"][0]["reason"], "invalid_card")
+
+    def test_apply_rejects_cycle_closed_by_a_live_edit(self):
+        a = self.put_overlay("a", card_text("A", "Card A."))
+        b = self.put_overlay("b", card_text("B", "Card B."))
+        self.ws.write("a", op="replace", extends=["b"], stage=True)  # acyclic when staged
+        original = a.read_bytes()
+        b.write_text(card_text("B", "Card B.", supersedes=["a"]), encoding="utf-8")  # unstaged edit closes a <-> b
+        bump_mtime(b)
+        with self.assertRaises(ApplyConflictError) as ctx:
+            self.ws.apply()  # a's base_sha256 still matches, so only the combined lineage check can object
+        self.assertEqual(ctx.exception.details["conflicts"], [
+            {"address": "@overlay/a", "reason": "lineage_cycle", "cycle": ["@overlay/a", "@overlay/b", "@overlay/a"]}])
+        self.assertEqual(a.read_bytes(), original)
+        self.assertFalse(self.ws.staging.journal_path.exists())
+        self.assertEqual([i["id"] for i in self.ws.diff()["items"]], ["a"])
 
     def test_overlay_diff_classification(self):
         self.project({"api/auth": card_text("Auth", "Auth."), "api/old": card_text("Old", "Old.")})
