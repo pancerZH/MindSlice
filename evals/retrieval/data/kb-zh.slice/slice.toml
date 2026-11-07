@@ -1,0 +1,5 @@
+name = "kb-zh"
+version = "1.0.0"
+description = "虚构团队的中文工程手册。"
+alias = "@kb-zh"
+dependencies = []

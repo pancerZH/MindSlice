@@ -131,7 +131,7 @@ class LineageView:
         if not reached:
             return Forward(start, start, [start], [start], set())
         terminals = [n for n in reached if not self.trusted_superseders(n)]
-        terminals.sort(key=lambda a: (-order[a][0], -order[a][1], a))
+        terminals.sort(key=lambda a: (-order[a][0], a))
         if not terminals:
             return Forward(start, start, [], [start], set(), cycle=True)
         if len(terminals) > 1:

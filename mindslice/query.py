@@ -294,7 +294,7 @@ def search(
         def sort_key(item: tuple[str, dict[str, Any]]):
             address, group = item
             row = ctx.row(address)
-            return (-group["coverage"], -group["phrases"], -group["score"], -row["precedence"], -row["mtime_ns"], address)
+            return (-group["coverage"], -group["phrases"], -group["score"], -row["precedence"], address)
 
         ordered = sorted(groups.items(), key=sort_key)
         total = len(ordered)
@@ -491,7 +491,7 @@ def read(
         if missing:
             result["missing_baselines"] = missing
 
-        ext_rows = idx.inbound("extends", *_split(node))
+        ext_rows = idx.inbound("extends", *_split(node), recency=True)
         if ext_rows:
             page = ext_rows[extensions_offset : extensions_offset + max_extensions]
             result["extensions"] = [ctx.card_payload(format_address(r["src_mount"], r["src_path"])) for r in page]

@@ -53,7 +53,7 @@ TOOLS: list[dict[str, Any]] = [
         "name": "search",
         "description": (
             "Associative lexical search across all mounted slices (any language, including unspaced Chinese/Japanese/"
-            "Korean). Results are ranked by coverage (share of query words matched), then BM25 score. Returns card "
+            "Korean). Results are ranked by coverage (share of the query matched, rare words weighing more), then BM25 score. Returns card "
             "previews (address, role, coverage, score, title, 240-char summary, 1-hop [[wikilink]] neighbors). Hits on "
             "superseded cards are redirected to their replacement (see matched_via_superseded). Use read() on an "
             "address for full content."

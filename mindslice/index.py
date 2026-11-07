@@ -13,6 +13,7 @@ Everything except telemetry is reconstructible from the Markdown on disk:
 from __future__ import annotations
 
 import json
+import math
 import os
 import sqlite3
 import time
@@ -110,7 +111,7 @@ class Hit:
 
     def rank_key(self) -> tuple:
         r = self.row
-        return (-self.coverage, -self.phrases, -self.score, -r["precedence"], -r["mtime_ns"], r["mount"], r["path"])
+        return (-self.coverage, -self.phrases, -self.score, -r["precedence"], r["mount"], r["path"])
 
 
 def mount_signature(table: MountTable) -> str:
@@ -428,9 +429,11 @@ class Index:
     ) -> list[Hit]:
         """All matches (overviews excluded), best first.
 
-        Ranking is coverage-first: the share of query units a card matches (a Latin word
-        counts 1, a CJK run earns the fraction of its bigrams present), then the number of
-        CJK runs matched verbatim, then ``score = -bm25(...)``, then mount precedence.
+        Ranking is coverage-first: the IDF-weighted share of query units a card matches (a
+        word counts by how rare it is in the corpus, so filler words like "the" or "for"
+        barely count; an unspaced run earns the weighted share of its bigrams present, or
+        full credit when matched verbatim), then the number of runs matched verbatim, then
+        ``score = -bm25(...)``, then mount precedence.
         An empty query with ``tags`` lists that facet (score and coverage 0).
         """
         plan = analyze_query(query)
@@ -475,18 +478,24 @@ class Index:
             return [Hit(r, float(r["score"]), 1.0, 0) for r in rows]  # every match matches everything
         term_ids = {t: self._matching_ids(t) for t in plan.terms}
         phrase_ids = {p: self._matching_ids(p) for p in plan.phrases}
+        n_cards = self.conn.execute("SELECT COUNT(*) FROM cards").fetchone()[0]
+        # Smoothed BM25 IDF (always positive, also in tiny corpora where FTS5 clamps its own to ~0).
+        idf = {t: math.log(1 + (n_cards - len(ids) + 0.5) / (len(ids) + 0.5)) for t, ids in term_ids.items()}
+        unit_weight = [sum(idf[t] for t in u.terms) / len(u.terms) for u in plan.units]
+        total = sum(unit_weight)
         hits = []
         for r in rows:
             rid = r["id"]
             credit = 0.0
             phrases = 0
-            for unit in plan.units:
+            for unit, weight in zip(plan.units, unit_weight):
                 if unit.phrase and rid in phrase_ids[unit.phrase]:
-                    credit += 1.0
+                    credit += weight
                     phrases += 1
                     continue
-                credit += sum(1 for t in unit.terms if rid in term_ids[t]) / len(unit.terms)
-            hits.append(Hit(r, float(r["score"]), credit / len(plan.units), phrases))
+                matched = sum(idf[t] for t in unit.terms if rid in term_ids[t])
+                credit += weight * matched / sum(idf[t] for t in unit.terms)
+            hits.append(Hit(r, float(r["score"]), credit / total if total else 0.0, phrases))
         return hits
 
     def card_has_tags(self, mount: str, path: str, tags: Iterable[str]) -> bool:
@@ -496,15 +505,20 @@ class Index:
         have = {r[0] for r in self.conn.execute("SELECT tag FROM card_tags WHERE mount=? AND path=?", (mount, path))}
         return wanted <= have
 
-    def inbound(self, kind: str, mount: str, path: str) -> list[sqlite3.Row]:
-        """Cards whose ``kind`` reference resolves to ``(mount, path)``."""
+    def inbound(self, kind: str, mount: str, path: str, recency: bool = False) -> list[sqlite3.Row]:
+        """Cards whose ``kind`` reference resolves to ``(mount, path)``.
+
+        Ordered by precedence, then address (deterministic). ``recency=True`` orders by
+        precedence then newest first (the design's order for ``extensions``).
+        """
+        order = "m.precedence DESC, c.mtime_ns DESC," if recency else "m.precedence DESC,"
         return self.conn.execute(
             """SELECT DISTINCT l.src_mount, l.src_path, c.mtime_ns, m.precedence, m.role
                FROM links l JOIN cards c ON c.mount = l.src_mount AND c.path = l.src_path
                JOIN mounts m ON m.alias = l.src_mount
                WHERE l.kind=? AND l.dst_mount=? AND l.dst_path=? AND l.resolved=1
                  AND NOT (l.src_mount = l.dst_mount AND l.src_path = l.dst_path)
-               ORDER BY m.precedence DESC, c.mtime_ns DESC, l.src_mount, l.src_path""",
+               ORDER BY """ + order + " l.src_mount, l.src_path",
             (kind, mount, path),
         ).fetchall()
 

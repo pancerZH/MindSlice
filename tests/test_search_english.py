@@ -60,7 +60,7 @@ class EnglishMatchingTests(WorkspaceTestCase):
         long_query = " ".join(f"word{i}" for i in range(80)) + " token"
         res = self.ws.search(long_query)
         self.assertEqual(self.addresses(res), ["@overlay/e/cafe"])
-        self.assertAlmostEqual(res["results"][0]["coverage"], 1 / 81, places=3)
+        self.assertTrue(0 < res["results"][0]["coverage"] < 0.05)  # 80 of 81 words match nothing
 
     def test_k_zero_still_counts(self):
         res = self.ws.search("token", k=0)
@@ -88,7 +88,8 @@ class EnglishRankingTests(WorkspaceTestCase):
         res = {r["address"]: r for r in self.ws.search("cache ttl", k=20)["results"]}
         top = self.ws.search("cache ttl")["results"][0]
         self.assertEqual((top["address"], top["coverage"]), ("@overlay/both", 1.0))
-        self.assertEqual(res["@overlay/title-hit"]["coverage"], 0.5)
+        # "cache" is rare and "ttl" is common, so matching "cache" alone is most of the query's weight.
+        self.assertTrue(0.5 < res["@overlay/title-hit"]["coverage"] < 1)
         self.assertGreater(res["@overlay/title-hit"]["score"], top["score"])
 
     def test_coverage_values_and_monotonic_order(self):
@@ -98,7 +99,20 @@ class EnglishRankingTests(WorkspaceTestCase):
         self.ws.write("one", summary="alpha.")
         res = self.ws.search("alpha beta gamma")
         self.assertEqual(self.addresses(res), ["@overlay/three", "@overlay/two", "@overlay/one"])
-        self.assertEqual([r["coverage"] for r in res["results"]], [1.0, 0.667, 0.333])
+        coverage = [r["coverage"] for r in res["results"]]
+        self.assertEqual(coverage[0], 1.0)
+        self.assertTrue(coverage[0] > coverage[1] > coverage[2] > 0)
+
+    def test_filler_words_barely_count(self):
+        # Found by the retrieval eval (evals/retrieval, dev query en-d07): with every query word
+        # counted equally, a card matching "for" plus one word outranked the card about prompts.
+        for i in range(8):
+            self.ws.write(f"filler/{i}", title=f"Filler {i}", summary=f"A note for gardening, number {i}.")
+        self.ws.write("refresh", title="Refresh tokens", summary="A refresh token lives for 14 days.")
+        self.ws.write("admin", title="Admin tokens", summary="Admin tokens expire after 5 minutes.")
+        self.ws.write("prompts", title="Prompt guidelines", summary="System prompts state the task and the format.")
+        top = self.addresses(self.ws.search("token budget for prompts"))[:2]
+        self.assertEqual(top[0], "@overlay/prompts")
 
     def test_precedence_breaks_exact_ties(self):
         self.mount_slice("kb", {"same": "+++\ntitle = \"Same\"\n+++\n\nIdentical walrus text.\n"}, "@kb", 50, "curated")

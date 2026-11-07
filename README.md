@@ -169,14 +169,21 @@ depend on how SQLite was compiled:
 
 Ranking is **coverage-first**, in this order:
 
-1. `coverage`: the share of query words a card matches. A Latin word counts 1. A CJK run earns
-   the fraction of its bigrams present, or full credit if the card contains it verbatim.
+1. `coverage`: the share of the query a card matches, with each word weighted by how rare it is in
+   the corpus (smoothed IDF), so filler words like "the" or "for" barely count. A CJK run earns the
+   weighted share of its bigrams present, or full credit if the card contains it verbatim.
 2. The number of CJK runs matched verbatim.
 3. `score = -bm25(...)`.
 4. Mount precedence.
 
 So a card matching every query word outranks one that matches a single word many times in its
 title. Both `coverage` and `score` are returned in every preview.
+
+**Evaluation status:** the retrieval evaluation ([`evals/retrieval`](evals/retrieval/PLAN.md)) does not support
+this ordering yet. On its harder, multi-candidate holdout, coverage-first trails plain BM25 order by 0.026
+nDCG@5 overall (0.065 in English), and gains only 0.002 on tiny corpora. Words that are rare in a small
+corpus but carry no topic ("do", "when") earn too much coverage credit. The pre-registered rule recommends
+reverting to BM25 order; that decision is pending.
 
 The analysis uses only Python's `unicodedata` and `re`, with SQLite's built-in FTS5 tokenizer: no
 jieba, no ICU, and no SQLite extension. The index records the analyzer and Unicode-database versions,
@@ -210,6 +217,19 @@ python3 -m unittest discover -s tests -t .
 ```
 
 The suite covers every row of the design's behavior matrix (section 6) plus the format, CLI and MCP layers.
+
+`tests/functional/` holds end-to-end **journeys**. Each starts from a workspace state (no slice, 3 slices,
+or 24 slices), replays user sessions, and ends by consolidating, baking and exporting slices. In each
+session a scripted agent drives MindSlice through the real MCP server; human steps between sessions
+review staging, edit files and mount slices. After every session, base slices must be byte-identical
+and `validate()` must report no errors. Every journey must also survive a cold-cache restart, and two
+replays must produce identical normalized transcripts. Each `Session` keeps the user message, the
+scripted tool calls and agent-agnostic outcome checks separate, so a real LLM agent can later replace
+the script.
+
+`evals/retrieval/` is a small English and Chinese retrieval-quality evaluation of `search()`. It reports
+nDCG@5, Recall@10 and MRR@10 with bootstrap intervals, compares against alternative systems, and fixes its
+pass lines in advance. See [its README](evals/retrieval/README.md) and [plan](evals/retrieval/PLAN.md).
 
 ## Notes on interpretation
 
