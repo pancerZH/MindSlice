@@ -120,8 +120,9 @@ Output is JSON (`--compact` for one line). Errors are JSON on stderr with a stab
 `R supersedes B`: reads and search hits on `B` forward to `R` (transitively, to the terminal
 replacement), annotated `redirected_from` / `matched_via_superseded`. Pass
 `follow_supersedes=False` or an allowlist such as `["curated"]` (roles or `@aliases`) to stop
-forwarding from untrusted mounts; untrusted replacements are still reported in
-`superseded_by_untrusted`. Two rival replacements are never guessed between (`competing_replacements`).
+forwarding from untrusted mounts; untrusted replacements are still reported, in
+`superseded_by_untrusted` for the card returned and in `bypassed_replacements` for the cards a
+redirect passed through. Two rival replacements are never guessed between (`competing_replacements`).
 `E extends B`: reading either returns the composed view (`baselines` / `extensions`). Extensions are
 never silently rebased: if `B` is superseded, `read(B)` reports `unrebased_extensions` and
 `read(E)` reports `baseline_superseded_by`. That notice covers the whole `extends` chain (a
@@ -270,7 +271,9 @@ The design leaves a few details open. These are the choices v1 makes:
   fork. For `A <- B <- {C, D}`, `read(A)` lands on `B` with `competing_replacements: [C, D]`.
 - **`superseded_by`** lists the direct replacements. `status` is `"active"`,
   `"superseded_by: <addrs>"` or `"competing_replacements"`. `matched_via_superseded` is a list.
-  `unrebased_extensions` items are `{"address", "extends"}` objects.
+  `unrebased_extensions` items are `{"address", "extends"}` objects; `bypassed_replacements` items
+  are `{"address", "supersedes"}` objects. For `A <- {B, C}` with only `B` trusted, `read(A)` lands
+  on `B` (`status: "active"`) with `bypassed_replacements: [{"address": C, "supersedes": A}]`.
 - **Search redirects respect filters.** A hit is redirected only if the replacement passes the same
   `source` and `tags` filters. Otherwise the original card is returned, stamped with its status.
 - **`if_match` compares against the write target.** That is the overlay file, or the staged file

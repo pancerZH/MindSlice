@@ -202,6 +202,21 @@ class _Ctx:
             out["lineage_cycle"] = True
         return out
 
+    def bypassed_replacements(self, *starts: str) -> list[dict[str, str]]:
+        """Untrusted replacements of the cards a redirect from ``starts`` was forwarded through.
+
+        The trust policy skipped them; the landing card's own untrusted replacements are reported
+        separately, in ``superseded_by_untrusted``.
+        """
+        out: list[dict[str, str]] = []
+        for start in starts:
+            for old in sorted(self.lv.forward(start).superseded):
+                for alt in self.lv.untrusted_superseders(old):
+                    item = {"address": alt, "supersedes": old}
+                    if item not in out:
+                        out.append(item)
+        return out
+
     def card_payload(self, address: str) -> dict[str, Any]:
         row = self.row(address)
         mount = self.table.get(row["mount"]) if row is not None else None
@@ -339,6 +354,9 @@ def _preview(ctx: _Ctx, address: str, group: dict[str, Any], max_neighbors: int)
         out["resolves_to"] = fwd.node
     if via:
         out["matched_via_superseded"] = via
+        bypassed = ctx.bypassed_replacements(*via)
+        if bypassed:
+            out["bypassed_replacements"] = bypassed
     for kind in _LINEAGE_KINDS:
         targets = ctx.lineage_targets(address, kind)
         if targets:
@@ -466,6 +484,9 @@ def read(
         if fwd.redirected:
             result["redirected_from"] = selected
             result["lineage_path"] = fwd.path
+            bypassed = ctx.bypassed_replacements(selected)
+            if bypassed:
+                result["bypassed_replacements"] = bypassed
         if shadows:
             result["shadows"] = shadows
 

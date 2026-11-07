@@ -72,6 +72,15 @@ class CLITests(WorkspaceTestCase):
         code, out, _ = run_cli("-w", w, "manifest")
         self.assertEqual([m["alias"] for m in json.loads(out)["mounts"]], ["@overlay", "@kb"])
 
+    def test_markdown_read_notes_bypassed_replacements(self):
+        self.mount_slice("kb", {"a": card_text("A", "Old rule."), "b": card_text("B", "New rule.", supersedes=["a"])},
+                         "@kb", 50, "curated")
+        self.ws.write("c", summary="Runtime rival.", supersedes=["@kb/a"])
+        code, out, _ = run_cli("-w", str(self.root), "read", "@kb/a", "--follow", "curated", "--markdown")
+        self.assertEqual(code, 0, out)
+        self.assertIn("# B", out)
+        self.assertIn("> bypassed_replacements: @overlay/c (supersedes @kb/a)", out)
+
     def test_errors_are_json_on_stderr(self):
         code, _, err = run_cli("-w", str(self.root), "read", "nope")
         self.assertEqual(code, 1)

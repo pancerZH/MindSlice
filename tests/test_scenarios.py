@@ -175,6 +175,9 @@ class Scenario05bTrustAcrossThreeMounts(WorkspaceTestCase):
         self.assertEqual(hits["results"][0]["matched_via_superseded"], ["@base/a"])
         self.assertEqual(hits["results"][0]["superseded_by_untrusted"], ["@overlay/c"])
         self.assertNotIn("resolves_to", hits["results"][0])  # the untrusted hop is not followed onward
+        # c replaces the card returned, so it is reported there, not again as bypassed.
+        self.assertNotIn("bypassed_replacements", res)
+        self.assertNotIn("bypassed_replacements", hits["results"][0])
         self.assertEqual(self.ws.read("@base/a")["address"], "@overlay/c")  # trusting everything walks on
 
     def test_trust_filter_resolves_a_fork(self):
@@ -184,10 +187,27 @@ class Scenario05bTrustAcrossThreeMounts(WorkspaceTestCase):
         self.assertEqual(forked["status"], "competing_replacements")
         self.assertEqual([c["address"] for c in forked["competing_replacements"]], ["@overlay/c", "@curated/b"])
         self.assertNotIn("redirected_from", forked)
+        self.assertNotIn("bypassed_replacements", forked)
         curated = self.ws.read("@base/a", follow_supersedes=["curated"])
         self.assertEqual(curated["address"], "@curated/b")
         self.assertEqual(curated["redirected_from"], "@base/a")
-        self.assertEqual(curated["status"], "active")
+        self.assertEqual(curated["status"], "active")  # under the caller's policy b is the answer...
+        rival = [{"address": "@overlay/c", "supersedes": "@base/a"}]
+        self.assertEqual(curated["bypassed_replacements"], rival)  # ...but the skipped rival is not hidden
+        self.assertNotIn("superseded_by_untrusted", curated)
+        hits = self.ws.search("throttled", follow_supersedes=["curated"])
+        self.assertEqual(self.addresses(hits), ["@curated/b"])
+        self.assertEqual(hits["results"][0]["bypassed_replacements"], rival)
+
+    def test_rival_of_a_card_passed_through_is_reported(self):
+        # @base/a <- @curated/b <- @curated2/d, and an untrusted @overlay/c also replaces b.
+        self.mount_slice("curated2-kb", {"d": card_text("Rate limits v3", "Clients get 500 requests.",
+                                                        supersedes=["@curated/b"])}, "@curated2", 60, "curated")
+        self.ws.write("c", summary="Runtime guess: the quota was lifted.", supersedes=["@curated/b"])
+        res = self.ws.read("@base/a", follow_supersedes=["curated"])
+        self.assertEqual(res["lineage_path"], ["@base/a", "@curated/b", "@curated2/d"])
+        self.assertEqual(res["bypassed_replacements"], [{"address": "@overlay/c", "supersedes": "@curated/b"}])
+        self.assertEqual(res["status"], "active")
 
 
 class Scenario06UnrebasedExtension(WorkspaceTestCase):

@@ -55,7 +55,8 @@ TOOLS: list[dict[str, Any]] = [
             "Associative lexical search across all mounted slices (any language, including unspaced Chinese/Japanese/"
             "Korean), ranked by BM25 score. Each card preview also reports coverage, the share of the query it matched. Returns card "
             "previews (address, role, coverage, score, title, 240-char summary, 1-hop [[wikilink]] neighbors). Hits on "
-            "superseded cards are redirected to their replacement (see matched_via_superseded). A preview whose "
+            "superseded cards are redirected to their replacement (see matched_via_superseded; bypassed_replacements "
+            "lists replacements your follow_supersedes policy did not trust). A preview whose "
             "extends chain changed says so: baseline_superseded_by (a baseline, at any depth, was replaced) or "
             "missing_baselines (one was deleted); read it before relying on it. Use read() on an "
             "address for full content. Search is lexical: unmatched_terms lists query words no card contains. When "
@@ -81,7 +82,8 @@ TOOLS: list[dict[str, Any]] = [
         "name": "read",
         "description": (
             "Read one card by address: '@alias/path' (exact mount) or 'path' (highest-precedence mount wins; other "
-            "same-path cards are listed in shadows). Follows supersedes to the replacement (redirected_from), composes "
+            "same-path cards are listed in shadows). Follows supersedes to the replacement (redirected_from; untrusted "
+            "replacements are listed in superseded_by_untrusted and bypassed_replacements, not followed), composes "
             "extends baselines/extensions, and returns sha256 (pass it as write.if_match), links and backlinks."
         ),
         "inputSchema": {

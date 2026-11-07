@@ -67,6 +67,9 @@ def render_markdown(result: dict[str, Any]) -> str:
     if result.get("unrebased_extensions"):
         notes.append("unrebased_extensions: " + ", ".join(
             f"{u['address']} (extends {u['extends']})" for u in result["unrebased_extensions"]))
+    if result.get("bypassed_replacements"):
+        notes.append("bypassed_replacements: " + ", ".join(
+            f"{b['address']} (supersedes {b['supersedes']})" for b in result["bypassed_replacements"]))
     if result.get("competing_replacements"):
         notes.append("competing_replacements: " + ", ".join(c["address"] for c in result["competing_replacements"]))
     for base in result.get("baselines", []):
