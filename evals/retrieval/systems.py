@@ -13,6 +13,14 @@ choice is worth on this data:
 * ``v1-baseline``   - the analysis as of commit bc0e7ac: no script-aware analysis, no NFKC, raw
                       ``unicode61`` tokens (its ordering, BM25, is the engine's again).
 
+Two more leave the engine as it is and change what surrounds it (PLAN.md, holdout-3):
+
+* ``aliases``       - every workspace is built from ``data/aliased/``: the same cards with aliases
+                      written by an agent following the slice-builder skill.
+* ``suggest-retry`` - a fixed caller policy: if the first search's ``did_you_mean`` is not empty,
+                      replace each suggested word with its first suggestion and search once more;
+                      the second list is the one scored.
+
 The record of the coverage-first engine, where ``mindslice`` was coverage-first and ``bm25-order``
 was today's ordering, is in ``results/archive/2026-11-06-coverage-first-engine/``.
 """
@@ -21,15 +29,20 @@ from __future__ import annotations
 
 import re
 from contextlib import ExitStack, contextmanager
+from pathlib import Path
 from typing import Iterator
 from unittest import mock
 
+from mindslice import Workspace
 from mindslice import index as index_module
 from mindslice import query as query_module
 from mindslice.index import Hit
-from mindslice.lexical import QueryPlan, QueryUnit, analyze_query
+from mindslice.lexical import _RUN, _WORD, QueryPlan, QueryUnit, analyze_query, normalize
 
-SYSTEMS = ("mindslice", "coverage-first", "unweighted-coverage", "strict-phrase", "v1-baseline")
+from .dataset import ALIASED, DATA
+
+SYSTEMS = ("mindslice", "coverage-first", "unweighted-coverage", "strict-phrase", "v1-baseline", "aliases",
+           "suggest-retry")
 BASELINE = "mindslice"
 
 _V1_WORD = re.compile(r"\w+(\*)?", re.UNICODE)
@@ -92,3 +105,32 @@ def system(name: str) -> Iterator[None]:
             stack.enter_context(mock.patch.object(index_module, "index_text", lambda text: text))
             stack.enter_context(mock.patch.object(index_module, "analyze_query", _v1_plan))
         yield
+
+
+def data_for(name: str) -> Path:
+    """The directory a system's workspaces are built from."""
+    return ALIASED if name == "aliases" else DATA
+
+
+def _replace_words(text: str, mapping: dict[str, str]) -> str:
+    """Replace whole query words (as ``analyze_query`` splits them) by ``mapping``; unspaced runs stay."""
+    text = normalize(text)
+
+    def words(segment: str) -> str:
+        return _WORD.sub(lambda m: mapping.get(m.group(0), m.group(0)), segment)
+
+    out, last = [], 0
+    for m in _RUN.finditer(text):
+        out += [words(text[last : m.start()]), m.group()]
+        last = m.end()
+    out.append(words(text[last:]))
+    return "".join(out)
+
+
+def ranked(name: str, ws: Workspace, text: str, k: int) -> list[str]:
+    """The addresses ``name`` returns for ``text``: one search, or the suggest-retry policy."""
+    res = ws.search(text, k=k)
+    if name == "suggest-retry" and res["did_you_mean"]:
+        retry = _replace_words(text, {word: found[0] for word, found in res["did_you_mean"].items()})
+        res = ws.search(retry, k=k)
+    return [r["address"] for r in res["results"]]

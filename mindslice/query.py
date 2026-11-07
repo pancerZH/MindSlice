@@ -278,7 +278,9 @@ def search(
         # Superseded hits are routes to their replacement; deduplicated groups keep the best
         # value of each ranking signal (design: max(score(A), score(B))).
         groups: dict[str, dict[str, Any]] = {}
-        for hit in idx.search(query, sources, tag_list):
+        hits = idx.search(query, sources, tag_list)
+        feedback = idx.feedback(query, hits, sources, tag_list)
+        for hit in hits:
             address = ctx.remember(hit.row)
             fwd = ctx.lv.forward(address)
             target, via = address, None
@@ -305,6 +307,10 @@ def search(
             "k": k,
             "truncated": offset + k < total,
             "next_offset": _page(total, offset, k),
+            # About the query, not the results: words no card in scope contains, and close
+            # words that do occur. Neither changes or reorders anything above.
+            "unmatched_terms": feedback.unmatched_terms,
+            "did_you_mean": feedback.did_you_mean,
         }
 
 

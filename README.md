@@ -173,6 +173,17 @@ it is in the corpus (smoothed IDF). A CJK run earns the weighted share of its bi
 credit if the card contains it verbatim. Coverage tells an agent how much of its question a card
 covered; it does not order results.
 
+Every response also says what in the *query* found nothing, so an agent can rephrase instead of
+concluding the memory is empty. Neither field changes or reorders results:
+
+- `unmatched_terms`: query words (or whole CJK runs) that no card in scope contains.
+- `did_you_mean`: for an unmatched spaced-script word, up to 3 words that do occur in scope, by edit
+  distance (`rollbak` -> `rollback`). Unspaced runs get no suggestions.
+
+Lexical search finds a card only by words it contains, so synonyms belong in each card's `aliases`
+(indexed just below the title). The [`slice-builder`](skills/slice-builder/SKILL.md) skill says what
+they should cover.
+
 Coverage-first ordering was tried and evaluated ([`evals/retrieval`](evals/retrieval/PLAN.md)). On a
 harder, multi-candidate holdout it trailed BM25 order by 0.026 nDCG@5 overall (0.065 in English) and
 gained only 0.002 on tiny corpora. In a small corpus, words that are rare but carry no topic ("do",

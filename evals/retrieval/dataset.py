@@ -1,4 +1,8 @@
-"""Evaluation data: corpus slices, overlay cards, queries with graded judgments, and their digests."""
+"""Evaluation data: corpus slices, overlay cards, queries with graded judgments, and their digests.
+
+``data/aliased/`` is the same corpus with every card's ``aliases`` line written by an agent following the
+``slice-builder`` skill (PLAN.md, holdout-3); ``check`` verifies nothing else differs.
+"""
 
 from __future__ import annotations
 
@@ -14,7 +18,8 @@ from mindslice import Workspace
 DATA = Path(__file__).parent / "data"
 QUERIES_FILE = DATA / "queries.toml"
 DIGESTS_FILE = DATA / "DIGESTS.json"
-SPLITS = ("dev", "holdout", "limits", "holdout-2")
+SPLITS = ("dev", "holdout", "limits", "holdout-2", "holdout-3")
+ALIASED = DATA / "aliased"  # the aliased copy of every corpus directory
 LANGS = ("en", "zh")
 # (directory under data/, alias, precedence, role). The overlay is @overlay (precedence 100, runtime).
 MOUNTS = (("kb-en.slice", "@kb-en", 50, "curated"), ("kb-zh.slice", "@kb-zh", 40, "curated"))
@@ -44,17 +49,20 @@ def load_queries(path: Path = QUERIES_FILE) -> list[Query]:
             for q in data["queries"]]
 
 
-def build_workspace(root: Path, corpus: str = "full") -> Workspace:
-    """A fresh workspace for ``corpus``: the two handbooks plus overlay, or a tiny overlay-only memory."""
+def build_workspace(root: Path, corpus: str = "full", data: Path = DATA) -> Workspace:
+    """A fresh workspace for ``corpus``: the two handbooks plus overlay, or a tiny overlay-only memory.
+
+    ``data`` is the directory holding the corpus directories: ``DATA`` (plain) or ``ALIASED``.
+    """
     if corpus not in CORPORA:
         raise ValueError(f"unknown corpus {corpus!r}")
     ws = Workspace.init(root)
     if corpus == "full":
         for dirname, alias, precedence, role in MOUNTS:
             target = root / "slices" / dirname
-            shutil.copytree(DATA / dirname, target)
+            shutil.copytree(data / dirname, target)
             ws.mount(target, alias=alias, precedence=precedence, role=role)
-    shutil.copytree(DATA / CORPORA[corpus][-1], ws.table().overlay.root, dirs_exist_ok=True)
+    shutil.copytree(data / CORPORA[corpus][-1], ws.table().overlay.root, dirs_exist_ok=True)
     ws.manifest(limit=1)  # any public call syncs the index with the files just copied in
     return ws
 
@@ -76,6 +84,11 @@ def corpus_digest(corpus: str = "full") -> str:
     return _sha(p.relative_to(DATA).as_posix().encode() + b"\0" + p.read_bytes() + b"\0" for p in files)
 
 
+def aliased_digest() -> str:
+    files = sorted(p for p in ALIASED.rglob("*") if p.is_file())
+    return _sha(p.relative_to(DATA).as_posix().encode() + b"\0" + p.read_bytes() + b"\0" for p in files)
+
+
 def _record(q: Query) -> dict:
     record = asdict(q)
     if record["corpus"] == "full":  # queries frozen before corpora existed keep their original digest
@@ -91,7 +104,9 @@ def split_digest(queries: list[Query], split: str) -> str:
 def digests(queries: list[Query]) -> dict[str, str]:
     out = {"corpus": corpus_digest("full")}
     out.update({f"corpus-{c}": corpus_digest(c) for c in CORPORA if c != "full"})
-    out.update({split: split_digest(queries, split) for split in SPLITS})
+    if ALIASED.exists():
+        out["corpus-aliased"] = aliased_digest()
+    out.update({split: split_digest(queries, split) for split in SPLITS if any(q.split == split for q in queries)})
     return out
 
 
@@ -127,4 +142,49 @@ def problems(queries: list[Query], ws: Workspace) -> list[str]:
                 out.append(f"{q.id}: judged card {address} is an overview (never returned by search)")
             elif ws.read(address)["address"] != address:
                 out.append(f"{q.id}: judged card {address} is superseded; judge its replacement")
+    return out
+
+
+def _aliases_line(text: str) -> int | None:
+    """Index of the frontmatter's ``aliases = [...]`` line, if any."""
+    lines = text.split("\n")
+    if not lines or lines[0] != "+++":
+        return None
+    for i, line in enumerate(lines[1:], 1):
+        if line == "+++":
+            return None
+        if line.startswith("aliases = "):
+            return i
+    return None
+
+
+def aliased_problems() -> list[str]:
+    """The aliased corpus must be the plain one with only card ``aliases`` lines changed (every one filled)."""
+    if not ALIASED.exists():
+        return []
+    out: list[str] = []
+    dirs = sorted({d for ds in CORPORA.values() for d in ds})
+    plain = {p.relative_to(DATA) for d in dirs for p in (DATA / d).rglob("*") if p.is_file()}
+    aliased = {p.relative_to(ALIASED) for p in ALIASED.rglob("*") if p.is_file()}
+    out += [f"aliased: missing {p}" for p in sorted(plain - aliased)]
+    out += [f"aliased: unexpected file {p}" for p in sorted(aliased - plain)]
+    for rel in sorted(plain & aliased):
+        before = (DATA / rel).read_text(encoding="utf-8")
+        after = (ALIASED / rel).read_text(encoding="utf-8")
+        i = _aliases_line(before)
+        if i is None or rel.name == "overview.md":
+            if before != after:
+                out.append(f"aliased: {rel} changed, but only card aliases may")
+            continue
+        b, a = before.split("\n"), after.split("\n")
+        if len(a) != len(b) or a[:i] + a[i + 1:] != b[:i] + b[i + 1:]:
+            out.append(f"aliased: {rel} changed outside its aliases line")
+            continue
+        try:
+            value = tomllib.loads(a[i])["aliases"]
+        except (tomllib.TOMLDecodeError, KeyError):
+            out.append(f"aliased: {rel} has an unparsable aliases line")
+            continue
+        if not value or not all(isinstance(v, str) and v.strip() for v in value):
+            out.append(f"aliased: {rel} has no aliases, or an empty one")
     return out

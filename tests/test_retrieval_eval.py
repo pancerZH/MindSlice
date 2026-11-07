@@ -63,6 +63,15 @@ class SystemTests(unittest.TestCase):
             with systems.system("nope"):
                 pass
 
+    def test_aliases_only_change_the_data_and_retry_rewrites_whole_words(self):
+        from evals.retrieval.dataset import ALIASED, DATA
+
+        self.assertEqual((systems.data_for("aliases"), systems.data_for("mindslice")), (ALIASED, DATA))
+        self.assertEqual(systems._replace_words("how to rollbak token预算 now", {"rollbak": "rollback", "now": "today"}),
+                         "how to rollback token预算 today")
+        self.assertEqual(systems._replace_words("ＲＯＬＬＢＡＫ deploy", {"ROLLBAK": "rollback"}), "rollback deploy")
+        self.assertEqual(systems._replace_words("rollbacks rollbak", {"rollbak": "rollback"}), "rollbacks rollback")
+
 
 class RegressionTests(unittest.TestCase):
     def test_engine_has_not_regressed_against_recorded_results(self):

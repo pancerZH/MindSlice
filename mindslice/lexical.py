@@ -18,8 +18,10 @@ text reaches FTS5:
   Latin and other spaced scripts are left to ``porter unicode61`` (stemming, case folding).
 * **Querying**: each run in a query becomes its bigrams, OR-ed like ordinary words (a
   one-unit run becomes its unigram). Partial overlap is *found and ranked lower* instead of
-  silently missed; the run's contiguous bigram phrase is used only as a ranking signal.
-  See ``Index.search`` for the coverage-first ranking.
+  silently missed; the run's contiguous bigram phrase is a reported signal (``Index.search``).
+* **Vocabulary**: the spaced-script words of each card (``surface_words``) are kept unstemmed,
+  so ``search()`` can say which query words no card contains and suggest close words that
+  do occur (``did_you_mean``). Unspaced runs get no suggestions.
 
 The analysis depends on Python's bundled Unicode database (``unicodedata.unidata_version``);
 ``ANALYZER_VERSION`` plus that version are recorded in the index so a change re-indexes.
@@ -31,7 +33,7 @@ import re
 import unicodedata
 from dataclasses import dataclass
 
-ANALYZER_VERSION = "1"
+ANALYZER_VERSION = "2"  # 2: the surface vocabulary (card_words) is derived at index time
 
 # Unicode blocks of scripts written without spaces between words. Blocks are listed whole;
 # each code point's general category decides its role: letters/numbers start a unit,
@@ -109,6 +111,8 @@ _RUN = re.compile(f"[{_BASE_CLASS}][{_BASE_CLASS}{_MARK_CLASS}]*")
 # Default-ignorable characters that must not change what text matches.
 _IGNORABLE = re.compile("[­​-‍⁠﻿︀-️\U000e0100-\U000e01ef]")
 _WORD = re.compile(r"\w+(\*)?")
+_TOKEN = re.compile(r"[^\W_]+")  # what unicode61 keeps as a token (letters and digits; "_" separates)
+SUGGEST_MIN_CHARS = 3  # shorter words get no suggestions, and are not kept in the vocabulary
 
 
 def normalize(text: str) -> str:
@@ -151,6 +155,34 @@ def index_text(text: str) -> str:
         last = m.end()
     out.append(text[last:])
     return "".join(out)
+
+
+def surface_words(text: str) -> set[str]:
+    """Spaced-script words of ``text``, NFKC + case-folded and unstemmed (the vocabulary
+    ``did_you_mean`` draws from). Unspaced runs, pure numbers and words under
+    ``SUGGEST_MIN_CHARS`` characters are left out."""
+    text = _RUN.sub(" ", normalize(text))
+    return {w for w in (t.casefold() for t in _TOKEN.findall(text)) if len(w) >= SUGGEST_MIN_CHARS and not w.isdigit()}
+
+
+def edit_distance(a: str, b: str, limit: int) -> int:
+    """Optimal string alignment distance (a swap of two adjacent characters costs 1), or
+    ``limit + 1`` as soon as it is certain to exceed ``limit``."""
+    if abs(len(a) - len(b)) > limit:
+        return limit + 1
+    prev2: list[int] = []
+    prev = list(range(len(b) + 1))
+    for i, ca in enumerate(a, 1):
+        cur = [i] + [0] * len(b)
+        for j, cb in enumerate(b, 1):
+            cost = 0 if ca == cb else 1
+            cur[j] = min(prev[j] + 1, cur[j - 1] + 1, prev[j - 1] + cost)
+            if i > 1 and j > 1 and ca == b[j - 2] and a[i - 2] == cb:
+                cur[j] = min(cur[j], prev2[j - 2] + 1)
+        if min(cur) > limit:
+            return limit + 1
+        prev2, prev = prev, cur
+    return prev[-1] if prev[-1] <= limit else limit + 1
 
 
 def _quote(term: str) -> str:

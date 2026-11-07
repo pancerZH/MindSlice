@@ -225,6 +225,21 @@ reduces the shared-author bias but doesn't remove it. Only English typos can ben
 With 8 typo and 32 vocabulary-gap queries, those intervals are wide. Once read, `holdout-3` has informed
 the alias and suggestion questions, and any later change to either needs fresh data.
 
+**Amendment, 2026-11-07: after the queries were written, before any system was scored on them.** The
+query writer gave the other team's same-topic card a grade 1 on 73 of 80 queries (75 judgments, none a
+grade 2). The earlier splits have 6 such judgments in 150 queries. Lexical search seldom returns a Chinese
+card for an English query, or the reverse, so these cap nDCG@5. A query with one grade-2 card and one such
+grade 1 scores at most 0.76 unless the other-language card is returned, which is below L18 and L19's 0.80.
+
+- **The lines stay as written**, read on the judgments as written. A miss stays a miss.
+- **Also reported, deciding nothing:** a *same-team reading*. The same rankings are scored without the
+  judgments on the other team's handbook (`@kb-zh` for English-team queries, `@kb-en` for Chinese-team),
+  with verdicts shown against the same lines.
+
+The writer's report also named its four Chinese typos. That report was read after the engine was frozen
+for this read (source digest `f8e62ecdcb2ea9683593c61959e81f81394c1db8605c2afbe19ff35e9f1236de`), and
+`did_you_mean` makes no suggestions inside Chinese runs.
+
 ## Ledger
 
 | Date | Run | What it informed |
@@ -239,3 +254,5 @@ the alias and suggestion questions, and any later change to either needs fresh d
 | 2026-11-06 | User decision: revert to BM25 order | Engine ordering changed; coverage kept as a reported field. Equivalence verified on all 150 queries (above). Record archived, L7, L8 and L13 to L17 retired, results and the regression floor regenerated on the new engine |
 | 2026-11-07 | Reading the eight queries below 0.5 nDCG@5 (`dev`, `holdout`, `limits`, `holdout-2`) | All are vocabulary mismatches, and no card has aliases. **Skill changed:** `slice-builder`'s alias section rewritten (what aliases should cover, what to avoid; examples from a topic outside the corpus). No engine or data change |
 | 2026-11-07 | `holdout-3` and aliased-corpus rules written (above), before any of their data existed | Nothing generated or scored |
+| 2026-11-07 | Engine change: `search()` reports `unmatched_terms` and `did_you_mean` (analyzer version 2 adds the unstemmed `card_words` vocabulary). Harness: systems `aliases` and `suggest-retry`, lines L18-L24, category groups | No ranking change: on all 150 queries, every system's top 10 equals the recorded one (750 rankings). Exploratory, `dev` only: `suggest-retry` minus `mindslice` is +0.012 English, 0.000 Chinese. Engine frozen for the `holdout-3` read, source digest `f8e62ecdcb2ea9683593c61959e81f81394c1db8605c2afbe19ff35e9f1236de` |
+| 2026-11-07 | `holdout-3` queries written by the blind agent; amendment above (same-team reading), before any scoring | Nothing scored on `holdout-3` |

@@ -3,7 +3,7 @@
     python -m evals.retrieval check                      # integrity + digests (no system is scored)
     python -m evals.retrieval freeze                     # record data digests in data/DIGESTS.json
     python -m evals.retrieval run                        # dev and limits splits, printed
-    python -m evals.retrieval run --splits dev,holdout,limits --write   # also write results/
+    python -m evals.retrieval run --splits dev,holdout,limits,holdout-2,holdout-3 --write   # also write results/
 """
 
 from __future__ import annotations
@@ -22,9 +22,21 @@ from typing import Any
 import mindslice
 from mindslice.lexical import analyzer_signature
 
-from .dataset import CORPORA, DIGESTS_FILE, SPLITS, Query, build_workspace, digests, frozen_digests, load_queries, problems
+from .dataset import (
+    ALIASED,
+    CORPORA,
+    DIGESTS_FILE,
+    SPLITS,
+    Query,
+    aliased_problems,
+    build_workspace,
+    digests,
+    frozen_digests,
+    load_queries,
+    problems,
+)
 from .metrics import BOOTSTRAP_REPLICATES, BOOTSTRAP_SEED, METRICS, interval, resamples, score, verdict
-from .systems import BASELINE, SYSTEMS, system
+from .systems import BASELINE, SYSTEMS, data_for, ranked, system
 
 RESULTS = Path(__file__).parent / "results"
 K = 10  # search()'s default page: what an agent sees first
@@ -45,8 +57,27 @@ LINES = (
     {"id": "L10", "group": "holdout-2/zh", "metric": "ndcg@5", "line": 0.70, "claim": "Harder Chinese nDCG@5 at least 0.70"},
     {"id": "L11", "group": "holdout-2/en/tiny", "metric": "ndcg@5", "line": 0.70, "claim": "Tiny English nDCG@5 at least 0.70"},
     {"id": "L12", "group": "holdout-2/zh/tiny", "metric": "ndcg@5", "line": 0.70, "claim": "Tiny Chinese nDCG@5 at least 0.70"},
+    # holdout-3 (queries written blind to the engine). A "gain" line reads that system minus mindslice.
+    {"id": "L18", "group": "holdout-3/en/natural", "metric": "ndcg@5", "line": 0.80,
+     "claim": "Blind English natural queries: nDCG@5 at least 0.80"},
+    {"id": "L19", "group": "holdout-3/zh/natural", "metric": "ndcg@5", "line": 0.80,
+     "claim": "Blind Chinese natural queries: nDCG@5 at least 0.80"},
+    {"id": "L20", "group": "holdout-3/all/vocab-gap", "metric": "ndcg@5", "gain": "aliases", "line": 0.05,
+     "claim": "Aliases add at least 0.05 on vocabulary-gap queries"},
+    {"id": "L21", "group": "holdout-3/all/natural", "metric": "ndcg@5", "gain": "aliases", "line": -0.02,
+     "claim": "Aliases cost natural queries at most 0.02"},
+    {"id": "L22", "group": "holdout-3/all", "metric": "ndcg@5", "gain": "aliases", "line": 0.0,
+     "claim": "Aliases are no worse overall (decision line)"},
+    {"id": "L23", "group": "holdout-3/all/typo", "metric": "ndcg@5", "gain": "suggest-retry", "line": 0.0,
+     "claim": "Retrying with did_you_mean is no worse on typos"},
+    {"id": "L24", "group": "holdout-3/all", "metric": "ndcg@5", "gain": "suggest-retry", "line": 0.0,
+     "claim": "Retrying with did_you_mean is no worse overall (decision line)"},
 )
-POOLED_SPLITS = ("holdout-2",)  # also summarized over all their queries, as "<split>/all"
+POOLED_SPLITS = ("holdout-2", "holdout-3")  # also summarized over all their queries, as "<split>/all"
+# Category groups, per language ("<split>/<lang>/<name>") and pooled ("<split>/all/<name>").
+CATEGORY_GROUPS = {
+    "holdout-3": {"natural": ("natural",), "vocab-gap": ("own-words", "cross-lingual"), "typo": ("typo",)},
+}
 
 
 # ---------------------------------------------------------------------------
@@ -65,14 +96,14 @@ def rank_all(queries: list[Query], systems: tuple[str, ...] = SYSTEMS) -> list[d
         for name in systems:
             with system(name):
                 for corpus in corpora:
-                    ws = build_workspace(Path(tmp) / name / corpus / "ws", corpus)
+                    ws = build_workspace(Path(tmp) / name / corpus / "ws", corpus, data_for(name))
                     try:
                         for q in (q for q in queries if q.corpus == corpus):
-                            ranked = [r["address"] for r in ws.search(q.text, k=K)["results"]]
+                            got = ranked(name, ws, q.text, K)
                             records.append({"system": name, "id": q.id, "split": q.split, "lang": q.lang,
                                             "corpus": q.corpus, "group": group_of(q), "category": q.category,
-                                            "query": q.text, "ranked": ranked,
-                                            **{m: round(v, 6) for m, v in score(ranked, q.relevant).items()}})
+                                            "query": q.text, "ranked": got,
+                                            **{m: round(v, 6) for m, v in score(got, q.relevant).items()}})
                     finally:
                         ws.close()
     order = {q.id: i for i, q in enumerate(queries)}
@@ -89,7 +120,11 @@ def summarize(records: list[dict[str, Any]], systems: tuple[str, ...]) -> dict[s
             members.setdefault(r["group"], []).append(r["id"])
             if r["split"] in POOLED_SPLITS:
                 members.setdefault(f"{r['split']}/all", []).append(r["id"])
-    order = sorted(members, key=lambda g: (SPLITS.index(g.split("/")[0]), g.endswith("/all"), g))
+            for name, categories in CATEGORY_GROUPS.get(r["split"], {}).items():
+                if r["category"] in categories:
+                    members.setdefault(f"{r['split']}/{r['lang']}/{name}", []).append(r["id"])
+                    members.setdefault(f"{r['split']}/all/{name}", []).append(r["id"])
+    order = sorted(members, key=lambda g: (SPLITS.index(g.split("/")[0]), g.split("/")[1] == "all", g))
     groups: dict[str, Any] = {}
     for key in order:
         ids = sorted(members[key])
@@ -116,11 +151,35 @@ def read_lines(summary: dict[str, Any]) -> list[dict[str, Any]]:
             continue
         if "versus" in spec:
             stat = group["systems"][spec["versus"]][f"{spec['metric']} baseline minus this"]
+        elif "gain" in spec:  # that system minus mindslice: the negated paired difference
+            d = group["systems"][spec["gain"]][f"{spec['metric']} baseline minus this"]
+            stat = {"mean": 0.0 - d["mean"], "low": 0.0 - d["high"], "high": 0.0 - d["low"]}
         else:
             stat = group["systems"][BASELINE][spec["metric"]]
         out.append({**spec, "point": stat["mean"], "low": stat["low"], "high": stat["high"],
                     "verdict": verdict(stat["mean"], stat["low"], spec["line"])})
     return out
+
+
+# Secondary reading of holdout-3 (PLAN.md, amendment before scoring): the same rankings, scored without the
+# judgments on the other team's handbook. It shows verdicts against the same lines but decides nothing.
+SECONDARY_SPLITS = ("holdout-3",)
+
+
+def same_team(q: Query) -> dict[str, int]:
+    other = "@kb-zh/" if q.lang == "en" else "@kb-en/"
+    return {a: g for a, g in q.relevant.items() if not a.startswith(other)}
+
+
+def secondary(records: list[dict[str, Any]], queries: list[Query],
+              systems: tuple[str, ...]) -> tuple[dict[str, Any], list[dict[str, Any]]]:
+    qmap = {q.id: q for q in queries}
+    rescored = [{**r, **{m: round(v, 6) for m, v in score(r["ranked"], same_team(qmap[r["id"]])).items()}}
+                for r in records if r["split"] in SECONDARY_SPLITS]
+    if not rescored:
+        return {}, []
+    summary = summarize(rescored, systems)
+    return summary, read_lines(summary)
 
 
 # ---------------------------------------------------------------------------
@@ -151,19 +210,37 @@ def _ci(stat: dict[str, float]) -> str:
 
 
 def render(records: list[dict[str, Any]], summary: dict[str, Any], lines: list[dict[str, Any]],
-           queries: list[Query], systems: tuple[str, ...]) -> str:
+           queries: list[Query], systems: tuple[str, ...],
+           second: tuple[dict[str, Any], list[dict[str, Any]]] = ({}, [])) -> str:
     out = ["# Retrieval evaluation results", "",
            "Generated by `python -m evals.retrieval run --write`. Rules: [PLAN.md](../PLAN.md). "
            "Brackets are 95% bootstrap intervals over queries; differences are paired.", ""]
     if lines:
-        out += ["## Verdicts (L1-L6 read `holdout`, L9-L12 `holdout-2`; re-read on the current engine)", "", "| Line | Claim | Point | 95% interval | Line | Verdict |",
-                "| --- | --- | --- | --- | --- | --- |"]
+        out += ["## Verdicts", "",
+                "L1-L6 read `holdout` and L9-L12 `holdout-2`, re-read on the current engine (no longer fresh evidence). "
+                "L18-L24 read `holdout-3`; for L20-L24 the point is that system minus `mindslice`.", "",
+                "| Line | Claim | Point | 95% interval | Line | Verdict |", "| --- | --- | --- | --- | --- | --- |"]
         out += [f"| {l['id']} | {l['claim']} | {l['point']:.3f} | [{l['low']:.3f}, {l['high']:.3f}] | {l['line']:.2f} | "
                 f"**{l['verdict']}** |" for l in lines]
         out.append("")
+    second_summary, second_lines = second
+    if second_lines:
+        out += ["## Secondary reading: `holdout-3` with same-team judgments (decides nothing)", "",
+                "The same rankings, scored without the grade-1 judgments on the other team's handbook "
+                "(PLAN.md, amendment before scoring).", "",
+                "| Line | Claim | Point | 95% interval | Line | Would be |", "| --- | --- | --- | --- | --- | --- |"]
+        out += [f"| {l['id']} | {l['claim']} | {l['point']:.3f} | [{l['low']:.3f}, {l['high']:.3f}] | {l['line']:.2f} | "
+                f"{l['verdict']} |" for l in second_lines]
+        out += ["", "| Group | Queries | " + " | ".join(systems) + " |", "| --- | --- | " + " | ".join("---" for _ in systems) + " |"]
+        for key, group in second_summary.items():
+            cells = [f"{group['systems'][s]['ndcg@5']['mean']:.3f}" for s in systems]
+            out.append(f"| {key} | {group['queries']} | " + " | ".join(cells) + " |")
+        out.append("")
     for key, group in summary.items():
-        split, lang, *corpus = key.split("/")
-        title = {"en": "English", "zh": "Chinese", "all": "all queries pooled"}[lang] + (", tiny corpus" if corpus else "")
+        split, lang, *rest = key.split("/")
+        title = {"en": "English", "zh": "Chinese", "all": "all queries pooled"}[lang]
+        if rest:
+            title += ", tiny corpus" if rest == ["tiny"] else f", `{rest[0]}` queries"
         out += [f"## {split}: {title} ({group['queries']} queries)", "",
                 "| System | nDCG@5 | Recall@10 | MRR@10 | mindslice minus system, nDCG@5 |", "| --- | --- | --- | --- | --- |"]
         for name in systems:
@@ -211,10 +288,21 @@ def check() -> list[str]:
                 ws.close()
         unknown = sorted({q.corpus for q in queries} - set(CORPORA))
         issues += [f"unknown corpus {c!r}" for c in unknown]
+        aliased = aliased_problems()
+        issues += aliased
+        if ALIASED.exists() and not aliased:
+            for corpus in CORPORA:  # aliases must not break validation (duplicates, collisions with paths)
+                ws = build_workspace(Path(tmp) / "aliased" / corpus / "ws", corpus, ALIASED)
+                try:
+                    report = ws.validate()
+                    issues += [f"aliased {corpus}: {i['code']}: {i['message']}" for i in report["errors"] + report["warnings"]]
+                finally:
+                    ws.close()
     if DIGESTS_FILE.exists():
         frozen, now = frozen_digests(), digests(queries)
         issues += [f"data changed since freeze: {k} ({frozen.get(k, '-')[:12]} -> {v[:12]})"
                    for k, v in now.items() if frozen.get(k) != v]
+        issues += [f"frozen data missing: {k}" for k in frozen.keys() - now.keys()]
     else:
         issues.append("data/DIGESTS.json missing: run `python -m evals.retrieval freeze`")
     return issues
@@ -227,7 +315,7 @@ def main(argv: list[str] | None = None) -> int:
     sub.add_parser("check", help="integrity and digest checks")
     sub.add_parser("freeze", help="write data/DIGESTS.json from the current data")
     r = sub.add_parser("run", help="score every system")
-    r.add_argument("--splits", default="dev,limits", help="comma-separated: dev, holdout, limits")
+    r.add_argument("--splits", default="dev,limits", help=f"comma-separated: {', '.join(SPLITS)}")
     r.add_argument("--systems", default=",".join(SYSTEMS))
     r.add_argument("--write", action="store_true", help="write results/summary.md, per_query.jsonl, run.json")
     args = p.parse_args(argv)
@@ -249,7 +337,8 @@ def main(argv: list[str] | None = None) -> int:
     records = rank_all(queries, systems)
     summary = summarize(records, systems)
     lines = read_lines(summary)
-    report = render(records, summary, lines, queries, systems)
+    second = secondary(records, queries, systems)
+    report = render(records, summary, lines, queries, systems, second)
     print(report)
     if args.write:
         RESULTS.mkdir(exist_ok=True)
@@ -258,7 +347,8 @@ def main(argv: list[str] | None = None) -> int:
             for rec in records:
                 fh.write(json.dumps(rec, ensure_ascii=False) + "\n")
         run = {"environment": environment(), "digests": digests(load_queries()), "splits": list(splits),
-               "systems": list(systems), "summary": summary, "lines": lines}
+               "systems": list(systems), "summary": summary, "lines": lines,
+               "secondary_same_team": {"summary": second[0], "lines": second[1]}}
         (RESULTS / "run.json").write_text(json.dumps(run, ensure_ascii=False, indent=2) + "\n", encoding="utf-8")
     return 0
 
