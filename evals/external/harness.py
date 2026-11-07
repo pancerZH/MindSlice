@@ -120,8 +120,10 @@ def ask(ws: Workspace, h: Haystack, q: Question, b: Built, granularity: str, lin
         "granularity": granularity, "variant": "lineage" if lineage else "flat",
         "answerable": q.answerable, "query": q.text, "ranked": ranked,
         "sessions": [b.card_of_address[a].session for a in ranked],
-        "warned": [r["status"] != "active" or bool(r.get("baseline_superseded_by")) for r in results],
-        "baseline_flagged": [bool(r.get("baseline_superseded_by")) for r in results],
+        # A preview warns when the card is superseded or its extends chain changed: a baseline replaced
+        # (baseline_superseded_by) or deleted (missing_baselines), the two signals read() gives (PLAN.md, ac7928a).
+        "warned": [r["status"] != "active" or _basis_changed(r) for r in results],
+        "baseline_flagged": [_basis_changed(r) for r in results],
         "via": [r.get("matched_via_superseded", []) for r in results],
         "scores": [r["score"] for r in results],
         "coverage_max": max((r["coverage"] for r in results), default=0.0),
@@ -144,6 +146,10 @@ def ask(ws: Workspace, h: Haystack, q: Question, b: Built, granularity: str, lin
         rec["gold_rank"] = _best_rank(ws, q.text, set(rec["gold"]))
         rec["miss_words"] = _miss_words(ws, q.text, rec["gold"])
     return rec
+
+
+def _basis_changed(result: dict[str, Any]) -> bool:
+    return bool(result.get("baseline_superseded_by") or result.get("missing_baselines"))
 
 
 def _leaks(ws: Workspace, ranked: list[str], values: list[str], requests: set[str]) -> bool:

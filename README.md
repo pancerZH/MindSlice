@@ -252,6 +252,10 @@ compares `search()` and `read()` responses with the datasets' annotations. It me
 do for stale facts. See [its README](evals/external/README.md), [plan](evals/external/PLAN.md) and
 [report](evals/external/REPORT.md).
 
+[`evals/agent_test.md`](evals/agent_test.md) plans the test those results leave open, not yet run: whether
+an LLM agent writing memory through the MCP tools records `supersedes` well enough to keep stale facts
+behind current ones, scored by the same deterministic harness.
+
 ## Notes on interpretation
 
 The design leaves a few details open. These are the choices v1 makes:

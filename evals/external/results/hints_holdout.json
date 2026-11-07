@@ -1,0 +1,137 @@
+{
+ "environment": {
+  "mindslice": "0.1.0",
+  "commit": "a90e19a",
+  "engine_dirty": false,
+  "engine_digest": "2d682415d4d98292e926e16f48fb8b53803d2823307a0703f24d3be7c170e1b8",
+  "harness_digest": "d0584239230476942a9847f2198bb9cc279814d8a4797cee89e7e8ef0ef389c9",
+  "python": "3.12.3",
+  "sqlite": "3.45.1",
+  "unicode": "15.0.0",
+  "analyzer": "3:unicode-15.0.0",
+  "k": 10,
+  "sources": {
+   "locomo": {
+    "url": "https://raw.githubusercontent.com/snap-research/locomo/3eb6f2c585f5e1699204e3c3bdf7adc5c28cb376/data/locomo10.json",
+    "sha256": "79fa87e90f04081343b8c8debecb80a9a6842b76a7aa537dc9fdf651ea698ff4"
+   },
+   "longmemeval-s": {
+    "url": "https://huggingface.co/datasets/xiaowu0162/longmemeval-cleaned/resolve/98d7416c24c778c2fee6e6f3006e7a073259d48f/longmemeval_s_cleaned.json",
+    "sha256": "d6f21ea9d60a0d56f34a05b609c79c88a451d2ae03597821ea3d5a9678c3a442"
+   },
+   "meme-filler32k": {
+    "url": "https://huggingface.co/datasets/meme-benchmark/MEME/resolve/e14c4e685772014deb96f91dc7eddfbeb21d90d8/meme_filler32k.json",
+    "sha256": "a88d28374a002b3e5b1683fb7201d06a1ce739d2ebf94c971c37bb65cf6ebdd3"
+   },
+   "meme-nofiller": {
+    "url": "https://huggingface.co/datasets/meme-benchmark/MEME/resolve/e14c4e685772014deb96f91dc7eddfbeb21d90d8/meme_nofiller.json",
+    "sha256": "1687d028cc1638986df9f58f0c3f072f614cf13d72a791541b4439fddf701636"
+   },
+   "mab-cr": {
+    "url": "https://huggingface.co/datasets/ai-hyz/MemoryAgentBench/resolve/7ea066982b140a19337e17e60d45d4076e042faf/data/Conflict_Resolution-00000-of-00001.parquet",
+    "sha256": "24d5c3f09ce0ce15625cb9f8a98f44f0d864ca6c94d7b4ad04eb697ca3a5ff45"
+   }
+  }
+ },
+ "split": "holdout",
+ "selection": {
+  "qualified": true,
+  "variant": "full",
+  "t": 0.3,
+  "dev_recall": 0.5401459854014599,
+  "dev_fire_plain": 0.06311018131101813,
+  "dev_fire_extends": 0.8551236749116607,
+  "dev_r3": {
+   "full": 0.7481751824817519,
+   "summary": 0.7737226277372263
+  }
+ },
+ "describe": {
+  "pooled": {
+   "positives": 308,
+   "plain": 2942,
+   "extends": 258,
+   "r1": 0.5422077922077922,
+   "r3": 0.685064935064935,
+   "recall": 0.5064935064935064,
+   "fire_plain": 0.06152277362338545,
+   "fire_extends": 0.8333333333333334,
+   "extends_names_baseline": 0.5697674418604651,
+   "hinted_per_write": 0.35290763968072975
+  },
+  "longmemeval-s": {
+   "positives": 36,
+   "plain": 1019,
+   "extends": 0,
+   "r1": 0.08333333333333333,
+   "r3": 0.2222222222222222,
+   "recall": 0.08333333333333333,
+   "fire_plain": 0.09421000981354269,
+   "fire_extends": NaN,
+   "extends_names_baseline": NaN,
+   "hinted_per_write": 0.19146919431279621
+  },
+  "mab-sh": {
+   "positives": 99,
+   "plain": 1014,
+   "extends": 0,
+   "r1": 0.9494949494949495,
+   "r3": 0.9797979797979798,
+   "recall": 0.9797979797979798,
+   "fire_plain": 0.0,
+   "fire_extends": NaN,
+   "extends_names_baseline": NaN,
+   "hinted_per_write": 0.24618149146451032
+  },
+  "meme-filler32k": {
+   "positives": 173,
+   "plain": 909,
+   "extends": 258,
+   "r1": 0.4046242774566474,
+   "r3": 0.6127167630057804,
+   "recall": 0.3236994219653179,
+   "fire_plain": 0.09350935093509351,
+   "fire_extends": 0.8333333333333334,
+   "extends_names_baseline": 0.5697674418604651,
+   "hinted_per_write": 0.5686567164179105
+  }
+ },
+ "lines": [
+  {
+   "id": "H1",
+   "claim": "Predecessor in the top 3 (`full` query, no threshold)",
+   "stat": {
+    "mean": 0.685064935064935,
+    "low": 0.6331168831168831,
+    "high": 0.7337662337662337,
+    "n": 308
+   },
+   "line": 0.8,
+   "verdict": "miss"
+  },
+  {
+   "id": "H2a",
+   "claim": "Predecessor hinted (`full`, coverage >= 0.30)",
+   "stat": {
+    "mean": 0.5064935064935064,
+    "low": 0.4512987012987013,
+    "high": 0.5616883116883117,
+    "n": 308
+   },
+   "line": 0.6,
+   "verdict": "miss"
+  },
+  {
+   "id": "H2b",
+   "claim": "Plain writes with any hint (`full`, coverage >= 0.30); lower is better",
+   "stat": {
+    "mean": 0.06152277362338545,
+    "low": 0.05336505778382053,
+    "high": 0.07036029911624746,
+    "n": 2942
+   },
+   "line": 0.2,
+   "verdict": "confirmed"
+  }
+ ]
+}

@@ -5,3 +5,4 @@ build/
 dist/
 .venv/
 evals/external/results/per_query.jsonl
+evals/external/results/hints_*.jsonl

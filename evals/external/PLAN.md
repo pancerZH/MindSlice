@@ -158,6 +158,84 @@ were written independently of MindSlice, which is the point of this evaluation. 
 choice: a different summary rule would move Mode A. That is why the rule is fixed above and applied to
 every dataset alike.
 
+## Engine `ac7928a`: amended lines (2026-11-07)
+
+`ac7928a` makes `search()` previews carry `read()`'s baseline notices over the whole `extends` closure:
+`baseline_superseded_by` at any depth, and `missing_baselines` when a reference on the chain no longer
+resolves (engine source digest `2d682415d4d98292e926e16f48fb8b53803d2823307a0703f24d3be7c170e1b8`). The
+lines above stay as the record of `16223dc`. For this engine and later ones:
+
+- **A preview warns** when `status` is not `active`, or it carries `baseline_superseded_by` **or
+  `missing_baselines`**. This changes `stale@10`, `stale-first` and the end-to-end preview flag. At `16223dc`
+  no preview carried `missing_baselines`, so its numbers are the same under either definition.
+- **B11 becomes a structural line**: search previews flag every 2-hop dependent that is on the page, by
+  either notice. 100%, like B1-B10.
+- **C2** is expected confirmed with no MEME 2-hop exception.
+
+Stated plainly: while making the fix, an in-memory run (nothing written to `results/`) had already shown
+87 of 89 previews flagged by `baseline_superseded_by`, the other 2 (`sw_019`, `sw_037`) carrying
+`missing_baselines`, and every page's ranking unchanged. So these amendments were written after seeing that
+run, not before it. They change definitions to match the engine's two documented signals, not thresholds.
+
+## Mode C: write-time supersession candidates (rules fixed 2026-11-07, before any probe)
+
+**Question.** Mode B's gains need an agent to write `supersedes`, and without it the stale fact wins
+(C1). The same thing that makes the stale fact win, that old and new statements share their words, might
+let the engine *find* the old card when the new one is written and name it to the agent. Is a lexical
+candidate list at write time precise enough to offer? No LLM is involved, and the engine is unchanged:
+the harness calls `search()` the way a `write()` implementation would, just before each write.
+
+**Writes probed.** Mode B ingestion, unchanged (same datasets, granularities and order: LongMemEval-S
+round cards, MEME `filler32k` round cards, MemoryAgentBench fact cards).
+
+- **Positive**: every card written with a non-empty `supersedes` (LongMemEval's newer evidence, MEME
+  updates and root changes, MemoryAgentBench's latest facts). Its *predecessors* are its `supersedes`
+  targets. Probed just before its `write()`, so the workspace holds everything written up to then.
+- **Plain**: cards with no lineage, a deterministic sample: a card is kept when
+  `int(sha256("neg/<haystack>/<path>")[:8], 16) % m == 0`, with m = 8 (LongMemEval), 5 (MEME) and 13
+  (MemoryAgentBench): 2,000 to 2,100 of LongMemEval's 16,939, MEME's 9,102 and MemoryAgentBench's 25,472
+  plain cards (Mode B ingests only the haystacks with lineage: 70, 100 and 4). Probed just before its
+  session's files are added.
+- **Extends**: every card written with `extends` and no `supersedes` (MEME dependents and rules). They
+  replace nothing but are close to their baseline by construction: the case where a wrong hint would
+  hurt most (a false `supersedes` hides a valid card). Reported, no line.
+
+**Probe.** `search(query, k=5)` with defaults, where the query is the card's text as written minus its
+title and its `Date:` line (both are harness templates: the speakers' names, and a session date no agent
+would restate as content). Two query variants, chosen on `dev` below: `full` (summary and body) and
+`summary` (summary only). Candidates are the top 3 results; a candidate is **hinted** when its `coverage`
+(the engine's IDF-weighted share of the query it matches) is at least a threshold t.
+
+**Split.** A write is `dev` when `int(sha256("split/<haystack>/<path>")[:8], 16)` is even, `holdout`
+otherwise, for all three groups.
+
+**Selection on `dev`, fixed now.** Over both variants and t in {0.00, 0.05, ..., 0.95}: the (variant, t)
+with the highest positive recall (a predecessor is hinted) subject to a plain-write fire rate (any
+candidate hinted) at or below 0.10. Ties: lower fire rate, then higher t. If no pair qualifies, H2a and
+H2b are misses by rule, and H1 uses the variant with the higher `dev` R@3.
+
+**Lines, read once on `holdout`** (95% bootstrap over writes, 2,000 replicates, seed 20261106; verdicts as
+above, and for H2b, where lower is better, **confirmed** when the upper bound is at or below the line):
+
+| Line | Claim | Statistic | Line | Expected now |
+| --- | --- | --- | --- | --- |
+| H1 | The predecessor is findable lexically | R@3 (no threshold), pooled positives | 0.80 | uncertain: MemoryAgentBench's facts differ by one word, MEME's updates often reword the value |
+| H2a | A thresholded hint finds it | positive recall at the `dev` (variant, t) | 0.60 | uncertain |
+| H2b | ...and stays quiet on unrelated writes | plain-write fire rate at the same (variant, t) | 0.20 | likely, if the threshold exists |
+
+Also reported, no lines: per-dataset R@1 and R@3, recall and fire rate, the `extends` group's fire rate
+and how often its hint names its own baseline, and mean hinted cards per write.
+
+**What would follow (the decision stays the user's).** H1, H2a and H2b hold: an optional write-time
+`similar_active` list is worth building and testing with agents ([`evals/agent_test.md`](../agent_test.md)).
+H1 holds but H2 doesn't: candidates exist but no threshold separates them, so leave it to the skill's
+"search first". H1 misses: lexical matching can't find predecessors often enough; noticing supersession
+is the agent's job, and the agent test is the only measure.
+
+**Known biases.** Round cards hold a whole exchange, so the query carries the assistant's reply as well as
+the user's new fact: a harder case than an agent's focused card. MemoryAgentBench's conflicts are
+templated and differ by their object, which favors lexical matching. Same author as above.
+
 ## Ledger
 
 | Date | Run | What it informed |
@@ -166,3 +244,11 @@ every dataset alike.
 | 2026-11-07 | Run 1, every dataset, frozen harness | A1-A4 **miss** (as expected). B1, B4, B5, B7-B10 **pass**, B11 **gap confirmed**, C1-C3 **confirmed**. **B2, B3 and B6 failed**; diagnosed as wrong check expectations, not engine faults: (B6) the count included MEME's before-change searches, made while the deleted cards still existed (162 sightings, none after a deletion); (B2) in `sw_019` and `sw_037` the expected `unrebased_extensions` included a card the episode deletes; (B3) in those two episodes the 2-hop middle entity is the one deleted, so the dependent's chain no longer reaches the root and `read()` correctly reports `missing_baselines` instead (B7 passes on exactly those cards). Also found while reading: `no-rule` fails on 10 Absence questions because MEME declares a replacement rule for their target (the middle of a 2-hop chain) while labeling them "Uncertain"; this is a data note, not a line. The miss analysis ("no judged card matches any query word") was uninformative, since filler words match every card |
 | 2026-11-07 | Check and diagnostics fixes, then run 2 (harness `592abe69…`) | Checks: B6 counts after-change searches only; B2's expectation excludes deleted cards; B3 (and the end-to-end read flag) also accepts `missing_baselines`. Records gained first-page `scores` and, for flat misses, each query word's share of cards and whether a judged card holds it. The miss analysis became the exploratory **distinctive-word** reading (a word in under 10% of the haystack's cards; threshold chosen after run 1). **All 11,568 first pages (results, lineage markers, coverage, unmatched terms) are identical to run 1**, so no ranking changed |
 | 2026-11-07 | Summary fixes, re-rendered from run 2's records with `report` (summarized by `39401459…`, recorded in `run.json`) | Found while diagnosing a MEME Cascade row: the ablation paired each lineage record with the flat record of the same question id, and MEME's `filler32k` and `nofiller` share ids, so MEME rows had compared against `nofiller`'s flat pages (now keyed by dataset; a test covers it). MemoryAgentBench's session level was dropped (its facts form one list, so it was trivially 1.0). **Final verdicts:** A1-A4 miss; B1-B10 pass; B11 gap confirmed; C1 0.620 [0.572, 0.665], C2 0.595 [0.550, 0.638], C3 +0.007 [0.000, 0.016], all **confirmed**. Nothing in the engine changed |
+| 2026-11-07 | Engine fix `ac7928a` (B11), checked with an in-memory run against run 2's records, nothing written | Every one of the 11,568 first pages has the same ranking and scores. Previews flag 87 of the 89 hop-2 dependents by `baseline_superseded_by`; the other 2 (`sw_019`, `sw_037`) carry `missing_baselines`, which the harness did not yet count. Led to the amendments above |
+| 2026-11-07 | Run 3: engine `ac7928a` (`2d682415…`), harness `08ca1621…` with the amended definitions, recorded at `a90e19a` | **B11 pass** (89 / 89). **C2** 0.620 [0.572, 0.665] **confirmed**: under lineage, `stale-first` is 0.000 (was 0.025) and pooled `stale@10` 0.000 (was 0.111). A1-A4, B1-B10, C1 and C3 unchanged. In `checks.jsonl` only the 89 hop-2 end-to-end rows changed |
+| 2026-11-07 | Mode C rules written (the section above, SHA-256 `b326b43e5d09aca7de95076127e54cb7d2793693b30440e27c4d1a962e5cf5cd` as first written), before its code existed | Nothing probed on benchmark data |
+| 2026-11-07 | Mode C amendment, before any probe: counted the writes (cards only, nothing searched) | Mode B ingests only haystacks with lineage, so LongMemEval has 16,939 plain cards, not ~120,000: m = 60 would sample 306, not the ~2,000 the rule meant. m changed to 8. Positive writes: 70 LongMemEval, 307 MEME, 205 MemoryAgentBench; MEME `extends` writes: 541 |
+| 2026-11-07 | Mode C code (`hints.py`, the `hints` subcommand) written and tested on synthetic data only; harness `d0584239…` | Nothing probed on benchmark data. Mode A and B code paths unchanged (`run.py` only gains the subcommand) |
+| 2026-11-07 | Mode C `dev` (274 positive, 2,868 plain, 283 extends writes) | **Selection by rule: `full`, coverage ≥ 0.30** (recall 0.540, plain fire 0.063). Dev R@3 0.748 (`full`). Seen, not acted on: `extends` writes fire 0.855 and the hint names their own baseline in 0.548; LongMemEval R@3 is 0.353. Nothing changed before the holdout read |
+| 2026-11-07 | Mode C `holdout`, once, with `dev`'s selection (308 positive, 2,942 plain, 258 extends writes) | **H1 miss** (R@3 0.685 [0.633, 0.734]). **H2a miss** (0.506 [0.451, 0.562]). **H2b confirmed** (0.062 [0.053, 0.070]). By the rule above: lexical matching does not find predecessors often enough to offer a write-time hint; noticing supersession stays the agent's job, measured by `evals/agent_test.md`. By dataset (R@3): MemoryAgentBench 0.980, MEME 0.613, LongMemEval 0.222. Exploratory, after the verdict: the `summary` query gives LongMemEval 0.500 and pooled 0.701 (still under the line); at the selected setting the hint fires on 215 of 258 `extends` writes, and in 120 of those its top card is the card being extended, so a "may supersede" hint would invite exactly the harmful error. The engine is unchanged |
+| 2026-11-07 | Run 4: run 3 repeated with the final harness (`d0584239…`, which adds Mode C), so `run.json` matches the code | `summary.md` and `checks.jsonl` byte-identical to run 3. In `per_query.jsonl` (not committed) only the order of `gold` lists differs (they come from sets, whose order varies between processes); every ranking, score and warning is identical |

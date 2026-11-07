@@ -13,13 +13,13 @@ import tempfile
 import unittest
 from pathlib import Path
 
-from evals.external import sources
+from evals.external import hints, sources
 from evals.external.corpus import Card, Session, Turn, add_files, address, make_card, round_cards, rounds, summary_line
 from evals.external.datasets import label_fact, locomo, longmemeval, meme
 from evals.external.harness import run_in_tmp
 from evals.external.checks import CHECKS
 from evals.external.parquet import rle_hybrid, snappy_decompress
-from evals.external.run import jobs_for, summarize
+from evals.external.run import STATE_GRANULARITY, jobs_for, summarize
 from evals.external.score import auroc, auroc_ci, levels, state
 from mindslice import Workspace
 
@@ -263,6 +263,75 @@ class MetricTests(unittest.TestCase):
         packed = (sum(v << (3 * i) for i, v in enumerate(range(8)))).to_bytes(3, "little")
         data = bytes([3 << 1, 5, 1 << 1 | 1]) + packed
         self.assertEqual(rle_hybrid(data, 0, len(data), 3, 11), [5, 5, 5, 0, 1, 2, 3, 4, 5, 6, 7])
+
+
+class HintTests(unittest.TestCase):
+    """Mode C (PLAN.md): probes replay Mode B ingestion; scoring follows the pre-registered selection rule."""
+
+    def test_probes_cover_every_lineage_write_once_in_harness_order(self):
+        self.assertEqual(hints.GRANULARITY_OF, STATE_GRANULARITY)
+        with tempfile.TemporaryDirectory() as tmp:
+            _write(Path(tmp), "meme-filler32k", [meme_episode()])
+            (h,) = list(meme("meme-filler32k", Path(tmp)))
+        with tempfile.TemporaryDirectory() as tmp:
+            dev = hints.probe_haystack(h, "dev", Path(tmp) / "a")
+            holdout = hints.probe_haystack(h, "holdout", Path(tmp) / "b")
+        recs = dev + holdout
+        self.assertTrue(all(r["split"] == "dev" for r in dev) and all(r["split"] == "holdout" for r in holdout))
+        by = {r["path"]: r for r in recs}
+        self.assertEqual(len(by), len(recs))
+        g = hints.groups(recs)
+        # Every supersedes write is a positive (2 Tracking steps, the root change); every extends-only write
+        # (dependents and if-then rules) is in the extends group; the deletion request is never probed.
+        self.assertEqual(sorted(r["path"] for r in g["positive"]), ["s002/r000", "s002/r001", "s003/r000"])
+        self.assertEqual(by["s002/r001"]["predecessors"], ["@overlay/s002/r000"])
+        self.assertTrue(all(r["baselines"] and not r["predecessors"] for r in g["extends"]))
+        self.assertTrue(all(not (r["predecessors"] or r["baselines"]) for r in g["plain"]))
+        for r in recs:
+            self.assertEqual(set(r["probes"]), set(hints.VARIANTS))
+            self.assertTrue(all(c["address"] != f"@overlay/{r['path']}" for v in r["probes"].values() for c in v))
+        # Probed before the write: the second Tracking step finds the first, which is still active.
+        self.assertIn("@overlay/s002/r000", [c["address"] for c in by["s002/r001"]["probes"]["summary"]])
+
+    def test_query_drops_date_line(self):
+        card = make_card("s000/r000", [Turn("User", "My 5K best is 25:10.", "0#0", role="user")], "2023/05/01", "0")
+        self.assertEqual(hints.query_text(card, "summary"), "My 5K best is 25:10.")
+        self.assertNotIn("2023/05/01", hints.query_text(card, "full"))
+        self.assertIn("User: My 5K best is 25:10.", hints.query_text(card, "full"))
+
+    @staticmethod
+    def _rec(group, cands, pred=(), base=(), dataset="d"):
+        probe = [{"address": a, "coverage": c, "score": 1.0} for a, c in cands]
+        return {"dataset": dataset, "group": group, "predecessors": list(pred), "baselines": list(base),
+                "probes": {"full": probe, "summary": probe}}
+
+    def test_hint_threshold_and_top3(self):
+        r = self._rec("positive", [("a", 0.2), ("b", 0.5), ("c", 0.4), ("p", 0.9)], pred=["p"])
+        self.assertEqual(hints.hinted(r, "full", 0.40), ["b", "c"])  # only the top 3 may be named
+        self.assertEqual(hints.at_k(r, "full", 3), 0.0)
+        self.assertEqual(hints.found(r, "full", 0.0), 0.0)
+        self.assertEqual(hints.hinted(r, "full", 0.5), ["b"])  # rounded coverage meets the threshold exactly
+
+    def test_selection_rule(self):
+        pos = [self._rec("positive", [("p", 0.6)], pred=["p"]), self._rec("positive", [("q", 0.3)], pred=["q"])]
+        plain = [self._rec("plain", [("x", 0.35)])] + [self._rec("plain", [("y", 0.1)]) for _ in range(9)]
+        choice = hints.select(pos + plain)
+        # t <= 0.10 fires on all 10 plain writes (over the cap); 0.15-0.35 fires on 1 of 10 (allowed). Recall is
+        # 1.0 up to t = 0.30 (q's coverage) and 0.5 at 0.35, so the rule keeps recall 1.0 at the highest t, 0.30.
+        self.assertTrue(choice["qualified"])
+        self.assertEqual((choice["variant"], choice["t"], choice["dev_recall"]), ("full", 0.30, 1.0))
+        none = hints.select(pos + [self._rec("plain", [("x", 0.99)])])
+        self.assertFalse(none["qualified"])
+        lines = hints.read_lines(pos + plain, none)
+        self.assertEqual([l["verdict"] for l in lines[1:]], ["miss (by rule)"] * 2)
+
+    def test_h2b_is_lower_is_better(self):
+        pos = [self._rec("positive", [("p", 0.9)], pred=["p"]) for _ in range(5)]
+        quiet = [self._rec("plain", [("x", 0.1)]) for _ in range(50)]
+        lines = {l["id"]: l for l in hints.read_lines(pos + quiet, {"qualified": True, "variant": "full", "t": 0.5})}
+        self.assertEqual(lines["H2b"]["stat"]["mean"], 0.0)
+        self.assertEqual(lines["H2b"]["verdict"], "confirmed")
+        self.assertEqual(lines["H1"]["verdict"], "confirmed")
 
 
 class ExternalDataTests(unittest.TestCase):

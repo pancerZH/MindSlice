@@ -1,10 +1,10 @@
 {
  "environment": {
   "mindslice": "0.1.0",
-  "commit": "16223dc",
+  "commit": "a90e19a",
   "engine_dirty": false,
-  "engine_digest": "a48eae418a9054fe0d1c0a5eadb0b89b464378dab849f0b2e317ccd3bc5990fb",
-  "harness_digest": "592abe6983adad080deb9c232265b6956de9b4f3220110702c9d4e1898642ce4",
+  "engine_digest": "2d682415d4d98292e926e16f48fb8b53803d2823307a0703f24d3be7c170e1b8",
+  "harness_digest": "d0584239230476942a9847f2198bb9cc279814d8a4797cee89e7e8ef0ef389c9",
   "python": "3.12.3",
   "sqlite": "3.45.1",
   "unicode": "15.0.0",
@@ -4844,15 +4844,15 @@
         "n": 30
        },
        "lineage": {
-        "mean": 0.9,
-        "low": 0.7667,
-        "high": 1.0,
-        "n": 30
-       },
-       "lineage-minus-flat": {
         "mean": 0.0,
         "low": 0.0,
         "high": 0.0,
+        "n": 30
+       },
+       "lineage-minus-flat": {
+        "mean": -0.9,
+        "low": -1.0,
+        "high": -0.7667,
         "n": 30
        }
       }
@@ -4954,15 +4954,15 @@
         "n": 64
        },
        "lineage": {
-        "mean": 0.1719,
-        "low": 0.0934,
-        "high": 0.2656,
-        "n": 64
-       },
-       "lineage-minus-flat": {
         "mean": 0.0,
         "low": 0.0,
         "high": 0.0,
+        "n": 64
+       },
+       "lineage-minus-flat": {
+        "mean": -0.1719,
+        "low": -0.2656,
+        "high": -0.0934,
         "n": 64
        }
       },
@@ -4974,15 +4974,15 @@
         "n": 64
        },
        "lineage": {
-        "mean": 0.7656,
-        "low": 0.6562,
-        "high": 0.875,
-        "n": 64
-       },
-       "lineage-minus-flat": {
         "mean": 0.0,
         "low": 0.0,
         "high": 0.0,
+        "n": 64
+       },
+       "lineage-minus-flat": {
+        "mean": -0.7656,
+        "low": -0.875,
+        "high": -0.6562,
         "n": 64
        }
       }
@@ -5108,21 +5108,21 @@
       "n": 442
      },
      "lineage": {
-      "mean": 0.0249,
-      "low": 0.0113,
-      "high": 0.0407,
+      "mean": 0.0,
+      "low": 0.0,
+      "high": 0.0,
       "n": 442
      },
      "lineage-minus-flat": {
-      "mean": -0.595,
-      "low": -0.638,
-      "high": -0.5498,
+      "mean": -0.6199,
+      "low": -0.6652,
+      "high": -0.5724,
       "n": 442
      },
      "flat-minus-lineage": {
-      "mean": 0.595,
-      "low": 0.5498,
-      "high": 0.638,
+      "mean": 0.6199,
+      "low": 0.5724,
+      "high": 0.6652,
       "n": 442
      }
     },
@@ -5160,21 +5160,21 @@
       "n": 442
      },
      "lineage": {
-      "mean": 0.1109,
-      "low": 0.0837,
-      "high": 0.1425,
+      "mean": 0.0,
+      "low": 0.0,
+      "high": 0.0,
       "n": 442
      },
      "lineage-minus-flat": {
-      "mean": -0.8235,
-      "low": -0.8575,
-      "high": -0.7873,
+      "mean": -0.9344,
+      "low": -0.957,
+      "high": -0.9095,
       "n": 442
      },
      "flat-minus-lineage": {
-      "mean": 0.8235,
-      "low": 0.7873,
-      "high": 0.8575,
+      "mean": 0.9344,
+      "low": 0.9095,
+      "high": 0.957,
       "n": 442
      }
     },
@@ -5310,7 +5310,7 @@
     "Abs-hop2": {
      "questions": 29,
      "found": 0.931,
-     "preview_flag": 0.0,
+     "preview_flag": 0.931,
      "read_flag": 0.931,
      "rule_reachable": 0.0,
      "ok": 0.931
@@ -5326,7 +5326,7 @@
     "Cas-hop2": {
      "questions": 62,
      "found": 1.0,
-     "preview_flag": 0.0,
+     "preview_flag": 1.0,
      "read_flag": 1.0,
      "rule_reachable": 1.0,
      "ok": 1.0
@@ -5726,10 +5726,10 @@
    },
    {
     "id": "B11",
-    "claim": "Known gap: search previews flag 2-hop dependents (expected: they don't)",
-    "ok": 0,
+    "claim": "Search previews flag 2-hop dependents (baseline_superseded_by, or missing_baselines through a deleted card)",
+    "ok": 89,
     "total": 89,
-    "verdict": "gap confirmed"
+    "verdict": "pass"
    },
    {
     "id": "C1",
@@ -5748,9 +5748,9 @@
     "metric": "stale-first",
     "line": 0.2,
     "claim": "Lineage cuts stale-outranks-current by at least 0.20 (pooled, paired)",
-    "point": 0.595,
-    "low": 0.5498,
-    "high": 0.638,
+    "point": 0.6199,
+    "low": 0.5724,
+    "high": 0.6652,
     "verdict": "confirmed"
    },
    {
@@ -5766,5 +5766,5 @@
    }
   ]
  },
- "summarized_by": "39401459badf06dc71509f9fe886c38088c7628dd7ae90b090b00ad445d276af"
+ "summarized_by": "d0584239230476942a9847f2198bb9cc279814d8a4797cee89e7e8ef0ef389c9"
 }

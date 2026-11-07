@@ -105,8 +105,8 @@ def state(rec: dict[str, Any]) -> dict[str, float]:
     """For a question about current state (``current`` and/or ``stale`` cards are known).
 
     * ``current@10``: share of the current-value cards on the first page.
-    * ``stale@10``: a stale-value card is on the page *unwarned* (status ``active`` and no
-      ``baseline_superseded_by``): the agent is shown an outdated fact as if it held.
+    * ``stale@10``: a stale-value card is on the page *unwarned* (status ``active``, no
+      ``baseline_superseded_by`` and no ``missing_baselines``): the agent is shown an outdated fact as if it held.
     * ``stale-first``: an unwarned stale card ranks above every current card (questions with a current card).
     """
     ranked, warned = rec["ranked"], rec["warned"]

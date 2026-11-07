@@ -284,7 +284,7 @@
 {"dataset": "meme-filler32k", "haystack": "meme-filler32k/pl_001", "check": "dependent-flagged", "subject": "pl_001/after2", "ok": true, "group": "Cas-hop2", "signal": "baseline_superseded_by"}
 {"dataset": "meme-filler32k", "haystack": "meme-filler32k/pl_001", "check": "dependent-flagged", "subject": "pl_001/after3", "ok": true, "group": "Abs-hop1", "signal": "baseline_superseded_by"}
 {"dataset": "meme-filler32k", "haystack": "meme-filler32k/pl_001", "check": "e2e", "subject": "pl_001/after1", "ok": true, "group": "Cas-hop1", "found": true, "preview_flag": true, "read_flag": true, "rule_reachable": true}
-{"dataset": "meme-filler32k", "haystack": "meme-filler32k/pl_001", "check": "e2e", "subject": "pl_001/after2", "ok": true, "group": "Cas-hop2", "found": true, "preview_flag": false, "read_flag": true, "rule_reachable": true}
+{"dataset": "meme-filler32k", "haystack": "meme-filler32k/pl_001", "check": "e2e", "subject": "pl_001/after2", "ok": true, "group": "Cas-hop2", "found": true, "preview_flag": true, "read_flag": true, "rule_reachable": true}
 {"dataset": "meme-filler32k", "haystack": "meme-filler32k/pl_001", "check": "e2e", "subject": "pl_001/after3", "ok": true, "group": "Abs-hop1", "found": true, "preview_flag": true, "read_flag": true, "rule_reachable": false}
 {"dataset": "meme-filler32k", "haystack": "meme-filler32k/pl_001", "check": "history-chain", "subject": "pl_001/after0", "ok": true, "length": 3}
 {"dataset": "meme-filler32k", "haystack": "meme-filler32k/pl_001", "check": "history-forwarding", "subject": "pl_001/after0", "ok": true}
@@ -347,7 +347,7 @@
 {"dataset": "meme-filler32k", "haystack": "meme-filler32k/pl_006", "check": "dependent-flagged", "subject": "pl_006/after2", "ok": true, "group": "Cas-hop2", "signal": "baseline_superseded_by"}
 {"dataset": "meme-filler32k", "haystack": "meme-filler32k/pl_006", "check": "dependent-flagged", "subject": "pl_006/after3", "ok": true, "group": "Abs-hop1", "signal": "baseline_superseded_by"}
 {"dataset": "meme-filler32k", "haystack": "meme-filler32k/pl_006", "check": "e2e", "subject": "pl_006/after1", "ok": true, "group": "Cas-hop1", "found": true, "preview_flag": true, "read_flag": true, "rule_reachable": true}
-{"dataset": "meme-filler32k", "haystack": "meme-filler32k/pl_006", "check": "e2e", "subject": "pl_006/after2", "ok": true, "group": "Cas-hop2", "found": true, "preview_flag": false, "read_flag": true, "rule_reachable": true}
+{"dataset": "meme-filler32k", "haystack": "meme-filler32k/pl_006", "check": "e2e", "subject": "pl_006/after2", "ok": true, "group": "Cas-hop2", "found": true, "preview_flag": true, "read_flag": true, "rule_reachable": true}
 {"dataset": "meme-filler32k", "haystack": "meme-filler32k/pl_006", "check": "e2e", "subject": "pl_006/after3", "ok": true, "group": "Abs-hop1", "found": true, "preview_flag": true, "read_flag": true, "rule_reachable": false}
 {"dataset": "meme-filler32k", "haystack": "meme-filler32k/pl_006", "check": "history-chain", "subject": "pl_006/after0", "ok": true, "length": 3}
 {"dataset": "meme-filler32k", "haystack": "meme-filler32k/pl_006", "check": "history-forwarding", "subject": "pl_006/after0", "ok": true}
@@ -375,9 +375,9 @@
 {"dataset": "meme-filler32k", "haystack": "meme-filler32k/pl_008", "check": "dependent-flagged", "subject": "pl_008/after3", "ok": true, "group": "Abs-hop1", "signal": "baseline_superseded_by"}
 {"dataset": "meme-filler32k", "haystack": "meme-filler32k/pl_008", "check": "dependent-flagged", "subject": "pl_008/after4", "ok": true, "group": "Abs-hop2", "signal": "baseline_superseded_by"}
 {"dataset": "meme-filler32k", "haystack": "meme-filler32k/pl_008", "check": "e2e", "subject": "pl_008/after1", "ok": false, "group": "Cas-hop1", "found": false, "preview_flag": false, "read_flag": false, "rule_reachable": false}
-{"dataset": "meme-filler32k", "haystack": "meme-filler32k/pl_008", "check": "e2e", "subject": "pl_008/after2", "ok": true, "group": "Cas-hop2", "found": true, "preview_flag": false, "read_flag": true, "rule_reachable": true}
+{"dataset": "meme-filler32k", "haystack": "meme-filler32k/pl_008", "check": "e2e", "subject": "pl_008/after2", "ok": true, "group": "Cas-hop2", "found": true, "preview_flag": true, "read_flag": true, "rule_reachable": true}
 {"dataset": "meme-filler32k", "haystack": "meme-filler32k/pl_008", "check": "e2e", "subject": "pl_008/after3", "ok": true, "group": "Abs-hop1", "found": true, "preview_flag": true, "read_flag": true, "rule_reachable": false}
-{"dataset": "meme-filler32k", "haystack": "meme-filler32k/pl_008", "check": "e2e", "subject": "pl_008/after4", "ok": true, "group": "Abs-hop2", "found": true, "preview_flag": false, "read_flag": true, "rule_reachable": false}
+{"dataset": "meme-filler32k", "haystack": "meme-filler32k/pl_008", "check": "e2e", "subject": "pl_008/after4", "ok": true, "group": "Abs-hop2", "found": true, "preview_flag": true, "read_flag": true, "rule_reachable": false}
 {"dataset": "meme-filler32k", "haystack": "meme-filler32k/pl_008", "check": "history-chain", "subject": "pl_008/after0", "ok": true, "length": 3}
 {"dataset": "meme-filler32k", "haystack": "meme-filler32k/pl_008", "check": "history-forwarding", "subject": "pl_008/after0", "ok": true}
 {"dataset": "meme-filler32k", "haystack": "meme-filler32k/pl_008", "check": "no-rule", "subject": "pl_008/after3", "ok": true, "group": "Abs-hop1"}
@@ -392,7 +392,7 @@
 {"dataset": "meme-filler32k", "haystack": "meme-filler32k/pl_009", "check": "dependent-flagged", "subject": "pl_009/after2", "ok": true, "group": "Cas-hop2", "signal": "baseline_superseded_by"}
 {"dataset": "meme-filler32k", "haystack": "meme-filler32k/pl_009", "check": "dependent-flagged", "subject": "pl_009/after3", "ok": true, "group": "Abs-hop1", "signal": "baseline_superseded_by"}
 {"dataset": "meme-filler32k", "haystack": "meme-filler32k/pl_009", "check": "e2e", "subject": "pl_009/after1", "ok": true, "group": "Cas-hop1", "found": true, "preview_flag": true, "read_flag": true, "rule_reachable": true}
-{"dataset": "meme-filler32k", "haystack": "meme-filler32k/pl_009", "check": "e2e", "subject": "pl_009/after2", "ok": true, "group": "Cas-hop2", "found": true, "preview_flag": false, "read_flag": true, "rule_reachable": true}
+{"dataset": "meme-filler32k", "haystack": "meme-filler32k/pl_009", "check": "e2e", "subject": "pl_009/after2", "ok": true, "group": "Cas-hop2", "found": true, "preview_flag": true, "read_flag": true, "rule_reachable": true}
 {"dataset": "meme-filler32k", "haystack": "meme-filler32k/pl_009", "check": "e2e", "subject": "pl_009/after3", "ok": true, "group": "Abs-hop1", "found": true, "preview_flag": true, "read_flag": true, "rule_reachable": true}
 {"dataset": "meme-filler32k", "haystack": "meme-filler32k/pl_009", "check": "history-chain", "subject": "pl_009/after0", "ok": true, "length": 3}
 {"dataset": "meme-filler32k", "haystack": "meme-filler32k/pl_009", "check": "history-forwarding", "subject": "pl_009/after0", "ok": true}
@@ -442,7 +442,7 @@
 {"dataset": "meme-filler32k", "haystack": "meme-filler32k/pl_013", "check": "dependent-flagged", "subject": "pl_013/after3", "ok": true, "group": "Abs-hop1", "signal": "baseline_superseded_by"}
 {"dataset": "meme-filler32k", "haystack": "meme-filler32k/pl_013", "check": "dependent-flagged", "subject": "pl_013/after4", "ok": true, "group": "Abs-hop2", "signal": "baseline_superseded_by"}
 {"dataset": "meme-filler32k", "haystack": "meme-filler32k/pl_013", "check": "e2e", "subject": "pl_013/after1", "ok": true, "group": "Cas-hop1", "found": true, "preview_flag": true, "read_flag": true, "rule_reachable": true}
-{"dataset": "meme-filler32k", "haystack": "meme-filler32k/pl_013", "check": "e2e", "subject": "pl_013/after2", "ok": true, "group": "Cas-hop2", "found": true, "preview_flag": false, "read_flag": true, "rule_reachable": true}
+{"dataset": "meme-filler32k", "haystack": "meme-filler32k/pl_013", "check": "e2e", "subject": "pl_013/after2", "ok": true, "group": "Cas-hop2", "found": true, "preview_flag": true, "read_flag": true, "rule_reachable": true}
 {"dataset": "meme-filler32k", "haystack": "meme-filler32k/pl_013", "check": "e2e", "subject": "pl_013/after3", "ok": true, "group": "Abs-hop1", "found": true, "preview_flag": true, "read_flag": true, "rule_reachable": false}
 {"dataset": "meme-filler32k", "haystack": "meme-filler32k/pl_013", "check": "e2e", "subject": "pl_013/after4", "ok": false, "group": "Abs-hop2", "found": false, "preview_flag": false, "read_flag": false, "rule_reachable": false}
 {"dataset": "meme-filler32k", "haystack": "meme-filler32k/pl_013", "check": "history-chain", "subject": "pl_013/after0", "ok": true, "length": 3}
@@ -459,7 +459,7 @@
 {"dataset": "meme-filler32k", "haystack": "meme-filler32k/pl_014", "check": "dependent-flagged", "subject": "pl_014/after2", "ok": true, "group": "Cas-hop2", "signal": "baseline_superseded_by"}
 {"dataset": "meme-filler32k", "haystack": "meme-filler32k/pl_014", "check": "dependent-flagged", "subject": "pl_014/after3", "ok": true, "group": "Abs-hop1", "signal": "baseline_superseded_by"}
 {"dataset": "meme-filler32k", "haystack": "meme-filler32k/pl_014", "check": "e2e", "subject": "pl_014/after1", "ok": true, "group": "Cas-hop1", "found": true, "preview_flag": true, "read_flag": true, "rule_reachable": true}
-{"dataset": "meme-filler32k", "haystack": "meme-filler32k/pl_014", "check": "e2e", "subject": "pl_014/after2", "ok": true, "group": "Cas-hop2", "found": true, "preview_flag": false, "read_flag": true, "rule_reachable": true}
+{"dataset": "meme-filler32k", "haystack": "meme-filler32k/pl_014", "check": "e2e", "subject": "pl_014/after2", "ok": true, "group": "Cas-hop2", "found": true, "preview_flag": true, "read_flag": true, "rule_reachable": true}
 {"dataset": "meme-filler32k", "haystack": "meme-filler32k/pl_014", "check": "e2e", "subject": "pl_014/after3", "ok": true, "group": "Abs-hop1", "found": true, "preview_flag": true, "read_flag": true, "rule_reachable": false}
 {"dataset": "meme-filler32k", "haystack": "meme-filler32k/pl_014", "check": "history-chain", "subject": "pl_014/after0", "ok": true, "length": 3}
 {"dataset": "meme-filler32k", "haystack": "meme-filler32k/pl_014", "check": "history-forwarding", "subject": "pl_014/after0", "ok": true}
@@ -545,9 +545,9 @@
 {"dataset": "meme-filler32k", "haystack": "meme-filler32k/pl_021", "check": "dependent-flagged", "subject": "pl_021/after3", "ok": true, "group": "Abs-hop1", "signal": "baseline_superseded_by"}
 {"dataset": "meme-filler32k", "haystack": "meme-filler32k/pl_021", "check": "dependent-flagged", "subject": "pl_021/after4", "ok": true, "group": "Abs-hop2", "signal": "baseline_superseded_by"}
 {"dataset": "meme-filler32k", "haystack": "meme-filler32k/pl_021", "check": "e2e", "subject": "pl_021/after1", "ok": true, "group": "Cas-hop1", "found": true, "preview_flag": true, "read_flag": true, "rule_reachable": true}
-{"dataset": "meme-filler32k", "haystack": "meme-filler32k/pl_021", "check": "e2e", "subject": "pl_021/after2", "ok": true, "group": "Cas-hop2", "found": true, "preview_flag": false, "read_flag": true, "rule_reachable": true}
+{"dataset": "meme-filler32k", "haystack": "meme-filler32k/pl_021", "check": "e2e", "subject": "pl_021/after2", "ok": true, "group": "Cas-hop2", "found": true, "preview_flag": true, "read_flag": true, "rule_reachable": true}
 {"dataset": "meme-filler32k", "haystack": "meme-filler32k/pl_021", "check": "e2e", "subject": "pl_021/after3", "ok": true, "group": "Abs-hop1", "found": true, "preview_flag": true, "read_flag": true, "rule_reachable": false}
-{"dataset": "meme-filler32k", "haystack": "meme-filler32k/pl_021", "check": "e2e", "subject": "pl_021/after4", "ok": true, "group": "Abs-hop2", "found": true, "preview_flag": false, "read_flag": true, "rule_reachable": false}
+{"dataset": "meme-filler32k", "haystack": "meme-filler32k/pl_021", "check": "e2e", "subject": "pl_021/after4", "ok": true, "group": "Abs-hop2", "found": true, "preview_flag": true, "read_flag": true, "rule_reachable": false}
 {"dataset": "meme-filler32k", "haystack": "meme-filler32k/pl_021", "check": "history-chain", "subject": "pl_021/after0", "ok": true, "length": 3}
 {"dataset": "meme-filler32k", "haystack": "meme-filler32k/pl_021", "check": "history-forwarding", "subject": "pl_021/after0", "ok": true}
 {"dataset": "meme-filler32k", "haystack": "meme-filler32k/pl_021", "check": "no-rule", "subject": "pl_021/after3", "ok": true, "group": "Abs-hop1"}
@@ -574,7 +574,7 @@
 {"dataset": "meme-filler32k", "haystack": "meme-filler32k/pl_023", "check": "dependent-flagged", "subject": "pl_023/after2", "ok": true, "group": "Cas-hop2", "signal": "baseline_superseded_by"}
 {"dataset": "meme-filler32k", "haystack": "meme-filler32k/pl_023", "check": "dependent-flagged", "subject": "pl_023/after3", "ok": true, "group": "Abs-hop1", "signal": "baseline_superseded_by"}
 {"dataset": "meme-filler32k", "haystack": "meme-filler32k/pl_023", "check": "e2e", "subject": "pl_023/after1", "ok": true, "group": "Cas-hop1", "found": true, "preview_flag": true, "read_flag": true, "rule_reachable": true}
-{"dataset": "meme-filler32k", "haystack": "meme-filler32k/pl_023", "check": "e2e", "subject": "pl_023/after2", "ok": true, "group": "Cas-hop2", "found": true, "preview_flag": false, "read_flag": true, "rule_reachable": true}
+{"dataset": "meme-filler32k", "haystack": "meme-filler32k/pl_023", "check": "e2e", "subject": "pl_023/after2", "ok": true, "group": "Cas-hop2", "found": true, "preview_flag": true, "read_flag": true, "rule_reachable": true}
 {"dataset": "meme-filler32k", "haystack": "meme-filler32k/pl_023", "check": "e2e", "subject": "pl_023/after3", "ok": true, "group": "Abs-hop1", "found": true, "preview_flag": true, "read_flag": true, "rule_reachable": false}
 {"dataset": "meme-filler32k", "haystack": "meme-filler32k/pl_023", "check": "history-chain", "subject": "pl_023/after0", "ok": true, "length": 3}
 {"dataset": "meme-filler32k", "haystack": "meme-filler32k/pl_023", "check": "history-forwarding", "subject": "pl_023/after0", "ok": true}
@@ -602,9 +602,9 @@
 {"dataset": "meme-filler32k", "haystack": "meme-filler32k/pl_025", "check": "dependent-flagged", "subject": "pl_025/after3", "ok": true, "group": "Abs-hop1", "signal": "baseline_superseded_by"}
 {"dataset": "meme-filler32k", "haystack": "meme-filler32k/pl_025", "check": "dependent-flagged", "subject": "pl_025/after4", "ok": true, "group": "Abs-hop2", "signal": "baseline_superseded_by"}
 {"dataset": "meme-filler32k", "haystack": "meme-filler32k/pl_025", "check": "e2e", "subject": "pl_025/after1", "ok": true, "group": "Cas-hop1", "found": true, "preview_flag": true, "read_flag": true, "rule_reachable": true}
-{"dataset": "meme-filler32k", "haystack": "meme-filler32k/pl_025", "check": "e2e", "subject": "pl_025/after2", "ok": true, "group": "Cas-hop2", "found": true, "preview_flag": false, "read_flag": true, "rule_reachable": true}
+{"dataset": "meme-filler32k", "haystack": "meme-filler32k/pl_025", "check": "e2e", "subject": "pl_025/after2", "ok": true, "group": "Cas-hop2", "found": true, "preview_flag": true, "read_flag": true, "rule_reachable": true}
 {"dataset": "meme-filler32k", "haystack": "meme-filler32k/pl_025", "check": "e2e", "subject": "pl_025/after3", "ok": true, "group": "Abs-hop1", "found": true, "preview_flag": true, "read_flag": true, "rule_reachable": false}
-{"dataset": "meme-filler32k", "haystack": "meme-filler32k/pl_025", "check": "e2e", "subject": "pl_025/after4", "ok": true, "group": "Abs-hop2", "found": true, "preview_flag": false, "read_flag": true, "rule_reachable": false}
+{"dataset": "meme-filler32k", "haystack": "meme-filler32k/pl_025", "check": "e2e", "subject": "pl_025/after4", "ok": true, "group": "Abs-hop2", "found": true, "preview_flag": true, "read_flag": true, "rule_reachable": false}
 {"dataset": "meme-filler32k", "haystack": "meme-filler32k/pl_025", "check": "history-chain", "subject": "pl_025/after0", "ok": true, "length": 3}
 {"dataset": "meme-filler32k", "haystack": "meme-filler32k/pl_025", "check": "history-forwarding", "subject": "pl_025/after0", "ok": true}
 {"dataset": "meme-filler32k", "haystack": "meme-filler32k/pl_025", "check": "no-rule", "subject": "pl_025/after3", "ok": true, "group": "Abs-hop1"}
@@ -644,9 +644,9 @@
 {"dataset": "meme-filler32k", "haystack": "meme-filler32k/pl_028", "check": "dependent-flagged", "subject": "pl_028/after3", "ok": true, "group": "Abs-hop1", "signal": "baseline_superseded_by"}
 {"dataset": "meme-filler32k", "haystack": "meme-filler32k/pl_028", "check": "dependent-flagged", "subject": "pl_028/after4", "ok": true, "group": "Abs-hop2", "signal": "baseline_superseded_by"}
 {"dataset": "meme-filler32k", "haystack": "meme-filler32k/pl_028", "check": "e2e", "subject": "pl_028/after1", "ok": true, "group": "Cas-hop1", "found": true, "preview_flag": true, "read_flag": true, "rule_reachable": true}
-{"dataset": "meme-filler32k", "haystack": "meme-filler32k/pl_028", "check": "e2e", "subject": "pl_028/after2", "ok": true, "group": "Cas-hop2", "found": true, "preview_flag": false, "read_flag": true, "rule_reachable": true}
+{"dataset": "meme-filler32k", "haystack": "meme-filler32k/pl_028", "check": "e2e", "subject": "pl_028/after2", "ok": true, "group": "Cas-hop2", "found": true, "preview_flag": true, "read_flag": true, "rule_reachable": true}
 {"dataset": "meme-filler32k", "haystack": "meme-filler32k/pl_028", "check": "e2e", "subject": "pl_028/after3", "ok": true, "group": "Abs-hop1", "found": true, "preview_flag": true, "read_flag": true, "rule_reachable": false}
-{"dataset": "meme-filler32k", "haystack": "meme-filler32k/pl_028", "check": "e2e", "subject": "pl_028/after4", "ok": true, "group": "Abs-hop2", "found": true, "preview_flag": false, "read_flag": true, "rule_reachable": false}
+{"dataset": "meme-filler32k", "haystack": "meme-filler32k/pl_028", "check": "e2e", "subject": "pl_028/after4", "ok": true, "group": "Abs-hop2", "found": true, "preview_flag": true, "read_flag": true, "rule_reachable": false}
 {"dataset": "meme-filler32k", "haystack": "meme-filler32k/pl_028", "check": "history-chain", "subject": "pl_028/after0", "ok": true, "length": 3}
 {"dataset": "meme-filler32k", "haystack": "meme-filler32k/pl_028", "check": "history-forwarding", "subject": "pl_028/after0", "ok": true}
 {"dataset": "meme-filler32k", "haystack": "meme-filler32k/pl_028", "check": "no-rule", "subject": "pl_028/after3", "ok": true, "group": "Abs-hop1"}
@@ -673,7 +673,7 @@
 {"dataset": "meme-filler32k", "haystack": "meme-filler32k/pl_030", "check": "dependent-flagged", "subject": "pl_030/after2", "ok": true, "group": "Cas-hop2", "signal": "baseline_superseded_by"}
 {"dataset": "meme-filler32k", "haystack": "meme-filler32k/pl_030", "check": "dependent-flagged", "subject": "pl_030/after3", "ok": true, "group": "Abs-hop1", "signal": "baseline_superseded_by"}
 {"dataset": "meme-filler32k", "haystack": "meme-filler32k/pl_030", "check": "e2e", "subject": "pl_030/after1", "ok": true, "group": "Cas-hop1", "found": true, "preview_flag": true, "read_flag": true, "rule_reachable": true}
-{"dataset": "meme-filler32k", "haystack": "meme-filler32k/pl_030", "check": "e2e", "subject": "pl_030/after2", "ok": true, "group": "Cas-hop2", "found": true, "preview_flag": false, "read_flag": true, "rule_reachable": true}
+{"dataset": "meme-filler32k", "haystack": "meme-filler32k/pl_030", "check": "e2e", "subject": "pl_030/after2", "ok": true, "group": "Cas-hop2", "found": true, "preview_flag": true, "read_flag": true, "rule_reachable": true}
 {"dataset": "meme-filler32k", "haystack": "meme-filler32k/pl_030", "check": "e2e", "subject": "pl_030/after3", "ok": true, "group": "Abs-hop1", "found": true, "preview_flag": true, "read_flag": true, "rule_reachable": false}
 {"dataset": "meme-filler32k", "haystack": "meme-filler32k/pl_030", "check": "history-chain", "subject": "pl_030/after0", "ok": true, "length": 3}
 {"dataset": "meme-filler32k", "haystack": "meme-filler32k/pl_030", "check": "history-forwarding", "subject": "pl_030/after0", "ok": true}
@@ -688,7 +688,7 @@
 {"dataset": "meme-filler32k", "haystack": "meme-filler32k/pl_031", "check": "dependent-flagged", "subject": "pl_031/after2", "ok": true, "group": "Cas-hop2", "signal": "baseline_superseded_by"}
 {"dataset": "meme-filler32k", "haystack": "meme-filler32k/pl_031", "check": "dependent-flagged", "subject": "pl_031/after3", "ok": true, "group": "Abs-hop1", "signal": "baseline_superseded_by"}
 {"dataset": "meme-filler32k", "haystack": "meme-filler32k/pl_031", "check": "e2e", "subject": "pl_031/after1", "ok": true, "group": "Cas-hop1", "found": true, "preview_flag": true, "read_flag": true, "rule_reachable": true}
-{"dataset": "meme-filler32k", "haystack": "meme-filler32k/pl_031", "check": "e2e", "subject": "pl_031/after2", "ok": true, "group": "Cas-hop2", "found": true, "preview_flag": false, "read_flag": true, "rule_reachable": true}
+{"dataset": "meme-filler32k", "haystack": "meme-filler32k/pl_031", "check": "e2e", "subject": "pl_031/after2", "ok": true, "group": "Cas-hop2", "found": true, "preview_flag": true, "read_flag": true, "rule_reachable": true}
 {"dataset": "meme-filler32k", "haystack": "meme-filler32k/pl_031", "check": "e2e", "subject": "pl_031/after3", "ok": true, "group": "Abs-hop1", "found": true, "preview_flag": true, "read_flag": true, "rule_reachable": false}
 {"dataset": "meme-filler32k", "haystack": "meme-filler32k/pl_031", "check": "history-chain", "subject": "pl_031/after0", "ok": true, "length": 3}
 {"dataset": "meme-filler32k", "haystack": "meme-filler32k/pl_031", "check": "history-forwarding", "subject": "pl_031/after0", "ok": true}
@@ -716,9 +716,9 @@
 {"dataset": "meme-filler32k", "haystack": "meme-filler32k/pl_033", "check": "dependent-flagged", "subject": "pl_033/after3", "ok": true, "group": "Abs-hop1", "signal": "baseline_superseded_by"}
 {"dataset": "meme-filler32k", "haystack": "meme-filler32k/pl_033", "check": "dependent-flagged", "subject": "pl_033/after4", "ok": true, "group": "Abs-hop2", "signal": "baseline_superseded_by"}
 {"dataset": "meme-filler32k", "haystack": "meme-filler32k/pl_033", "check": "e2e", "subject": "pl_033/after1", "ok": true, "group": "Cas-hop1", "found": true, "preview_flag": true, "read_flag": true, "rule_reachable": true}
-{"dataset": "meme-filler32k", "haystack": "meme-filler32k/pl_033", "check": "e2e", "subject": "pl_033/after2", "ok": true, "group": "Cas-hop2", "found": true, "preview_flag": false, "read_flag": true, "rule_reachable": true}
+{"dataset": "meme-filler32k", "haystack": "meme-filler32k/pl_033", "check": "e2e", "subject": "pl_033/after2", "ok": true, "group": "Cas-hop2", "found": true, "preview_flag": true, "read_flag": true, "rule_reachable": true}
 {"dataset": "meme-filler32k", "haystack": "meme-filler32k/pl_033", "check": "e2e", "subject": "pl_033/after3", "ok": true, "group": "Abs-hop1", "found": true, "preview_flag": true, "read_flag": true, "rule_reachable": false}
-{"dataset": "meme-filler32k", "haystack": "meme-filler32k/pl_033", "check": "e2e", "subject": "pl_033/after4", "ok": true, "group": "Abs-hop2", "found": true, "preview_flag": false, "read_flag": true, "rule_reachable": false}
+{"dataset": "meme-filler32k", "haystack": "meme-filler32k/pl_033", "check": "e2e", "subject": "pl_033/after4", "ok": true, "group": "Abs-hop2", "found": true, "preview_flag": true, "read_flag": true, "rule_reachable": false}
 {"dataset": "meme-filler32k", "haystack": "meme-filler32k/pl_033", "check": "history-chain", "subject": "pl_033/after0", "ok": true, "length": 3}
 {"dataset": "meme-filler32k", "haystack": "meme-filler32k/pl_033", "check": "history-forwarding", "subject": "pl_033/after0", "ok": true}
 {"dataset": "meme-filler32k", "haystack": "meme-filler32k/pl_033", "check": "no-rule", "subject": "pl_033/after3", "ok": true, "group": "Abs-hop1"}
@@ -733,7 +733,7 @@
 {"dataset": "meme-filler32k", "haystack": "meme-filler32k/pl_034", "check": "dependent-flagged", "subject": "pl_034/after2", "ok": true, "group": "Cas-hop2", "signal": "baseline_superseded_by"}
 {"dataset": "meme-filler32k", "haystack": "meme-filler32k/pl_034", "check": "dependent-flagged", "subject": "pl_034/after3", "ok": true, "group": "Abs-hop1", "signal": "baseline_superseded_by"}
 {"dataset": "meme-filler32k", "haystack": "meme-filler32k/pl_034", "check": "e2e", "subject": "pl_034/after1", "ok": true, "group": "Cas-hop1", "found": true, "preview_flag": true, "read_flag": true, "rule_reachable": true}
-{"dataset": "meme-filler32k", "haystack": "meme-filler32k/pl_034", "check": "e2e", "subject": "pl_034/after2", "ok": true, "group": "Cas-hop2", "found": true, "preview_flag": false, "read_flag": true, "rule_reachable": true}
+{"dataset": "meme-filler32k", "haystack": "meme-filler32k/pl_034", "check": "e2e", "subject": "pl_034/after2", "ok": true, "group": "Cas-hop2", "found": true, "preview_flag": true, "read_flag": true, "rule_reachable": true}
 {"dataset": "meme-filler32k", "haystack": "meme-filler32k/pl_034", "check": "e2e", "subject": "pl_034/after3", "ok": true, "group": "Abs-hop1", "found": true, "preview_flag": true, "read_flag": true, "rule_reachable": false}
 {"dataset": "meme-filler32k", "haystack": "meme-filler32k/pl_034", "check": "history-chain", "subject": "pl_034/after0", "ok": true, "length": 3}
 {"dataset": "meme-filler32k", "haystack": "meme-filler32k/pl_034", "check": "history-forwarding", "subject": "pl_034/after0", "ok": true}
@@ -820,7 +820,7 @@
 {"dataset": "meme-filler32k", "haystack": "meme-filler32k/pl_041", "check": "dependent-flagged", "subject": "pl_041/after2", "ok": true, "group": "Cas-hop2", "signal": "baseline_superseded_by"}
 {"dataset": "meme-filler32k", "haystack": "meme-filler32k/pl_041", "check": "dependent-flagged", "subject": "pl_041/after3", "ok": true, "group": "Abs-hop1", "signal": "baseline_superseded_by"}
 {"dataset": "meme-filler32k", "haystack": "meme-filler32k/pl_041", "check": "e2e", "subject": "pl_041/after1", "ok": true, "group": "Cas-hop1", "found": true, "preview_flag": true, "read_flag": true, "rule_reachable": true}
-{"dataset": "meme-filler32k", "haystack": "meme-filler32k/pl_041", "check": "e2e", "subject": "pl_041/after2", "ok": true, "group": "Cas-hop2", "found": true, "preview_flag": false, "read_flag": true, "rule_reachable": true}
+{"dataset": "meme-filler32k", "haystack": "meme-filler32k/pl_041", "check": "e2e", "subject": "pl_041/after2", "ok": true, "group": "Cas-hop2", "found": true, "preview_flag": true, "read_flag": true, "rule_reachable": true}
 {"dataset": "meme-filler32k", "haystack": "meme-filler32k/pl_041", "check": "e2e", "subject": "pl_041/after3", "ok": true, "group": "Abs-hop1", "found": true, "preview_flag": true, "read_flag": true, "rule_reachable": true}
 {"dataset": "meme-filler32k", "haystack": "meme-filler32k/pl_041", "check": "history-chain", "subject": "pl_041/after0", "ok": true, "length": 3}
 {"dataset": "meme-filler32k", "haystack": "meme-filler32k/pl_041", "check": "history-forwarding", "subject": "pl_041/after0", "ok": true}
@@ -835,7 +835,7 @@
 {"dataset": "meme-filler32k", "haystack": "meme-filler32k/pl_042", "check": "dependent-flagged", "subject": "pl_042/after2", "ok": true, "group": "Cas-hop2", "signal": "baseline_superseded_by"}
 {"dataset": "meme-filler32k", "haystack": "meme-filler32k/pl_042", "check": "dependent-flagged", "subject": "pl_042/after3", "ok": true, "group": "Abs-hop1", "signal": "baseline_superseded_by"}
 {"dataset": "meme-filler32k", "haystack": "meme-filler32k/pl_042", "check": "e2e", "subject": "pl_042/after1", "ok": true, "group": "Cas-hop1", "found": true, "preview_flag": true, "read_flag": true, "rule_reachable": true}
-{"dataset": "meme-filler32k", "haystack": "meme-filler32k/pl_042", "check": "e2e", "subject": "pl_042/after2", "ok": true, "group": "Cas-hop2", "found": true, "preview_flag": false, "read_flag": true, "rule_reachable": true}
+{"dataset": "meme-filler32k", "haystack": "meme-filler32k/pl_042", "check": "e2e", "subject": "pl_042/after2", "ok": true, "group": "Cas-hop2", "found": true, "preview_flag": true, "read_flag": true, "rule_reachable": true}
 {"dataset": "meme-filler32k", "haystack": "meme-filler32k/pl_042", "check": "e2e", "subject": "pl_042/after3", "ok": true, "group": "Abs-hop1", "found": true, "preview_flag": true, "read_flag": true, "rule_reachable": false}
 {"dataset": "meme-filler32k", "haystack": "meme-filler32k/pl_042", "check": "history-chain", "subject": "pl_042/after0", "ok": true, "length": 3}
 {"dataset": "meme-filler32k", "haystack": "meme-filler32k/pl_042", "check": "history-forwarding", "subject": "pl_042/after0", "ok": true}
@@ -862,7 +862,7 @@
 {"dataset": "meme-filler32k", "haystack": "meme-filler32k/pl_044", "check": "dependent-flagged", "subject": "pl_044/after2", "ok": true, "group": "Cas-hop2", "signal": "baseline_superseded_by"}
 {"dataset": "meme-filler32k", "haystack": "meme-filler32k/pl_044", "check": "dependent-flagged", "subject": "pl_044/after3", "ok": true, "group": "Abs-hop1", "signal": "baseline_superseded_by"}
 {"dataset": "meme-filler32k", "haystack": "meme-filler32k/pl_044", "check": "e2e", "subject": "pl_044/after1", "ok": true, "group": "Cas-hop1", "found": true, "preview_flag": true, "read_flag": true, "rule_reachable": true}
-{"dataset": "meme-filler32k", "haystack": "meme-filler32k/pl_044", "check": "e2e", "subject": "pl_044/after2", "ok": true, "group": "Cas-hop2", "found": true, "preview_flag": false, "read_flag": true, "rule_reachable": true}
+{"dataset": "meme-filler32k", "haystack": "meme-filler32k/pl_044", "check": "e2e", "subject": "pl_044/after2", "ok": true, "group": "Cas-hop2", "found": true, "preview_flag": true, "read_flag": true, "rule_reachable": true}
 {"dataset": "meme-filler32k", "haystack": "meme-filler32k/pl_044", "check": "e2e", "subject": "pl_044/after3", "ok": true, "group": "Abs-hop1", "found": true, "preview_flag": true, "read_flag": true, "rule_reachable": true}
 {"dataset": "meme-filler32k", "haystack": "meme-filler32k/pl_044", "check": "history-chain", "subject": "pl_044/after0", "ok": true, "length": 3}
 {"dataset": "meme-filler32k", "haystack": "meme-filler32k/pl_044", "check": "history-forwarding", "subject": "pl_044/after0", "ok": true}
@@ -889,7 +889,7 @@
 {"dataset": "meme-filler32k", "haystack": "meme-filler32k/pl_046", "check": "dependent-flagged", "subject": "pl_046/after2", "ok": true, "group": "Cas-hop2", "signal": "baseline_superseded_by"}
 {"dataset": "meme-filler32k", "haystack": "meme-filler32k/pl_046", "check": "dependent-flagged", "subject": "pl_046/after3", "ok": true, "group": "Abs-hop1", "signal": "baseline_superseded_by"}
 {"dataset": "meme-filler32k", "haystack": "meme-filler32k/pl_046", "check": "e2e", "subject": "pl_046/after1", "ok": true, "group": "Cas-hop1", "found": true, "preview_flag": true, "read_flag": true, "rule_reachable": true}
-{"dataset": "meme-filler32k", "haystack": "meme-filler32k/pl_046", "check": "e2e", "subject": "pl_046/after2", "ok": true, "group": "Cas-hop2", "found": true, "preview_flag": false, "read_flag": true, "rule_reachable": true}
+{"dataset": "meme-filler32k", "haystack": "meme-filler32k/pl_046", "check": "e2e", "subject": "pl_046/after2", "ok": true, "group": "Cas-hop2", "found": true, "preview_flag": true, "read_flag": true, "rule_reachable": true}
 {"dataset": "meme-filler32k", "haystack": "meme-filler32k/pl_046", "check": "e2e", "subject": "pl_046/after3", "ok": true, "group": "Abs-hop1", "found": true, "preview_flag": true, "read_flag": true, "rule_reachable": false}
 {"dataset": "meme-filler32k", "haystack": "meme-filler32k/pl_046", "check": "history-chain", "subject": "pl_046/after0", "ok": true, "length": 3}
 {"dataset": "meme-filler32k", "haystack": "meme-filler32k/pl_046", "check": "history-forwarding", "subject": "pl_046/after0", "ok": true}
@@ -905,7 +905,7 @@
 {"dataset": "meme-filler32k", "haystack": "meme-filler32k/pl_047", "check": "dependent-flagged", "subject": "pl_047/after3", "ok": true, "group": "Abs-hop1", "signal": "baseline_superseded_by"}
 {"dataset": "meme-filler32k", "haystack": "meme-filler32k/pl_047", "check": "dependent-flagged", "subject": "pl_047/after4", "ok": true, "group": "Abs-hop2", "signal": "baseline_superseded_by"}
 {"dataset": "meme-filler32k", "haystack": "meme-filler32k/pl_047", "check": "e2e", "subject": "pl_047/after1", "ok": true, "group": "Cas-hop1", "found": true, "preview_flag": true, "read_flag": true, "rule_reachable": true}
-{"dataset": "meme-filler32k", "haystack": "meme-filler32k/pl_047", "check": "e2e", "subject": "pl_047/after2", "ok": true, "group": "Cas-hop2", "found": true, "preview_flag": false, "read_flag": true, "rule_reachable": true}
+{"dataset": "meme-filler32k", "haystack": "meme-filler32k/pl_047", "check": "e2e", "subject": "pl_047/after2", "ok": true, "group": "Cas-hop2", "found": true, "preview_flag": true, "read_flag": true, "rule_reachable": true}
 {"dataset": "meme-filler32k", "haystack": "meme-filler32k/pl_047", "check": "e2e", "subject": "pl_047/after3", "ok": true, "group": "Abs-hop1", "found": true, "preview_flag": true, "read_flag": true, "rule_reachable": true}
 {"dataset": "meme-filler32k", "haystack": "meme-filler32k/pl_047", "check": "e2e", "subject": "pl_047/after4", "ok": false, "group": "Abs-hop2", "found": false, "preview_flag": false, "read_flag": false, "rule_reachable": false}
 {"dataset": "meme-filler32k", "haystack": "meme-filler32k/pl_047", "check": "history-chain", "subject": "pl_047/after0", "ok": true, "length": 3}
@@ -922,7 +922,7 @@
 {"dataset": "meme-filler32k", "haystack": "meme-filler32k/pl_048", "check": "dependent-flagged", "subject": "pl_048/after2", "ok": true, "group": "Cas-hop2", "signal": "baseline_superseded_by"}
 {"dataset": "meme-filler32k", "haystack": "meme-filler32k/pl_048", "check": "dependent-flagged", "subject": "pl_048/after3", "ok": true, "group": "Abs-hop1", "signal": "baseline_superseded_by"}
 {"dataset": "meme-filler32k", "haystack": "meme-filler32k/pl_048", "check": "e2e", "subject": "pl_048/after1", "ok": true, "group": "Cas-hop1", "found": true, "preview_flag": true, "read_flag": true, "rule_reachable": true}
-{"dataset": "meme-filler32k", "haystack": "meme-filler32k/pl_048", "check": "e2e", "subject": "pl_048/after2", "ok": true, "group": "Cas-hop2", "found": true, "preview_flag": false, "read_flag": true, "rule_reachable": true}
+{"dataset": "meme-filler32k", "haystack": "meme-filler32k/pl_048", "check": "e2e", "subject": "pl_048/after2", "ok": true, "group": "Cas-hop2", "found": true, "preview_flag": true, "read_flag": true, "rule_reachable": true}
 {"dataset": "meme-filler32k", "haystack": "meme-filler32k/pl_048", "check": "e2e", "subject": "pl_048/after3", "ok": true, "group": "Abs-hop1", "found": true, "preview_flag": true, "read_flag": true, "rule_reachable": false}
 {"dataset": "meme-filler32k", "haystack": "meme-filler32k/pl_048", "check": "history-chain", "subject": "pl_048/after0", "ok": true, "length": 3}
 {"dataset": "meme-filler32k", "haystack": "meme-filler32k/pl_048", "check": "history-forwarding", "subject": "pl_048/after0", "ok": true}
@@ -938,9 +938,9 @@
 {"dataset": "meme-filler32k", "haystack": "meme-filler32k/pl_049", "check": "dependent-flagged", "subject": "pl_049/after3", "ok": true, "group": "Abs-hop1", "signal": "baseline_superseded_by"}
 {"dataset": "meme-filler32k", "haystack": "meme-filler32k/pl_049", "check": "dependent-flagged", "subject": "pl_049/after4", "ok": true, "group": "Abs-hop2", "signal": "baseline_superseded_by"}
 {"dataset": "meme-filler32k", "haystack": "meme-filler32k/pl_049", "check": "e2e", "subject": "pl_049/after1", "ok": true, "group": "Cas-hop1", "found": true, "preview_flag": true, "read_flag": true, "rule_reachable": true}
-{"dataset": "meme-filler32k", "haystack": "meme-filler32k/pl_049", "check": "e2e", "subject": "pl_049/after2", "ok": true, "group": "Cas-hop2", "found": true, "preview_flag": false, "read_flag": true, "rule_reachable": true}
+{"dataset": "meme-filler32k", "haystack": "meme-filler32k/pl_049", "check": "e2e", "subject": "pl_049/after2", "ok": true, "group": "Cas-hop2", "found": true, "preview_flag": true, "read_flag": true, "rule_reachable": true}
 {"dataset": "meme-filler32k", "haystack": "meme-filler32k/pl_049", "check": "e2e", "subject": "pl_049/after3", "ok": true, "group": "Abs-hop1", "found": true, "preview_flag": true, "read_flag": true, "rule_reachable": false}
-{"dataset": "meme-filler32k", "haystack": "meme-filler32k/pl_049", "check": "e2e", "subject": "pl_049/after4", "ok": true, "group": "Abs-hop2", "found": true, "preview_flag": false, "read_flag": true, "rule_reachable": false}
+{"dataset": "meme-filler32k", "haystack": "meme-filler32k/pl_049", "check": "e2e", "subject": "pl_049/after4", "ok": true, "group": "Abs-hop2", "found": true, "preview_flag": true, "read_flag": true, "rule_reachable": false}
 {"dataset": "meme-filler32k", "haystack": "meme-filler32k/pl_049", "check": "history-chain", "subject": "pl_049/after0", "ok": true, "length": 3}
 {"dataset": "meme-filler32k", "haystack": "meme-filler32k/pl_049", "check": "history-forwarding", "subject": "pl_049/after0", "ok": true}
 {"dataset": "meme-filler32k", "haystack": "meme-filler32k/pl_049", "check": "no-rule", "subject": "pl_049/after3", "ok": true, "group": "Abs-hop1"}
@@ -968,9 +968,9 @@
 {"dataset": "meme-filler32k", "haystack": "meme-filler32k/sw_001", "check": "dependent-flagged", "subject": "sw_001/after3", "ok": true, "group": "Abs-hop1", "signal": "baseline_superseded_by"}
 {"dataset": "meme-filler32k", "haystack": "meme-filler32k/sw_001", "check": "dependent-flagged", "subject": "sw_001/after4", "ok": true, "group": "Abs-hop2", "signal": "baseline_superseded_by"}
 {"dataset": "meme-filler32k", "haystack": "meme-filler32k/sw_001", "check": "e2e", "subject": "sw_001/after1", "ok": true, "group": "Cas-hop1", "found": true, "preview_flag": true, "read_flag": true, "rule_reachable": true}
-{"dataset": "meme-filler32k", "haystack": "meme-filler32k/sw_001", "check": "e2e", "subject": "sw_001/after2", "ok": true, "group": "Cas-hop2", "found": true, "preview_flag": false, "read_flag": true, "rule_reachable": true}
+{"dataset": "meme-filler32k", "haystack": "meme-filler32k/sw_001", "check": "e2e", "subject": "sw_001/after2", "ok": true, "group": "Cas-hop2", "found": true, "preview_flag": true, "read_flag": true, "rule_reachable": true}
 {"dataset": "meme-filler32k", "haystack": "meme-filler32k/sw_001", "check": "e2e", "subject": "sw_001/after3", "ok": true, "group": "Abs-hop1", "found": true, "preview_flag": true, "read_flag": true, "rule_reachable": false}
-{"dataset": "meme-filler32k", "haystack": "meme-filler32k/sw_001", "check": "e2e", "subject": "sw_001/after4", "ok": true, "group": "Abs-hop2", "found": true, "preview_flag": false, "read_flag": true, "rule_reachable": false}
+{"dataset": "meme-filler32k", "haystack": "meme-filler32k/sw_001", "check": "e2e", "subject": "sw_001/after4", "ok": true, "group": "Abs-hop2", "found": true, "preview_flag": true, "read_flag": true, "rule_reachable": false}
 {"dataset": "meme-filler32k", "haystack": "meme-filler32k/sw_001", "check": "history-chain", "subject": "sw_001/after0", "ok": true, "length": 3}
 {"dataset": "meme-filler32k", "haystack": "meme-filler32k/sw_001", "check": "history-forwarding", "subject": "sw_001/after0", "ok": true}
 {"dataset": "meme-filler32k", "haystack": "meme-filler32k/sw_001", "check": "no-rule", "subject": "sw_001/after3", "ok": true, "group": "Abs-hop1"}
@@ -986,9 +986,9 @@
 {"dataset": "meme-filler32k", "haystack": "meme-filler32k/sw_002", "check": "dependent-flagged", "subject": "sw_002/after3", "ok": true, "group": "Abs-hop1", "signal": "baseline_superseded_by"}
 {"dataset": "meme-filler32k", "haystack": "meme-filler32k/sw_002", "check": "dependent-flagged", "subject": "sw_002/after4", "ok": true, "group": "Abs-hop2", "signal": "baseline_superseded_by"}
 {"dataset": "meme-filler32k", "haystack": "meme-filler32k/sw_002", "check": "e2e", "subject": "sw_002/after1", "ok": true, "group": "Cas-hop1", "found": true, "preview_flag": true, "read_flag": true, "rule_reachable": true}
-{"dataset": "meme-filler32k", "haystack": "meme-filler32k/sw_002", "check": "e2e", "subject": "sw_002/after2", "ok": true, "group": "Cas-hop2", "found": true, "preview_flag": false, "read_flag": true, "rule_reachable": true}
+{"dataset": "meme-filler32k", "haystack": "meme-filler32k/sw_002", "check": "e2e", "subject": "sw_002/after2", "ok": true, "group": "Cas-hop2", "found": true, "preview_flag": true, "read_flag": true, "rule_reachable": true}
 {"dataset": "meme-filler32k", "haystack": "meme-filler32k/sw_002", "check": "e2e", "subject": "sw_002/after3", "ok": true, "group": "Abs-hop1", "found": true, "preview_flag": true, "read_flag": true, "rule_reachable": false}
-{"dataset": "meme-filler32k", "haystack": "meme-filler32k/sw_002", "check": "e2e", "subject": "sw_002/after4", "ok": true, "group": "Abs-hop2", "found": true, "preview_flag": false, "read_flag": true, "rule_reachable": false}
+{"dataset": "meme-filler32k", "haystack": "meme-filler32k/sw_002", "check": "e2e", "subject": "sw_002/after4", "ok": true, "group": "Abs-hop2", "found": true, "preview_flag": true, "read_flag": true, "rule_reachable": false}
 {"dataset": "meme-filler32k", "haystack": "meme-filler32k/sw_002", "check": "history-chain", "subject": "sw_002/after0", "ok": true, "length": 3}
 {"dataset": "meme-filler32k", "haystack": "meme-filler32k/sw_002", "check": "history-forwarding", "subject": "sw_002/after0", "ok": true}
 {"dataset": "meme-filler32k", "haystack": "meme-filler32k/sw_002", "check": "no-rule", "subject": "sw_002/after3", "ok": true, "group": "Abs-hop1"}
@@ -1004,9 +1004,9 @@
 {"dataset": "meme-filler32k", "haystack": "meme-filler32k/sw_003", "check": "dependent-flagged", "subject": "sw_003/after3", "ok": true, "group": "Abs-hop1", "signal": "baseline_superseded_by"}
 {"dataset": "meme-filler32k", "haystack": "meme-filler32k/sw_003", "check": "dependent-flagged", "subject": "sw_003/after4", "ok": true, "group": "Abs-hop2", "signal": "baseline_superseded_by"}
 {"dataset": "meme-filler32k", "haystack": "meme-filler32k/sw_003", "check": "e2e", "subject": "sw_003/after1", "ok": true, "group": "Cas-hop1", "found": true, "preview_flag": true, "read_flag": true, "rule_reachable": true}
-{"dataset": "meme-filler32k", "haystack": "meme-filler32k/sw_003", "check": "e2e", "subject": "sw_003/after2", "ok": true, "group": "Cas-hop2", "found": true, "preview_flag": false, "read_flag": true, "rule_reachable": true}
+{"dataset": "meme-filler32k", "haystack": "meme-filler32k/sw_003", "check": "e2e", "subject": "sw_003/after2", "ok": true, "group": "Cas-hop2", "found": true, "preview_flag": true, "read_flag": true, "rule_reachable": true}
 {"dataset": "meme-filler32k", "haystack": "meme-filler32k/sw_003", "check": "e2e", "subject": "sw_003/after3", "ok": true, "group": "Abs-hop1", "found": true, "preview_flag": true, "read_flag": true, "rule_reachable": false}
-{"dataset": "meme-filler32k", "haystack": "meme-filler32k/sw_003", "check": "e2e", "subject": "sw_003/after4", "ok": true, "group": "Abs-hop2", "found": true, "preview_flag": false, "read_flag": true, "rule_reachable": false}
+{"dataset": "meme-filler32k", "haystack": "meme-filler32k/sw_003", "check": "e2e", "subject": "sw_003/after4", "ok": true, "group": "Abs-hop2", "found": true, "preview_flag": true, "read_flag": true, "rule_reachable": false}
 {"dataset": "meme-filler32k", "haystack": "meme-filler32k/sw_003", "check": "history-chain", "subject": "sw_003/after0", "ok": true, "length": 3}
 {"dataset": "meme-filler32k", "haystack": "meme-filler32k/sw_003", "check": "history-forwarding", "subject": "sw_003/after0", "ok": true}
 {"dataset": "meme-filler32k", "haystack": "meme-filler32k/sw_003", "check": "no-rule", "subject": "sw_003/after3", "ok": true, "group": "Abs-hop1"}
@@ -1034,9 +1034,9 @@
 {"dataset": "meme-filler32k", "haystack": "meme-filler32k/sw_005", "check": "dependent-flagged", "subject": "sw_005/after3", "ok": true, "group": "Abs-hop1", "signal": "baseline_superseded_by"}
 {"dataset": "meme-filler32k", "haystack": "meme-filler32k/sw_005", "check": "dependent-flagged", "subject": "sw_005/after4", "ok": true, "group": "Abs-hop2", "signal": "baseline_superseded_by"}
 {"dataset": "meme-filler32k", "haystack": "meme-filler32k/sw_005", "check": "e2e", "subject": "sw_005/after1", "ok": true, "group": "Cas-hop1", "found": true, "preview_flag": true, "read_flag": true, "rule_reachable": true}
-{"dataset": "meme-filler32k", "haystack": "meme-filler32k/sw_005", "check": "e2e", "subject": "sw_005/after2", "ok": true, "group": "Cas-hop2", "found": true, "preview_flag": false, "read_flag": true, "rule_reachable": true}
+{"dataset": "meme-filler32k", "haystack": "meme-filler32k/sw_005", "check": "e2e", "subject": "sw_005/after2", "ok": true, "group": "Cas-hop2", "found": true, "preview_flag": true, "read_flag": true, "rule_reachable": true}
 {"dataset": "meme-filler32k", "haystack": "meme-filler32k/sw_005", "check": "e2e", "subject": "sw_005/after3", "ok": true, "group": "Abs-hop1", "found": true, "preview_flag": true, "read_flag": true, "rule_reachable": false}
-{"dataset": "meme-filler32k", "haystack": "meme-filler32k/sw_005", "check": "e2e", "subject": "sw_005/after4", "ok": true, "group": "Abs-hop2", "found": true, "preview_flag": false, "read_flag": true, "rule_reachable": false}
+{"dataset": "meme-filler32k", "haystack": "meme-filler32k/sw_005", "check": "e2e", "subject": "sw_005/after4", "ok": true, "group": "Abs-hop2", "found": true, "preview_flag": true, "read_flag": true, "rule_reachable": false}
 {"dataset": "meme-filler32k", "haystack": "meme-filler32k/sw_005", "check": "history-chain", "subject": "sw_005/after0", "ok": true, "length": 3}
 {"dataset": "meme-filler32k", "haystack": "meme-filler32k/sw_005", "check": "history-forwarding", "subject": "sw_005/after0", "ok": true}
 {"dataset": "meme-filler32k", "haystack": "meme-filler32k/sw_005", "check": "no-rule", "subject": "sw_005/after3", "ok": true, "group": "Abs-hop1"}
@@ -1063,7 +1063,7 @@
 {"dataset": "meme-filler32k", "haystack": "meme-filler32k/sw_007", "check": "dependent-flagged", "subject": "sw_007/after2", "ok": true, "group": "Cas-hop2", "signal": "baseline_superseded_by"}
 {"dataset": "meme-filler32k", "haystack": "meme-filler32k/sw_007", "check": "dependent-flagged", "subject": "sw_007/after3", "ok": true, "group": "Abs-hop1", "signal": "baseline_superseded_by"}
 {"dataset": "meme-filler32k", "haystack": "meme-filler32k/sw_007", "check": "e2e", "subject": "sw_007/after1", "ok": true, "group": "Cas-hop1", "found": true, "preview_flag": true, "read_flag": true, "rule_reachable": true}
-{"dataset": "meme-filler32k", "haystack": "meme-filler32k/sw_007", "check": "e2e", "subject": "sw_007/after2", "ok": true, "group": "Cas-hop2", "found": true, "preview_flag": false, "read_flag": true, "rule_reachable": true}
+{"dataset": "meme-filler32k", "haystack": "meme-filler32k/sw_007", "check": "e2e", "subject": "sw_007/after2", "ok": true, "group": "Cas-hop2", "found": true, "preview_flag": true, "read_flag": true, "rule_reachable": true}
 {"dataset": "meme-filler32k", "haystack": "meme-filler32k/sw_007", "check": "e2e", "subject": "sw_007/after3", "ok": true, "group": "Abs-hop1", "found": true, "preview_flag": true, "read_flag": true, "rule_reachable": false}
 {"dataset": "meme-filler32k", "haystack": "meme-filler32k/sw_007", "check": "history-chain", "subject": "sw_007/after0", "ok": true, "length": 3}
 {"dataset": "meme-filler32k", "haystack": "meme-filler32k/sw_007", "check": "history-forwarding", "subject": "sw_007/after0", "ok": true}
@@ -1078,7 +1078,7 @@
 {"dataset": "meme-filler32k", "haystack": "meme-filler32k/sw_008", "check": "dependent-flagged", "subject": "sw_008/after2", "ok": true, "group": "Cas-hop2", "signal": "baseline_superseded_by"}
 {"dataset": "meme-filler32k", "haystack": "meme-filler32k/sw_008", "check": "dependent-flagged", "subject": "sw_008/after3", "ok": true, "group": "Abs-hop1", "signal": "baseline_superseded_by"}
 {"dataset": "meme-filler32k", "haystack": "meme-filler32k/sw_008", "check": "e2e", "subject": "sw_008/after1", "ok": true, "group": "Cas-hop1", "found": true, "preview_flag": true, "read_flag": true, "rule_reachable": true}
-{"dataset": "meme-filler32k", "haystack": "meme-filler32k/sw_008", "check": "e2e", "subject": "sw_008/after2", "ok": true, "group": "Cas-hop2", "found": true, "preview_flag": false, "read_flag": true, "rule_reachable": true}
+{"dataset": "meme-filler32k", "haystack": "meme-filler32k/sw_008", "check": "e2e", "subject": "sw_008/after2", "ok": true, "group": "Cas-hop2", "found": true, "preview_flag": true, "read_flag": true, "rule_reachable": true}
 {"dataset": "meme-filler32k", "haystack": "meme-filler32k/sw_008", "check": "e2e", "subject": "sw_008/after3", "ok": true, "group": "Abs-hop1", "found": true, "preview_flag": true, "read_flag": true, "rule_reachable": false}
 {"dataset": "meme-filler32k", "haystack": "meme-filler32k/sw_008", "check": "history-chain", "subject": "sw_008/after0", "ok": true, "length": 3}
 {"dataset": "meme-filler32k", "haystack": "meme-filler32k/sw_008", "check": "history-forwarding", "subject": "sw_008/after0", "ok": true}
@@ -1094,9 +1094,9 @@
 {"dataset": "meme-filler32k", "haystack": "meme-filler32k/sw_009", "check": "dependent-flagged", "subject": "sw_009/after3", "ok": true, "group": "Abs-hop1", "signal": "baseline_superseded_by"}
 {"dataset": "meme-filler32k", "haystack": "meme-filler32k/sw_009", "check": "dependent-flagged", "subject": "sw_009/after4", "ok": true, "group": "Abs-hop2", "signal": "baseline_superseded_by"}
 {"dataset": "meme-filler32k", "haystack": "meme-filler32k/sw_009", "check": "e2e", "subject": "sw_009/after1", "ok": true, "group": "Cas-hop1", "found": true, "preview_flag": true, "read_flag": true, "rule_reachable": true}
-{"dataset": "meme-filler32k", "haystack": "meme-filler32k/sw_009", "check": "e2e", "subject": "sw_009/after2", "ok": true, "group": "Cas-hop2", "found": true, "preview_flag": false, "read_flag": true, "rule_reachable": true}
+{"dataset": "meme-filler32k", "haystack": "meme-filler32k/sw_009", "check": "e2e", "subject": "sw_009/after2", "ok": true, "group": "Cas-hop2", "found": true, "preview_flag": true, "read_flag": true, "rule_reachable": true}
 {"dataset": "meme-filler32k", "haystack": "meme-filler32k/sw_009", "check": "e2e", "subject": "sw_009/after3", "ok": true, "group": "Abs-hop1", "found": true, "preview_flag": true, "read_flag": true, "rule_reachable": false}
-{"dataset": "meme-filler32k", "haystack": "meme-filler32k/sw_009", "check": "e2e", "subject": "sw_009/after4", "ok": true, "group": "Abs-hop2", "found": true, "preview_flag": false, "read_flag": true, "rule_reachable": false}
+{"dataset": "meme-filler32k", "haystack": "meme-filler32k/sw_009", "check": "e2e", "subject": "sw_009/after4", "ok": true, "group": "Abs-hop2", "found": true, "preview_flag": true, "read_flag": true, "rule_reachable": false}
 {"dataset": "meme-filler32k", "haystack": "meme-filler32k/sw_009", "check": "history-chain", "subject": "sw_009/after0", "ok": true, "length": 3}
 {"dataset": "meme-filler32k", "haystack": "meme-filler32k/sw_009", "check": "history-forwarding", "subject": "sw_009/after0", "ok": true}
 {"dataset": "meme-filler32k", "haystack": "meme-filler32k/sw_009", "check": "no-rule", "subject": "sw_009/after3", "ok": true, "group": "Abs-hop1"}
@@ -1112,9 +1112,9 @@
 {"dataset": "meme-filler32k", "haystack": "meme-filler32k/sw_010", "check": "dependent-flagged", "subject": "sw_010/after3", "ok": true, "group": "Abs-hop1", "signal": "baseline_superseded_by"}
 {"dataset": "meme-filler32k", "haystack": "meme-filler32k/sw_010", "check": "dependent-flagged", "subject": "sw_010/after4", "ok": true, "group": "Abs-hop2", "signal": "baseline_superseded_by"}
 {"dataset": "meme-filler32k", "haystack": "meme-filler32k/sw_010", "check": "e2e", "subject": "sw_010/after1", "ok": true, "group": "Cas-hop1", "found": true, "preview_flag": true, "read_flag": true, "rule_reachable": true}
-{"dataset": "meme-filler32k", "haystack": "meme-filler32k/sw_010", "check": "e2e", "subject": "sw_010/after2", "ok": true, "group": "Cas-hop2", "found": true, "preview_flag": false, "read_flag": true, "rule_reachable": true}
+{"dataset": "meme-filler32k", "haystack": "meme-filler32k/sw_010", "check": "e2e", "subject": "sw_010/after2", "ok": true, "group": "Cas-hop2", "found": true, "preview_flag": true, "read_flag": true, "rule_reachable": true}
 {"dataset": "meme-filler32k", "haystack": "meme-filler32k/sw_010", "check": "e2e", "subject": "sw_010/after3", "ok": true, "group": "Abs-hop1", "found": true, "preview_flag": true, "read_flag": true, "rule_reachable": false}
-{"dataset": "meme-filler32k", "haystack": "meme-filler32k/sw_010", "check": "e2e", "subject": "sw_010/after4", "ok": true, "group": "Abs-hop2", "found": true, "preview_flag": false, "read_flag": true, "rule_reachable": false}
+{"dataset": "meme-filler32k", "haystack": "meme-filler32k/sw_010", "check": "e2e", "subject": "sw_010/after4", "ok": true, "group": "Abs-hop2", "found": true, "preview_flag": true, "read_flag": true, "rule_reachable": false}
 {"dataset": "meme-filler32k", "haystack": "meme-filler32k/sw_010", "check": "history-chain", "subject": "sw_010/after0", "ok": true, "length": 3}
 {"dataset": "meme-filler32k", "haystack": "meme-filler32k/sw_010", "check": "history-forwarding", "subject": "sw_010/after0", "ok": true}
 {"dataset": "meme-filler32k", "haystack": "meme-filler32k/sw_010", "check": "no-rule", "subject": "sw_010/after3", "ok": true, "group": "Abs-hop1"}
@@ -1130,9 +1130,9 @@
 {"dataset": "meme-filler32k", "haystack": "meme-filler32k/sw_011", "check": "dependent-flagged", "subject": "sw_011/after3", "ok": true, "group": "Abs-hop1", "signal": "baseline_superseded_by"}
 {"dataset": "meme-filler32k", "haystack": "meme-filler32k/sw_011", "check": "dependent-flagged", "subject": "sw_011/after4", "ok": true, "group": "Abs-hop2", "signal": "baseline_superseded_by"}
 {"dataset": "meme-filler32k", "haystack": "meme-filler32k/sw_011", "check": "e2e", "subject": "sw_011/after1", "ok": true, "group": "Cas-hop1", "found": true, "preview_flag": true, "read_flag": true, "rule_reachable": true}
-{"dataset": "meme-filler32k", "haystack": "meme-filler32k/sw_011", "check": "e2e", "subject": "sw_011/after2", "ok": true, "group": "Cas-hop2", "found": true, "preview_flag": false, "read_flag": true, "rule_reachable": true}
+{"dataset": "meme-filler32k", "haystack": "meme-filler32k/sw_011", "check": "e2e", "subject": "sw_011/after2", "ok": true, "group": "Cas-hop2", "found": true, "preview_flag": true, "read_flag": true, "rule_reachable": true}
 {"dataset": "meme-filler32k", "haystack": "meme-filler32k/sw_011", "check": "e2e", "subject": "sw_011/after3", "ok": true, "group": "Abs-hop1", "found": true, "preview_flag": true, "read_flag": true, "rule_reachable": false}
-{"dataset": "meme-filler32k", "haystack": "meme-filler32k/sw_011", "check": "e2e", "subject": "sw_011/after4", "ok": true, "group": "Abs-hop2", "found": true, "preview_flag": false, "read_flag": true, "rule_reachable": false}
+{"dataset": "meme-filler32k", "haystack": "meme-filler32k/sw_011", "check": "e2e", "subject": "sw_011/after4", "ok": true, "group": "Abs-hop2", "found": true, "preview_flag": true, "read_flag": true, "rule_reachable": false}
 {"dataset": "meme-filler32k", "haystack": "meme-filler32k/sw_011", "check": "history-chain", "subject": "sw_011/after0", "ok": true, "length": 3}
 {"dataset": "meme-filler32k", "haystack": "meme-filler32k/sw_011", "check": "history-forwarding", "subject": "sw_011/after0", "ok": true}
 {"dataset": "meme-filler32k", "haystack": "meme-filler32k/sw_011", "check": "no-rule", "subject": "sw_011/after3", "ok": true, "group": "Abs-hop1"}
@@ -1147,7 +1147,7 @@
 {"dataset": "meme-filler32k", "haystack": "meme-filler32k/sw_012", "check": "dependent-flagged", "subject": "sw_012/after2", "ok": true, "group": "Cas-hop2", "signal": "baseline_superseded_by"}
 {"dataset": "meme-filler32k", "haystack": "meme-filler32k/sw_012", "check": "dependent-flagged", "subject": "sw_012/after3", "ok": true, "group": "Abs-hop1", "signal": "baseline_superseded_by"}
 {"dataset": "meme-filler32k", "haystack": "meme-filler32k/sw_012", "check": "e2e", "subject": "sw_012/after1", "ok": true, "group": "Cas-hop1", "found": true, "preview_flag": true, "read_flag": true, "rule_reachable": true}
-{"dataset": "meme-filler32k", "haystack": "meme-filler32k/sw_012", "check": "e2e", "subject": "sw_012/after2", "ok": true, "group": "Cas-hop2", "found": true, "preview_flag": false, "read_flag": true, "rule_reachable": true}
+{"dataset": "meme-filler32k", "haystack": "meme-filler32k/sw_012", "check": "e2e", "subject": "sw_012/after2", "ok": true, "group": "Cas-hop2", "found": true, "preview_flag": true, "read_flag": true, "rule_reachable": true}
 {"dataset": "meme-filler32k", "haystack": "meme-filler32k/sw_012", "check": "e2e", "subject": "sw_012/after3", "ok": true, "group": "Abs-hop1", "found": true, "preview_flag": true, "read_flag": true, "rule_reachable": false}
 {"dataset": "meme-filler32k", "haystack": "meme-filler32k/sw_012", "check": "history-chain", "subject": "sw_012/after0", "ok": true, "length": 3}
 {"dataset": "meme-filler32k", "haystack": "meme-filler32k/sw_012", "check": "history-forwarding", "subject": "sw_012/after0", "ok": true}
@@ -1162,7 +1162,7 @@
 {"dataset": "meme-filler32k", "haystack": "meme-filler32k/sw_013", "check": "dependent-flagged", "subject": "sw_013/after2", "ok": true, "group": "Cas-hop2", "signal": "baseline_superseded_by"}
 {"dataset": "meme-filler32k", "haystack": "meme-filler32k/sw_013", "check": "dependent-flagged", "subject": "sw_013/after3", "ok": true, "group": "Abs-hop1", "signal": "baseline_superseded_by"}
 {"dataset": "meme-filler32k", "haystack": "meme-filler32k/sw_013", "check": "e2e", "subject": "sw_013/after1", "ok": true, "group": "Cas-hop1", "found": true, "preview_flag": true, "read_flag": true, "rule_reachable": true}
-{"dataset": "meme-filler32k", "haystack": "meme-filler32k/sw_013", "check": "e2e", "subject": "sw_013/after2", "ok": true, "group": "Cas-hop2", "found": true, "preview_flag": false, "read_flag": true, "rule_reachable": true}
+{"dataset": "meme-filler32k", "haystack": "meme-filler32k/sw_013", "check": "e2e", "subject": "sw_013/after2", "ok": true, "group": "Cas-hop2", "found": true, "preview_flag": true, "read_flag": true, "rule_reachable": true}
 {"dataset": "meme-filler32k", "haystack": "meme-filler32k/sw_013", "check": "e2e", "subject": "sw_013/after3", "ok": true, "group": "Abs-hop1", "found": true, "preview_flag": true, "read_flag": true, "rule_reachable": true}
 {"dataset": "meme-filler32k", "haystack": "meme-filler32k/sw_013", "check": "history-chain", "subject": "sw_013/after0", "ok": true, "length": 3}
 {"dataset": "meme-filler32k", "haystack": "meme-filler32k/sw_013", "check": "history-forwarding", "subject": "sw_013/after0", "ok": true}
@@ -1190,9 +1190,9 @@
 {"dataset": "meme-filler32k", "haystack": "meme-filler32k/sw_015", "check": "dependent-flagged", "subject": "sw_015/after3", "ok": true, "group": "Abs-hop1", "signal": "baseline_superseded_by"}
 {"dataset": "meme-filler32k", "haystack": "meme-filler32k/sw_015", "check": "dependent-flagged", "subject": "sw_015/after4", "ok": true, "group": "Abs-hop2", "signal": "baseline_superseded_by"}
 {"dataset": "meme-filler32k", "haystack": "meme-filler32k/sw_015", "check": "e2e", "subject": "sw_015/after1", "ok": true, "group": "Cas-hop1", "found": true, "preview_flag": true, "read_flag": true, "rule_reachable": true}
-{"dataset": "meme-filler32k", "haystack": "meme-filler32k/sw_015", "check": "e2e", "subject": "sw_015/after2", "ok": true, "group": "Cas-hop2", "found": true, "preview_flag": false, "read_flag": true, "rule_reachable": true}
+{"dataset": "meme-filler32k", "haystack": "meme-filler32k/sw_015", "check": "e2e", "subject": "sw_015/after2", "ok": true, "group": "Cas-hop2", "found": true, "preview_flag": true, "read_flag": true, "rule_reachable": true}
 {"dataset": "meme-filler32k", "haystack": "meme-filler32k/sw_015", "check": "e2e", "subject": "sw_015/after3", "ok": true, "group": "Abs-hop1", "found": true, "preview_flag": true, "read_flag": true, "rule_reachable": false}
-{"dataset": "meme-filler32k", "haystack": "meme-filler32k/sw_015", "check": "e2e", "subject": "sw_015/after4", "ok": true, "group": "Abs-hop2", "found": true, "preview_flag": false, "read_flag": true, "rule_reachable": false}
+{"dataset": "meme-filler32k", "haystack": "meme-filler32k/sw_015", "check": "e2e", "subject": "sw_015/after4", "ok": true, "group": "Abs-hop2", "found": true, "preview_flag": true, "read_flag": true, "rule_reachable": false}
 {"dataset": "meme-filler32k", "haystack": "meme-filler32k/sw_015", "check": "history-chain", "subject": "sw_015/after0", "ok": true, "length": 3}
 {"dataset": "meme-filler32k", "haystack": "meme-filler32k/sw_015", "check": "history-forwarding", "subject": "sw_015/after0", "ok": true}
 {"dataset": "meme-filler32k", "haystack": "meme-filler32k/sw_015", "check": "no-rule", "subject": "sw_015/after3", "ok": true, "group": "Abs-hop1"}
@@ -1208,9 +1208,9 @@
 {"dataset": "meme-filler32k", "haystack": "meme-filler32k/sw_016", "check": "dependent-flagged", "subject": "sw_016/after3", "ok": true, "group": "Abs-hop1", "signal": "baseline_superseded_by"}
 {"dataset": "meme-filler32k", "haystack": "meme-filler32k/sw_016", "check": "dependent-flagged", "subject": "sw_016/after4", "ok": true, "group": "Abs-hop2", "signal": "baseline_superseded_by"}
 {"dataset": "meme-filler32k", "haystack": "meme-filler32k/sw_016", "check": "e2e", "subject": "sw_016/after1", "ok": true, "group": "Cas-hop1", "found": true, "preview_flag": true, "read_flag": true, "rule_reachable": true}
-{"dataset": "meme-filler32k", "haystack": "meme-filler32k/sw_016", "check": "e2e", "subject": "sw_016/after2", "ok": true, "group": "Cas-hop2", "found": true, "preview_flag": false, "read_flag": true, "rule_reachable": true}
+{"dataset": "meme-filler32k", "haystack": "meme-filler32k/sw_016", "check": "e2e", "subject": "sw_016/after2", "ok": true, "group": "Cas-hop2", "found": true, "preview_flag": true, "read_flag": true, "rule_reachable": true}
 {"dataset": "meme-filler32k", "haystack": "meme-filler32k/sw_016", "check": "e2e", "subject": "sw_016/after3", "ok": true, "group": "Abs-hop1", "found": true, "preview_flag": true, "read_flag": true, "rule_reachable": true}
-{"dataset": "meme-filler32k", "haystack": "meme-filler32k/sw_016", "check": "e2e", "subject": "sw_016/after4", "ok": true, "group": "Abs-hop2", "found": true, "preview_flag": false, "read_flag": true, "rule_reachable": false}
+{"dataset": "meme-filler32k", "haystack": "meme-filler32k/sw_016", "check": "e2e", "subject": "sw_016/after4", "ok": true, "group": "Abs-hop2", "found": true, "preview_flag": true, "read_flag": true, "rule_reachable": false}
 {"dataset": "meme-filler32k", "haystack": "meme-filler32k/sw_016", "check": "history-chain", "subject": "sw_016/after0", "ok": true, "length": 3}
 {"dataset": "meme-filler32k", "haystack": "meme-filler32k/sw_016", "check": "history-forwarding", "subject": "sw_016/after0", "ok": true}
 {"dataset": "meme-filler32k", "haystack": "meme-filler32k/sw_016", "check": "no-rule", "subject": "sw_016/after3", "ok": false, "group": "Abs-hop1"}
@@ -1225,7 +1225,7 @@
 {"dataset": "meme-filler32k", "haystack": "meme-filler32k/sw_017", "check": "dependent-flagged", "subject": "sw_017/after2", "ok": true, "group": "Cas-hop2", "signal": "baseline_superseded_by"}
 {"dataset": "meme-filler32k", "haystack": "meme-filler32k/sw_017", "check": "dependent-flagged", "subject": "sw_017/after3", "ok": true, "group": "Abs-hop1", "signal": "baseline_superseded_by"}
 {"dataset": "meme-filler32k", "haystack": "meme-filler32k/sw_017", "check": "e2e", "subject": "sw_017/after1", "ok": true, "group": "Cas-hop1", "found": true, "preview_flag": true, "read_flag": true, "rule_reachable": true}
-{"dataset": "meme-filler32k", "haystack": "meme-filler32k/sw_017", "check": "e2e", "subject": "sw_017/after2", "ok": true, "group": "Cas-hop2", "found": true, "preview_flag": false, "read_flag": true, "rule_reachable": true}
+{"dataset": "meme-filler32k", "haystack": "meme-filler32k/sw_017", "check": "e2e", "subject": "sw_017/after2", "ok": true, "group": "Cas-hop2", "found": true, "preview_flag": true, "read_flag": true, "rule_reachable": true}
 {"dataset": "meme-filler32k", "haystack": "meme-filler32k/sw_017", "check": "e2e", "subject": "sw_017/after3", "ok": true, "group": "Abs-hop1", "found": true, "preview_flag": true, "read_flag": true, "rule_reachable": false}
 {"dataset": "meme-filler32k", "haystack": "meme-filler32k/sw_017", "check": "history-chain", "subject": "sw_017/after0", "ok": true, "length": 3}
 {"dataset": "meme-filler32k", "haystack": "meme-filler32k/sw_017", "check": "history-forwarding", "subject": "sw_017/after0", "ok": true}
@@ -1240,7 +1240,7 @@
 {"dataset": "meme-filler32k", "haystack": "meme-filler32k/sw_018", "check": "dependent-flagged", "subject": "sw_018/after2", "ok": true, "group": "Cas-hop2", "signal": "baseline_superseded_by"}
 {"dataset": "meme-filler32k", "haystack": "meme-filler32k/sw_018", "check": "dependent-flagged", "subject": "sw_018/after3", "ok": true, "group": "Abs-hop1", "signal": "baseline_superseded_by"}
 {"dataset": "meme-filler32k", "haystack": "meme-filler32k/sw_018", "check": "e2e", "subject": "sw_018/after1", "ok": true, "group": "Cas-hop1", "found": true, "preview_flag": true, "read_flag": true, "rule_reachable": true}
-{"dataset": "meme-filler32k", "haystack": "meme-filler32k/sw_018", "check": "e2e", "subject": "sw_018/after2", "ok": true, "group": "Cas-hop2", "found": true, "preview_flag": false, "read_flag": true, "rule_reachable": true}
+{"dataset": "meme-filler32k", "haystack": "meme-filler32k/sw_018", "check": "e2e", "subject": "sw_018/after2", "ok": true, "group": "Cas-hop2", "found": true, "preview_flag": true, "read_flag": true, "rule_reachable": true}
 {"dataset": "meme-filler32k", "haystack": "meme-filler32k/sw_018", "check": "e2e", "subject": "sw_018/after3", "ok": true, "group": "Abs-hop1", "found": true, "preview_flag": true, "read_flag": true, "rule_reachable": false}
 {"dataset": "meme-filler32k", "haystack": "meme-filler32k/sw_018", "check": "history-chain", "subject": "sw_018/after0", "ok": true, "length": 3}
 {"dataset": "meme-filler32k", "haystack": "meme-filler32k/sw_018", "check": "history-forwarding", "subject": "sw_018/after0", "ok": true}
@@ -1258,9 +1258,9 @@
 {"dataset": "meme-filler32k", "haystack": "meme-filler32k/sw_019", "check": "dependent-of-deleted-flagged", "subject": "@overlay/s013/r005", "ok": true}
 {"dataset": "meme-filler32k", "haystack": "meme-filler32k/sw_019", "check": "dependent-of-deleted-flagged", "subject": "@overlay/s013/r007", "ok": true}
 {"dataset": "meme-filler32k", "haystack": "meme-filler32k/sw_019", "check": "e2e", "subject": "sw_019/after1", "ok": true, "group": "Cas-hop1", "found": true, "preview_flag": true, "read_flag": true, "rule_reachable": true}
-{"dataset": "meme-filler32k", "haystack": "meme-filler32k/sw_019", "check": "e2e", "subject": "sw_019/after2", "ok": true, "group": "Cas-hop2", "found": true, "preview_flag": false, "read_flag": true, "rule_reachable": true}
+{"dataset": "meme-filler32k", "haystack": "meme-filler32k/sw_019", "check": "e2e", "subject": "sw_019/after2", "ok": true, "group": "Cas-hop2", "found": true, "preview_flag": true, "read_flag": true, "rule_reachable": true}
 {"dataset": "meme-filler32k", "haystack": "meme-filler32k/sw_019", "check": "e2e", "subject": "sw_019/after3", "ok": true, "group": "Abs-hop1", "found": true, "preview_flag": true, "read_flag": true, "rule_reachable": false}
-{"dataset": "meme-filler32k", "haystack": "meme-filler32k/sw_019", "check": "e2e", "subject": "sw_019/after4", "ok": true, "group": "Abs-hop2", "found": true, "preview_flag": false, "read_flag": true, "rule_reachable": false}
+{"dataset": "meme-filler32k", "haystack": "meme-filler32k/sw_019", "check": "e2e", "subject": "sw_019/after4", "ok": true, "group": "Abs-hop2", "found": true, "preview_flag": true, "read_flag": true, "rule_reachable": false}
 {"dataset": "meme-filler32k", "haystack": "meme-filler32k/sw_019", "check": "history-chain", "subject": "sw_019/after0", "ok": true, "length": 3}
 {"dataset": "meme-filler32k", "haystack": "meme-filler32k/sw_019", "check": "history-forwarding", "subject": "sw_019/after0", "ok": true}
 {"dataset": "meme-filler32k", "haystack": "meme-filler32k/sw_019", "check": "no-rule", "subject": "sw_019/after3", "ok": true, "group": "Abs-hop1"}
@@ -1276,9 +1276,9 @@
 {"dataset": "meme-filler32k", "haystack": "meme-filler32k/sw_020", "check": "dependent-flagged", "subject": "sw_020/after3", "ok": true, "group": "Abs-hop1", "signal": "baseline_superseded_by"}
 {"dataset": "meme-filler32k", "haystack": "meme-filler32k/sw_020", "check": "dependent-flagged", "subject": "sw_020/after4", "ok": true, "group": "Abs-hop2", "signal": "baseline_superseded_by"}
 {"dataset": "meme-filler32k", "haystack": "meme-filler32k/sw_020", "check": "e2e", "subject": "sw_020/after1", "ok": true, "group": "Cas-hop1", "found": true, "preview_flag": true, "read_flag": true, "rule_reachable": true}
-{"dataset": "meme-filler32k", "haystack": "meme-filler32k/sw_020", "check": "e2e", "subject": "sw_020/after2", "ok": true, "group": "Cas-hop2", "found": true, "preview_flag": false, "read_flag": true, "rule_reachable": true}
+{"dataset": "meme-filler32k", "haystack": "meme-filler32k/sw_020", "check": "e2e", "subject": "sw_020/after2", "ok": true, "group": "Cas-hop2", "found": true, "preview_flag": true, "read_flag": true, "rule_reachable": true}
 {"dataset": "meme-filler32k", "haystack": "meme-filler32k/sw_020", "check": "e2e", "subject": "sw_020/after3", "ok": true, "group": "Abs-hop1", "found": true, "preview_flag": true, "read_flag": true, "rule_reachable": true}
-{"dataset": "meme-filler32k", "haystack": "meme-filler32k/sw_020", "check": "e2e", "subject": "sw_020/after4", "ok": true, "group": "Abs-hop2", "found": true, "preview_flag": false, "read_flag": true, "rule_reachable": false}
+{"dataset": "meme-filler32k", "haystack": "meme-filler32k/sw_020", "check": "e2e", "subject": "sw_020/after4", "ok": true, "group": "Abs-hop2", "found": true, "preview_flag": true, "read_flag": true, "rule_reachable": false}
 {"dataset": "meme-filler32k", "haystack": "meme-filler32k/sw_020", "check": "history-chain", "subject": "sw_020/after0", "ok": true, "length": 3}
 {"dataset": "meme-filler32k", "haystack": "meme-filler32k/sw_020", "check": "history-forwarding", "subject": "sw_020/after0", "ok": true}
 {"dataset": "meme-filler32k", "haystack": "meme-filler32k/sw_020", "check": "no-rule", "subject": "sw_020/after3", "ok": false, "group": "Abs-hop1"}
@@ -1305,7 +1305,7 @@
 {"dataset": "meme-filler32k", "haystack": "meme-filler32k/sw_022", "check": "dependent-flagged", "subject": "sw_022/after2", "ok": true, "group": "Cas-hop2", "signal": "baseline_superseded_by"}
 {"dataset": "meme-filler32k", "haystack": "meme-filler32k/sw_022", "check": "dependent-flagged", "subject": "sw_022/after3", "ok": true, "group": "Abs-hop1", "signal": "baseline_superseded_by"}
 {"dataset": "meme-filler32k", "haystack": "meme-filler32k/sw_022", "check": "e2e", "subject": "sw_022/after1", "ok": true, "group": "Cas-hop1", "found": true, "preview_flag": true, "read_flag": true, "rule_reachable": true}
-{"dataset": "meme-filler32k", "haystack": "meme-filler32k/sw_022", "check": "e2e", "subject": "sw_022/after2", "ok": true, "group": "Cas-hop2", "found": true, "preview_flag": false, "read_flag": true, "rule_reachable": true}
+{"dataset": "meme-filler32k", "haystack": "meme-filler32k/sw_022", "check": "e2e", "subject": "sw_022/after2", "ok": true, "group": "Cas-hop2", "found": true, "preview_flag": true, "read_flag": true, "rule_reachable": true}
 {"dataset": "meme-filler32k", "haystack": "meme-filler32k/sw_022", "check": "e2e", "subject": "sw_022/after3", "ok": true, "group": "Abs-hop1", "found": true, "preview_flag": true, "read_flag": true, "rule_reachable": false}
 {"dataset": "meme-filler32k", "haystack": "meme-filler32k/sw_022", "check": "history-chain", "subject": "sw_022/after0", "ok": true, "length": 3}
 {"dataset": "meme-filler32k", "haystack": "meme-filler32k/sw_022", "check": "history-forwarding", "subject": "sw_022/after0", "ok": true}
@@ -1332,7 +1332,7 @@
 {"dataset": "meme-filler32k", "haystack": "meme-filler32k/sw_024", "check": "dependent-flagged", "subject": "sw_024/after2", "ok": true, "group": "Cas-hop2", "signal": "baseline_superseded_by"}
 {"dataset": "meme-filler32k", "haystack": "meme-filler32k/sw_024", "check": "dependent-flagged", "subject": "sw_024/after3", "ok": true, "group": "Abs-hop1", "signal": "baseline_superseded_by"}
 {"dataset": "meme-filler32k", "haystack": "meme-filler32k/sw_024", "check": "e2e", "subject": "sw_024/after1", "ok": true, "group": "Cas-hop1", "found": true, "preview_flag": true, "read_flag": true, "rule_reachable": true}
-{"dataset": "meme-filler32k", "haystack": "meme-filler32k/sw_024", "check": "e2e", "subject": "sw_024/after2", "ok": true, "group": "Cas-hop2", "found": true, "preview_flag": false, "read_flag": true, "rule_reachable": true}
+{"dataset": "meme-filler32k", "haystack": "meme-filler32k/sw_024", "check": "e2e", "subject": "sw_024/after2", "ok": true, "group": "Cas-hop2", "found": true, "preview_flag": true, "read_flag": true, "rule_reachable": true}
 {"dataset": "meme-filler32k", "haystack": "meme-filler32k/sw_024", "check": "e2e", "subject": "sw_024/after3", "ok": true, "group": "Abs-hop1", "found": true, "preview_flag": true, "read_flag": true, "rule_reachable": false}
 {"dataset": "meme-filler32k", "haystack": "meme-filler32k/sw_024", "check": "history-chain", "subject": "sw_024/after0", "ok": true, "length": 3}
 {"dataset": "meme-filler32k", "haystack": "meme-filler32k/sw_024", "check": "history-forwarding", "subject": "sw_024/after0", "ok": true}
@@ -1360,9 +1360,9 @@
 {"dataset": "meme-filler32k", "haystack": "meme-filler32k/sw_026", "check": "dependent-flagged", "subject": "sw_026/after3", "ok": true, "group": "Abs-hop1", "signal": "baseline_superseded_by"}
 {"dataset": "meme-filler32k", "haystack": "meme-filler32k/sw_026", "check": "dependent-flagged", "subject": "sw_026/after4", "ok": true, "group": "Abs-hop2", "signal": "baseline_superseded_by"}
 {"dataset": "meme-filler32k", "haystack": "meme-filler32k/sw_026", "check": "e2e", "subject": "sw_026/after1", "ok": true, "group": "Cas-hop1", "found": true, "preview_flag": true, "read_flag": true, "rule_reachable": true}
-{"dataset": "meme-filler32k", "haystack": "meme-filler32k/sw_026", "check": "e2e", "subject": "sw_026/after2", "ok": true, "group": "Cas-hop2", "found": true, "preview_flag": false, "read_flag": true, "rule_reachable": true}
+{"dataset": "meme-filler32k", "haystack": "meme-filler32k/sw_026", "check": "e2e", "subject": "sw_026/after2", "ok": true, "group": "Cas-hop2", "found": true, "preview_flag": true, "read_flag": true, "rule_reachable": true}
 {"dataset": "meme-filler32k", "haystack": "meme-filler32k/sw_026", "check": "e2e", "subject": "sw_026/after3", "ok": true, "group": "Abs-hop1", "found": true, "preview_flag": true, "read_flag": true, "rule_reachable": true}
-{"dataset": "meme-filler32k", "haystack": "meme-filler32k/sw_026", "check": "e2e", "subject": "sw_026/after4", "ok": true, "group": "Abs-hop2", "found": true, "preview_flag": false, "read_flag": true, "rule_reachable": false}
+{"dataset": "meme-filler32k", "haystack": "meme-filler32k/sw_026", "check": "e2e", "subject": "sw_026/after4", "ok": true, "group": "Abs-hop2", "found": true, "preview_flag": true, "read_flag": true, "rule_reachable": false}
 {"dataset": "meme-filler32k", "haystack": "meme-filler32k/sw_026", "check": "history-chain", "subject": "sw_026/after0", "ok": true, "length": 3}
 {"dataset": "meme-filler32k", "haystack": "meme-filler32k/sw_026", "check": "history-forwarding", "subject": "sw_026/after0", "ok": true}
 {"dataset": "meme-filler32k", "haystack": "meme-filler32k/sw_026", "check": "no-rule", "subject": "sw_026/after3", "ok": false, "group": "Abs-hop1"}
@@ -1377,7 +1377,7 @@
 {"dataset": "meme-filler32k", "haystack": "meme-filler32k/sw_027", "check": "dependent-flagged", "subject": "sw_027/after2", "ok": true, "group": "Cas-hop2", "signal": "baseline_superseded_by"}
 {"dataset": "meme-filler32k", "haystack": "meme-filler32k/sw_027", "check": "dependent-flagged", "subject": "sw_027/after3", "ok": true, "group": "Abs-hop1", "signal": "baseline_superseded_by"}
 {"dataset": "meme-filler32k", "haystack": "meme-filler32k/sw_027", "check": "e2e", "subject": "sw_027/after1", "ok": true, "group": "Cas-hop1", "found": true, "preview_flag": true, "read_flag": true, "rule_reachable": true}
-{"dataset": "meme-filler32k", "haystack": "meme-filler32k/sw_027", "check": "e2e", "subject": "sw_027/after2", "ok": true, "group": "Cas-hop2", "found": true, "preview_flag": false, "read_flag": true, "rule_reachable": true}
+{"dataset": "meme-filler32k", "haystack": "meme-filler32k/sw_027", "check": "e2e", "subject": "sw_027/after2", "ok": true, "group": "Cas-hop2", "found": true, "preview_flag": true, "read_flag": true, "rule_reachable": true}
 {"dataset": "meme-filler32k", "haystack": "meme-filler32k/sw_027", "check": "e2e", "subject": "sw_027/after3", "ok": true, "group": "Abs-hop1", "found": true, "preview_flag": true, "read_flag": true, "rule_reachable": false}
 {"dataset": "meme-filler32k", "haystack": "meme-filler32k/sw_027", "check": "history-chain", "subject": "sw_027/after0", "ok": true, "length": 3}
 {"dataset": "meme-filler32k", "haystack": "meme-filler32k/sw_027", "check": "history-forwarding", "subject": "sw_027/after0", "ok": true}
@@ -1393,9 +1393,9 @@
 {"dataset": "meme-filler32k", "haystack": "meme-filler32k/sw_028", "check": "dependent-flagged", "subject": "sw_028/after3", "ok": true, "group": "Abs-hop1", "signal": "baseline_superseded_by"}
 {"dataset": "meme-filler32k", "haystack": "meme-filler32k/sw_028", "check": "dependent-flagged", "subject": "sw_028/after4", "ok": true, "group": "Abs-hop2", "signal": "baseline_superseded_by"}
 {"dataset": "meme-filler32k", "haystack": "meme-filler32k/sw_028", "check": "e2e", "subject": "sw_028/after1", "ok": true, "group": "Cas-hop1", "found": true, "preview_flag": true, "read_flag": true, "rule_reachable": true}
-{"dataset": "meme-filler32k", "haystack": "meme-filler32k/sw_028", "check": "e2e", "subject": "sw_028/after2", "ok": true, "group": "Cas-hop2", "found": true, "preview_flag": false, "read_flag": true, "rule_reachable": true}
+{"dataset": "meme-filler32k", "haystack": "meme-filler32k/sw_028", "check": "e2e", "subject": "sw_028/after2", "ok": true, "group": "Cas-hop2", "found": true, "preview_flag": true, "read_flag": true, "rule_reachable": true}
 {"dataset": "meme-filler32k", "haystack": "meme-filler32k/sw_028", "check": "e2e", "subject": "sw_028/after3", "ok": true, "group": "Abs-hop1", "found": true, "preview_flag": true, "read_flag": true, "rule_reachable": false}
-{"dataset": "meme-filler32k", "haystack": "meme-filler32k/sw_028", "check": "e2e", "subject": "sw_028/after4", "ok": true, "group": "Abs-hop2", "found": true, "preview_flag": false, "read_flag": true, "rule_reachable": false}
+{"dataset": "meme-filler32k", "haystack": "meme-filler32k/sw_028", "check": "e2e", "subject": "sw_028/after4", "ok": true, "group": "Abs-hop2", "found": true, "preview_flag": true, "read_flag": true, "rule_reachable": false}
 {"dataset": "meme-filler32k", "haystack": "meme-filler32k/sw_028", "check": "history-chain", "subject": "sw_028/after0", "ok": true, "length": 3}
 {"dataset": "meme-filler32k", "haystack": "meme-filler32k/sw_028", "check": "history-forwarding", "subject": "sw_028/after0", "ok": true}
 {"dataset": "meme-filler32k", "haystack": "meme-filler32k/sw_028", "check": "no-rule", "subject": "sw_028/after3", "ok": true, "group": "Abs-hop1"}
@@ -1410,7 +1410,7 @@
 {"dataset": "meme-filler32k", "haystack": "meme-filler32k/sw_029", "check": "dependent-flagged", "subject": "sw_029/after2", "ok": true, "group": "Cas-hop2", "signal": "baseline_superseded_by"}
 {"dataset": "meme-filler32k", "haystack": "meme-filler32k/sw_029", "check": "dependent-flagged", "subject": "sw_029/after3", "ok": true, "group": "Abs-hop1", "signal": "baseline_superseded_by"}
 {"dataset": "meme-filler32k", "haystack": "meme-filler32k/sw_029", "check": "e2e", "subject": "sw_029/after1", "ok": true, "group": "Cas-hop1", "found": true, "preview_flag": true, "read_flag": true, "rule_reachable": true}
-{"dataset": "meme-filler32k", "haystack": "meme-filler32k/sw_029", "check": "e2e", "subject": "sw_029/after2", "ok": true, "group": "Cas-hop2", "found": true, "preview_flag": false, "read_flag": true, "rule_reachable": true}
+{"dataset": "meme-filler32k", "haystack": "meme-filler32k/sw_029", "check": "e2e", "subject": "sw_029/after2", "ok": true, "group": "Cas-hop2", "found": true, "preview_flag": true, "read_flag": true, "rule_reachable": true}
 {"dataset": "meme-filler32k", "haystack": "meme-filler32k/sw_029", "check": "e2e", "subject": "sw_029/after3", "ok": true, "group": "Abs-hop1", "found": true, "preview_flag": true, "read_flag": true, "rule_reachable": false}
 {"dataset": "meme-filler32k", "haystack": "meme-filler32k/sw_029", "check": "history-chain", "subject": "sw_029/after0", "ok": true, "length": 3}
 {"dataset": "meme-filler32k", "haystack": "meme-filler32k/sw_029", "check": "history-forwarding", "subject": "sw_029/after0", "ok": true}
@@ -1425,7 +1425,7 @@
 {"dataset": "meme-filler32k", "haystack": "meme-filler32k/sw_030", "check": "dependent-flagged", "subject": "sw_030/after2", "ok": true, "group": "Cas-hop2", "signal": "baseline_superseded_by"}
 {"dataset": "meme-filler32k", "haystack": "meme-filler32k/sw_030", "check": "dependent-flagged", "subject": "sw_030/after3", "ok": true, "group": "Abs-hop1", "signal": "baseline_superseded_by"}
 {"dataset": "meme-filler32k", "haystack": "meme-filler32k/sw_030", "check": "e2e", "subject": "sw_030/after1", "ok": true, "group": "Cas-hop1", "found": true, "preview_flag": true, "read_flag": true, "rule_reachable": true}
-{"dataset": "meme-filler32k", "haystack": "meme-filler32k/sw_030", "check": "e2e", "subject": "sw_030/after2", "ok": true, "group": "Cas-hop2", "found": true, "preview_flag": false, "read_flag": true, "rule_reachable": true}
+{"dataset": "meme-filler32k", "haystack": "meme-filler32k/sw_030", "check": "e2e", "subject": "sw_030/after2", "ok": true, "group": "Cas-hop2", "found": true, "preview_flag": true, "read_flag": true, "rule_reachable": true}
 {"dataset": "meme-filler32k", "haystack": "meme-filler32k/sw_030", "check": "e2e", "subject": "sw_030/after3", "ok": true, "group": "Abs-hop1", "found": true, "preview_flag": true, "read_flag": true, "rule_reachable": false}
 {"dataset": "meme-filler32k", "haystack": "meme-filler32k/sw_030", "check": "history-chain", "subject": "sw_030/after0", "ok": true, "length": 3}
 {"dataset": "meme-filler32k", "haystack": "meme-filler32k/sw_030", "check": "history-forwarding", "subject": "sw_030/after0", "ok": true}
@@ -1440,7 +1440,7 @@
 {"dataset": "meme-filler32k", "haystack": "meme-filler32k/sw_031", "check": "dependent-flagged", "subject": "sw_031/after2", "ok": true, "group": "Cas-hop2", "signal": "baseline_superseded_by"}
 {"dataset": "meme-filler32k", "haystack": "meme-filler32k/sw_031", "check": "dependent-flagged", "subject": "sw_031/after3", "ok": true, "group": "Abs-hop1", "signal": "baseline_superseded_by"}
 {"dataset": "meme-filler32k", "haystack": "meme-filler32k/sw_031", "check": "e2e", "subject": "sw_031/after1", "ok": true, "group": "Cas-hop1", "found": true, "preview_flag": true, "read_flag": true, "rule_reachable": true}
-{"dataset": "meme-filler32k", "haystack": "meme-filler32k/sw_031", "check": "e2e", "subject": "sw_031/after2", "ok": true, "group": "Cas-hop2", "found": true, "preview_flag": false, "read_flag": true, "rule_reachable": true}
+{"dataset": "meme-filler32k", "haystack": "meme-filler32k/sw_031", "check": "e2e", "subject": "sw_031/after2", "ok": true, "group": "Cas-hop2", "found": true, "preview_flag": true, "read_flag": true, "rule_reachable": true}
 {"dataset": "meme-filler32k", "haystack": "meme-filler32k/sw_031", "check": "e2e", "subject": "sw_031/after3", "ok": true, "group": "Abs-hop1", "found": true, "preview_flag": true, "read_flag": true, "rule_reachable": false}
 {"dataset": "meme-filler32k", "haystack": "meme-filler32k/sw_031", "check": "history-chain", "subject": "sw_031/after0", "ok": true, "length": 3}
 {"dataset": "meme-filler32k", "haystack": "meme-filler32k/sw_031", "check": "history-forwarding", "subject": "sw_031/after0", "ok": true}
@@ -1455,7 +1455,7 @@
 {"dataset": "meme-filler32k", "haystack": "meme-filler32k/sw_032", "check": "dependent-flagged", "subject": "sw_032/after2", "ok": true, "group": "Cas-hop2", "signal": "baseline_superseded_by"}
 {"dataset": "meme-filler32k", "haystack": "meme-filler32k/sw_032", "check": "dependent-flagged", "subject": "sw_032/after3", "ok": true, "group": "Abs-hop1", "signal": "baseline_superseded_by"}
 {"dataset": "meme-filler32k", "haystack": "meme-filler32k/sw_032", "check": "e2e", "subject": "sw_032/after1", "ok": true, "group": "Cas-hop1", "found": true, "preview_flag": true, "read_flag": true, "rule_reachable": true}
-{"dataset": "meme-filler32k", "haystack": "meme-filler32k/sw_032", "check": "e2e", "subject": "sw_032/after2", "ok": true, "group": "Cas-hop2", "found": true, "preview_flag": false, "read_flag": true, "rule_reachable": true}
+{"dataset": "meme-filler32k", "haystack": "meme-filler32k/sw_032", "check": "e2e", "subject": "sw_032/after2", "ok": true, "group": "Cas-hop2", "found": true, "preview_flag": true, "read_flag": true, "rule_reachable": true}
 {"dataset": "meme-filler32k", "haystack": "meme-filler32k/sw_032", "check": "e2e", "subject": "sw_032/after3", "ok": true, "group": "Abs-hop1", "found": true, "preview_flag": true, "read_flag": true, "rule_reachable": false}
 {"dataset": "meme-filler32k", "haystack": "meme-filler32k/sw_032", "check": "history-chain", "subject": "sw_032/after0", "ok": true, "length": 3}
 {"dataset": "meme-filler32k", "haystack": "meme-filler32k/sw_032", "check": "history-forwarding", "subject": "sw_032/after0", "ok": true}
@@ -1483,9 +1483,9 @@
 {"dataset": "meme-filler32k", "haystack": "meme-filler32k/sw_034", "check": "dependent-flagged", "subject": "sw_034/after3", "ok": true, "group": "Abs-hop1", "signal": "baseline_superseded_by"}
 {"dataset": "meme-filler32k", "haystack": "meme-filler32k/sw_034", "check": "dependent-flagged", "subject": "sw_034/after4", "ok": true, "group": "Abs-hop2", "signal": "baseline_superseded_by"}
 {"dataset": "meme-filler32k", "haystack": "meme-filler32k/sw_034", "check": "e2e", "subject": "sw_034/after1", "ok": true, "group": "Cas-hop1", "found": true, "preview_flag": true, "read_flag": true, "rule_reachable": true}
-{"dataset": "meme-filler32k", "haystack": "meme-filler32k/sw_034", "check": "e2e", "subject": "sw_034/after2", "ok": true, "group": "Cas-hop2", "found": true, "preview_flag": false, "read_flag": true, "rule_reachable": true}
+{"dataset": "meme-filler32k", "haystack": "meme-filler32k/sw_034", "check": "e2e", "subject": "sw_034/after2", "ok": true, "group": "Cas-hop2", "found": true, "preview_flag": true, "read_flag": true, "rule_reachable": true}
 {"dataset": "meme-filler32k", "haystack": "meme-filler32k/sw_034", "check": "e2e", "subject": "sw_034/after3", "ok": true, "group": "Abs-hop1", "found": true, "preview_flag": true, "read_flag": true, "rule_reachable": false}
-{"dataset": "meme-filler32k", "haystack": "meme-filler32k/sw_034", "check": "e2e", "subject": "sw_034/after4", "ok": true, "group": "Abs-hop2", "found": true, "preview_flag": false, "read_flag": true, "rule_reachable": false}
+{"dataset": "meme-filler32k", "haystack": "meme-filler32k/sw_034", "check": "e2e", "subject": "sw_034/after4", "ok": true, "group": "Abs-hop2", "found": true, "preview_flag": true, "read_flag": true, "rule_reachable": false}
 {"dataset": "meme-filler32k", "haystack": "meme-filler32k/sw_034", "check": "history-chain", "subject": "sw_034/after0", "ok": true, "length": 3}
 {"dataset": "meme-filler32k", "haystack": "meme-filler32k/sw_034", "check": "history-forwarding", "subject": "sw_034/after0", "ok": true}
 {"dataset": "meme-filler32k", "haystack": "meme-filler32k/sw_034", "check": "no-rule", "subject": "sw_034/after3", "ok": true, "group": "Abs-hop1"}
@@ -1500,7 +1500,7 @@
 {"dataset": "meme-filler32k", "haystack": "meme-filler32k/sw_035", "check": "dependent-flagged", "subject": "sw_035/after2", "ok": true, "group": "Cas-hop2", "signal": "baseline_superseded_by"}
 {"dataset": "meme-filler32k", "haystack": "meme-filler32k/sw_035", "check": "dependent-flagged", "subject": "sw_035/after3", "ok": true, "group": "Abs-hop1", "signal": "baseline_superseded_by"}
 {"dataset": "meme-filler32k", "haystack": "meme-filler32k/sw_035", "check": "e2e", "subject": "sw_035/after1", "ok": true, "group": "Cas-hop1", "found": true, "preview_flag": true, "read_flag": true, "rule_reachable": true}
-{"dataset": "meme-filler32k", "haystack": "meme-filler32k/sw_035", "check": "e2e", "subject": "sw_035/after2", "ok": true, "group": "Cas-hop2", "found": true, "preview_flag": false, "read_flag": true, "rule_reachable": true}
+{"dataset": "meme-filler32k", "haystack": "meme-filler32k/sw_035", "check": "e2e", "subject": "sw_035/after2", "ok": true, "group": "Cas-hop2", "found": true, "preview_flag": true, "read_flag": true, "rule_reachable": true}
 {"dataset": "meme-filler32k", "haystack": "meme-filler32k/sw_035", "check": "e2e", "subject": "sw_035/after3", "ok": true, "group": "Abs-hop1", "found": true, "preview_flag": true, "read_flag": true, "rule_reachable": false}
 {"dataset": "meme-filler32k", "haystack": "meme-filler32k/sw_035", "check": "history-chain", "subject": "sw_035/after0", "ok": true, "length": 3}
 {"dataset": "meme-filler32k", "haystack": "meme-filler32k/sw_035", "check": "history-forwarding", "subject": "sw_035/after0", "ok": true}
@@ -1516,9 +1516,9 @@
 {"dataset": "meme-filler32k", "haystack": "meme-filler32k/sw_036", "check": "dependent-flagged", "subject": "sw_036/after3", "ok": true, "group": "Abs-hop1", "signal": "baseline_superseded_by"}
 {"dataset": "meme-filler32k", "haystack": "meme-filler32k/sw_036", "check": "dependent-flagged", "subject": "sw_036/after4", "ok": true, "group": "Abs-hop2", "signal": "baseline_superseded_by"}
 {"dataset": "meme-filler32k", "haystack": "meme-filler32k/sw_036", "check": "e2e", "subject": "sw_036/after1", "ok": true, "group": "Cas-hop1", "found": true, "preview_flag": true, "read_flag": true, "rule_reachable": true}
-{"dataset": "meme-filler32k", "haystack": "meme-filler32k/sw_036", "check": "e2e", "subject": "sw_036/after2", "ok": true, "group": "Cas-hop2", "found": true, "preview_flag": false, "read_flag": true, "rule_reachable": true}
+{"dataset": "meme-filler32k", "haystack": "meme-filler32k/sw_036", "check": "e2e", "subject": "sw_036/after2", "ok": true, "group": "Cas-hop2", "found": true, "preview_flag": true, "read_flag": true, "rule_reachable": true}
 {"dataset": "meme-filler32k", "haystack": "meme-filler32k/sw_036", "check": "e2e", "subject": "sw_036/after3", "ok": true, "group": "Abs-hop1", "found": true, "preview_flag": true, "read_flag": true, "rule_reachable": false}
-{"dataset": "meme-filler32k", "haystack": "meme-filler32k/sw_036", "check": "e2e", "subject": "sw_036/after4", "ok": true, "group": "Abs-hop2", "found": true, "preview_flag": false, "read_flag": true, "rule_reachable": false}
+{"dataset": "meme-filler32k", "haystack": "meme-filler32k/sw_036", "check": "e2e", "subject": "sw_036/after4", "ok": true, "group": "Abs-hop2", "found": true, "preview_flag": true, "read_flag": true, "rule_reachable": false}
 {"dataset": "meme-filler32k", "haystack": "meme-filler32k/sw_036", "check": "history-chain", "subject": "sw_036/after0", "ok": true, "length": 3}
 {"dataset": "meme-filler32k", "haystack": "meme-filler32k/sw_036", "check": "history-forwarding", "subject": "sw_036/after0", "ok": true}
 {"dataset": "meme-filler32k", "haystack": "meme-filler32k/sw_036", "check": "no-rule", "subject": "sw_036/after3", "ok": true, "group": "Abs-hop1"}
@@ -1536,9 +1536,9 @@
 {"dataset": "meme-filler32k", "haystack": "meme-filler32k/sw_037", "check": "dependent-flagged", "subject": "sw_037/after4", "ok": true, "group": "Abs-hop2", "signal": "missing_baselines"}
 {"dataset": "meme-filler32k", "haystack": "meme-filler32k/sw_037", "check": "dependent-of-deleted-flagged", "subject": "@overlay/s014/r004", "ok": true}
 {"dataset": "meme-filler32k", "haystack": "meme-filler32k/sw_037", "check": "e2e", "subject": "sw_037/after1", "ok": true, "group": "Cas-hop1", "found": true, "preview_flag": true, "read_flag": true, "rule_reachable": true}
-{"dataset": "meme-filler32k", "haystack": "meme-filler32k/sw_037", "check": "e2e", "subject": "sw_037/after2", "ok": true, "group": "Cas-hop2", "found": true, "preview_flag": false, "read_flag": true, "rule_reachable": true}
+{"dataset": "meme-filler32k", "haystack": "meme-filler32k/sw_037", "check": "e2e", "subject": "sw_037/after2", "ok": true, "group": "Cas-hop2", "found": true, "preview_flag": true, "read_flag": true, "rule_reachable": true}
 {"dataset": "meme-filler32k", "haystack": "meme-filler32k/sw_037", "check": "e2e", "subject": "sw_037/after3", "ok": true, "group": "Abs-hop1", "found": true, "preview_flag": true, "read_flag": true, "rule_reachable": false}
-{"dataset": "meme-filler32k", "haystack": "meme-filler32k/sw_037", "check": "e2e", "subject": "sw_037/after4", "ok": true, "group": "Abs-hop2", "found": true, "preview_flag": false, "read_flag": true, "rule_reachable": false}
+{"dataset": "meme-filler32k", "haystack": "meme-filler32k/sw_037", "check": "e2e", "subject": "sw_037/after4", "ok": true, "group": "Abs-hop2", "found": true, "preview_flag": true, "read_flag": true, "rule_reachable": false}
 {"dataset": "meme-filler32k", "haystack": "meme-filler32k/sw_037", "check": "history-chain", "subject": "sw_037/after0", "ok": true, "length": 3}
 {"dataset": "meme-filler32k", "haystack": "meme-filler32k/sw_037", "check": "history-forwarding", "subject": "sw_037/after0", "ok": true}
 {"dataset": "meme-filler32k", "haystack": "meme-filler32k/sw_037", "check": "no-rule", "subject": "sw_037/after3", "ok": true, "group": "Abs-hop1"}
@@ -1554,9 +1554,9 @@
 {"dataset": "meme-filler32k", "haystack": "meme-filler32k/sw_038", "check": "dependent-flagged", "subject": "sw_038/after3", "ok": true, "group": "Abs-hop1", "signal": "baseline_superseded_by"}
 {"dataset": "meme-filler32k", "haystack": "meme-filler32k/sw_038", "check": "dependent-flagged", "subject": "sw_038/after4", "ok": true, "group": "Abs-hop2", "signal": "baseline_superseded_by"}
 {"dataset": "meme-filler32k", "haystack": "meme-filler32k/sw_038", "check": "e2e", "subject": "sw_038/after1", "ok": true, "group": "Cas-hop1", "found": true, "preview_flag": true, "read_flag": true, "rule_reachable": true}
-{"dataset": "meme-filler32k", "haystack": "meme-filler32k/sw_038", "check": "e2e", "subject": "sw_038/after2", "ok": true, "group": "Cas-hop2", "found": true, "preview_flag": false, "read_flag": true, "rule_reachable": true}
+{"dataset": "meme-filler32k", "haystack": "meme-filler32k/sw_038", "check": "e2e", "subject": "sw_038/after2", "ok": true, "group": "Cas-hop2", "found": true, "preview_flag": true, "read_flag": true, "rule_reachable": true}
 {"dataset": "meme-filler32k", "haystack": "meme-filler32k/sw_038", "check": "e2e", "subject": "sw_038/after3", "ok": true, "group": "Abs-hop1", "found": true, "preview_flag": true, "read_flag": true, "rule_reachable": false}
-{"dataset": "meme-filler32k", "haystack": "meme-filler32k/sw_038", "check": "e2e", "subject": "sw_038/after4", "ok": true, "group": "Abs-hop2", "found": true, "preview_flag": false, "read_flag": true, "rule_reachable": false}
+{"dataset": "meme-filler32k", "haystack": "meme-filler32k/sw_038", "check": "e2e", "subject": "sw_038/after4", "ok": true, "group": "Abs-hop2", "found": true, "preview_flag": true, "read_flag": true, "rule_reachable": false}
 {"dataset": "meme-filler32k", "haystack": "meme-filler32k/sw_038", "check": "history-chain", "subject": "sw_038/after0", "ok": true, "length": 3}
 {"dataset": "meme-filler32k", "haystack": "meme-filler32k/sw_038", "check": "history-forwarding", "subject": "sw_038/after0", "ok": true}
 {"dataset": "meme-filler32k", "haystack": "meme-filler32k/sw_038", "check": "no-rule", "subject": "sw_038/after3", "ok": true, "group": "Abs-hop1"}
@@ -1572,9 +1572,9 @@
 {"dataset": "meme-filler32k", "haystack": "meme-filler32k/sw_039", "check": "dependent-flagged", "subject": "sw_039/after3", "ok": true, "group": "Abs-hop1", "signal": "baseline_superseded_by"}
 {"dataset": "meme-filler32k", "haystack": "meme-filler32k/sw_039", "check": "dependent-flagged", "subject": "sw_039/after4", "ok": true, "group": "Abs-hop2", "signal": "baseline_superseded_by"}
 {"dataset": "meme-filler32k", "haystack": "meme-filler32k/sw_039", "check": "e2e", "subject": "sw_039/after1", "ok": true, "group": "Cas-hop1", "found": true, "preview_flag": true, "read_flag": true, "rule_reachable": true}
-{"dataset": "meme-filler32k", "haystack": "meme-filler32k/sw_039", "check": "e2e", "subject": "sw_039/after2", "ok": true, "group": "Cas-hop2", "found": true, "preview_flag": false, "read_flag": true, "rule_reachable": true}
+{"dataset": "meme-filler32k", "haystack": "meme-filler32k/sw_039", "check": "e2e", "subject": "sw_039/after2", "ok": true, "group": "Cas-hop2", "found": true, "preview_flag": true, "read_flag": true, "rule_reachable": true}
 {"dataset": "meme-filler32k", "haystack": "meme-filler32k/sw_039", "check": "e2e", "subject": "sw_039/after3", "ok": true, "group": "Abs-hop1", "found": true, "preview_flag": true, "read_flag": true, "rule_reachable": false}
-{"dataset": "meme-filler32k", "haystack": "meme-filler32k/sw_039", "check": "e2e", "subject": "sw_039/after4", "ok": true, "group": "Abs-hop2", "found": true, "preview_flag": false, "read_flag": true, "rule_reachable": false}
+{"dataset": "meme-filler32k", "haystack": "meme-filler32k/sw_039", "check": "e2e", "subject": "sw_039/after4", "ok": true, "group": "Abs-hop2", "found": true, "preview_flag": true, "read_flag": true, "rule_reachable": false}
 {"dataset": "meme-filler32k", "haystack": "meme-filler32k/sw_039", "check": "history-chain", "subject": "sw_039/after0", "ok": true, "length": 3}
 {"dataset": "meme-filler32k", "haystack": "meme-filler32k/sw_039", "check": "history-forwarding", "subject": "sw_039/after0", "ok": true}
 {"dataset": "meme-filler32k", "haystack": "meme-filler32k/sw_039", "check": "no-rule", "subject": "sw_039/after3", "ok": true, "group": "Abs-hop1"}
@@ -1589,7 +1589,7 @@
 {"dataset": "meme-filler32k", "haystack": "meme-filler32k/sw_040", "check": "dependent-flagged", "subject": "sw_040/after2", "ok": true, "group": "Cas-hop2", "signal": "baseline_superseded_by"}
 {"dataset": "meme-filler32k", "haystack": "meme-filler32k/sw_040", "check": "dependent-flagged", "subject": "sw_040/after3", "ok": true, "group": "Abs-hop1", "signal": "baseline_superseded_by"}
 {"dataset": "meme-filler32k", "haystack": "meme-filler32k/sw_040", "check": "e2e", "subject": "sw_040/after1", "ok": true, "group": "Cas-hop1", "found": true, "preview_flag": true, "read_flag": true, "rule_reachable": true}
-{"dataset": "meme-filler32k", "haystack": "meme-filler32k/sw_040", "check": "e2e", "subject": "sw_040/after2", "ok": true, "group": "Cas-hop2", "found": true, "preview_flag": false, "read_flag": true, "rule_reachable": true}
+{"dataset": "meme-filler32k", "haystack": "meme-filler32k/sw_040", "check": "e2e", "subject": "sw_040/after2", "ok": true, "group": "Cas-hop2", "found": true, "preview_flag": true, "read_flag": true, "rule_reachable": true}
 {"dataset": "meme-filler32k", "haystack": "meme-filler32k/sw_040", "check": "e2e", "subject": "sw_040/after3", "ok": true, "group": "Abs-hop1", "found": true, "preview_flag": true, "read_flag": true, "rule_reachable": true}
 {"dataset": "meme-filler32k", "haystack": "meme-filler32k/sw_040", "check": "history-chain", "subject": "sw_040/after0", "ok": true, "length": 3}
 {"dataset": "meme-filler32k", "haystack": "meme-filler32k/sw_040", "check": "history-forwarding", "subject": "sw_040/after0", "ok": true}
@@ -1604,7 +1604,7 @@
 {"dataset": "meme-filler32k", "haystack": "meme-filler32k/sw_041", "check": "dependent-flagged", "subject": "sw_041/after2", "ok": true, "group": "Cas-hop2", "signal": "baseline_superseded_by"}
 {"dataset": "meme-filler32k", "haystack": "meme-filler32k/sw_041", "check": "dependent-flagged", "subject": "sw_041/after3", "ok": true, "group": "Abs-hop1", "signal": "baseline_superseded_by"}
 {"dataset": "meme-filler32k", "haystack": "meme-filler32k/sw_041", "check": "e2e", "subject": "sw_041/after1", "ok": true, "group": "Cas-hop1", "found": true, "preview_flag": true, "read_flag": true, "rule_reachable": true}
-{"dataset": "meme-filler32k", "haystack": "meme-filler32k/sw_041", "check": "e2e", "subject": "sw_041/after2", "ok": true, "group": "Cas-hop2", "found": true, "preview_flag": false, "read_flag": true, "rule_reachable": true}
+{"dataset": "meme-filler32k", "haystack": "meme-filler32k/sw_041", "check": "e2e", "subject": "sw_041/after2", "ok": true, "group": "Cas-hop2", "found": true, "preview_flag": true, "read_flag": true, "rule_reachable": true}
 {"dataset": "meme-filler32k", "haystack": "meme-filler32k/sw_041", "check": "e2e", "subject": "sw_041/after3", "ok": true, "group": "Abs-hop1", "found": true, "preview_flag": true, "read_flag": true, "rule_reachable": false}
 {"dataset": "meme-filler32k", "haystack": "meme-filler32k/sw_041", "check": "history-chain", "subject": "sw_041/after0", "ok": true, "length": 3}
 {"dataset": "meme-filler32k", "haystack": "meme-filler32k/sw_041", "check": "history-forwarding", "subject": "sw_041/after0", "ok": true}
@@ -1631,7 +1631,7 @@
 {"dataset": "meme-filler32k", "haystack": "meme-filler32k/sw_043", "check": "dependent-flagged", "subject": "sw_043/after2", "ok": true, "group": "Cas-hop2", "signal": "baseline_superseded_by"}
 {"dataset": "meme-filler32k", "haystack": "meme-filler32k/sw_043", "check": "dependent-flagged", "subject": "sw_043/after3", "ok": true, "group": "Abs-hop1", "signal": "baseline_superseded_by"}
 {"dataset": "meme-filler32k", "haystack": "meme-filler32k/sw_043", "check": "e2e", "subject": "sw_043/after1", "ok": true, "group": "Cas-hop1", "found": true, "preview_flag": true, "read_flag": true, "rule_reachable": true}
-{"dataset": "meme-filler32k", "haystack": "meme-filler32k/sw_043", "check": "e2e", "subject": "sw_043/after2", "ok": true, "group": "Cas-hop2", "found": true, "preview_flag": false, "read_flag": true, "rule_reachable": true}
+{"dataset": "meme-filler32k", "haystack": "meme-filler32k/sw_043", "check": "e2e", "subject": "sw_043/after2", "ok": true, "group": "Cas-hop2", "found": true, "preview_flag": true, "read_flag": true, "rule_reachable": true}
 {"dataset": "meme-filler32k", "haystack": "meme-filler32k/sw_043", "check": "e2e", "subject": "sw_043/after3", "ok": true, "group": "Abs-hop1", "found": true, "preview_flag": true, "read_flag": true, "rule_reachable": false}
 {"dataset": "meme-filler32k", "haystack": "meme-filler32k/sw_043", "check": "history-chain", "subject": "sw_043/after0", "ok": true, "length": 3}
 {"dataset": "meme-filler32k", "haystack": "meme-filler32k/sw_043", "check": "history-forwarding", "subject": "sw_043/after0", "ok": true}
@@ -1647,9 +1647,9 @@
 {"dataset": "meme-filler32k", "haystack": "meme-filler32k/sw_044", "check": "dependent-flagged", "subject": "sw_044/after3", "ok": true, "group": "Abs-hop1", "signal": "baseline_superseded_by"}
 {"dataset": "meme-filler32k", "haystack": "meme-filler32k/sw_044", "check": "dependent-flagged", "subject": "sw_044/after4", "ok": true, "group": "Abs-hop2", "signal": "baseline_superseded_by"}
 {"dataset": "meme-filler32k", "haystack": "meme-filler32k/sw_044", "check": "e2e", "subject": "sw_044/after1", "ok": true, "group": "Cas-hop1", "found": true, "preview_flag": true, "read_flag": true, "rule_reachable": true}
-{"dataset": "meme-filler32k", "haystack": "meme-filler32k/sw_044", "check": "e2e", "subject": "sw_044/after2", "ok": true, "group": "Cas-hop2", "found": true, "preview_flag": false, "read_flag": true, "rule_reachable": true}
+{"dataset": "meme-filler32k", "haystack": "meme-filler32k/sw_044", "check": "e2e", "subject": "sw_044/after2", "ok": true, "group": "Cas-hop2", "found": true, "preview_flag": true, "read_flag": true, "rule_reachable": true}
 {"dataset": "meme-filler32k", "haystack": "meme-filler32k/sw_044", "check": "e2e", "subject": "sw_044/after3", "ok": true, "group": "Abs-hop1", "found": true, "preview_flag": true, "read_flag": true, "rule_reachable": false}
-{"dataset": "meme-filler32k", "haystack": "meme-filler32k/sw_044", "check": "e2e", "subject": "sw_044/after4", "ok": true, "group": "Abs-hop2", "found": true, "preview_flag": false, "read_flag": true, "rule_reachable": false}
+{"dataset": "meme-filler32k", "haystack": "meme-filler32k/sw_044", "check": "e2e", "subject": "sw_044/after4", "ok": true, "group": "Abs-hop2", "found": true, "preview_flag": true, "read_flag": true, "rule_reachable": false}
 {"dataset": "meme-filler32k", "haystack": "meme-filler32k/sw_044", "check": "history-chain", "subject": "sw_044/after0", "ok": true, "length": 3}
 {"dataset": "meme-filler32k", "haystack": "meme-filler32k/sw_044", "check": "history-forwarding", "subject": "sw_044/after0", "ok": true}
 {"dataset": "meme-filler32k", "haystack": "meme-filler32k/sw_044", "check": "no-rule", "subject": "sw_044/after3", "ok": true, "group": "Abs-hop1"}
@@ -1677,9 +1677,9 @@
 {"dataset": "meme-filler32k", "haystack": "meme-filler32k/sw_046", "check": "dependent-flagged", "subject": "sw_046/after3", "ok": true, "group": "Abs-hop1", "signal": "baseline_superseded_by"}
 {"dataset": "meme-filler32k", "haystack": "meme-filler32k/sw_046", "check": "dependent-flagged", "subject": "sw_046/after4", "ok": true, "group": "Abs-hop2", "signal": "baseline_superseded_by"}
 {"dataset": "meme-filler32k", "haystack": "meme-filler32k/sw_046", "check": "e2e", "subject": "sw_046/after1", "ok": true, "group": "Cas-hop1", "found": true, "preview_flag": true, "read_flag": true, "rule_reachable": true}
-{"dataset": "meme-filler32k", "haystack": "meme-filler32k/sw_046", "check": "e2e", "subject": "sw_046/after2", "ok": true, "group": "Cas-hop2", "found": true, "preview_flag": false, "read_flag": true, "rule_reachable": true}
+{"dataset": "meme-filler32k", "haystack": "meme-filler32k/sw_046", "check": "e2e", "subject": "sw_046/after2", "ok": true, "group": "Cas-hop2", "found": true, "preview_flag": true, "read_flag": true, "rule_reachable": true}
 {"dataset": "meme-filler32k", "haystack": "meme-filler32k/sw_046", "check": "e2e", "subject": "sw_046/after3", "ok": true, "group": "Abs-hop1", "found": true, "preview_flag": true, "read_flag": true, "rule_reachable": false}
-{"dataset": "meme-filler32k", "haystack": "meme-filler32k/sw_046", "check": "e2e", "subject": "sw_046/after4", "ok": true, "group": "Abs-hop2", "found": true, "preview_flag": false, "read_flag": true, "rule_reachable": false}
+{"dataset": "meme-filler32k", "haystack": "meme-filler32k/sw_046", "check": "e2e", "subject": "sw_046/after4", "ok": true, "group": "Abs-hop2", "found": true, "preview_flag": true, "read_flag": true, "rule_reachable": false}
 {"dataset": "meme-filler32k", "haystack": "meme-filler32k/sw_046", "check": "history-chain", "subject": "sw_046/after0", "ok": true, "length": 3}
 {"dataset": "meme-filler32k", "haystack": "meme-filler32k/sw_046", "check": "history-forwarding", "subject": "sw_046/after0", "ok": true}
 {"dataset": "meme-filler32k", "haystack": "meme-filler32k/sw_046", "check": "no-rule", "subject": "sw_046/after3", "ok": true, "group": "Abs-hop1"}
@@ -1694,7 +1694,7 @@
 {"dataset": "meme-filler32k", "haystack": "meme-filler32k/sw_047", "check": "dependent-flagged", "subject": "sw_047/after2", "ok": true, "group": "Cas-hop2", "signal": "baseline_superseded_by"}
 {"dataset": "meme-filler32k", "haystack": "meme-filler32k/sw_047", "check": "dependent-flagged", "subject": "sw_047/after3", "ok": true, "group": "Abs-hop1", "signal": "baseline_superseded_by"}
 {"dataset": "meme-filler32k", "haystack": "meme-filler32k/sw_047", "check": "e2e", "subject": "sw_047/after1", "ok": true, "group": "Cas-hop1", "found": true, "preview_flag": true, "read_flag": true, "rule_reachable": true}
-{"dataset": "meme-filler32k", "haystack": "meme-filler32k/sw_047", "check": "e2e", "subject": "sw_047/after2", "ok": true, "group": "Cas-hop2", "found": true, "preview_flag": false, "read_flag": true, "rule_reachable": true}
+{"dataset": "meme-filler32k", "haystack": "meme-filler32k/sw_047", "check": "e2e", "subject": "sw_047/after2", "ok": true, "group": "Cas-hop2", "found": true, "preview_flag": true, "read_flag": true, "rule_reachable": true}
 {"dataset": "meme-filler32k", "haystack": "meme-filler32k/sw_047", "check": "e2e", "subject": "sw_047/after3", "ok": true, "group": "Abs-hop1", "found": true, "preview_flag": true, "read_flag": true, "rule_reachable": false}
 {"dataset": "meme-filler32k", "haystack": "meme-filler32k/sw_047", "check": "history-chain", "subject": "sw_047/after0", "ok": true, "length": 3}
 {"dataset": "meme-filler32k", "haystack": "meme-filler32k/sw_047", "check": "history-forwarding", "subject": "sw_047/after0", "ok": true}
@@ -1709,7 +1709,7 @@
 {"dataset": "meme-filler32k", "haystack": "meme-filler32k/sw_048", "check": "dependent-flagged", "subject": "sw_048/after2", "ok": true, "group": "Cas-hop2", "signal": "baseline_superseded_by"}
 {"dataset": "meme-filler32k", "haystack": "meme-filler32k/sw_048", "check": "dependent-flagged", "subject": "sw_048/after3", "ok": true, "group": "Abs-hop1", "signal": "baseline_superseded_by"}
 {"dataset": "meme-filler32k", "haystack": "meme-filler32k/sw_048", "check": "e2e", "subject": "sw_048/after1", "ok": true, "group": "Cas-hop1", "found": true, "preview_flag": true, "read_flag": true, "rule_reachable": true}
-{"dataset": "meme-filler32k", "haystack": "meme-filler32k/sw_048", "check": "e2e", "subject": "sw_048/after2", "ok": true, "group": "Cas-hop2", "found": true, "preview_flag": false, "read_flag": true, "rule_reachable": true}
+{"dataset": "meme-filler32k", "haystack": "meme-filler32k/sw_048", "check": "e2e", "subject": "sw_048/after2", "ok": true, "group": "Cas-hop2", "found": true, "preview_flag": true, "read_flag": true, "rule_reachable": true}
 {"dataset": "meme-filler32k", "haystack": "meme-filler32k/sw_048", "check": "e2e", "subject": "sw_048/after3", "ok": true, "group": "Abs-hop1", "found": true, "preview_flag": true, "read_flag": true, "rule_reachable": true}
 {"dataset": "meme-filler32k", "haystack": "meme-filler32k/sw_048", "check": "history-chain", "subject": "sw_048/after0", "ok": true, "length": 3}
 {"dataset": "meme-filler32k", "haystack": "meme-filler32k/sw_048", "check": "history-forwarding", "subject": "sw_048/after0", "ok": true}
@@ -1724,7 +1724,7 @@
 {"dataset": "meme-filler32k", "haystack": "meme-filler32k/sw_049", "check": "dependent-flagged", "subject": "sw_049/after2", "ok": true, "group": "Cas-hop2", "signal": "baseline_superseded_by"}
 {"dataset": "meme-filler32k", "haystack": "meme-filler32k/sw_049", "check": "dependent-flagged", "subject": "sw_049/after3", "ok": true, "group": "Abs-hop1", "signal": "baseline_superseded_by"}
 {"dataset": "meme-filler32k", "haystack": "meme-filler32k/sw_049", "check": "e2e", "subject": "sw_049/after1", "ok": true, "group": "Cas-hop1", "found": true, "preview_flag": true, "read_flag": true, "rule_reachable": true}
-{"dataset": "meme-filler32k", "haystack": "meme-filler32k/sw_049", "check": "e2e", "subject": "sw_049/after2", "ok": true, "group": "Cas-hop2", "found": true, "preview_flag": false, "read_flag": true, "rule_reachable": true}
+{"dataset": "meme-filler32k", "haystack": "meme-filler32k/sw_049", "check": "e2e", "subject": "sw_049/after2", "ok": true, "group": "Cas-hop2", "found": true, "preview_flag": true, "read_flag": true, "rule_reachable": true}
 {"dataset": "meme-filler32k", "haystack": "meme-filler32k/sw_049", "check": "e2e", "subject": "sw_049/after3", "ok": true, "group": "Abs-hop1", "found": true, "preview_flag": true, "read_flag": true, "rule_reachable": false}
 {"dataset": "meme-filler32k", "haystack": "meme-filler32k/sw_049", "check": "history-chain", "subject": "sw_049/after0", "ok": true, "length": 3}
 {"dataset": "meme-filler32k", "haystack": "meme-filler32k/sw_049", "check": "history-forwarding", "subject": "sw_049/after0", "ok": true}
@@ -1740,9 +1740,9 @@
 {"dataset": "meme-filler32k", "haystack": "meme-filler32k/sw_050", "check": "dependent-flagged", "subject": "sw_050/after3", "ok": true, "group": "Abs-hop1", "signal": "baseline_superseded_by"}
 {"dataset": "meme-filler32k", "haystack": "meme-filler32k/sw_050", "check": "dependent-flagged", "subject": "sw_050/after4", "ok": true, "group": "Abs-hop2", "signal": "baseline_superseded_by"}
 {"dataset": "meme-filler32k", "haystack": "meme-filler32k/sw_050", "check": "e2e", "subject": "sw_050/after1", "ok": true, "group": "Cas-hop1", "found": true, "preview_flag": true, "read_flag": true, "rule_reachable": true}
-{"dataset": "meme-filler32k", "haystack": "meme-filler32k/sw_050", "check": "e2e", "subject": "sw_050/after2", "ok": true, "group": "Cas-hop2", "found": true, "preview_flag": false, "read_flag": true, "rule_reachable": true}
+{"dataset": "meme-filler32k", "haystack": "meme-filler32k/sw_050", "check": "e2e", "subject": "sw_050/after2", "ok": true, "group": "Cas-hop2", "found": true, "preview_flag": true, "read_flag": true, "rule_reachable": true}
 {"dataset": "meme-filler32k", "haystack": "meme-filler32k/sw_050", "check": "e2e", "subject": "sw_050/after3", "ok": true, "group": "Abs-hop1", "found": true, "preview_flag": true, "read_flag": true, "rule_reachable": false}
-{"dataset": "meme-filler32k", "haystack": "meme-filler32k/sw_050", "check": "e2e", "subject": "sw_050/after4", "ok": true, "group": "Abs-hop2", "found": true, "preview_flag": false, "read_flag": true, "rule_reachable": false}
+{"dataset": "meme-filler32k", "haystack": "meme-filler32k/sw_050", "check": "e2e", "subject": "sw_050/after4", "ok": true, "group": "Abs-hop2", "found": true, "preview_flag": true, "read_flag": true, "rule_reachable": false}
 {"dataset": "meme-filler32k", "haystack": "meme-filler32k/sw_050", "check": "history-chain", "subject": "sw_050/after0", "ok": true, "length": 3}
 {"dataset": "meme-filler32k", "haystack": "meme-filler32k/sw_050", "check": "history-forwarding", "subject": "sw_050/after0", "ok": true}
 {"dataset": "meme-filler32k", "haystack": "meme-filler32k/sw_050", "check": "no-rule", "subject": "sw_050/after3", "ok": true, "group": "Abs-hop1"}

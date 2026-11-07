@@ -6,6 +6,8 @@
     python -m evals.external run --write           # also write results/
     python -m evals.external report                # re-summarize results/ from its saved records
     python -m evals.external run --datasets locomo,mab-sh --jobs 8
+    python -m evals.external hints --split dev --write       # Mode C: pick the query variant and threshold
+    python -m evals.external hints --split holdout --write   # Mode C: read the lines once with that choice
 
 Data lives outside the repository (``$MINDSLICE_EVAL_DATA``, default ``~/.cache/mindslice/evals``).
 Rules: PLAN.md. How to read the results: README.md.
@@ -30,7 +32,7 @@ from typing import Any
 import mindslice
 from mindslice.lexical import analyzer_signature
 
-from . import sources
+from . import hints, sources
 from .checks import CHECKS
 from .datasets import LOADERS, SOURCE_OF, Haystack
 from .harness import K, built, run_in_tmp
@@ -319,9 +321,11 @@ def read_lines(summary: dict[str, Any]) -> list[dict[str, Any]]:
     if hop2:
         flagged = sum(g["preview_flag"] * g["questions"] for g in hop2)
         found = sum(g["found"] * g["questions"] for g in hop2)
-        out.append({"id": "B11", "claim": "Known gap: search previews flag 2-hop dependents (expected: they don't)",
-                    "ok": round(flagged), "total": round(found),
-                    "verdict": "gap confirmed" if flagged == 0 else f"previews flag {round(flagged)} of {round(found)}"})
+        # Re-registered for engine ac7928a (PLAN.md): at 16223dc this was a known gap (0 flagged).
+        ok, total = round(flagged), round(found)
+        out.append({"id": "B11", "claim": "Search previews flag 2-hop dependents (baseline_superseded_by, or "
+                    "missing_baselines through a deleted card)", "ok": ok, "total": total,
+                    "verdict": "pass" if ok == total and total else f"fail ({total - ok} of {total})"})
     pooled = summary["ablation"]["pooled"]
     for spec in ABLATION_LINES:
         stat = pooled[spec["metric"]][spec["stat"]]
@@ -416,7 +420,8 @@ def render(summary: dict[str, Any], info: dict[str, Any]) -> str:
     o.append("")
 
     o += ["## Mode B: lineage versus flat cards (same cards, same questions)", "",
-          "`stale@10`: an outdated fact is on the first page unwarned. `stale-first`: it ranks above every current "
+          "`stale@10`: an outdated fact is on the first page unwarned (`status` active, no `baseline_superseded_by` "
+          "and no `missing_baselines` in its preview). `stale-first`: it ranks above every current "
           "card. `current@10`: share of current-value cards on the page. `value-leak@10` (Deletion): some card other "
           "than the deletion request still states the deleted value. `history@10` (Tracking): share of the value "
           "history among results; `history-named@10` also counts `matched_via_superseded` entries.", "",
@@ -510,8 +515,16 @@ def main(argv: list[str] | None = None) -> int:
     r.add_argument("--jobs", type=int, default=os.cpu_count() or 2)
     r.add_argument("--write", action="store_true", help="write results/ (records first, then the summary)")
     sub.add_parser("report", help="re-summarize results/ from its saved records (searches nothing)")
+    hn = sub.add_parser("hints", help="Mode C: write-time supersession candidates (PLAN.md)")
+    hn.add_argument("--split", choices=("dev", "holdout"), required=True)
+    hn.add_argument("--jobs", type=int, default=os.cpu_count() or 2)
+    hn.add_argument("--write", action="store_true", help="write results/hints_<split>.*")
+    hn.add_argument("--again", action="store_true", help="re-read holdout although it was read (record it in the ledger)")
     args = p.parse_args(argv)
     root = sources.data_dir(args.data)
+
+    if args.command == "hints":
+        return _hints(args, root)
 
     if args.command == "fetch":
         failures = sources.fetch(root)
@@ -547,6 +560,37 @@ def main(argv: list[str] | None = None) -> int:
             fh.write(json.dumps(row, ensure_ascii=False) + "\n")
     (RESULTS / "run.json").write_text(json.dumps(run, ensure_ascii=False, indent=1) + "\n", encoding="utf-8")
     _write_summary(run, records, checks)
+    return 0
+
+
+def _hints(args: argparse.Namespace, root: Path | None) -> int:
+    issues = check(root, hints.DATASETS)
+    if issues:
+        print("\n".join(issues))
+        return 1
+    if args.split == "holdout":
+        dev = RESULTS / "hints_dev.json"
+        if not dev.exists():
+            print("run `hints --split dev --write` first: holdout is read with dev's selection")
+            return 2
+        if (RESULTS / "hints_holdout.json").exists() and not args.again:
+            print("holdout was already read (results/hints_holdout.json); pass --again and record why in PLAN.md")
+            return 2
+        choice = json.loads(dev.read_text(encoding="utf-8"))["selection"]
+    records = hints.run(args.split, args.jobs, root, log=lambda s: print(s, file=sys.stderr))
+    if args.split == "dev":
+        choice = hints.select(records)
+        lines = None
+    else:
+        lines = hints.read_lines(records, choice)
+    report = hints.render(args.split, records, choice, lines)
+    print(report)
+    if args.write:
+        payload = {"environment": environment(), "split": args.split, "selection": choice,
+                   "describe": hints.describe(records, choice["variant"], choice["t"]), "lines": lines}
+        if args.split == "dev":
+            payload["grid"] = hints.grid(records)
+        hints.save(RESULTS, args.split, records, payload, report)
     return 0
 
 

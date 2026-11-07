@@ -1,11 +1,13 @@
 # MindSlice on external memory benchmarks: findings
 
-Engine `16223dc` (unchanged by this work) on LongMemEval-S, LoCoMo, MEME and MemoryAgentBench, with **no
-language model anywhere**: the benchmark dialogue is compiled into cards by fixed rules, the questions go to
+Engine `ac7928a` on LongMemEval-S, LoCoMo, MEME and MemoryAgentBench, with **no language model
+anywhere**: the benchmark dialogue is compiled into cards by fixed rules, the questions go to
 `search(question, k=10)` verbatim, and `read()` / `search()` responses are scored against the datasets'
 annotations. 11,568 first pages across about 1,600 workspaces; a rerun gives identical pages. Rules and
 lines were fixed before any question was searched ([PLAN.md](PLAN.md)); every table is in
-[results/summary.md](results/summary.md).
+[results/summary.md](results/summary.md). The first runs read engine `16223dc` and found one gap, B11
+below; `ac7928a` fixed it without changing any page's ranking, and these numbers are its run (PLAN.md
+records the amended lines and both runs).
 
 ## In short
 
@@ -20,13 +22,18 @@ lines were fixed before any question was searched ([PLAN.md](PLAN.md)); every ta
    questions but also for 7% of answerable ones. On LoCoMo's adversarial questions it is chance (0.51-0.55).
 3. **Without lineage, the stale fact usually wins.** Over 442 state questions, a superseded or pre-change
    fact outranks the current one on 62% of first pages (C1), because the old and new statements share their
-   words. With lineage written from the annotations, that drops to 2.5% (C2), at no recall cost (C3).
-4. **The engine's lineage mechanics hold at benchmark scale.** Every structural check passes (B1-B10, 1,333
-   checks), including 2-hop dependency invalidation through `read()` and `missing_baselines` after a
-   deleted dependency.
-5. **Two limits show up.** Search previews don't flag 2-hop dependents (B11, read from the code beforehand):
-   all the residual stale exposure under lineage is that case. And exact BM25 ties break by address, so the
-   older card comes first: 103 of MemoryAgentBench's 162 stale-first pages are exact ties.
+   words. With lineage written from the annotations, that drops to 0 (C2), at no recall cost (C3), and no
+   stale fact is left on a first page unwarned.
+4. **The engine's lineage mechanics hold at benchmark scale.** Every structural check passes (B1-B11,
+   1,422 checks), including 2-hop dependency invalidation through `read()` and in search previews, and
+   `missing_baselines` after a deleted dependency.
+5. **One limit found here was fixed, one remains.** At `16223dc`, search previews didn't flag 2-hop
+   dependents (B11), and that was all the residual stale exposure under lineage; `ac7928a` closed it. Still
+   open: exact BM25 ties break by address, so the older card comes first. 103 of MemoryAgentBench's 162
+   stale-first pages (without lineage) are exact ties.
+6. **The engine can't stand in for the agent on supersession.** A write-time lexical hint (Mode C) misses
+   its lines: the predecessor is among the top 3 results for 0.685 of writes that supersede (0.80 needed),
+   and the hint fires on most cards that merely extend a baseline, often naming that baseline.
 
 ## What was run
 
@@ -140,21 +147,22 @@ cards, so it shows the gap without that remedy.
 | B5-B7 | Deleted cards raise `not_found`, never appear in later searches, and their dependents report `missing_baselines` | 101 / 101, 100 / 100, 3 / 3 |
 | B8, B9 | Tracking: `supersedes` rebuilds the history in order; `read(first)` forwards along it | 98 / 98 each |
 | B10 | Knowledge updates and conflicts: `read(stale)` forwards to the current card | 280 / 280 |
-| B11 | Search previews flag 2-hop dependents | 0 of 89 on the page (**known gap**) |
+| B11 | Search previews flag 2-hop dependents (`baseline_superseded_by`, or `missing_baselines` through a deleted card) | 89 / 89 on the page (0 of 89 at `16223dc`) |
 
 End to end, starting from the question's first page as an agent would (MEME, after the change):
 
 | Group | Dependent or rule on page | Flagged in the preview | Flagged after `read()` | Rule reachable |
 | --- | --- | --- | --- | --- |
 | Cascade, hop 1 (100) | 0.970 | 0.970 | 0.970 | 0.970 |
-| Cascade, hop 2 (62) | 1.000 | **0.000** | 1.000 | 1.000 |
+| Cascade, hop 2 (62) | 1.000 | 1.000 | 1.000 | 1.000 |
 | Absence, hop 1 (100) | 0.990 | 0.990 | 0.990 | n/a |
-| Absence, hop 2 (29) | 0.931 | **0.000** | 0.931 | n/a |
+| Absence, hop 2 (29) | 0.931 | 0.931 | 0.931 | n/a |
 
 The one-search-one-read pattern gives an agent the signals MEME's Cascade and Absence tasks need: "your
 basis changed, and here is the declared replacement" versus "your basis changed, and nothing replaces it".
 [The MEME paper](https://arxiv.org/abs/2605.12477) reports these two tasks as the hardest for the memory
-systems it tested. With 2-hop dependents, the signal appears only after `read()`.
+systems it tested. Since `ac7928a` the search preview already carries it, at 2 hops as at 1 (at `16223dc`,
+2-hop dependents were flagged only after `read()`).
 
 ### Lineage versus flat cards
 
@@ -162,13 +170,13 @@ Same cards, same questions:
 
 | Group | Metric | Flat | Lineage |
 | --- | --- | --- | --- |
-| **Pooled** (442: MEME Cascade, LongMemEval updates, MemoryAgentBench conflicts) | stale outranks current | 0.620 [0.572, 0.665] | 0.025 [0.011, 0.041] |
-| | stale fact on page, unwarned | 0.934 | 0.111 |
+| **Pooled** (442: MEME Cascade, LongMemEval updates, MemoryAgentBench conflicts) | stale outranks current | 0.620 [0.572, 0.665] | 0.000 [0.000, 0.000] |
+| | stale fact on page, unwarned | 0.934 | 0.000 |
 | | current fact on page (Recall@10) | 0.959 | 0.966 |
 | LongMemEval knowledge updates (70) | stale outranks current | 0.586 | 0.000 |
 | MemoryAgentBench conflicts (208) | stale outranks current | 0.779 | 0.000 |
-| MEME Cascade, hop 1 / hop 2 | stale outranks current | 0.600 / 0.172 | 0.000 / 0.172 |
-| MEME Absence, hop 1 / hop 2 | stale fact on page, unwarned | 0.990 / 0.900 | 0.000 / 0.900 |
+| MEME Cascade, hop 1 / hop 2 | stale outranks current | 0.600 / 0.172 | 0.000 / 0.000 |
+| MEME Absence, hop 1 / hop 2 | stale fact on page, unwarned | 0.990 / 0.900 | 0.000 / 0.000 |
 | MEME Deletion (100) | deleted value still on page | 0.800 | 0.040 |
 | MEME Tracking (100) | history among results | 0.718 | 0.309 |
 | | history named on the page (results + `matched_via_superseded`) | 0.718 | 0.929 |
@@ -178,14 +186,41 @@ Same cards, same questions:
   the older card wins: 103 of MemoryAgentBench's 162 stale-first pages are exact score ties.
 - **`supersedes` fixes it completely where it applies**: hits on the old card redirect to the replacement,
   which keeps the best score of the group.
-- **All remaining exposure is 2-hop** (MEME hop 2: 0.172 and 0.900 are unchanged). Neither card involved is
-  superseded; only the baseline of a baseline is, and previews look one hop deep (B11).
+- **2-hop dependents are warned in their previews.** Neither card involved is superseded, only the baseline
+  of a baseline. At `16223dc` previews looked one hop deep, so all the remaining exposure was there (MEME
+  hop 2 stayed at 0.172 and 0.900, and pooled unwarned exposure at 0.111); `ac7928a` follows the whole
+  `extends` chain, as `read()` does, and flags a deleted card on it with `missing_baselines`.
 - **Deletion is per card.** Deleting the fact's cards removes 95% of the leaks. Of the 4 pages left, two
   are coincidences (an assistant suggesting "dairy-free pancakes", a "bus" in a filler session). The other
   two matter: the dependent card restates the deleted value as its basis ("…determined by the fact that our
-  CI is orinthal-build.yml"). `read()` flags it with `missing_baselines` (B7), but its text still says it.
+  CI is orinthal-build.yml"). `read()` and its search preview flag it with `missing_baselines` (B7), but its
+  text still says it.
 - **Supersession trades visible history for recency.** Tracking's earlier values leave the result list but
   stay on the page as `matched_via_superseded` (0.93, more than flat's 0.72) and in the `supersedes` chain (B8).
+
+## Mode C: could the engine name what a new card supersedes?
+
+Mode B's gains depend on someone writing `supersedes`. Mode C asked whether the engine could help, with no
+LLM: just before each write, `search()` with the new card's own text, and offer the top results whose
+`coverage` passes a threshold as candidates. The threshold was chosen on a `dev` half of the writes and
+the lines read once on the other half ([PLAN.md](PLAN.md), "Mode C"; tables in
+[results/hints_holdout.md](results/hints_holdout.md)).
+
+| Line | Claim | Holdout | Line | Verdict |
+| --- | --- | --- | --- | --- |
+| H1 | The predecessor is among the top 3 results (308 writes that supersede) | 0.685 [0.633, 0.734] | 0.80 | **miss** |
+| H2a | ...and passes the `dev` threshold (`full` text, coverage ≥ 0.30) | 0.506 [0.451, 0.562] | 0.60 | **miss** |
+| H2b | Unrelated writes rarely get a candidate (2,942 sampled) | 0.062 [0.053, 0.070] | ≤ 0.20 | **confirmed** |
+
+- **Only templated conflicts are lexically findable.** MemoryAgentBench's facts differ by one word, and the
+  predecessor is in the top 3 for 0.980 of them. MEME updates reword the value (0.613), and LongMemEval's
+  new fact is one sentence in a long exchange (0.222; 0.500 when the query is the summary alone,
+  exploratory).
+- **The hint would invite the worst error.** Cards that *extend* a baseline are lexically closest to it:
+  the hint fires on 215 of 258 such writes, and in 120 its top candidate is the very card being extended.
+  A wrong `supersedes` there would hide a valid card.
+- **So the engine stays as it is**, and noticing supersession remains the agent's job. Whether agents do
+  it is the open question; [`evals/agent_test.md`](../agent_test.md) is the plan for measuring it.
 
 ## Dataset issues found along the way
 
@@ -205,20 +240,26 @@ Same cards, same questions:
 - **Answer accuracy.** That needs a reader model; these are retrieval and structure measurements.
 - **Whether an agent writes good lineage.** Mode B's lineage is the annotations'. In practice the
   bottleneck is an agent noticing that a new statement supersedes an old one; this harness gives the
-  oracle for that, not the agent.
+  oracle for that, not the agent (Mode C shows the engine can't stand in for it lexically).
+  [`evals/agent_test.md`](../agent_test.md) plans that measurement.
 - **Authored cards.** Titles, summaries and aliases here are templates. Authored cards would change Mode A
   (aliases did on the retrieval evaluation).
 - **Comparisons with published systems.** They chunk, weight and key differently, often with LLM-written
   memory. Read these numbers against future MindSlice versions on this harness.
 
-## Possible engine follow-ups (not made; each needs its own evaluation)
+## Engine follow-ups
 
-1. **Closure in previews.** Compute `baseline_superseded_by` over the `extends` closure in `search()`
-   previews, as `read()` does. That would remove all remaining stale exposure here (0.111 → 0, by B11's
-   arithmetic), at some cost per result.
+1. **Closure in previews: done in `ac7928a`.** `search()` previews compute `baseline_superseded_by` over the
+   `extends` closure, as `read()` does, and report `missing_baselines`. Pooled unwarned stale exposure went
+   from 0.111 to 0.000, no page's ranking changed, and `search(k=10)` took about 0.7% longer on a 550-card
+   test workspace.
+
+Not made:
+
 2. **Recency on exact ties.** Exact BM25 ties currently fall to precedence, then address, which favours the
    older card when paths are chronological. Ordering ties by `mtime_ns`, newest first, would flip most of
    MemoryAgentBench's stale-first pages without lineage. It is a ranking change, so it needs a fresh
    holdout first, as `evals/retrieval/PLAN.md` requires.
-3. **Nothing for vocabulary gaps in the engine.** By the design's own split, that belongs to authoring
+3. **No write-time supersession hint.** Mode C missed its lines (above).
+4. **Nothing for vocabulary gaps in the engine.** By the design's own split, that belongs to authoring
    (aliases, the `slice-builder` skill) and to the agent rephrasing after `unmatched_terms`.
