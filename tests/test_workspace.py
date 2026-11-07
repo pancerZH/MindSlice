@@ -4,6 +4,7 @@ from __future__ import annotations
 
 import hashlib
 import json
+import sys
 import tarfile
 import tomllib
 import unittest
@@ -436,6 +437,15 @@ class RobustnessTests(WorkspaceTestCase):
         self.assertEqual(ws.read("user-preferences/tooling")["body"].count("\n- "), 2)
 
 
+# TODO(windows): run the whole suite on a Windows machine; nothing has been exercised there yet.
+# Known risk areas to check:
+#   - mindslice/locking.py msvcrt adapter: exclusive-only, so concurrent readers serialize
+#     (test_shared_locks_coexist_and_reenter is skipped there by design).
+#   - os.replace()/unlink() of files another process holds open (atomic writes, apply(), pack()).
+#   - fsutil.fsync_dir() is a no-op on Windows: confirm apply() journal durability is acceptable.
+#   - CRLF line endings from Windows editors (card parsing normalizes; check sha256/if_match flows).
+#   - Drive-letter / backslash paths in mounts.toml (config.portable_path, Workspace.mount).
+#   - ConcurrencyTests in test_interfaces.py (subprocess workers + msvcrt locking).
 class LockTests(WorkspaceTestCase):
     def test_exclusive_lock_blocks_other_holders(self):
         other = WorkspaceLock(self.root / ".cache/workspace.lock", timeout=0.2)
@@ -445,6 +455,7 @@ class LockTests(WorkspaceTestCase):
                 self.ws.search("anything")
         other.close()
 
+    @unittest.skipIf(sys.platform == "win32", "msvcrt adapter has no shared mode; readers serialize on Windows")
     def test_shared_locks_coexist_and_reenter(self):
         self.ws.search("warm up")  # first query builds the index (needs LOCK_EX)
         other = WorkspaceLock(self.root / ".cache/workspace.lock", timeout=0.2)

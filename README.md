@@ -145,6 +145,47 @@ Generic MCP client config:
 {"mcpServers": {"mindslice": {"command": "python3", "args": ["-m", "mindslice", "-w", "/path/to/workspace", "mcp"]}}}
 ```
 
+## Search, ranking & multilingual text
+
+`search()` is lexical (SQLite FTS5, BM25 over `title, aliases, tags, summary, body` weighted
+`10, 5, 3, 2, 1`). MindSlice analyzes text itself before it reaches FTS5, so behavior does not
+depend on how SQLite was compiled:
+
+- **Normalization.** Index and query text are NFKC-normalized, and variation selectors and
+  zero-width characters are dropped. Full-width `ＪＷＴ` matches `JWT`, and half-width `ﾄｰｸﾝ`
+  matches `トークン`. Tags and aliases compare NFKC + case-folded.
+- **Latin and other spaced scripts** go through `porter unicode61` (case folding, stemming).
+  `term*` is a prefix match.
+- **Unspaced scripts (Chinese, Japanese, Korean, Thai, Khmer, Myanmar, Tibetan)** have no reliable
+  word spaces, so each run is indexed as unigrams plus overlapping bigrams
+  (`令牌过期` -> `令 牌 过 期 令牌 牌过 过期`). A unit is a letter plus its combining marks, so Thai
+  vowels, the Khmer coeng and Tibetan stacks stay together.
+  Any substring of two or more characters matches through its bigrams, and a single character
+  matches through its unigram. Supplementary-plane ideographs (e.g. `𠮷`) and iteration marks
+  (`々`) are handled.
+- **Queries never fail silently on unspaced compounds.** An unspaced query run becomes its bigrams,
+  OR-ed like ordinary words. `雾凇拼音` still finds a card that only says `雾凇词库`; it just
+  ranks below cards that contain more of the query.
+
+Ranking is **coverage-first**, in this order:
+
+1. `coverage`: the share of query words a card matches. A Latin word counts 1. A CJK run earns
+   the fraction of its bigrams present, or full credit if the card contains it verbatim.
+2. The number of CJK runs matched verbatim.
+3. `score = -bm25(...)`.
+4. Mount precedence.
+
+So a card matching every query word outranks one that matches a single word many times in its
+title. Both `coverage` and `score` are returned in every preview.
+
+The analysis uses only Python's `unicodedata` and `re`, with SQLite's built-in FTS5 tokenizer: no
+jieba, no ICU, and no SQLite extension. The index records the analyzer and Unicode-database versions,
+and re-indexes itself when either changes (for example after a Python upgrade). Read counts survive.
+
+Lexical search is not morphological. Korean or Japanese inflections that change the stem
+syllables (`이끌었다` vs `이끈다`) and Simplified/Traditional variants (`认证` vs `認證`) are
+different strings, just as `ran`/`run` are in English.
+
 ## Concurrency & durability
 
 - Reads take `LOCK_SH` and writes take `LOCK_EX` (`fcntl.flock`) on `.cache/workspace.lock`.
@@ -174,9 +215,10 @@ The suite covers every row of the design's behavior matrix (section 6) plus the 
 
 The design leaves a few details open. These are the choices v1 makes:
 
-- **Search query syntax.** Free-text terms are OR-ed and ranked by BM25 with Porter stemming.
-  `term*` does a prefix match. An empty query with `tags` lists that facet. `tags` filters are
-  all-of. The card path is also indexed, alongside `aliases`.
+- **Search query syntax.** Free-text words are OR-ed and ranked coverage-first (see
+  [Search, ranking & multilingual text](#search-ranking--multilingual-text)). An empty query with
+  `tags` lists that facet. `tags` filters are all-of. The card path is also indexed, alongside
+  `aliases`.
 - **Competing replacements.** Forwarding follows the unambiguous part of a chain and stops at the
   fork. For `A <- B <- {C, D}`, `read(A)` lands on `B` with `competing_replacements: [C, D]`.
 - **`superseded_by`** lists the direct replacements. `status` is `"active"`,
@@ -190,4 +232,5 @@ The design leaves a few details open. These are the choices v1 makes:
 - **Orphan files in `staging/`** (no manifest entry, e.g. human drafts) count as creates that
   require the overlay path to still be absent.
 - **Root `overview.md`** is readable and linkable, but is excluded from search results and card counts.
-- **CJK text.** The default `unicode61` tokenizer does not segment CJK words; a CJK tokenizer is future work.
+- **Windows.** The `msvcrt` locking adapter has not been run yet (see the TODO in
+  `tests/test_workspace.py`). It has no shared mode, so readers serialize on Windows.

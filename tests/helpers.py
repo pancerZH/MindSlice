@@ -39,6 +39,12 @@ def card_text(
     return "".join(parts)
 
 
+def add_filler(ws: Workspace, n: int = 8) -> None:
+    """Unrelated cards so BM25 sees a corpus with positive IDF (tiny corpora clamp it to ~0)."""
+    for i in range(n):
+        ws.write(f"filler/{i}", title=f"Filler {i}", summary=f"Unrelated gardening note number {i}.")
+
+
 def bump_mtime(path: Path, delta_ns: int = 1_000_000_000) -> None:
     """Simulate an editor save that lands on a later clock tick."""
     st = path.stat()

@@ -14,7 +14,6 @@ from __future__ import annotations
 
 import json
 import os
-import re
 import sqlite3
 import time
 from dataclasses import dataclass, field
@@ -25,8 +24,9 @@ from .addressing import MountCatalog, resolve_ref
 from .card import parse_card, preview_text, sha256_bytes
 from .config import OVERVIEW_PATH, Mount, MountTable
 from .fsutil import iter_markdown
+from .lexical import QueryPlan, analyze_query, analyzer_signature, fold, index_text
 
-SCHEMA_VERSION = "1"
+SCHEMA_VERSION = "1"  # table layout; text-analysis changes are tracked by lexical.analyzer_signature()
 BM25_WEIGHTS = (10.0, 5.0, 3.0, 2.0, 1.0)  # title, aliases, tags, summary, body
 TOKENIZER = "porter unicode61 remove_diacritics 2"
 LINK_KINDS = ("extends", "supersedes", "wikilink")
@@ -68,7 +68,7 @@ CREATE TABLE IF NOT EXISTS telemetry(
 );
 """
 
-_DATA_TABLES = ("cards", "cards_fts", "card_aliases", "card_tags", "links", "mounts", "meta")
+_DERIVED_TABLES = ("cards", "cards_fts", "card_aliases", "card_tags", "links", "mounts")
 
 
 @dataclass
@@ -99,17 +99,18 @@ class DiskState:
     files: dict[tuple[str, str], tuple[int, int, Path]]  # (mount, path) -> (mtime_ns, size, abs path)
 
 
-def fts_match_expression(query: str) -> str:
-    """Turn free text into a safe FTS5 expression: quoted terms OR'ed together (``term*`` = prefix)."""
-    terms: list[str] = []
-    for m in re.finditer(r"\w+(\*)?", query or "", re.UNICODE):
-        term = m.group(0).rstrip("*").replace('"', "")
-        if not term:
-            continue
-        token = f'"{term}"' + ("*" if m.group(1) else "")
-        if token not in terms:
-            terms.append(token)
-    return " OR ".join(terms)
+@dataclass
+class Hit:
+    """One search match: the card row plus its ranking signals."""
+
+    row: sqlite3.Row
+    score: float  # -bm25(...) > 0 (0.0 for filter-only listings)
+    coverage: float  # share of query units matched, in [0, 1]
+    phrases: int  # CJK query runs (3+ chars) matched verbatim
+
+    def rank_key(self) -> tuple:
+        r = self.row
+        return (-self.coverage, -self.phrases, -self.score, -r["precedence"], -r["mtime_ns"], r["mount"], r["path"])
 
 
 def mount_signature(table: MountTable) -> str:
@@ -198,6 +199,8 @@ class Index:
         return {(r[0], r[1]): (r[2], r[3], r[4]) for r in rows}
 
     def is_stale(self, table: MountTable, exclude: Sequence[Path] = ()) -> bool:
+        if self._meta("analyzer") != analyzer_signature():
+            return True
         if self._meta("mounts_signature") != mount_signature(table):
             return True
         disk = self.scan(table, exclude).files
@@ -219,6 +222,12 @@ class Index:
         conn = self.conn
         conn.execute("BEGIN IMMEDIATE")
         try:
+            analyzer = analyzer_signature()
+            if self._meta("analyzer") != analyzer:
+                # Text analysis changed (MindSlice upgrade or a new Unicode database): every
+                # card must be re-analyzed. Telemetry is kept.
+                self._reset_derived()
+                self._set_meta("analyzer", analyzer)
             signature = mount_signature(table)
             if self._meta("mounts_signature") != signature:
                 stats.mounts_changed = True
@@ -275,14 +284,18 @@ class Index:
         conn = self.conn
         conn.execute("BEGIN IMMEDIATE")
         try:
-            for name in _DATA_TABLES:
-                conn.execute(f"DELETE FROM {name}")
-            conn.execute("INSERT INTO meta(key, value) VALUES('schema_version', ?)", (SCHEMA_VERSION,))
+            self._reset_derived()
             conn.execute("COMMIT")
         except BaseException:
             conn.execute("ROLLBACK")
             raise
         return self.sync(table, exclude, verify=True)
+
+    def _reset_derived(self) -> None:
+        """Drop everything reconstructible from disk (telemetry and schema version survive)."""
+        for name in _DERIVED_TABLES:
+            self.conn.execute(f"DELETE FROM {name}")
+        self.conn.execute("DELETE FROM meta WHERE key <> 'schema_version'")
 
     def _delete_mount_rows(self, alias: str) -> int:
         ids = [r[0] for r in self.conn.execute("SELECT id FROM cards WHERE mount=?", (alias,))]
@@ -336,15 +349,15 @@ class Index:
         alias_text = " ".join(parsed.aliases + [path.replace("/", " ")])
         self.conn.execute(
             "INSERT INTO cards_fts(rowid, title, aliases, tags, summary, body) VALUES(?, ?, ?, ?, ?, ?)",
-            (card_id, title, alias_text, " ".join(parsed.tags), parsed.summary, parsed.body),
+            (card_id, *(index_text(t) for t in (title, alias_text, " ".join(parsed.tags), parsed.summary, parsed.body))),
         )
         self.conn.executemany(
             "INSERT INTO card_aliases(mount, path, alias) VALUES(?, ?, ?)",
-            [(mount, path, a.strip().lower()) for a in parsed.aliases if a.strip()],
+            [(mount, path, k) for k in dict.fromkeys(fold(a) for a in parsed.aliases) if k],
         )
         self.conn.executemany(
             "INSERT INTO card_tags(mount, path, tag) VALUES(?, ?, ?)",
-            [(mount, path, t.strip().lower()) for t in dict.fromkeys(parsed.tags) if t.strip()],
+            [(mount, path, k) for k in dict.fromkeys(fold(t) for t in parsed.tags) if k],
         )
         refs: list[tuple[str, int, str]] = []
         for kind, values in (("extends", parsed.extends), ("supersedes", parsed.supersedes)):
@@ -395,7 +408,7 @@ class Index:
         sql = """SELECT c.*, m.precedence, m.role FROM card_aliases a
                  JOIN cards c ON c.mount = a.mount AND c.path = a.path
                  JOIN mounts m ON m.alias = c.mount WHERE a.alias=?"""
-        args: list[Any] = [alias.strip().lower()]
+        args: list[Any] = [fold(alias)]
         if mount is not None:
             sql += " AND a.mount=?"
             args.append(mount)
@@ -412,20 +425,26 @@ class Index:
 
     def search(
         self, query: str, sources: Iterable[str] | None = None, tags: Iterable[str] | None = None
-    ) -> list[sqlite3.Row]:
-        """All FTS matches (excluding overviews) with ``score = -bm25(...) > 0``, best first."""
-        expr = fts_match_expression(query)
+    ) -> list[Hit]:
+        """All matches (overviews excluded), best first.
+
+        Ranking is coverage-first: the share of query units a card matches (a Latin word
+        counts 1, a CJK run earns the fraction of its bigrams present), then the number of
+        CJK runs matched verbatim, then ``score = -bm25(...)``, then mount precedence.
+        An empty query with ``tags`` lists that facet (score and coverage 0).
+        """
+        plan = analyze_query(query)
         where: list[str] = ["c.is_overview = 0"]
         args: list[Any] = []
-        if expr:
+        if plan.units:
             weights = ", ".join(str(w) for w in BM25_WEIGHTS)
             sql = f"""SELECT c.*, m.precedence, m.role, -bm25(cards_fts, {weights}) AS score
                       FROM cards_fts JOIN cards c ON c.id = cards_fts.rowid
                       JOIN mounts m ON m.alias = c.mount"""
             where.insert(0, "cards_fts MATCH ?")
-            args.append(expr)
+            args.append(plan.match_expression)
         elif (query or "").strip():
-            return []
+            return []  # punctuation-only query: nothing searchable
         else:
             sql = """SELECT c.*, m.precedence, m.role, 0.0 AS score FROM cards c
                      JOIN mounts m ON m.alias = c.mount"""
@@ -433,7 +452,7 @@ class Index:
         if source_list:
             where.append(f"c.mount IN ({', '.join('?' * len(source_list))})")
             args += source_list
-        tag_list = sorted({t.strip().lower() for t in (tags or []) if t.strip()})
+        tag_list = sorted({fold(t) for t in (tags or []) if fold(t)})
         if tag_list:
             where.append(
                 f"""(SELECT COUNT(DISTINCT t.tag) FROM card_tags t WHERE t.mount = c.mount AND t.path = c.path
@@ -441,11 +460,37 @@ class Index:
             )
             args += tag_list + [len(tag_list)]
         sql += " WHERE " + " AND ".join(where)
-        sql += " ORDER BY score DESC, m.precedence DESC, c.mtime_ns DESC, c.mount, c.path"
-        return self.conn.execute(sql, args).fetchall()
+        rows = self.conn.execute(sql, args).fetchall()
+        hits = self._rank(plan, rows)
+        hits.sort(key=Hit.rank_key)
+        return hits
+
+    def _matching_ids(self, expression: str) -> set[int]:
+        return {r[0] for r in self.conn.execute("SELECT rowid FROM cards_fts WHERE cards_fts MATCH ?", (expression,))}
+
+    def _rank(self, plan: QueryPlan, rows: list[sqlite3.Row]) -> list[Hit]:
+        if not plan.units:
+            return [Hit(r, 0.0, 0.0, 0) for r in rows]
+        if len(plan.units) == 1 and len(plan.units[0].terms) == 1:
+            return [Hit(r, float(r["score"]), 1.0, 0) for r in rows]  # every match matches everything
+        term_ids = {t: self._matching_ids(t) for t in plan.terms}
+        phrase_ids = {p: self._matching_ids(p) for p in plan.phrases}
+        hits = []
+        for r in rows:
+            rid = r["id"]
+            credit = 0.0
+            phrases = 0
+            for unit in plan.units:
+                if unit.phrase and rid in phrase_ids[unit.phrase]:
+                    credit += 1.0
+                    phrases += 1
+                    continue
+                credit += sum(1 for t in unit.terms if rid in term_ids[t]) / len(unit.terms)
+            hits.append(Hit(r, float(r["score"]), credit / len(plan.units), phrases))
+        return hits
 
     def card_has_tags(self, mount: str, path: str, tags: Iterable[str]) -> bool:
-        wanted = {t.strip().lower() for t in tags if t.strip()}
+        wanted = {fold(t) for t in tags if fold(t)}
         if not wanted:
             return True
         have = {r[0] for r in self.conn.execute("SELECT tag FROM card_tags WHERE mount=? AND path=?", (mount, path))}

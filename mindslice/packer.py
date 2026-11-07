@@ -28,6 +28,7 @@ from .card import ParsedCard, parse_card, truncate
 from .config import DESCRIPTION_CHARS, OVERVIEW_PATH, SLICE_FILE, SliceManifest, dump_slice_manifest
 from .errors import AlreadyExistsError, InvalidAddressError, NotFoundError, UnresolvedExportDependencyError
 from .fsutil import fsync_dir, iter_markdown
+from .lexical import fold
 from .validation import validate_slice_dir
 from .writer import read_card_file, reassemble
 
@@ -77,7 +78,7 @@ def pack(
     output = Path(output_path).expanduser().absolute()
     fmt = _format_of(output)
     dir_name = _slice_dir_name(output, fmt)
-    tag_set = {t.strip().lower() for t in ([tags] if isinstance(tags, str) else (tags or [])) if t.strip()}
+    tag_set = {fold(t) for t in ([tags] if isinstance(tags, str) else (tags or [])) if fold(t)}
     if prefix is not None:
         prefix = prefix.strip().lstrip("./").lstrip("/")
 
@@ -96,7 +97,7 @@ def pack(
             return False
         if prefix and not path.startswith(prefix):
             return False
-        return tag_set <= {t.strip().lower() for t in parsed.tags}
+        return tag_set <= {fold(t) for t in parsed.tags}
 
     selected = sorted(p for p, (_, parsed) in cards.items() if selected_by_filter(p, parsed))
     if not selected:

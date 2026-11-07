@@ -52,14 +52,16 @@ TOOLS: list[dict[str, Any]] = [
     {
         "name": "search",
         "description": (
-            "Associative lexical (BM25) search across all mounted slices. Returns card previews (address, role, score, "
-            "title, 240-char summary, 1-hop [[wikilink]] neighbors). Hits on superseded cards are redirected to their "
-            "replacement (see matched_via_superseded). Use read() on an address for full content."
+            "Associative lexical search across all mounted slices (any language, including unspaced Chinese/Japanese/"
+            "Korean). Results are ranked by coverage (share of query words matched), then BM25 score. Returns card "
+            "previews (address, role, coverage, score, title, 240-char summary, 1-hop [[wikilink]] neighbors). Hits on "
+            "superseded cards are redirected to their replacement (see matched_via_superseded). Use read() on an "
+            "address for full content."
         ),
         "inputSchema": {
             "type": "object",
             "properties": {
-                "query": {"type": "string", "description": "free text; terms are OR-ed and ranked (term* = prefix)"},
+                "query": {"type": "string", "description": "free text; words are OR-ed and ranked by coverage then BM25 (word* = prefix); CJK needs no spaces"},
                 "source": {"type": ["string", "array"], "items": {"type": "string"}, "description": "restrict to mount alias(es), e.g. \"@project\""},
                 "tags": {"type": "array", "items": {"type": "string"}, "description": "cards must carry all of these tags"},
                 "k": _int(10, "max results"),
@@ -224,7 +226,25 @@ def _error(msg_id: Any, code: int, message: str) -> dict[str, Any]:
     return {"jsonrpc": "2.0", "id": msg_id, "error": {"code": code, "message": message}}
 
 
+def ensure_utf8_stdio() -> None:
+    """Pin stdio to UTF-8 (the MCP stdio transport requires it) whatever the console locale is.
+
+    Without this, CJK text crashes on Windows consoles or under ``PYTHONIOENCODING=ascii``.
+    Must run before anything is read from stdin.
+    """
+    for stream in (sys.stdin, sys.stdout, sys.stderr):
+        reconfigure = getattr(stream, "reconfigure", None)
+        if reconfigure is None:
+            continue
+        try:
+            reconfigure(encoding="utf-8")
+        except (ValueError, OSError):  # already consumed or detached; leave it alone
+            pass
+
+
 def serve(ws: Workspace, stage_writes: bool = False, stdin: IO[str] | None = None, stdout: IO[str] | None = None) -> None:
+    if stdin is None or stdout is None:
+        ensure_utf8_stdio()
     MCPServer(ws, stage_writes).serve(stdin or sys.stdin, stdout or sys.stdout)
 
 

@@ -30,6 +30,7 @@ from typing import Any, Iterable
 
 from . import tomlfmt
 from .addressing import extract_wikilinks
+from .lexical import normalize
 from .errors import FrontmatterError
 
 FENCE = "+++"
@@ -263,7 +264,7 @@ def render_card(fields: dict[str, Any], summary: str | None, body: str | None) -
 def _norm_statement(block: str) -> str:
     first, *rest = block.split("\n")
     first = _BULLET_RE.sub("", first.strip(), count=1)
-    return _WS_RE.sub(" ", " ".join([first] + [r.strip() for r in rest])).strip().casefold()
+    return _WS_RE.sub(" ", normalize(" ".join([first] + [r.strip() for r in rest]))).strip().casefold()
 
 
 def statement_blocks(content: str | Iterable[str]) -> list[str]:

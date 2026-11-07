@@ -165,6 +165,30 @@ class MCPTests(WorkspaceTestCase):
         self.assertEqual(responses[2]["error"]["code"], -32700)
 
 
+class NonUtf8ConsoleTests(WorkspaceTestCase):
+    """CJK must survive consoles whose default encoding is not UTF-8 (e.g. Windows)."""
+
+    def run_module(self, *args: str, stdin: str = "") -> subprocess.CompletedProcess:
+        env = dict(os.environ, PYTHONIOENCODING="ascii", PYTHONPATH=str(REPO))
+        return subprocess.run([sys.executable, "-m", "mindslice", "-w", str(self.root), *args],
+                              input=stdin.encode("utf-8"), capture_output=True, env=env, timeout=60)
+
+    def test_cli_and_mcp_emit_utf8(self):
+        self.ws.write("auth", title="认证流程", summary="令牌过期时间为15分钟。")
+        proc = self.run_module("search", "过期")
+        self.assertEqual(proc.returncode, 0, proc.stderr.decode("utf-8", "replace"))
+        self.assertEqual(json.loads(proc.stdout.decode("utf-8"))["results"][0]["title"], "认证流程")
+        request = {"jsonrpc": "2.0", "id": 1, "method": "tools/call",
+                   "params": {"name": "search", "arguments": {"query": "令牌"}}}
+        proc = self.run_module("mcp", stdin=json.dumps(request, ensure_ascii=False) + "\n")
+        self.assertEqual(proc.returncode, 0, proc.stderr.decode("utf-8", "replace"))
+        payload = json.loads(json.loads(proc.stdout.decode("utf-8"))["result"]["content"][0]["text"])
+        self.assertEqual(payload["results"][0]["address"], "@overlay/auth")
+        proc = self.run_module("write", "笔记", "--content-file", "-", "--summary", "中文摘要。", stdin="- 中文内容\n")
+        self.assertEqual(proc.returncode, 0, proc.stderr.decode("utf-8", "replace"))
+        self.assertIn("中文内容", self.ws.read("笔记")["body"])
+
+
 _WORKER = """
 import sys
 from mindslice import Workspace

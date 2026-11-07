@@ -176,6 +176,9 @@ def _open(args: argparse.Namespace) -> Workspace:
 
 
 def main(argv: Sequence[str] | None = None) -> int:
+    from .mcp_server import ensure_utf8_stdio
+
+    ensure_utf8_stdio()  # JSON output is UTF-8 (CJK-safe) regardless of the console locale
     args = build_parser().parse_args(argv)
     args.workspace = getattr(args, "workspace", None)
     args.compact = compact = getattr(args, "compact", False)

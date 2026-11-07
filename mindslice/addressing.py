@@ -17,6 +17,7 @@ from dataclasses import dataclass, field
 from typing import Iterable
 
 from .errors import InvalidAddressError
+from .lexical import fold
 
 _ALIAS_RE = re.compile(r"^@[A-Za-z0-9][A-Za-z0-9_.-]*$")
 _SEGMENT_RE = re.compile(r"^[\w][\w .-]*$", re.UNICODE)
@@ -165,7 +166,7 @@ class MountCatalog:
     def add(self, path: str, aliases: Iterable[str] = ()) -> None:
         self.paths.add(path)
         for a in aliases:
-            key = a.strip().lower()
+            key = fold(a)
             if key and key not in self.aliases:
                 self.aliases[key] = path
 
@@ -182,7 +183,7 @@ class MountCatalog:
             path = None
         if path is not None and path in self.paths:
             return path
-        return self.aliases.get(ref.strip().lower()) or (self.aliases.get(path.lower()) if path else None)
+        return self.aliases.get(fold(ref)) or (self.aliases.get(fold(path)) if path else None)
 
 
 @dataclass(frozen=True)

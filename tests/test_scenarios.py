@@ -134,7 +134,7 @@ class Scenario05ReplacementChain(WorkspaceTestCase):
         res = self.ws.search("auth")
         self.assertEqual(self.addresses(res), ["@overlay/api/v2"])
         self.assertCountEqual(res["results"][0]["matched_via_superseded"], ["@project/api/auth", "@overlay/api/v1"])
-        raw_scores = {f"{r['mount']}/{r['path']}": r["score"] for r in self.ws.index.search("auth")}
+        raw_scores = {f"{h.row['mount']}/{h.row['path']}": h.score for h in self.ws.index.search("auth")}
         self.assertAlmostEqual(res["results"][0]["score"], round(max(raw_scores.values()), 6), places=5)
 
     def test_read_resolves_transitively(self):

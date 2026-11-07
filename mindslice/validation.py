@@ -12,6 +12,7 @@ from .card import MAX_CARD_LINES, SUMMARY_PREVIEW_CHARS, ParsedCard, parse_card
 from .config import DESCRIPTION_CHARS, OVERVIEW_PATH, SliceManifest, load_slice_manifest
 from .errors import InvalidAddressError
 from .fsutil import iter_markdown
+from .lexical import fold
 from .lineage import strongly_connected_cycles
 from .writer import read_card_file
 
@@ -128,7 +129,7 @@ def lint(
         if lines > MAX_CARD_LINES:
             report.add("warning", "card_too_long", f"card has {lines} lines (> {MAX_CARD_LINES}); consider splitting", address, fname)
         for a in parsed.aliases:
-            aliases_seen[(mount, a.strip().lower())].append(path)
+            aliases_seen[(mount, fold(a))].append(path)
 
         src = by_alias[mount]
         refs = [(k, r) for k in ("extends", "supersedes") for r in parsed.list_field(k)]

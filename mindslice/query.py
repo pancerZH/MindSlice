@@ -275,27 +275,31 @@ def search(
                 return False
             return idx.card_has_tags(row["mount"], row["path"], tag_list)
 
+        # Superseded hits are routes to their replacement; deduplicated groups keep the best
+        # value of each ranking signal (design: max(score(A), score(B))).
         groups: dict[str, dict[str, Any]] = {}
-        for row in idx.search(query, sources, tag_list):
-            address = ctx.remember(row)
+        for hit in idx.search(query, sources, tag_list):
+            address = ctx.remember(hit.row)
             fwd = ctx.lv.forward(address)
             target, via = address, None
             if fwd.redirected and eligible(fwd.node):
                 target, via = fwd.node, address
-            group = groups.setdefault(target, {"score": row["score"], "via": []})
-            group["score"] = max(group["score"], row["score"])
+            group = groups.setdefault(target, {"score": hit.score, "coverage": hit.coverage, "phrases": hit.phrases, "via": []})
+            group["score"] = max(group["score"], hit.score)
+            group["coverage"] = max(group["coverage"], hit.coverage)
+            group["phrases"] = max(group["phrases"], hit.phrases)
             if via and via not in group["via"]:
                 group["via"].append(via)
 
         def sort_key(item: tuple[str, dict[str, Any]]):
             address, group = item
             row = ctx.row(address)
-            return (-group["score"], -row["precedence"], -row["mtime_ns"], address)
+            return (-group["coverage"], -group["phrases"], -group["score"], -row["precedence"], -row["mtime_ns"], address)
 
         ordered = sorted(groups.items(), key=sort_key)
         total = len(ordered)
         results = [
-            _preview(ctx, address, group["score"], group["via"], max_neighbors)
+            _preview(ctx, address, group, max_neighbors)
             for address, group in ordered[offset : offset + k]
         ]
         return {
@@ -309,15 +313,17 @@ def search(
         }
 
 
-def _preview(ctx: _Ctx, address: str, score: float, via: list[str], max_neighbors: int) -> dict[str, Any]:
+def _preview(ctx: _Ctx, address: str, group: dict[str, Any], max_neighbors: int) -> dict[str, Any]:
     row = ctx.row(address)
+    via = group["via"]
     summary, cut = truncate(_collapse(row["preview"]), SUMMARY_PREVIEW_CHARS)
     out: dict[str, Any] = {
         "address": address,
         "role": row["role"],
         "precedence": row["precedence"],
         "mtime_ns": row["mtime_ns"],
-        "score": round(float(score), 6),
+        "score": round(float(group["score"]), 6),
+        "coverage": round(float(group["coverage"]), 3),
         "title": row["title"],
         "tags": json.loads(row["tags"]),
         "summary": summary,
