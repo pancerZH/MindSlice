@@ -1,0 +1,193 @@
+# MindSlice
+
+A **lightweight, zero-dependency, human-readable** layered memory engine for LLM agents.
+MindSlice is the *filesystem layer* for agent memory: plain Markdown cards in directories
+("slices"), a writable overlay, a transactional staging buffer, and a disposable SQLite
+index. It holds no LLM calls and no built-in trust heuristics; memory *policy* plugs in
+through files, skills and caller-supplied trust rules.
+
+See [`MindSlice_design.md`](MindSlice_design.md) for the full design.
+
+- **Python 3.12+ standard library only** (`sqlite3` FTS5, `tomllib`, `fcntl`); POSIX (Linux/macOS).
+- **Markdown + TOML is the source of truth.** Delete `.cache/` at any time; it is rebuilt from disk
+  (only best-effort `read_count` / `last_read_at` telemetry is lost).
+- **Read-only base slices + writable `overlay/`**, with explicit `extends` / `supersedes` lineage.
+- **Three-stage retrieval funnel**: `manifest()` -> `search()` -> `read()`, with hard output bounds.
+- **4-tool MCP server** (`manifest`, `search`, `read`, `write`) for agents.
+
+## Install
+
+```bash
+pip install -e .          # provides the `mindslice` command
+# or run in place without installing:
+python -m mindslice --help
+```
+
+## Quick start
+
+```bash
+mindslice init my-workspace && cd my-workspace
+
+# Mount a read-only slice (any directory of cards)
+mindslice mount ./slices/project-kb.slice --alias @project --precedence 50 --role curated
+
+# Agents record what they learn into @overlay
+mindslice write api/jwt-ttl --title "JWT TTL" \
+  --summary "Sessions moved to signed JWTs with a 30 minute TTL." \
+  --content "- The JWT TTL is 30 minutes." --supersedes @project/api/auth-flow
+
+mindslice manifest                       # boot context
+mindslice search "token expiration"      # hits on the old card redirect to the replacement
+mindslice read api/auth-flow --markdown  # composed view, with lineage notices
+```
+
+Python:
+
+```python
+from mindslice import Workspace
+
+with Workspace("my-workspace") as ws:
+    ws.write("user-preferences/tooling", summary="The user prefers uv over pip.",
+             content=["Use `uv run` for scripts.", "Use `uv add` for dependencies."], tags=["tooling"])
+    hits = ws.search("uv dependencies", k=5)
+    card = ws.read(hits["results"][0]["address"])
+    ws.write("user-preferences/tooling", op="append", content="- Pin Python with `uv python pin`.",
+             if_match=card["sha256"])
+```
+
+## Workspace layout
+
+```text
+workspace/
+├── mounts.toml        # mount table: path, @alias, precedence, role
+├── slices/            # read-only base slices (*.slice/ directories)
+├── overlay/           # the only runtime write target (@overlay, precedence 100, role "runtime")
+├── staging/           # prospective final state for overlay/ (never indexed until apply())
+│   ├── .manifest.json       # base_sha256 preconditions + delete tombstones
+│   └── .apply_journal.json  # exists only while an apply() batch is in flight
+└── .cache/            # disposable: index.sqlite + workspace.lock
+```
+
+A slice is just a directory (version it with Git, ship it as `.zip` / `.tar.gz`):
+
+```text
+python-backend.slice/
+├── slice.toml           # optional: name, version, description (<=160), alias, dependencies
+├── overview.md          # optional: entry point, read("@alias/overview")
+├── coding-conventions.md
+└── architecture/
+    └── async-patterns.md
+```
+
+## Cards
+
+```markdown
++++
+title = "Python Backend Error Handling Conventions"
+aliases = ["error-handling", "exception-policy"]
+tags = ["python", "backend", "reliability"]
+extends = []                    # @alias/path or slice-relative path
+supersedes = []
++++
+
+One or two sentence summary (<= 240 chars), shown in search previews.
+
+- Atomic statements, one per bullet, with [[architecture/http-middleware]] links.
+```
+
+Address forms: `@alias/path` targets one mount. A bare `path` passed **to the API** resolves to
+the highest-precedence mount; written **inside a card**, it resolves only within that card's own slice.
+
+## The 9 primitives
+
+| Group | Primitive | Notes |
+| :-- | :-- | :-- |
+| A (MCP) | `manifest(limit=20, offset=0, max_folders_per_mount=10, include_overview=False)` | mounts, roles, counts, 160-char descriptions, bounded folder lists |
+| A (MCP) | `search(query, source=None, tags=None, k=10, offset=0, max_neighbors=3, follow_supersedes=True)` | `score = -bm25(10,5,3,2,1) > 0`; supersession redirect; 240-char summaries |
+| A (MCP) | `read(address, follow_supersedes=True, max_backlinks=10, backlinks_offset=0, max_extensions=5, extensions_offset=0)` | forwarding, extends composition, shadows, backlinks, `sha256` |
+| A (MCP) | `write(id, op="create"\|"replace"\|"append"\|"delete", content, summary, title, tags, aliases, extends, supersedes, stage=False, if_match=None)` | overlay only; cycle checks; verified TOML round-trip |
+| B | `mount(path, alias, precedence, role)` / `unmount(alias)` | updates `mounts.toml` and the index |
+| B | `validate(slice_path=None, rebuild_index=False)` | lints from disk; rebuild re-hashes everything |
+| B | `pack(output_path, prefix=None, tags=None, include_deps=False)` | deterministic dir / `.zip` / `.tar.gz` export |
+| C | `diff(scope="staging"\|"overlay")` | structured summary + unified diffs |
+| C | `apply()` / `discard()` | precondition-checked, journaled, crash-recoverable |
+
+Every primitive is a `Workspace` method and a CLI subcommand (`mindslice <cmd> --help`).
+Output is JSON (`--compact` for one line). Errors are JSON on stderr with a stable `code`.
+
+### Lineage in one paragraph
+
+`R supersedes B`: reads and search hits on `B` forward to `R` (transitively, to the terminal
+replacement), annotated `redirected_from` / `matched_via_superseded`. Pass
+`follow_supersedes=False` or an allowlist such as `["curated"]` (roles or `@aliases`) to stop
+forwarding from untrusted mounts; untrusted replacements are still reported in
+`superseded_by_untrusted`. Two rival replacements are never guessed between (`competing_replacements`).
+`E extends B`: reading either returns the composed view (`baselines` / `extensions`). Extensions are
+never silently rebased: if `B` is superseded, `read(B)` reports `unrebased_extensions` and
+`read(E)` reports `baseline_superseded_by`.
+
+## MCP server
+
+```bash
+mindslice -w /path/to/workspace mcp                 # stdio, newline-delimited JSON-RPC
+mindslice -w /path/to/workspace mcp --stage-writes  # force agent writes into staging/ for review
+```
+
+Claude Code:
+
+```bash
+claude mcp add mindslice -- python -m mindslice -w /path/to/workspace mcp
+```
+
+Generic MCP client config:
+
+```json
+{"mcpServers": {"mindslice": {"command": "python3", "args": ["-m", "mindslice", "-w", "/path/to/workspace", "mcp"]}}}
+```
+
+## Concurrency & durability
+
+- Reads take `LOCK_SH` and writes take `LOCK_EX` (`fcntl.flock`) on `.cache/workspace.lock`.
+- Before every operation, the engine re-indexes files whose `(mtime_ns, size)` changed. That covers
+  editor saves, creations, renames and deletions. It also finishes any interrupted `apply()` it finds
+  (`staging/.apply_journal.json`), upgrading to `LOCK_EX` only when needed. An edit that keeps both
+  mtime and size identical is invisible to this cheap check; `validate(rebuild_index=True)` catches it.
+- File writes are atomic (temp file, `fsync`, `os.replace`). `apply()` removes the journal last, so a
+  crash at any point is finished idempotently by the next reader or writer.
+
+## Slice lifecycle
+
+[`skills/slice-builder/SKILL.md`](skills/slice-builder/SKILL.md) is an agent skill for the full
+lifecycle. It covers cold start from project docs, daily refinement in `@overlay`, and consolidation
+plus `pack()` for sharing. [`prompt-template.md`](skills/slice-builder/prompt-template.md) is the same
+guidance as a portable prompt.
+
+## Development
+
+```bash
+python3 -m unittest discover -s tests -t .
+```
+
+The suite covers every row of the design's behavior matrix (section 6) plus the format, CLI and MCP layers.
+
+## Notes on interpretation
+
+The design leaves a few details open. These are the choices v1 makes:
+
+- **Search query syntax.** Free-text terms are OR-ed and ranked by BM25 with Porter stemming.
+  `term*` does a prefix match. An empty query with `tags` lists that facet. `tags` filters are
+  all-of. The card path is also indexed, alongside `aliases`.
+- **Competing replacements.** Forwarding follows the unambiguous part of a chain and stops at the
+  fork. For `A <- B <- {C, D}`, `read(A)` lands on `B` with `competing_replacements: [C, D]`.
+- **`superseded_by`** lists the direct replacements. `status` is `"active"`,
+  `"superseded_by: <addrs>"` or `"competing_replacements"`. `matched_via_superseded` is a list.
+  `unrebased_extensions` items are `{"address", "extends"}` objects.
+- **Search redirects respect filters.** A hit is redirected only if the replacement passes the same
+  `source` and `tags` filters. Otherwise the original card is returned, stamped with its status.
+- **`if_match` compares against the write target.** That is the overlay file, or the staged file
+  when `stage=True` (`diff()` reports `staged_sha256`).
+- **Deleting a missing card** succeeds with `changed: false` and a warning (an idempotent retry).
+- **Orphan files in `staging/`** (no manifest entry, e.g. human drafts) count as creates that
+  require the overlay path to still be absent.
+- **Root `overview.md`** is readable and linkable, but is excluded from search results and card counts.
+- **CJK text.** The default `unicode61` tokenizer does not segment CJK words; a CJK tokenizer is future work.

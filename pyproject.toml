@@ -1,0 +1,24 @@
+[build-system]
+requires = ["setuptools>=68"]
+build-backend = "setuptools.build_meta"
+
+[project]
+name = "mindslice"
+version = "0.1.0"
+description = "Layered, pluggable, human-readable long-term memory engine for LLM agents (Python stdlib only)."
+readme = "README.md"
+requires-python = ">=3.12"
+dependencies = []
+keywords = ["llm", "agents", "memory", "markdown", "mcp"]
+classifiers = [
+    "Programming Language :: Python :: 3",
+    "Programming Language :: Python :: 3.12",
+    "Operating System :: POSIX",
+    "Topic :: Software Development :: Libraries",
+]
+
+[project.scripts]
+mindslice = "mindslice.cli:main"
+
+[tool.setuptools]
+packages = ["mindslice"]
