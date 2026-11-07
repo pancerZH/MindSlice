@@ -37,7 +37,9 @@ Rules:
    Split anything longer (`validate()` warns past 50 lines).
 2. **Summary paragraph** directly under the closing `+++`: 1-2 sentences, <= 240 chars.
    It is what `search()` shows, so make it a high-signal abstract, not a heading.
-3. **Bullets are atomic**: one fact/rule per `- ` line, self-contained, greppable, diffable.
+3. **Bullets are atomic, not stripped**: one fact/rule per `- ` line, self-contained, greppable,
+   diffable. Keep the concrete values, names, dates, conditions and the source's own wording:
+   search matches only words the card contains.
 4. **Frontmatter is flat TOML**: only strings and lists of strings. `title` is weighted highest
    in search; `aliases` are synonyms (also usable as `[[alias]]` link targets, see below); `tags`
    are facets.
@@ -106,13 +108,30 @@ Pick the right operation:
 | :-- | :-- |
 | New durable fact on an existing overlay card | `write <id> --op append --content "- fact"` (dedupes retries) |
 | New topic | `write <id> --summary ... --content ...` (`create`) |
-| Exception/detail to a base card (base stays valid) | `create` with `--extends @project/api/auth-flow` |
-| Base card is now wrong/outdated | `create` with `--supersedes @project/api/auth-flow` |
+| Refines, adds an exception or if-then rule to, or depends on a card that stays valid | `create` with `--extends @project/api/auth-flow` |
+| An overlay card turns out to depend on another | `--op append --extends <baseline>` (adds the edge, text unchanged) |
+| A card is now wrong or outdated (changed value, correction) | `create` with `--supersedes @project/api/auth-flow` |
 | Rewrite an overlay card you just read | `--op replace --if-match <sha256 from read>` |
-| Wrong memory | `--op delete` |
+| A request to forget, or a card that should never have been written | `--op delete` |
 
 Prefer `append` over creating near-duplicates; `search` first to find the right card. Give new
 cards aliases too (`--alias`, repeatable), following the rules above.
+
+Lineage is what keeps stale facts behind current ones, and only the writer can declare it:
+
+- **`extends` is also a dependency.** A card extends its baseline when it refines it, adds an
+  exception or an if-then rule, or holds only because the baseline does (a choice made because of
+  a preference, a plan built on a constraint). If the baseline is later superseded or deleted,
+  `read()` and `search()` flag the card (`baseline_superseded_by`, `missing_baselines`) along the
+  whole `extends` chain. Declare it when you write the card.
+- **When something changes, supersede it; don't delete it.** The old card stays searchable and
+  forwards its hits to the replacement (`matched_via_superseded`), so its wording still finds the
+  current fact. The replacement takes over every hit on the old card, so restate whatever in it is
+  still true.
+- **When unsure, extend.** A wrong `supersedes` hides a card that is still true; a wrong `extends`
+  hides nothing. A sub-case, a refinement or a conditional rule replaces nothing.
+- **Keep facts that change independently on separate cards**, since `supersedes` and `delete` act
+  on whole cards, but keep each card concrete (rule 3).
 
 When a search comes back empty or weak, look at `unmatched_terms`: the query words no card contains.
 Rephrase those (fix a typo, try a synonym or the team's other language), or reuse the vocabulary of

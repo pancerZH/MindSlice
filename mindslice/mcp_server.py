@@ -104,10 +104,17 @@ TOOLS: list[dict[str, Any]] = [
         "name": "write",
         "description": (
             "Record memory in the writable @overlay layer (base slices are read-only). One focused sub-topic per card: "
-            "a 1-2 sentence summary plus 5-15 atomic '- ' bullet statements; link related cards with [[path]]. "
-            "op=create (idempotent if identical), replace (only the fields you pass), append (adds bullets, skips "
-            "duplicates; unions tags/aliases/extends/supersedes), delete. Use extends to add exceptions to a base card, "
-            "supersedes to replace one. stage=true buffers the change in staging/ for human review."
+            "a 1-2 sentence summary plus 5-15 self-contained '- ' bullet statements that keep the concrete values, "
+            "names, dates and conditions (search is lexical: a word you leave out can't be found); link related cards "
+            "with [[path]]. supersedes and delete act on whole cards, so keep facts that can change on their own on "
+            "separate cards. op=create (idempotent if identical), replace (only the fields you pass), append (adds "
+            "bullets, skips duplicates; unions tags/aliases/extends/supersedes), delete. supersedes: this card "
+            "replaces an outdated one, which stays searchable and forwards its hits here (restate whatever in it is "
+            "still true). extends: this card refines, adds an exception or if-then rule to, or depends on another "
+            "card as its premise; if that baseline is later superseded or deleted, this card is flagged. A wrong "
+            "supersedes hides a card that is still true and extends hides nothing, so when unsure, use extends. "
+            "Use delete to forget on request or to remove a wrong card. stage=true buffers the change in staging/ "
+            "for human review."
         ),
         "inputSchema": {
             "type": "object",
@@ -115,12 +122,12 @@ TOOLS: list[dict[str, Any]] = [
                 "id": {"type": "string", "description": "overlay-relative card path without .md, e.g. \"api/auth-edge-cases\""},
                 "op": {"type": "string", "enum": ["create", "replace", "append", "delete"], "default": "create"},
                 "content": {"type": ["string", "array"], "items": {"type": "string"}, "description": "card body (Markdown), or bullet statements for append"},
-                "summary": {"type": "string", "description": "1-2 sentence abstract (<= 240 chars)"},
-                "title": {"type": "string"},
-                "tags": {"type": "array", "items": {"type": "string"}},
-                "aliases": {"type": "array", "items": {"type": "string"}},
-                "extends": {"type": "array", "items": {"type": "string"}, "description": "cards this one adds exceptions/details to (@alias/path)"},
-                "supersedes": {"type": "array", "items": {"type": "string"}, "description": "cards this one replaces (@alias/path)"},
+                "summary": {"type": "string", "description": "1-2 sentence abstract (<= 240 chars) stating the key fact with its concrete value; shown in search previews"},
+                "title": {"type": "string", "description": "specific, descriptive title; the most heavily weighted search field"},
+                "tags": {"type": "array", "items": {"type": "string"}, "description": "facets; searched, and filterable with search(tags=...)"},
+                "aliases": {"type": "array", "items": {"type": "string"}, "description": "3-8 search synonyms of 1-4 words: other phrasings, the asker's words, abbreviations, former names, other-language terms (weighted just below the title; also [[alias]] link targets)"},
+                "extends": {"type": "array", "items": {"type": "string"}, "description": "baselines this card refines, adds exceptions or if-then rules to, or depends on as a premise (@alias/path); flagged if one is later superseded or deleted"},
+                "supersedes": {"type": "array", "items": {"type": "string"}, "description": "outdated cards this one replaces (@alias/path); their search hits forward here"},
                 "stage": {"type": "boolean", "default": False},
                 "if_match": {"type": "string", "description": "sha256 from read(); rejects the write if the card changed"},
             },
@@ -134,7 +141,8 @@ INSTRUCTIONS = (
     "MindSlice is your long-term memory. Start with manifest() to see the mounted slices, use search() to find "
     "relevant cards, and read() an address for full content (it composes extensions and follows replacements). "
     "Record durable learnings, user corrections and debugging lessons with write() into @overlay: prefer append "
-    "to grow an existing card, extends to add exceptions to a base card, and supersedes to replace outdated ones."
+    "to grow an existing card, extends when a card refines, adds an exception or if-then rule to, or depends on "
+    "another, supersedes to replace an outdated card (not delete), and delete only to forget on request."
 )
 
 

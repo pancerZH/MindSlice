@@ -49,14 +49,16 @@ scorer, so all arms are compared on the same questions with the same rules.
 | `oracle` | Template cards plus the annotations' lineage (Mode B) | none (exists) |
 | `agent-default` | An LLM agent with the MCP server as shipped (tool descriptions and server instructions) and the neutral task prompt (4.2) | LLM |
 | `agent-policy` | Same, plus the lineage policy paragraph (4.3) | LLM |
+| `agent-overlay` | The `flat` cards in a read-only `@history` slice; the agent writes only lineage cards into `@overlay`, with the policy paragraph and an addendum (4.4) | LLM |
 
-Run both agent arms with **at least two models of different capability** (for example the current Sonnet
+Run the agent arms with **at least two models of different capability** (for example the current Sonnet
 and Haiku; Opus if the budget allows) to see whether lineage-writing scales with the model. Record exact
 model ids.
 
-Two **scripted agents** validate the runner before any LLM run (section 7): `scripted-flat` writes each
-round as a card through the tools, and `scripted-oracle` replays the annotations' lineage through the
-tools. They must reproduce the `flat` and `oracle` numbers.
+Three **scripted agents** validate the runner before any LLM run (section 7): `scripted-flat` writes each
+round as a card through the tools, `scripted-oracle` replays the annotations' lineage through the tools,
+and `scripted-overlay` replays the same lineage as `agent-overlay` cards (4.4). The first two must
+reproduce the `flat` and `oracle` numbers; `scripted-overlay` must reproduce `oracle`'s.
 
 ## 4. The agent protocol
 
@@ -71,7 +73,7 @@ and descriptions (`mindslice/mcp_server.py`: `TOOLS`, `INSTRUCTIONS`). Either:
   `MCPServer(ws).call_tool(name, arguments)`. Return its result, errors included, to the model unchanged.
 
 Writes go straight to `@overlay` (no `--stage-writes`). The workspace has one mount, `@overlay`, and starts
-empty.
+empty (`agent-overlay` adds a read-only `@history` slice, 4.4).
 
 ### 4.2 Neutral task prompt (`agent-default`), verbatim
 
@@ -99,13 +101,67 @@ session's date as the harness's `Date:` line gives it, or omitted when the datas
 
 > Before you write, search for cards about the same thing. If the new information replaces something
 > already recorded (a changed value, a new preference, a correction), write the new card with
-> `supersedes` naming the old card's address instead of leaving both active. If it only adds a detail or
-> an exception to a card that stays true, use `extends`. If the user asks you to forget something, delete
-> the cards that state it. Keep one fact per card where you can, with a summary that states the fact.
+> `supersedes` naming the old card's address, rather than leaving both active or deleting the old one,
+> and restate anything in the old card that is still true. If it refines, adds an exception or an
+> if-then rule to, or depends on something that stays true (a choice made because of an earlier
+> preference or plan), write it with `extends` naming that card, so it is flagged if that card later
+> changes. If you can't tell which, use `extends`: it hides nothing. If the user asks you to forget
+> something, delete the cards that state it. Put each fact that can change on its own card, and keep its
+> concrete values, names, dates, conditions and the user's own wording; the summary states the fact.
 
-This is the runtime table of `skills/slice-builder/SKILL.md` ("Stage 2") in prose.
+This is the runtime table and lineage rules of `skills/slice-builder/SKILL.md` ("Stage 2") in prose. The
+shipped `write` description and `INSTRUCTIONS` define `supersedes`, `extends` and `delete` the same way,
+so `agent-default` versus `agent-policy` measures the procedure (search first, choose an operation) and
+the emphasis, not access to the definitions.
 
-### 4.4 Limits and logging
+### 4.4 Lineage over mounted history (`agent-overlay`)
+
+In the first two agent arms the agent is the only writer, so their scores mix two skills: what it keeps
+(a writer that compresses dialogue into terse facts drops details and the words search needs, which
+`current@10` and `lost` count) and the lineage it writes. On these four benchmarks,
+[Bao et al. (2026)](https://arxiv.org/abs/2610.30755) find retrieval over raw history ahead of
+LLM-transformed memory stores, and Mem0's LLM-decided updates and deletes rarely effective, with accuracy
+higher when they are disabled. `agent-overlay` takes extraction out of the agent's hands: the raw history
+is mounted where the agent can't change it, and the agent writes only lineage.
+
+- **Workspace.** The `flat` cards (rounds for MEME and LongMemEval, one card per fact for
+  MemoryAgentBench, as in Mode B) are files in `history.slice/`, mounted read-only as `@history` (role
+  `baseline`). The harness adds session *i*'s cards before the agent's session *i* conversation (the
+  engine re-indexes changed files before every call), so the agent can search the session it is reading.
+  `@overlay` starts empty.
+- **What the agent writes.** It can't edit `@history`, so its `@overlay` cards carry the lineage: for a
+  changed value, a card stating the new value that supersedes every card stating the old one (in
+  `@history`, and its own earlier copy); for a dependent decision or an if-then rule, a card restating it
+  that extends the card holding its premise and supersedes the `@history` card it came from (otherwise
+  that read-only copy stays active, unwarned, when the premise changes); for a request to forget, a card
+  that supersedes each `@history` card stating the value and restates the rest of that card without it.
+- **Prompt.** `agent-policy`'s system prompt, then this addendum, verbatim:
+
+  > Every session is already stored verbatim in the read-only `@history` slice. Don't copy it: write to
+  > `@overlay` only to keep that history accurate. When a value changes, write a card with the new value
+  > that `supersedes` every card stating the old one, in `@history` or `@overlay`. When something depends
+  > on or adds a rule to an earlier fact, write a card restating it that `extends` the card holding that
+  > fact and `supersedes` the `@history` card it came from. When the user asks you to forget something,
+  > write a card that `supersedes` each `@history` card stating it and restates the rest of that card
+  > (you can still delete your own `@overlay` cards). In every replacement, restate any other fact from
+  > the old card that is still true.
+
+- **Reading it.** `oracle` has the same cards and the annotations' lineage, so `oracle` versus
+  `agent-overlay` prices the agent's lineage alone, and `agent-overlay` versus `agent-policy` prices
+  extraction (plus the addendum's extra instruction). The history can't be rewritten or deleted, so here
+  `lost` comes only from a wrong `supersedes`: a `@history` card hidden behind a replacement that doesn't
+  restate its value.
+- **Limits.** `supersedes` acts on whole cards, so retiring one fact of a round that states two hides both
+  unless the replacement restates the other (`lost` counts it). Forgetting is hiding, not erasure: a
+  superseded `@history` card leaves search results and default `read()`, which `forgotten` counts, but its
+  text stays on disk, reachable with `follow_supersedes=false` and named in `matched_via_superseded`.
+  Erasing it takes a human edit of `history.slice/`; report `forgotten` for this arm with that caveat.
+- **Scripted check.** `scripted-overlay` writes these cards from the annotations: each copies the
+  `@history` card that states the new value, dependent or rule, with the annotations' lineage (`extends`
+  naming the premise's current card, preferring an `@overlay` replacement); a forget card states only that
+  the value was forgotten.
+
+### 4.5 Limits and logging
 
 - At most **40 tool calls per session**. Hitting the cap ends the session; count and report it.
 - Model parameters: the provider's defaults unless a parameter is fixed in section 8 (record whatever is
@@ -200,10 +256,10 @@ transcript text and question positions:
    noise; document every disagreement.
 3. **Agent runner** (section 4) with a pluggable "agent": a function from (system prompt, session message,
    tool dispatcher) to a finished session.
-4. **Scripted agents**: `scripted-flat` and `scripted-oracle` (section 3) through the same tool interface.
-   Acceptance: their metrics equal `flat` and `oracle` within matching noise on all of tier 1. This proves
-   the plumbing (ordering, question timing, scoring) before any money is spent. Scripted agents run
-   offline, so they also belong in CI on the synthetic datasets.
+4. **Scripted agents**: `scripted-flat`, `scripted-oracle` and `scripted-overlay` (section 3) through the
+   same tool interface. Acceptance: their metrics equal `flat`, `oracle` and `oracle` within matching noise
+   on all of tier 1. This proves the plumbing (ordering, question timing, scoring) before any money is
+   spent. Scripted agents run offline, so they also belong in CI on the synthetic datasets.
 5. **LLM agent** adapter for the chosen provider, then the smoke tier.
 
 ## 8. Protocol and pre-registration
@@ -248,10 +304,11 @@ second model's variance, so keep it out of G1-G5.
 | Outcome | Reading | Likely next step |
 | --- | --- | --- |
 | G1 and G2 hold, G4 holds | Agents write usable lineage; the design works end to end | Tier 2 for realism; then answer accuracy |
-| G2 misses under `agent-default` but holds under `agent-policy` | Agents can do it but the shipped guidance doesn't ask clearly enough | Move the policy into the MCP `INSTRUCTIONS` and `write` description; re-test on a fresh tier |
+| G2 misses under `agent-default` but holds under `agent-policy` | Agents can do it but the shipped guidance doesn't ask clearly enough | Move the rest of the policy (search first, then choose) into the MCP `INSTRUCTIONS`; re-test on a fresh tier |
 | G2 misses under both | Agents don't notice supersession from dialogue | Consider an end-of-session consolidation step (SKILL.md "Stage 3") as its own arm |
 | G4 misses | Agents over-supersede or over-delete, which hides true facts | Look at which writes did it (likely `extends` cases); consider tool-description changes or requiring a `read` of the target before `supersedes` |
 | G3 misses | The agent's cards are harder to find than raw dialogue | Card-authoring guidance (summaries, aliases), as in `evals/retrieval` |
+| G3 or G4 misses under `agent-policy` but holds under `agent-overlay` | Extraction, not lineage, is the weak step | Recommend mounting raw history read-only with an agent-written lineage overlay |
 
 ## 11. Known biases and risks
 

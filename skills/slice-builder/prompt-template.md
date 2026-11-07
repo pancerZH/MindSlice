@@ -34,6 +34,12 @@ supersedes = []
 Constraints:
 
 - One focused sub-topic per card; 5-15 bullets; at most ~50 lines. Split larger topics.
+- Bullets keep the concrete values, names, dates, conditions and the sources' own wording: search is
+  lexical and matches only words the card contains.
+- `aliases`: 3-8 search synonyms of 1-4 words each (other phrasings, the words someone would ask with,
+  abbreviations both ways, former names), none already in the title or summary.
+- `extends`: cards this one refines, adds exceptions or if-then rules to, or depends on as a premise.
+  `supersedes`: cards this one replaces (usually empty in a new slice).
 - Frontmatter is TOML: only strings and lists of strings.
 - `[[links]]` without an `@alias/` prefix refer to cards in this same slice; every link must resolve.
 - Capture what is durable and non-obvious (conventions, decisions and their rationale, invariants,

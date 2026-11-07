@@ -118,12 +118,14 @@ Output is JSON (`--compact` for one line). Errors are JSON on stderr with a stab
 ### Lineage in one paragraph
 
 `R supersedes B`: reads and search hits on `B` forward to `R` (transitively, to the terminal
-replacement), annotated `redirected_from` / `matched_via_superseded`. Pass
+replacement), annotated `redirected_from` / `matched_via_superseded`, so `B`'s wording still finds
+`R`; prefer it to deleting `B` when a fact changes. Pass
 `follow_supersedes=False` or an allowlist such as `["curated"]` (roles or `@aliases`) to stop
 forwarding from untrusted mounts; untrusted replacements are still reported, in
 `superseded_by_untrusted` for the card returned and in `bypassed_replacements` for the cards a
 redirect passed through. Two rival replacements are never guessed between (`competing_replacements`).
-`E extends B`: reading either returns the composed view (`baselines` / `extensions`). Extensions are
+`E extends B` (`E` refines `B`, adds an exception or if-then rule to it, or depends on it as a
+premise): reading either returns the composed view (`baselines` / `extensions`). Extensions are
 never silently rebased: if `B` is superseded, `read(B)` reports `unrebased_extensions` and
 `read(E)` reports `baseline_superseded_by`. That notice covers the whole `extends` chain (a
 baseline of a baseline counts), `missing_baselines` names a reference on it that no longer resolves
@@ -257,7 +259,8 @@ do for stale facts. See [its README](evals/external/README.md), [plan](evals/ext
 
 [`evals/agent_test.md`](evals/agent_test.md) plans the test those results leave open, not yet run: whether
 an LLM agent writing memory through the MCP tools records `supersedes` well enough to keep stale facts
-behind current ones, scored by the same deterministic harness.
+behind current ones, scored by the same deterministic harness. One arm mounts the raw sessions as a
+read-only slice, so the agent writes only lineage over them.
 
 ## Notes on interpretation
 
