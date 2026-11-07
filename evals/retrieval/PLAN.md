@@ -149,6 +149,82 @@ Following L17's miss and the rule above, the user reverted the engine to BM25 or
 - **Next ranking change:** `holdout` and `holdout-2` have both informed ranking. Judge any further ranking
   change on a new split (`holdout-3`), frozen with its lines before it is scored.
 
+## Third holdout (`holdout-3`) and the aliased corpus
+
+Written on 2026-11-07, before any of its data existed. The engine is the BM25-order engine above, plus
+the search feedback described below, which must leave every ranking unchanged.
+
+**Why.** Three questions the record leaves open:
+
+1. **Author bias.** Every query so far was written by the engine's author. `holdout-3`'s queries and
+   judgments are written by a separate agent that has not seen the engine's code, this plan, the earlier
+   queries or any result.
+2. **Vocabulary mismatch.** All eight queries scoring below 0.5 nDCG@5 fail because the words they use are
+   not in the answer card, and every card has `aliases = []`. MindSlice puts the remedy in policy, not in
+   the engine: the `slice-builder` skill writes aliases. The aliased corpus measures that remedy.
+3. **Search feedback.** `search()` now reports `unmatched_terms` (query words no card in scope contains)
+   and `did_you_mean` (close words that do occur, for spaced-script words). Ordering is untouched.
+
+**The data, and who writes it.**
+
+| Part | Written by | Sees | Never sees |
+| --- | --- | --- | --- |
+| Aliased corpus, `data/aliased/` | A fresh agent following `skills/slice-builder/SKILL.md` | Every card of every corpus (including the tiny ones), and the skill | Queries, results, this plan, the engine's code |
+| `holdout-3` queries and judgments | A second fresh agent | The plain corpus (no aliases) and the judging rules | All of the above, plus the aliased corpus and the skill |
+
+The aliased corpus is the plain corpus with only each card's `aliases = [...]` line changed; `check`
+verifies this. The skill's alias section was rewritten on 2026-11-07 after reading the failures on `dev`,
+`holdout`, `limits` and `holdout-2` (see the ledger), which is why it is judged here and not there.
+
+**Queries.** 40 English and 40 Chinese queries on the full corpus, ids `en-b01`... and `zh-b01`...
+`lang` names the handbook whose team asks (as in `limits`, where `zh-l03` is English text).
+
+| Category | Per language | What it is |
+| --- | --- | --- |
+| `natural` | 20 | Asked the way a teammate would type it into a search box or ask an assistant, in their own phrasing |
+| `own-words` | 12 | The asker doesn't know the handbook's terms: describes the situation, symptom or goal, not the card's name |
+| `cross-lingual` | 4 | Written in the other language from the card that answers it |
+| `typo` | 4 | A natural query with one realistic typo (in Chinese, a wrong character from the input method) |
+
+`own-words` and `cross-lingual` together are the **vocabulary-gap** queries (32 pooled).
+
+**Systems added.** Both leave the engine unchanged:
+
+- `aliases`: every workspace is built from `data/aliased/` instead of the plain corpus.
+- `suggest-retry`: a fixed caller policy, with no agent. If the first search's `did_you_mean` is not empty,
+  replace each suggested word in the query with its first suggestion, search once more, and score that
+  second list instead.
+
+They also run on the earlier splits, reported with no line, since those splits informed the skill.
+
+**Lines**, read on `holdout-3` only, once, with the verdict rules above:
+
+| Line | Group | Statistic | Line |
+| --- | --- | --- | --- |
+| L18 | English, `natural` | `mindslice` nDCG@5 | 0.80 |
+| L19 | Chinese, `natural` | `mindslice` nDCG@5 | 0.80 |
+| L20 | Vocabulary-gap, pooled (32) | `aliases` minus `mindslice` | 0.05 |
+| L21 | `natural`, pooled (40) | `aliases` minus `mindslice` | −0.02 |
+| L22 | All 80 pooled | `aliases` minus `mindslice` | 0.00 |
+| L23 | `typo`, pooled (8) | `suggest-retry` minus `mindslice` | 0.00 |
+| L24 | All 80 pooled | `suggest-retry` minus `mindslice` | 0.00 |
+
+L21 is a margin: aliases may cost ordinary queries at most 0.02.
+
+**Decision rules, fixed now.** The user makes the call either way; these fix what the evidence recommends.
+
+- **Aliases.** If L22 is confirmed or a point pass, and L21 is not a miss, keep the skill's alias section
+  and recommend aliases in the README. Otherwise, recommend reverting the alias section. L20 says whether
+  aliases help where they are meant to.
+- **Suggestions.** If L24 is confirmed or a point pass, keep `did_you_mean`. If it misses, recommend
+  dropping it and keeping `unmatched_terms`, which changes no result. L23 says whether it helps on typos.
+
+**Known limits, stated now.** The query writer is a language model, as is the author; a fresh context
+reduces the shared-author bias but doesn't remove it. Only English typos can benefit from `did_you_mean`
+(it makes no suggestions inside Chinese runs), so L23 pools 4 queries that may gain with 4 that can't.
+With 8 typo and 32 vocabulary-gap queries, those intervals are wide. Once read, `holdout-3` has informed
+the alias and suggestion questions, and any later change to either needs fresh data.
+
 ## Ledger
 
 | Date | Run | What it informed |
@@ -161,3 +237,5 @@ Following L17's miss and the rule above, the user reverted the engine to BM25 or
 | 2026-11-06 | `holdout-2` written and frozen, its rules added above | Nothing scored on it yet |
 | 2026-11-06 | `holdout-2`, once, same engine | Quality: L9, L11, L12 **confirmed**, L10 **point pass**. Ranking: L13 **miss** (−0.065 [−0.105, −0.027]), L14 **miss** (−0.016 [−0.047, 0.010]), L15 and L16 **confirmed** (+0.002 on the tiny corpora), and decision line L17 **miss** (−0.026 [−0.046, −0.010]). **By the rule above, the evidence recommends reverting to BM25 order.** Coverage-first was worse on 12 of 60 queries and better on 3. Cause, diagnosed after the verdict: in a corpus this size, words that are rare but carry no topic ("do", "when", 修改) earn heavy coverage credit, IDF-weighted or not, while BM25's field weights and term saturation keep the topical card first. `unweighted-coverage` falls between (−0.015 pooled). The engine is unchanged; the decision is the user's |
 | 2026-11-06 | User decision: revert to BM25 order | Engine ordering changed; coverage kept as a reported field. Equivalence verified on all 150 queries (above). Record archived, L7, L8 and L13 to L17 retired, results and the regression floor regenerated on the new engine |
+| 2026-11-07 | Reading the eight queries below 0.5 nDCG@5 (`dev`, `holdout`, `limits`, `holdout-2`) | All are vocabulary mismatches, and no card has aliases. **Skill changed:** `slice-builder`'s alias section rewritten (what aliases should cover, what to avoid; examples from a topic outside the corpus). No engine or data change |
+| 2026-11-07 | `holdout-3` and aliased-corpus rules written (above), before any of their data existed | Nothing generated or scored |

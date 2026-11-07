@@ -39,13 +39,37 @@ Rules:
    It is what `search()` shows, so make it a high-signal abstract, not a heading.
 3. **Bullets are atomic**: one fact/rule per `- ` line, self-contained, greppable, diffable.
 4. **Frontmatter is flat TOML**: only strings and lists of strings. `title` is weighted highest
-   in search; `aliases` are synonyms (also usable as `[[alias]]` link targets); `tags` are facets.
+   in search; `aliases` are synonyms (also usable as `[[alias]]` link targets, see below); `tags`
+   are facets.
 5. **Paths are addresses**: `architecture/async-patterns.md` is `architecture/async-patterns`.
    Use lowercase-kebab-case, group by topic folders, keep paths stable (links depend on them).
 6. **Links**: `[[path]]` or `[[path|label]]`. Without an `@alias/` prefix a link resolves *only
    inside the same slice* - never into other mounts. Use `[[@persona/tone]]` to reach across slices
    and declare that slice in `slice.toml` `dependencies`.
 7. Never put secrets, tokens, machine-specific absolute paths or session noise in cards.
+
+## Aliases: the words someone will search with
+
+`search()` is lexical: a card is found only by words it contains (stemmed, case-folded; Chinese,
+Japanese and other unspaced scripts match by character pairs). Someone who has never read the card
+searches with *their* words, not yours. `aliases` are indexed just below the title, so they are the
+place to put the other words for the same thing. Write 3-8 per card, each 1-4 words:
+
+- **Synonyms and near-synonyms** of the title's key terms (`exception policy` for error handling).
+- **The asker's phrasing**: the symptom, task or goal that sends someone to this card, as they
+  would say it (`500 errors`, `what to return when a request fails`), including colloquial wording.
+- **Abbreviations and expansions** both ways, and spelling variants (`RFC 7807`, `problem details`).
+- **Former names** of renamed things, and names from tools people know (`error middleware`).
+- **The team's other working language**, if it has one: the terms a colleague would use for this
+  topic in that language (`错误处理` on an English card, `error handling` on a Chinese one).
+
+Avoid:
+
+- Words already in the title or summary: they are indexed already.
+- Generic words that fit most cards (`process`, `policy`, `guide`, `team`, `规范`, `流程`): they make
+  unrelated cards match.
+- An alias another card in the same slice already uses (`validate()` warns), or one that equals
+  another card's path: aliases are also link and `read()` targets.
 
 ## Stage 1 - Cold start: bootstrap a slice from raw sources
 
@@ -87,7 +111,12 @@ Pick the right operation:
 | Rewrite an overlay card you just read | `--op replace --if-match <sha256 from read>` |
 | Wrong memory | `--op delete` |
 
-Prefer `append` over creating near-duplicates; `search` first to find the right card.
+Prefer `append` over creating near-duplicates; `search` first to find the right card. Give new
+cards aliases too (`--alias`, repeatable), following the rules above.
+
+When a search comes back empty or weak, look at `unmatched_terms` (query words no card contains)
+and `did_you_mean` (close words that do occur, e.g. a typo's correction). Rephrase with them, or
+with the vocabulary of the cards you did find, before concluding the memory has nothing.
 
 ## Stage 3 - Consolidate, scrub & share
 
