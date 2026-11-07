@@ -30,7 +30,7 @@ split or language loses more than 0.02 nDCG@5 against `results/run.json`.
 | `data/aliased/` | The same five corpus directories, with every card's `aliases` line written by an agent following the `slice-builder` skill. `check` verifies nothing else differs |
 | `data/queries.toml` | Queries with graded judgments, by split (`dev`, `holdout`, `limits`, `holdout-2`, `holdout-3`), language, corpus and category |
 | `data/DIGESTS.json` | SHA-256 of the corpus and of each split, frozen before the first run |
-| `systems.py` | `mindslice`, plus versions of it that each change one design decision: `coverage-first` (the reverted ordering), `unweighted-coverage`, `strict-phrase`, `v1-baseline`. Two keep the engine and change what surrounds it: `aliases` (built from `data/aliased/`) and `suggest-retry` (retries once with `did_you_mean`) |
+| `systems.py` | `mindslice`, plus versions of it that each change one design decision: `coverage-first` (the reverted ordering), `unweighted-coverage`, `strict-phrase`, `v1-baseline`. One keeps the engine and changes the data: `aliases` (built from `data/aliased/`) |
 | `metrics.py` | nDCG@5, Recall@10, MRR@10, the bootstrap, verdicts |
 | `results/` | `summary.md`, `per_query.jsonl` (every system's top 10 per query), `run.json` (environment, digests, numbers). `archive/` keeps the record each past decision was read on |
 

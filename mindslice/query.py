@@ -279,7 +279,6 @@ def search(
         # value of each ranking signal (design: max(score(A), score(B))).
         groups: dict[str, dict[str, Any]] = {}
         hits = idx.search(query, sources, tag_list)
-        feedback = idx.feedback(query, hits, sources, tag_list)
         for hit in hits:
             address = ctx.remember(hit.row)
             fwd = ctx.lv.forward(address)
@@ -307,10 +306,8 @@ def search(
             "k": k,
             "truncated": offset + k < total,
             "next_offset": _page(total, offset, k),
-            # About the query, not the results: words no card in scope contains, and close
-            # words that do occur. Neither changes or reorders anything above.
-            "unmatched_terms": feedback.unmatched_terms,
-            "did_you_mean": feedback.did_you_mean,
+            # About the query, not the results: words no card in scope contains (changes nothing above).
+            "unmatched_terms": idx.unmatched_terms(query, hits),
         }
 
 

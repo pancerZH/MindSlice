@@ -114,11 +114,9 @@ Pick the right operation:
 Prefer `append` over creating near-duplicates; `search` first to find the right card. Give new
 cards aliases too (`--alias`, repeatable), following the rules above.
 
-When a search comes back empty or weak, look at `unmatched_terms` (query words no card contains)
-and `did_you_mean` (close words that do occur, e.g. a typo's correction). Rephrase with them, or
-with the vocabulary of the cards you did find, before concluding the memory has nothing. A suggestion
-is only a near spelling: use it when it is what you meant (`rollbak` -> `rollback`), not when it merely
-looks alike (`how` -> `now`).
+When a search comes back empty or weak, look at `unmatched_terms`: the query words no card contains.
+Rephrase those (fix a typo, try a synonym or the team's other language), or reuse the vocabulary of
+the cards you did find, before concluding the memory has nothing.
 
 ## Stage 3 - Consolidate, scrub & share
 

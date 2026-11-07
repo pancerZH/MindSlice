@@ -247,6 +247,28 @@ for this read (source digest `f8e62ecdcb2ea9683593c61959e81f81394c1db8605c2afbe1
 | Aliased corpus, `data/aliased/` (88 cards, 539 aliases) | `89f7ba4e1455ec458189496b75dc4e01487f48d5867ef16a4f3de1d91c87ed44` |
 | `holdout-3` queries | `a05d7a4e0d9a77c174af7baab70bc62de704a8713898d158b5dd5be862f74f1a` |
 
+## Decision: no `did_you_mean` (2026-11-07)
+
+Following L24's miss and the rule above, `did_you_mean` is removed and `unmatched_terms` stays. The user
+delegated the call, asking whether constraining suggestions would overfit them to these queries.
+
+- **Why not constrain it instead.** Over all 230 queries it fired on 52, of which 5 are typo queries.
+  Retrying with it helped 4 queries and hurt 21; most of the noise was ordinary words a 70-card corpus
+  lacks (how→now). Making it precise means thresholds fitted to a handful of English typos. For example,
+  "5+ characters, edit distance 1" keeps all 4 English typos of `holdout-3`, but it was read off those 4,
+  and both numbers are English-centric. The only rule-free variant, suggesting only when nothing matched,
+  fires on 1 query of 230. Neither is worth another holdout round and its tuning.
+- **What stays covers the need.** The usual caller is a language model, which corrects a misspelling
+  itself once `unmatched_terms` names the word that missed. That field is a plain fact about the corpus,
+  with no thresholds, in every script. The larger failure, vocabulary gaps (32 `holdout-3` queries near
+  0.3 nDCG@5), is what aliases address.
+- **Verified equivalent.** On all 230 queries, every remaining system's top 10 equals the archived read
+  (1,380 rankings), so L18 to L22 stand as read. Source digest
+  `a48eae418a9054fe0d1c0a5eadb0b89b464378dab849f0b2e317ccd3bc5990fb`.
+- **Systems and lines.** `suggest-retry` is gone; L23 and L24 are retired, and their record is
+  `results/archive/2026-11-07-did-you-mean-engine/`. Existing caches drop the `card_words` table, and
+  analyzer version 3 re-indexes them once (telemetry survives).
+
 ## Ledger
 
 | Date | Run | What it informed |
@@ -267,3 +289,4 @@ for this read (source digest `f8e62ecdcb2ea9683593c61959e81f81394c1db8605c2afbe1
 | 2026-11-07 | Before the read, the CI regression test ranked `holdout-3` in memory and errored on missing recorded entries, printing no score | Nothing seen. The test now skips splits with no recorded floor |
 | 2026-11-07 | `holdout-3`, once, engine `f8e62ec…`, every system. `aliases` and `suggest-retry` also on the earlier splits (exploratory) | **Quality: L18 and L19 miss** (0.790 [0.754, 0.830], 0.772 [0.736, 0.814]). The same-team reading gives 0.942 and 0.916, so the cap from the cross-handbook grade 1s explains both. **Aliases: L20, L21 and L22 confirmed** (+0.163 on vocabulary-gap queries, +0.133 on natural ones, +0.144 overall). Same-team: +0.174, −0.025 (it would miss L21's margin), +0.064. **By the rule, the evidence recommends keeping the alias section.** Cause, diagnosed after the verdict: aliases put about one card from the other handbook in every top 5 (0.0-0.8 per query becomes 0.55-1.35), mostly through the other-language aliases. `holdout-3` grades those cards 1; the earlier, author-written splits mostly don't, and there aliases lose (−0.039 pooled on `holdout-2`, −0.073 on `dev/zh`), while they gain on `limits` (+0.100 English, +0.374 Chinese). **Suggestions: L23 point pass** (+0.039 [−0.029, 0.162]), **L24 miss** (−0.004 [−0.017, 0.012]). **By the rule, the evidence recommends dropping `did_you_mean`.** Cause: it suggests for ordinary words a 70-card corpus lacks (how→now, what→that, long→log, rules→uses), and blind substitution turns them into noise; real typos are fixed (`rollbak` 0.33→0.76). The engine is unchanged; both decisions are the user's |
 | 2026-11-07 | After the read: docs only | README, the skill and the MCP `search` description now say that a `did_you_mean` suggestion is a near spelling to use only when it is what was meant. No ranking code changed |
+| 2026-11-07 | Decision, delegated by the user: remove `did_you_mean`, keep `unmatched_terms` (above) | Every remaining system's rankings unchanged on all 230 queries (1,380). L23 and L24 retired and archived; results and the regression floor regenerated |

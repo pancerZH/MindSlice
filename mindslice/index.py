@@ -4,7 +4,6 @@ Everything except telemetry is reconstructible from the Markdown on disk:
 
 * ``cards``       one row per card file (stat, sha256, parsed metadata, preview)
 * ``cards_fts``   FTS5 table over ``title, aliases, tags, summary, body``
-* ``card_words``  each card's unstemmed spaced-script words (for ``did_you_mean``)
 * ``links``       raw lineage / wikilink references plus their current resolution
 * ``mounts``      snapshot of the mount table the index was built against
 * ``telemetry``   best-effort ``read_count`` / ``last_read_at`` (survives rebuilds,
@@ -26,23 +25,12 @@ from .addressing import MountCatalog, resolve_ref
 from .card import parse_card, preview_text, sha256_bytes
 from .config import OVERVIEW_PATH, Mount, MountTable
 from .fsutil import iter_markdown
-from .lexical import (
-    SUGGEST_MIN_CHARS,
-    QueryPlan,
-    analyze_query,
-    analyzer_signature,
-    edit_distance,
-    fold,
-    index_text,
-    surface_words,
-)
+from .lexical import QueryPlan, analyze_query, analyzer_signature, fold, index_text
 
 SCHEMA_VERSION = "1"  # table layout; text-analysis changes are tracked by lexical.analyzer_signature()
 BM25_WEIGHTS = (10.0, 5.0, 3.0, 2.0, 1.0)  # title, aliases, tags, summary, body
 TOKENIZER = "porter unicode61 remove_diacritics 2"
 LINK_KINDS = ("extends", "supersedes", "wikilink")
-MAX_SUGGESTIONS = 3  # did_you_mean entries per unmatched word
-MAX_SUGGESTED_WORDS = 5  # unmatched words that get suggestions, in query order
 
 _SCHEMA = f"""
 CREATE TABLE IF NOT EXISTS meta(key TEXT PRIMARY KEY, value TEXT NOT NULL);
@@ -67,8 +55,7 @@ CREATE VIRTUAL TABLE IF NOT EXISTS cards_fts USING fts5(
 CREATE TABLE IF NOT EXISTS card_aliases(mount TEXT NOT NULL, path TEXT NOT NULL, alias TEXT NOT NULL);
 CREATE INDEX IF NOT EXISTS card_aliases_idx ON card_aliases(mount, alias);
 CREATE TABLE IF NOT EXISTS card_tags(mount TEXT NOT NULL, path TEXT NOT NULL, tag TEXT NOT NULL);
-CREATE TABLE IF NOT EXISTS card_words(card_id INTEGER NOT NULL, word TEXT NOT NULL, PRIMARY KEY(card_id, word)) WITHOUT ROWID;
-CREATE INDEX IF NOT EXISTS card_words_word_idx ON card_words(word);
+DROP TABLE IF EXISTS card_words;  -- left by analyzer "2" caches (did_you_mean, since removed)
 CREATE INDEX IF NOT EXISTS card_tags_idx ON card_tags(mount, path);
 CREATE TABLE IF NOT EXISTS links(
     id INTEGER PRIMARY KEY,
@@ -83,7 +70,7 @@ CREATE TABLE IF NOT EXISTS telemetry(
 );
 """
 
-_DERIVED_TABLES = ("cards", "cards_fts", "card_words", "card_aliases", "card_tags", "links", "mounts")
+_DERIVED_TABLES = ("cards", "cards_fts", "card_aliases", "card_tags", "links", "mounts")
 
 
 @dataclass
@@ -112,14 +99,6 @@ class SyncStats:
 @dataclass
 class DiskState:
     files: dict[tuple[str, str], tuple[int, int, Path]]  # (mount, path) -> (mtime_ns, size, abs path)
-
-
-@dataclass(frozen=True)
-class Feedback:
-    """What a search can tell its caller about the query itself (it changes no result)."""
-
-    unmatched_terms: list[str]  # query words (or unspaced runs) that no card in scope contains
-    did_you_mean: dict[str, list[str]]  # unmatched spaced-script word -> close words that do occur
 
 
 @dataclass
@@ -324,7 +303,6 @@ class Index:
     def _delete_mount_rows(self, alias: str) -> int:
         ids = [r[0] for r in self.conn.execute("SELECT id FROM cards WHERE mount=?", (alias,))]
         self.conn.executemany("DELETE FROM cards_fts WHERE rowid=?", [(i,) for i in ids])
-        self.conn.executemany("DELETE FROM card_words WHERE card_id=?", [(i,) for i in ids])
         for tbl in ("cards", "card_aliases", "card_tags"):
             self.conn.execute(f"DELETE FROM {tbl} WHERE mount=?", (alias,))
         self.conn.execute("DELETE FROM links WHERE src_mount=?", (alias,))
@@ -334,7 +312,6 @@ class Index:
         row = self.conn.execute("SELECT id FROM cards WHERE mount=? AND path=?", (mount, path)).fetchone()
         if row is not None:
             self.conn.execute("DELETE FROM cards_fts WHERE rowid=?", (row[0],))
-            self.conn.execute("DELETE FROM card_words WHERE card_id=?", (row[0],))
         self.conn.execute("DELETE FROM cards WHERE mount=? AND path=?", (mount, path))
         self.conn.execute("DELETE FROM card_aliases WHERE mount=? AND path=?", (mount, path))
         self.conn.execute("DELETE FROM card_tags WHERE mount=? AND path=?", (mount, path))
@@ -377,10 +354,6 @@ class Index:
         self.conn.execute(
             "INSERT INTO cards_fts(rowid, title, aliases, tags, summary, body) VALUES(?, ?, ?, ?, ?, ?)",
             (card_id, *(index_text(t) for t in fields)),
-        )
-        self.conn.executemany(
-            "INSERT INTO card_words(card_id, word) VALUES(?, ?)",
-            [(card_id, w) for w in sorted(set().union(*(surface_words(t) for t in fields)))],
         )
         self.conn.executemany(
             "INSERT INTO card_aliases(mount, path, alias) VALUES(?, ?, ?)",
@@ -503,51 +476,21 @@ class Index:
             args += tag_list + [len(tag_list)]
         return where, args
 
-    def feedback(
-        self, query: str, hits: Sequence[Hit], sources: Iterable[str] | None = None, tags: Iterable[str] | None = None
-    ) -> Feedback:
-        """Which query words matched no card in scope, and close words that do occur.
+    def unmatched_terms(self, query: str, hits: Sequence[Hit]) -> list[str]:
+        """Query words (an unspaced run counts as one) that no card in scope contains.
 
-        ``hits`` must be ``search()``'s result for the same query and scope. A word (or an
-        unspaced run, taken whole) is unmatched when none of its terms occurs in any hit.
-        Unmatched spaced-script words of ``SUGGEST_MIN_CHARS`` or more characters (prefix
-        ``word*`` excepted) get up to ``MAX_SUGGESTIONS`` words from the in-scope vocabulary,
-        within edit distance 1 (words up to 4 characters) or 2: closest first, then the most
-        frequent, then alphabetical. Nothing here changes or reorders the results.
+        ``hits`` must be ``search()``'s result for the same query and scope: a word is unmatched
+        when none of its terms occurs in any hit. It is a plain fact about the corpus, with no
+        heuristics, in every script; it changes and reorders nothing. (Spelling suggestions were
+        tried and removed: evals/retrieval/PLAN.md, "Decision: no did_you_mean".)
         """
         plan = analyze_query(query)
         ids = {h.row["id"] for h in hits}
         if not ids:
-            unmatched = list(plan.units)
-        elif len(plan.units) == 1:
-            unmatched = []
-        else:
-            unmatched = [u for u in plan.units if not any(self._matching_ids(t) & ids for t in u.terms)]
-        suggestions: dict[str, list[str]] = {}
-        wordlike = [u for u in unmatched if not u.unspaced and not u.terms[0].endswith("*")]
-        for unit in wordlike[:MAX_SUGGESTED_WORDS]:
-            found = self._suggest(unit.text, sources, tags)
-            if found:
-                suggestions[unit.text] = found
-        return Feedback([u.text for u in unmatched], suggestions)
-
-    def _suggest(self, word: str, sources: Iterable[str] | None, tags: Iterable[str] | None) -> list[str]:
-        target = fold(word)
-        if len(target) < SUGGEST_MIN_CHARS or target.isdigit():
+            return [u.text for u in plan.units]
+        if len(plan.units) == 1:
             return []
-        limit = 1 if len(target) <= 4 else 2
-        where, args = self._scope(sources, tags)
-        rows = self.conn.execute(
-            f"""SELECT w.word, COUNT(*) AS df FROM card_words w JOIN cards c ON c.id = w.card_id
-                WHERE length(w.word) BETWEEN ? AND ? AND {' AND '.join(where)} GROUP BY w.word""",
-            [len(target) - limit, len(target) + limit, *args],
-        ).fetchall()
-        scored = []
-        for row in rows:
-            distance = edit_distance(target, row["word"], limit)
-            if 0 < distance <= limit:
-                scored.append((distance, -row["df"], row["word"]))
-        return [w for _, _, w in sorted(scored)[:MAX_SUGGESTIONS]]
+        return [u.text for u in plan.units if not any(self._matching_ids(t) & ids for t in u.terms)]
 
     def _matching_ids(self, expression: str) -> set[int]:
         return {r[0] for r in self.conn.execute("SELECT rowid FROM cards_fts WHERE cards_fts MATCH ?", (expression,))}

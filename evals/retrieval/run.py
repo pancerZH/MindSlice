@@ -68,10 +68,8 @@ LINES = (
      "claim": "Aliases cost natural queries at most 0.02"},
     {"id": "L22", "group": "holdout-3/all", "metric": "ndcg@5", "gain": "aliases", "line": 0.0,
      "claim": "Aliases are no worse overall (decision line)"},
-    {"id": "L23", "group": "holdout-3/all/typo", "metric": "ndcg@5", "gain": "suggest-retry", "line": 0.0,
-     "claim": "Retrying with did_you_mean is no worse on typos"},
-    {"id": "L24", "group": "holdout-3/all", "metric": "ndcg@5", "gain": "suggest-retry", "line": 0.0,
-     "claim": "Retrying with did_you_mean is no worse overall (decision line)"},
+    # L23 and L24 (suggest-retry) were decided on the engine with did_you_mean and retired with it; their
+    # record is in results/archive/2026-11-07-did-you-mean-engine/.
 )
 POOLED_SPLITS = ("holdout-2", "holdout-3")  # also summarized over all their queries, as "<split>/all"
 # Category groups, per language ("<split>/<lang>/<name>") and pooled ("<split>/all/<name>").
@@ -218,7 +216,8 @@ def render(records: list[dict[str, Any]], summary: dict[str, Any], lines: list[d
     if lines:
         out += ["## Verdicts", "",
                 "L1-L6 read `holdout` and L9-L12 `holdout-2`, re-read on the current engine (no longer fresh evidence). "
-                "L18-L24 read `holdout-3`; for L20-L24 the point is that system minus `mindslice`.", "",
+                "L18-L22 read `holdout-3`; for L20-L22 the point is `aliases` minus `mindslice`. L23 and L24 "
+                "(`did_you_mean`) are retired; see `archive/2026-11-07-did-you-mean-engine/`.", "",
                 "| Line | Claim | Point | 95% interval | Line | Verdict |", "| --- | --- | --- | --- | --- | --- |"]
         out += [f"| {l['id']} | {l['claim']} | {l['point']:.3f} | [{l['low']:.3f}, {l['high']:.3f}] | {l['line']:.2f} | "
                 f"**{l['verdict']}** |" for l in lines]
