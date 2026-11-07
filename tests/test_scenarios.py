@@ -491,6 +491,32 @@ class Scenario11CrashDuringApply(WorkspaceTestCase):
         self.assertEqual(staging.file("b-edit").read_bytes(), staged_b)  # kept for a human to reconcile
         self.assertFalse(staging.journal_path.exists())
         self.assertEqual(self.ws.read("a-new")["summary"], "A staged.")
+        # Both skipped changes stay staged against the version they were based on, not as fresh creates.
+        items = {i["id"]: i for i in self.ws.diff()["items"]}
+        self.assertEqual(set(items), {"b-edit", "c-gone"})
+        for path, op in (("b-edit", "write"), ("c-gone", "delete")):
+            base, current = entries[path]["base_sha256"], sha256_bytes(edited[path])
+            self.assertEqual((items[path]["op"], items[path]["base_sha256"]), (op, base))
+            self.assertEqual(items[path]["conflict"], f"expected {base[:12]}, found {current[:12]}")
+            self.assertNotIn("orphan", items[path])
+        self.assertEqual(items["b-edit"]["history"], ["replace"])
+        with self.assertRaises(ApplyConflictError):
+            self.ws.apply()
+
+    def test_skipped_delete_is_rebuilt_from_the_journal_if_the_manifest_is_gone(self):
+        self.ws.write("gone", summary="To delete.")
+        self.ws.write("gone", op="delete", stage=True)
+        base = self.ws.staging.entries()["gone"]["base_sha256"]
+        journal = {"version": 1, "overlay_root": str(self.ws.table().overlay.root),
+                   "actions": [{"op": "delete", "id": "gone", "base_sha256": base}]}
+        self.ws.staging.write_journal(journal)
+        self.ws.staging.manifest_path.unlink()  # an earlier pass got past step (d), then crashed
+        bump_mtime(self.put_overlay("gone", card_text("Gone", "Recreated by a human.")))
+        self.assertEqual(self.ws.search("recreated human")["total_matches"], 1)  # recovery ran
+        self.assertEqual([s["address"] for s in self.ws.last_recovery["skipped"]], ["@overlay/gone"])
+        [item] = self.ws.diff()["items"]
+        self.assertEqual((item["id"], item["op"], item["base_sha256"]), ("gone", "delete", base))
+        self.assertTrue(item["conflict"])
 
 
 if __name__ == "__main__":

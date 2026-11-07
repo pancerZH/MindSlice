@@ -215,7 +215,9 @@ different strings, just as `ran`/`run` are in English.
   (`staging/.apply_journal.json`), upgrading to `LOCK_EX` only when needed. An edit that keeps both
   mtime and size identical is invisible to this cheap check; `validate(rebuild_index=True)` catches it.
 - File writes are atomic (temp file, `fsync`, `os.replace`). `apply()` removes the journal last, so a
-  crash at any point is finished idempotently by the next reader or writer.
+  crash at any point is finished idempotently by the next reader or writer. Recovery never overwrites
+  or deletes an `overlay/` file edited since the crash: that change stays staged, with its original
+  base, and `diff()` shows the conflict.
 
 ## Slice lifecycle
 

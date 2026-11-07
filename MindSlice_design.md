@@ -229,9 +229,9 @@ MindSlice exposes **9 orthogonal primitives** across three groups. All 9 are ava
      1. **Precondition & Graph Verification**: Verifies every entry in `staging/.manifest.json` against `overlay/` (`current_sha256 == base_sha256`, or file must be absent when `base_sha256 is null`) and checks the combined graph for cycles. Aborts cleanly with a conflict report before touching `overlay/` if any check fails.
      2. **Ordered Journaled Promotion**:
         a. Writes and `fsync`s `staging/.apply_journal.json`.
-        b. Moves staged `.md` files into `overlay/` and unlinks tombstoned `overlay/` files (tolerating already-moved or already-unlinked files during crash replay).
+        b. Moves staged `.md` files into `overlay/` and unlinks tombstoned `overlay/` files (tolerating already-moved or already-unlinked files during crash replay). During replay, an action whose `overlay/` target changed since it was journaled is skipped, never forced: its staged file or tombstone stays in `staging/`.
         c. Synchronizes `.cache/index.sqlite` in a single SQLite transaction.
-        d. Removes `staging/.manifest.json` (and any empty `staging/` subdirectories).
+        d. Removes `staging/.manifest.json` (and any empty `staging/` subdirectories), keeping only the entries of skipped actions with their original `base_sha256`, so `diff()` reports the conflict against the version the change was based on.
         e. **Removes `staging/.apply_journal.json` strictly last.**
         Because `.apply_journal.json` is removed only after `.manifest.json` and SQLite are finalized, any crash prior to step (e) leaves the recovery marker intact for the next reader or writer to finish idempotently under `LOCK_EX`.
    * **`discard()`**: Acquires `LOCK_EX` and clears `staging/` and `staging/.manifest.json`.

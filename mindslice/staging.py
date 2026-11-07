@@ -386,11 +386,17 @@ def apply(ws: "Workspace") -> dict[str, Any]:
 
 
 def replay(ws: "Workspace", table: "MountTable", journal: dict[str, Any]) -> dict[str, Any]:
-    """Execute (or finish) a journaled batch idempotently. Caller holds ``LOCK_EX``."""
+    """Execute (or finish) a journaled batch idempotently. Caller holds ``LOCK_EX``.
+
+    An action whose overlay target changed since it was journaled is skipped, never forced: it
+    stays staged with its original ``base_sha256``, so ``diff()`` reports the conflict against the
+    version the change was based on.
+    """
     staging = ws.staging
     overlay_root = Path(journal.get("overlay_root") or table.overlay.root)
     alias = table.overlay.alias
     report: dict[str, Any] = {"applied": 0, "created": [], "modified": [], "deleted": [], "skipped": []}
+    skipped: list[dict[str, Any]] = []
     for action in journal.get("actions", []):
         path = action["id"]
         address = format_address(alias, path)
@@ -401,13 +407,15 @@ def replay(ws: "Workspace", table: "MountTable", journal: dict[str, Any]) -> dic
                 _, dst_sha = read_card_file(dst)
                 if dst_sha is not None and dst_sha not in (action.get("base_sha256"), action.get("sha256")):
                     report["skipped"].append({"address": address, "reason": "overlay changed during recovery; staged file kept"})
+                    skipped.append(action)
                     continue
                 durable_move(src, dst)
             report["created" if action.get("change") == "create" else "modified"].append(address)
         elif action["op"] == "delete":
             _, dst_sha = read_card_file(dst)
             if dst_sha is not None and dst_sha != action.get("base_sha256"):
-                report["skipped"].append({"address": address, "reason": "overlay changed during recovery; not deleted"})
+                report["skipped"].append({"address": address, "reason": "overlay changed during recovery; delete kept staged"})
+                skipped.append(action)
                 continue
             if dst_sha is not None:
                 unlink_if_exists(dst)
@@ -415,10 +423,22 @@ def replay(ws: "Workspace", table: "MountTable", journal: dict[str, Any]) -> dic
             report["deleted"].append(address)
         report["applied"] += 1
     ws._sync(table)  # (c) one SQLite transaction
-    unlink_if_exists(staging.manifest_path)  # (d)
+    staging.save_manifest(_skipped_entries(staging.load_manifest(), skipped))  # (d) removed when nothing was skipped
     staging.remove_empty_subdirs()
     unlink_if_exists(staging.journal_path)  # (e) strictly last
     return report
+
+
+def _skipped_entries(manifest: dict[str, dict[str, Any]], skipped: list[dict[str, Any]]) -> dict[str, dict[str, Any]]:
+    """Manifest entries to keep for skipped actions; rebuilt from the journal if an earlier pass removed them."""
+    kept: dict[str, dict[str, Any]] = {}
+    for action in skipped:
+        entry = manifest.get(action["id"])
+        if entry is None:
+            entry = {"op": "delete" if action["op"] == "delete" else "write",
+                     "base_sha256": action.get("base_sha256"), "history": [], "updated_at": _now()}
+        kept[action["id"]] = entry
+    return kept
 
 
 def discard(ws: "Workspace") -> dict[str, Any]:
