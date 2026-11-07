@@ -1,0 +1,25 @@
+name: tests
+
+on:
+  push:
+    branches: [main]
+  pull_request:
+
+permissions:
+  contents: read
+
+jobs:
+  unittest:
+    # Text analysis depends on Python's Unicode database (mindslice/lexical.py), and the recorded eval
+    # results were produced on Python 3.12 (Unicode 15.0.0): keep CI on the same minor version.
+    runs-on: ubuntu-24.04
+    timeout-minutes: 15
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+      - name: Environment
+        run: python -c "import sqlite3, unicodedata, sys; print(sys.version, 'sqlite', sqlite3.sqlite_version, 'unicode', unicodedata.unidata_version)"
+      - name: Unit, scenario and eval regression tests (standard library only; benchmark data not needed)
+        run: python -m unittest discover -s tests -t . -v
