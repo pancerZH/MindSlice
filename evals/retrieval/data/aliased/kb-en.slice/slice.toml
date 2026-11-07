@@ -1,0 +1,5 @@
+name = "kb-en"
+version = "1.0.0"
+description = "Engineering handbook of a fictional product team (English)."
+alias = "@kb-en"
+dependencies = []

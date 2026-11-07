@@ -28,7 +28,14 @@ class EvalDataTests(unittest.TestCase):
         for q in load_queries():
             counts[q.split, q.lang] = counts.get((q.split, q.lang), 0) + 1
         self.assertEqual(counts, {("dev", "en"): 20, ("dev", "zh"): 20, ("holdout", "en"): 20, ("holdout", "zh"): 20,
-                                  ("limits", "en"): 5, ("limits", "zh"): 5, ("holdout-2", "en"): 30, ("holdout-2", "zh"): 30})
+                                  ("limits", "en"): 5, ("limits", "zh"): 5, ("holdout-2", "en"): 30, ("holdout-2", "zh"): 30,
+                                  ("holdout-3", "en"): 40, ("holdout-3", "zh"): 40})
+        categories: dict[tuple[str, str], int] = {}
+        for q in load_queries():
+            if q.split == "holdout-3":
+                categories[q.lang, q.category] = categories.get((q.lang, q.category), 0) + 1
+        per_lang = {"natural": 20, "own-words": 12, "cross-lingual": 4, "typo": 4}
+        self.assertEqual(categories, {(lang, c): n for lang in ("en", "zh") for c, n in per_lang.items()})
 
 
 class MetricTests(unittest.TestCase):
@@ -76,9 +83,12 @@ class SystemTests(unittest.TestCase):
 class RegressionTests(unittest.TestCase):
     def test_engine_has_not_regressed_against_recorded_results(self):
         recorded = json.loads((RESULTS / "run.json").read_text(encoding="utf-8"))["summary"]
-        queries = load_queries()  # every split and corpus, including the tiny ones
+        recorded_splits = {key.split("/")[0] for key in recorded}
+        queries = [q for q in load_queries() if q.split in recorded_splits]  # every corpus, tiny ones included
         now = summarize(rank_all(queries, ("mindslice",)), ("mindslice",))
         for key, group in now.items():
+            if key not in recorded:  # a split not yet read once has no floor (and must not be scored here first)
+                continue
             with self.subTest(group=key):
                 current = group["systems"]["mindslice"]["ndcg@5"]["mean"]
                 before = recorded[key]["systems"]["mindslice"]["ndcg@5"]["mean"]

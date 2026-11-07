@@ -240,6 +240,13 @@ The writer's report also named its four Chinese typos. That report was read afte
 for this read (source digest `f8e62ecdcb2ea9683593c61959e81f81394c1db8605c2afbe19ff35e9f1236de`), and
 `did_you_mean` makes no suggestions inside Chinese runs.
 
+**Frozen data** (`data/DIGESTS.json`; every earlier digest is unchanged):
+
+| Part | Digest |
+| --- | --- |
+| Aliased corpus, `data/aliased/` (88 cards, 539 aliases) | `89f7ba4e1455ec458189496b75dc4e01487f48d5867ef16a4f3de1d91c87ed44` |
+| `holdout-3` queries | `a05d7a4e0d9a77c174af7baab70bc62de704a8713898d158b5dd5be862f74f1a` |
+
 ## Ledger
 
 | Date | Run | What it informed |
@@ -256,3 +263,5 @@ for this read (source digest `f8e62ecdcb2ea9683593c61959e81f81394c1db8605c2afbe1
 | 2026-11-07 | `holdout-3` and aliased-corpus rules written (above), before any of their data existed | Nothing generated or scored |
 | 2026-11-07 | Engine change: `search()` reports `unmatched_terms` and `did_you_mean` (analyzer version 2 adds the unstemmed `card_words` vocabulary). Harness: systems `aliases` and `suggest-retry`, lines L18-L24, category groups | No ranking change: on all 150 queries, every system's top 10 equals the recorded one (750 rankings). Exploratory, `dev` only: `suggest-retry` minus `mindslice` is +0.012 English, 0.000 Chinese. Engine frozen for the `holdout-3` read, source digest `f8e62ecdcb2ea9683593c61959e81f81394c1db8605c2afbe19ff35e9f1236de` |
 | 2026-11-07 | `holdout-3` queries written by the blind agent; amendment above (same-team reading), before any scoring | Nothing scored on `holdout-3` |
+| 2026-11-07 | Aliased corpus written by the blind agent (88 cards, 539 aliases, 5-7 per card); `check` confirms only aliases lines differ and `validate()` is clean. Both new parts frozen (digests above) | Nothing scored on `holdout-3` or with `aliases` |
+| 2026-11-07 | Before the read, the CI regression test ranked `holdout-3` in memory and errored on missing recorded entries, printing no score | Nothing seen. The test now skips splits with no recorded floor |

@@ -1234,3 +1234,646 @@ category = "single"
 corpus = "tiny-zh"
 text = "用户什么时候值班"
 relevant = { "@overlay/星图/值班" = 2 }
+
+# ---------------------------------------------------------------------------- holdout-3 (both languages)
+# Written by an agent that saw only the plain corpus and the judging rules (PLAN.md, holdout-3).
+# Appended unedited.
+[[queries]]
+id = "en-b01"
+split = "holdout-3"
+lang = "en"
+category = "natural"
+text = "how long until a web session expires?"
+relevant = { "@overlay/auth/jwt-sessions" = 2, "@kb-en/auth/refresh-tokens" = 1, "@kb-en/auth/admin-tokens" = 1, "@overlay/认证/令牌有效期调整" = 1 }
+
+[[queries]]
+id = "en-b02"
+split = "holdout-3"
+lang = "en"
+category = "natural"
+text = "what day of the week do we release to production"
+relevant = { "@overlay/deploy/thursday-releases" = 2, "@kb-en/deploy/hotfix" = 1, "@kb-zh/发布/发布节奏" = 1 }
+
+[[queries]]
+id = "en-b03"
+split = "holdout-3"
+lang = "en"
+category = "natural"
+text = "canary rollout: what share of traffic and for how long"
+relevant = { "@kb-en/deploy/canary" = 2, "@kb-en/deploy/rollback" = 1, "@kb-zh/发布/灰度发布" = 1 }
+
+[[queries]]
+id = "en-b04"
+split = "holdout-3"
+lang = "en"
+category = "natural"
+text = "Should examples go before or after the instructions in a system prompt?"
+relevant = { "@kb-en/ml/prompt-guidelines" = 2, "@kb-en/ml/token-budget" = 1, "@kb-zh/模型/提示词规范" = 1 }
+
+[[queries]]
+id = "en-b05"
+split = "holdout-3"
+lang = "en"
+category = "natural"
+text = "can an API key have both read and write scope?"
+relevant = { "@kb-en/auth/api-keys" = 2, "@kb-zh/认证/接口密钥" = 1 }
+
+[[queries]]
+id = "en-b06"
+split = "holdout-3"
+lang = "en"
+category = "natural"
+text = "do we make people change their passwords every few months?"
+relevant = { "@kb-en/auth/password-policy" = 2, "@kb-en/auth/sso" = 1, "@kb-zh/认证/密码策略" = 1 }
+
+[[queries]]
+id = "en-b07"
+split = "holdout-3"
+lang = "en"
+category = "natural"
+text = "backup retention days"
+relevant = { "@kb-en/data/backups" = 2, "@kb-en/data/retention" = 1, "@kb-zh/数据/备份" = 1 }
+
+[[queries]]
+id = "en-b08"
+split = "holdout-3"
+lang = "en"
+category = "natural"
+text = "how many years do we keep audit logs"
+relevant = { "@kb-en/data/retention" = 2, "@kb-zh/数据/个人信息保留" = 1 }
+
+[[queries]]
+id = "en-b09"
+split = "holdout-3"
+lang = "en"
+category = "natural"
+text = "is it ok to send email addresses in analytics event properties?"
+relevant = { "@kb-en/data/analytics-events" = 2, "@kb-en/data/retention" = 1, "@kb-zh/数据/埋点规范" = 1 }
+
+[[queries]]
+id = "en-b10"
+split = "holdout-3"
+lang = "en"
+category = "natural"
+text = "who is the third escalation step after the secondary on-call"
+relevant = { "@kb-en/oncall/escalation" = 2, "@kb-en/oncall/paging" = 1, "@kb-zh/值班/升级流程" = 1 }
+
+[[queries]]
+id = "en-b11"
+split = "holdout-3"
+lang = "en"
+category = "natural"
+text = "deadline for publishing a postmortem"
+relevant = { "@kb-en/oncall/incident-review" = 2, "@kb-zh/值班/故障复盘" = 1 }
+
+[[queries]]
+id = "en-b12"
+split = "holdout-3"
+lang = "en"
+category = "natural"
+text = "LLM context window size and how much to reserve for the answer"
+relevant = { "@kb-en/ml/token-budget" = 2, "@kb-en/ml/prompt-guidelines" = 1, "@kb-zh/模型/上下文窗口" = 1 }
+
+[[queries]]
+id = "en-b13"
+split = "holdout-3"
+lang = "en"
+category = "natural"
+text = "Do P2 incidents page on-call during the December freeze?"
+relevant = { "@overlay/oncall/holiday-paging" = 2, "@kb-en/oncall/paging" = 1 }
+
+[[queries]]
+id = "en-b14"
+split = "holdout-3"
+lang = "en"
+category = "natural"
+text = "minimum test coverage in CI"
+relevant = { "@kb-en/conventions/testing" = 2, "@kb-zh/规范/测试规范" = 1 }
+
+[[queries]]
+id = "en-b15"
+split = "holdout-3"
+lang = "en"
+category = "natural"
+text = "do we squash or rebase when merging PRs"
+relevant = { "@kb-en/conventions/git-workflow" = 2, "@kb-en/conventions/code-review" = 1, "@kb-zh/规范/分支流程" = 1 }
+
+[[queries]]
+id = "en-b16"
+split = "holdout-3"
+lang = "en"
+category = "natural"
+text = "which formatter do we use for Python, and tabs or spaces?"
+relevant = { "@kb-en/conventions/python-style" = 2, "@kb-zh/规范/代码风格" = 1 }
+
+[[queries]]
+id = "en-b17"
+split = "holdout-3"
+lang = "en"
+category = "natural"
+text = "is our SSO SAML or OIDC"
+relevant = { "@kb-en/auth/sso" = 2, "@kb-zh/认证/单点登录" = 1 }
+
+[[queries]]
+id = "en-b18"
+split = "holdout-3"
+lang = "en"
+category = "natural"
+text = "admin console token lifetime"
+relevant = { "@kb-en/auth/admin-tokens" = 2, "@overlay/auth/jwt-sessions" = 1, "@kb-zh/认证/管理员令牌" = 1 }
+
+[[queries]]
+id = "en-b19"
+split = "holdout-3"
+lang = "en"
+category = "natural"
+text = "P1 incident: who gets paged, when does it escalate, and what do we owe afterwards"
+relevant = { "@kb-en/oncall/paging" = 2, "@kb-en/oncall/escalation" = 2, "@kb-en/oncall/incident-review" = 2, "@overlay/oncall/holiday-paging" = 1, "@overlay/值班/告警响应调整" = 1, "@kb-zh/值班/升级流程" = 1, "@kb-zh/值班/故障复盘" = 1 }
+
+[[queries]]
+id = "en-b20"
+split = "holdout-3"
+lang = "en"
+category = "natural"
+text = "which WCAG level do we target for color contrast"
+relevant = { "@kb-en/frontend/accessibility" = 2, "@kb-en/frontend/design-tokens" = 1, "@kb-zh/前端/无障碍" = 1 }
+
+[[queries]]
+id = "en-b21"
+split = "holdout-3"
+lang = "en"
+category = "own-words"
+text = "a deploy just broke checkout, what's the fastest way to put the old build back?"
+relevant = { "@kb-en/deploy/rollback" = 2, "@kb-en/deploy/hotfix" = 1, "@kb-en/deploy/canary" = 1, "@kb-zh/发布/回滚" = 1 }
+
+[[queries]]
+id = "en-b22"
+split = "holdout-3"
+lang = "en"
+category = "own-words"
+text = "nobody has looked at my PR in two days - is that acceptable, or should I chase someone?"
+relevant = { "@kb-en/conventions/code-review" = 2, "@kb-en/conventions/git-workflow" = 1, "@kb-zh/规范/代码评审" = 1 }
+
+[[queries]]
+id = "en-b23"
+split = "holdout-3"
+lang = "en"
+category = "own-words"
+text = "I want to ship half-built work to production but keep it hidden from customers until it's ready"
+relevant = { "@kb-en/deploy/feature-flags" = 2, "@kb-en/deploy/canary" = 1, "@kb-zh/发布/功能开关" = 1 }
+
+[[queries]]
+id = "en-b24"
+split = "holdout-3"
+lang = "en"
+category = "own-words"
+text = "the main Postgres server just died; how do we get the standby copy in the other region to take over?"
+relevant = { "@kb-en/oncall/db-failover" = 2, "@kb-en/data/backups" = 1, "@kb-zh/值班/数据库切换" = 1 }
+
+[[queries]]
+id = "en-b25"
+split = "holdout-3"
+lang = "en"
+category = "own-words"
+text = "someone typed #d32f2f straight into a button's styles - what are they supposed to use instead?"
+relevant = { "@kb-en/frontend/design-tokens" = 2, "@kb-zh/前端/设计令牌" = 1 }
+
+[[queries]]
+id = "en-b26"
+split = "holdout-3"
+lang = "en"
+category = "own-words"
+text = "we're launching in new countries - how should the app's wording and the way days and months are shown be handled?"
+relevant = { "@kb-en/frontend/i18n" = 2, "@kb-zh/前端/国际化" = 1 }
+
+[[queries]]
+id = "en-b27"
+split = "holdout-3"
+lang = "en"
+category = "own-words"
+text = "does this person want long friendly explanations or short replies?"
+relevant = { "@kb-en/prefs/communication" = 2, "@kb-zh/偏好/沟通" = 1 }
+
+[[queries]]
+id = "en-b28"
+split = "holdout-3"
+lang = "en"
+category = "own-words"
+text = "which app does the user type programs in, and do they prefer a light or dark look?"
+relevant = { "@kb-en/prefs/editor" = 2, "@kb-zh/偏好/编辑器" = 1 }
+
+[[queries]]
+id = "en-b29"
+split = "holdout-3"
+lang = "en"
+category = "own-words"
+text = "my phone went off at 3am for the worst kind of outage, how quickly am I expected to respond?"
+relevant = { "@kb-en/oncall/paging" = 2, "@kb-en/oncall/escalation" = 1, "@overlay/oncall/holiday-paging" = 1, "@overlay/值班/告警响应调整" = 1 }
+
+[[queries]]
+id = "en-b30"
+split = "holdout-3"
+lang = "en"
+category = "own-words"
+text = "we renamed a field in a table; can the old one be deleted in the same deploy that switches the code over?"
+relevant = { "@kb-en/data/migrations" = 2, "@kb-zh/数据/数据迁移" = 1 }
+
+[[queries]]
+id = "en-b31"
+split = "holdout-3"
+lang = "en"
+category = "own-words"
+text = "the AI's reply keeps getting chopped off when I paste lots of search results in"
+relevant = { "@kb-en/ml/token-budget" = 2, "@kb-en/ml/prompt-guidelines" = 1, "@kb-zh/模型/上下文窗口" = 1 }
+
+[[queries]]
+id = "en-b32"
+split = "holdout-3"
+lang = "en"
+category = "own-words"
+text = "a client company accidentally posted their access secret on GitHub - after we kill it, how fast is it actually dead?"
+relevant = { "@kb-en/auth/api-keys" = 2, "@kb-zh/认证/接口密钥" = 1 }
+
+[[queries]]
+id = "en-b33"
+split = "holdout-3"
+lang = "en"
+category = "cross-lingual"
+text = "紧急修复也需要有人审代码吗？"
+relevant = { "@kb-en/deploy/hotfix" = 2, "@kb-en/conventions/code-review" = 1, "@kb-zh/发布/紧急修复" = 1 }
+
+[[queries]]
+id = "en-b34"
+split = "holdout-3"
+lang = "en"
+category = "cross-lingual"
+text = "新员工入职第一天就能用单点登录吗"
+relevant = { "@kb-en/auth/sso" = 2, "@kb-zh/认证/单点登录" = 1 }
+
+[[queries]]
+id = "en-b35"
+split = "holdout-3"
+lang = "en"
+category = "cross-lingual"
+text = "埋点事件名用什么命名格式"
+relevant = { "@kb-en/data/analytics-events" = 2, "@kb-zh/数据/埋点规范" = 1 }
+
+[[queries]]
+id = "en-b36"
+split = "holdout-3"
+lang = "en"
+category = "cross-lingual"
+text = "错过了封版时间的改动怎么办"
+relevant = { "@overlay/deploy/thursday-releases" = 2, "@kb-en/deploy/hotfix" = 1, "@kb-zh/发布/发布节奏" = 1 }
+
+[[queries]]
+id = "en-b37"
+split = "holdout-3"
+lang = "en"
+category = "typo"
+text = "rollbak command for a bad release"
+relevant = { "@kb-en/deploy/rollback" = 2, "@kb-zh/发布/回滚" = 1 }
+
+[[queries]]
+id = "en-b38"
+split = "holdout-3"
+lang = "en"
+category = "typo"
+text = "what happens if a refersh token gets used twice"
+relevant = { "@kb-en/auth/refresh-tokens" = 2, "@overlay/auth/jwt-sessions" = 1, "@kb-zh/认证/刷新令牌" = 1 }
+
+[[queries]]
+id = "en-b39"
+split = "holdout-3"
+lang = "en"
+category = "typo"
+text = "which weekday does the user keep meetnig-free"
+relevant = { "@kb-en/prefs/meetings" = 2, "@kb-zh/偏好/会议" = 1 }
+
+[[queries]]
+id = "en-b40"
+split = "holdout-3"
+lang = "en"
+category = "typo"
+text = "how long until a fetaure flag has to be removed after full rollout"
+relevant = { "@kb-en/deploy/feature-flags" = 2, "@kb-zh/发布/功能开关" = 1 }
+
+[[queries]]
+id = "zh-b01"
+split = "holdout-3"
+lang = "zh"
+category = "natural"
+text = "现在会话有效期是20分钟还是30分钟？"
+relevant = { "@overlay/认证/令牌有效期调整" = 2, "@kb-zh/认证/刷新令牌" = 1, "@overlay/auth/jwt-sessions" = 1 }
+
+[[queries]]
+id = "zh-b02"
+split = "holdout-3"
+lang = "zh"
+category = "natural"
+text = "封版是周几几点"
+relevant = { "@kb-zh/发布/发布节奏" = 2, "@overlay/发布/节假日封板" = 1, "@overlay/deploy/thursday-releases" = 1 }
+
+[[queries]]
+id = "zh-b03"
+split = "holdout-3"
+lang = "zh"
+category = "natural"
+text = "春节期间还能发版吗"
+relevant = { "@overlay/发布/节假日封板" = 2, "@kb-zh/发布/发布节奏" = 1, "@kb-zh/发布/紧急修复" = 1 }
+
+[[queries]]
+id = "zh-b04"
+split = "holdout-3"
+lang = "zh"
+category = "natural"
+text = "灰度期间延迟涨多少会被终止"
+relevant = { "@kb-zh/发布/灰度发布" = 2, "@kb-zh/发布/回滚" = 1, "@kb-en/deploy/canary" = 1 }
+
+[[queries]]
+id = "zh-b05"
+split = "holdout-3"
+lang = "zh"
+category = "natural"
+text = "P0告警几分钟内必须响应"
+relevant = { "@overlay/值班/告警响应调整" = 2, "@kb-zh/值班/升级流程" = 1, "@kb-en/oncall/paging" = 1 }
+
+[[queries]]
+id = "zh-b06"
+split = "holdout-3"
+lang = "zh"
+category = "natural"
+text = "告警多久没人确认会升级"
+relevant = { "@kb-zh/值班/升级流程" = 2, "@overlay/值班/告警响应调整" = 1, "@kb-en/oncall/escalation" = 1 }
+
+[[queries]]
+id = "zh-b07"
+split = "holdout-3"
+lang = "zh"
+category = "natural"
+text = "哪些级别的故障需要复盘"
+relevant = { "@kb-zh/值班/故障复盘" = 2, "@kb-en/oncall/incident-review" = 1 }
+
+[[queries]]
+id = "zh-b08"
+split = "holdout-3"
+lang = "zh"
+category = "natural"
+text = "接口密钥多久轮换一次"
+relevant = { "@kb-zh/认证/接口密钥" = 2, "@kb-en/auth/api-keys" = 1 }
+
+[[queries]]
+id = "zh-b09"
+split = "holdout-3"
+lang = "zh"
+category = "natural"
+text = "本地密码最少几位"
+relevant = { "@kb-zh/认证/密码策略" = 2, "@kb-zh/认证/单点登录" = 1, "@kb-en/auth/password-policy" = 1 }
+
+[[queries]]
+id = "zh-b10"
+split = "holdout-3"
+lang = "zh"
+category = "natural"
+text = "管理后台做敏感操作需要二次验证吗"
+relevant = { "@kb-zh/认证/管理员令牌" = 2, "@kb-en/auth/admin-tokens" = 1 }
+
+[[queries]]
+id = "zh-b11"
+split = "holdout-3"
+lang = "zh"
+category = "natural"
+text = "恢复演练多久做一次"
+relevant = { "@kb-zh/数据/备份" = 2, "@kb-en/data/backups" = 1 }
+
+[[queries]]
+id = "zh-b12"
+split = "holdout-3"
+lang = "zh"
+category = "natural"
+text = "表结构变更规范"
+relevant = { "@kb-zh/数据/数据迁移" = 2, "@kb-en/data/migrations" = 1 }
+
+[[queries]]
+id = "zh-b13"
+split = "holdout-3"
+lang = "zh"
+category = "natural"
+text = "埋点事件必须带哪些ID"
+relevant = { "@kb-zh/数据/埋点规范" = 2, "@kb-en/data/analytics-events" = 1 }
+
+[[queries]]
+id = "zh-b14"
+split = "holdout-3"
+lang = "zh"
+category = "natural"
+text = "用户注销账号后，个人信息多久删除？"
+relevant = { "@kb-zh/数据/个人信息保留" = 2, "@kb-en/data/retention" = 1 }
+
+[[queries]]
+id = "zh-b15"
+split = "holdout-3"
+lang = "zh"
+category = "natural"
+text = "拼接检索文档时要给回答预留多少token"
+relevant = { "@kb-zh/模型/上下文窗口" = 2, "@kb-zh/模型/提示词规范" = 1, "@kb-en/ml/token-budget" = 1 }
+
+[[queries]]
+id = "zh-b16"
+split = "holdout-3"
+lang = "zh"
+category = "natural"
+text = "系统提示词要写清楚哪些东西"
+relevant = { "@kb-zh/模型/提示词规范" = 2, "@kb-zh/模型/上下文窗口" = 1, "@kb-en/ml/prompt-guidelines" = 1 }
+
+[[queries]]
+id = "zh-b17"
+split = "holdout-3"
+lang = "zh"
+category = "natural"
+text = "跑得慢的测试怎么处理"
+relevant = { "@kb-zh/规范/测试规范" = 2, "@kb-en/conventions/testing" = 1 }
+
+[[queries]]
+id = "zh-b18"
+split = "holdout-3"
+lang = "zh"
+category = "natural"
+text = "公共函数必须加类型注解吗"
+relevant = { "@kb-zh/规范/代码风格" = 2, "@kb-en/conventions/python-style" = 1 }
+
+[[queries]]
+id = "zh-b19"
+split = "holdout-3"
+lang = "zh"
+category = "natural"
+text = "提交信息有固定格式吗"
+relevant = { "@kb-zh/规范/分支流程" = 2, "@kb-en/conventions/git-workflow" = 1 }
+
+[[queries]]
+id = "zh-b20"
+split = "holdout-3"
+lang = "zh"
+category = "natural"
+text = "发版的完整流程：什么时候封版、怎么灰度、出了问题怎么回滚"
+relevant = { "@kb-zh/发布/发布节奏" = 2, "@kb-zh/发布/灰度发布" = 2, "@kb-zh/发布/回滚" = 2, "@overlay/发布/节假日封板" = 1, "@kb-zh/发布/紧急修复" = 1, "@overlay/deploy/thursday-releases" = 1, "@kb-en/deploy/canary" = 1, "@kb-en/deploy/rollback" = 1 }
+
+[[queries]]
+id = "zh-b21"
+split = "holdout-3"
+lang = "zh"
+category = "own-words"
+text = "刚上线就发现有严重bug，怎么最快恢复成之前那套"
+relevant = { "@kb-zh/发布/回滚" = 2, "@kb-zh/发布/紧急修复" = 1, "@kb-zh/发布/灰度发布" = 1, "@kb-en/deploy/rollback" = 1 }
+
+[[queries]]
+id = "zh-b22"
+split = "holdout-3"
+lang = "zh"
+category = "own-words"
+text = "合代码之前，别人留的意见都必须处理完吗"
+relevant = { "@kb-zh/规范/代码评审" = 2, "@kb-zh/规范/分支流程" = 1, "@kb-en/conventions/code-review" = 1 }
+
+[[queries]]
+id = "zh-b23"
+split = "holdout-3"
+lang = "zh"
+category = "own-words"
+text = "新东西心里没底，想先放到线上，但要能随时一键关掉"
+relevant = { "@kb-zh/发布/功能开关" = 2, "@kb-zh/发布/灰度发布" = 1, "@kb-en/deploy/feature-flags" = 1 }
+
+[[queries]]
+id = "zh-b24"
+split = "holdout-3"
+lang = "zh"
+category = "own-words"
+text = "存数据的那台主服务器挂了，换到另一台顶上的过程中，用户大概多久没法保存东西"
+relevant = { "@kb-zh/值班/数据库切换" = 2, "@kb-zh/数据/备份" = 1, "@kb-en/oncall/db-failover" = 1 }
+
+[[queries]]
+id = "zh-b25"
+split = "holdout-3"
+lang = "zh"
+category = "own-words"
+text = "按钮之间留多宽、字要多大，有统一取值的地方吗"
+relevant = { "@kb-zh/前端/设计令牌" = 2, "@kb-en/frontend/design-tokens" = 1 }
+
+[[queries]]
+id = "zh-b26"
+split = "holdout-3"
+lang = "zh"
+category = "own-words"
+text = "给外国用户看的那些句子，谁负责看写得地不地道"
+relevant = { "@kb-zh/前端/国际化" = 2, "@kb-en/frontend/i18n" = 1 }
+
+[[queries]]
+id = "zh-b27"
+split = "holdout-3"
+lang = "zh"
+category = "own-words"
+text = "盲人或者不用鼠标的人能正常用我们的产品吗，有什么要求"
+relevant = { "@kb-zh/前端/无障碍" = 2, "@kb-en/frontend/accessibility" = 1 }
+
+[[queries]]
+id = "zh-b28"
+split = "holdout-3"
+lang = "zh"
+category = "own-words"
+text = "跟这位用户说话要不要先寒暄几句"
+relevant = { "@kb-zh/偏好/沟通" = 2, "@kb-en/prefs/communication" = 1 }
+
+[[queries]]
+id = "zh-b29"
+split = "holdout-3"
+lang = "zh"
+category = "own-words"
+text = "这个用户想同时开好几个命令行窗口，平时用什么工具"
+relevant = { "@kb-zh/偏好/编辑器" = 2, "@kb-en/prefs/editor" = 1 }
+
+[[queries]]
+id = "zh-b30"
+split = "holdout-3"
+lang = "zh"
+category = "own-words"
+text = "想约这个用户当面聊聊，什么时间比较合适"
+relevant = { "@kb-zh/偏好/会议" = 2, "@kb-en/prefs/meetings" = 1 }
+
+[[queries]]
+id = "zh-b31"
+split = "holdout-3"
+lang = "zh"
+category = "own-words"
+text = "新同事来了以后，公司各种内网工具是不是一套用户名密码就都能进"
+relevant = { "@kb-zh/认证/单点登录" = 2, "@kb-zh/认证/密码策略" = 1, "@kb-en/auth/sso" = 1 }
+
+[[queries]]
+id = "zh-b32"
+split = "holdout-3"
+lang = "zh"
+category = "own-words"
+text = "登录后一阵子没操作就被踢出来了，这是多长时间"
+relevant = { "@overlay/认证/令牌有效期调整" = 2, "@kb-zh/认证/刷新令牌" = 1, "@overlay/auth/jwt-sessions" = 1 }
+
+[[queries]]
+id = "zh-b33"
+split = "holdout-3"
+lang = "zh"
+category = "cross-lingual"
+text = "how long is a refresh token valid"
+relevant = { "@kb-zh/认证/刷新令牌" = 2, "@overlay/认证/令牌有效期调整" = 1, "@kb-en/auth/refresh-tokens" = 1 }
+
+[[queries]]
+id = "zh-b34"
+split = "holdout-3"
+lang = "zh"
+category = "cross-lingual"
+text = "where do we branch a hotfix from"
+relevant = { "@kb-zh/发布/紧急修复" = 2, "@kb-zh/规范/分支流程" = 1, "@kb-en/deploy/hotfix" = 1 }
+
+[[queries]]
+id = "zh-b35"
+split = "holdout-3"
+lang = "zh"
+category = "cross-lingual"
+text = "backfill batch size for large data migrations"
+relevant = { "@kb-zh/数据/数据迁移" = 2, "@kb-en/data/migrations" = 1 }
+
+[[queries]]
+id = "zh-b36"
+split = "holdout-3"
+lang = "zh"
+category = "cross-lingual"
+text = "can one engineer do a database failover alone?"
+relevant = { "@kb-zh/值班/数据库切换" = 2, "@kb-en/oncall/db-failover" = 1 }
+
+[[queries]]
+id = "zh-b37"
+split = "holdout-3"
+lang = "zh"
+category = "typo"
+text = "覆盘的改进项要指定负责人吗"
+relevant = { "@kb-zh/值班/故障复盘" = 2, "@kb-en/oncall/incident-review" = 1 }
+
+[[queries]]
+id = "zh-b38"
+split = "holdout-3"
+lang = "zh"
+category = "typo"
+text = "代码平审一般多久会回复"
+relevant = { "@kb-zh/规范/代码评审" = 2, "@kb-en/conventions/code-review" = 1 }
+
+[[queries]]
+id = "zh-b39"
+split = "holdout-3"
+lang = "zh"
+category = "typo"
+text = "外包人员的单点登陆账号会过期吗"
+relevant = { "@kb-zh/认证/单点登录" = 2, "@kb-en/auth/sso" = 1 }
+
+[[queries]]
+id = "zh-b40"
+split = "holdout-3"
+lang = "zh"
+category = "typo"
+text = "买点里能上报手机号吗"
+relevant = { "@kb-zh/数据/埋点规范" = 2, "@kb-zh/数据/个人信息保留" = 1, "@kb-en/data/analytics-events" = 1 }
