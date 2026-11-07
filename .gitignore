@@ -4,3 +4,4 @@ __pycache__/
 build/
 dist/
 .venv/
+evals/external/results/per_query.jsonl

@@ -245,6 +245,13 @@ the script.
 nDCG@5, Recall@10 and MRR@10 with bootstrap intervals, compares against alternative systems, and fixes its
 pass lines in advance. See [its README](evals/retrieval/README.md) and [plan](evals/retrieval/PLAN.md).
 
+`evals/external/` runs the engine on four published memory benchmarks (LongMemEval-S, LoCoMo, MEME,
+MemoryAgentBench) with no language model: a fixed compiler turns their dialogue into cards, and scoring
+compares `search()` and `read()` responses with the datasets' annotations. It measures retrieval, whether
+`coverage` and `unmatched_terms` flag unanswerable questions, and what `supersedes` / `extends` / deletion
+do for stale facts. See [its README](evals/external/README.md), [plan](evals/external/PLAN.md) and
+[report](evals/external/REPORT.md).
+
 ## Notes on interpretation
 
 The design leaves a few details open. These are the choices v1 makes:
