@@ -182,6 +182,47 @@ class Scenario06UnrebasedExtension(WorkspaceTestCase):
         self.assertEqual([e["address"] for e in self.ws.read("api/jwt")["extensions"]], ["@overlay/api/auth-edge"])
 
 
+class Scenario06bTwoHopAndDeletedBaselines(WorkspaceTestCase):
+    """Search previews carry read()'s baseline notices over the whole extends closure."""
+
+    def setUp(self):
+        super().setUp()
+        self.project({"api/auth": AUTH})
+        self.ws.write("api/auth-edge", summary="Edge cases for token expiry.",
+                      content="- Clock skew of 30s is tolerated.", extends=["@project/api/auth"])
+        self.ws.write("api/skew-mobile", summary="Mobile clients get extra clock skew.",
+                      content="- Mobile clock skew of 60s is tolerated.", extends=["api/auth-edge"])
+        self.ws.write("api/jwt", summary="Sessions use signed JWTs.", content="- The JWT TTL is 30 minutes.",
+                      supersedes=["@project/api/auth"])
+
+    def preview(self, query: str, address: str) -> dict:
+        return {r["address"]: r for r in self.ws.search(query)["results"]}[address]
+
+    def test_two_hop_dependent_flagged_in_preview_as_in_read(self):
+        hit = self.preview("mobile clock skew", "@overlay/api/skew-mobile")
+        self.assertEqual(hit["status"], "active")
+        self.assertEqual(hit["extends"], ["@overlay/api/auth-edge"])
+        self.assertEqual(hit["baseline_superseded_by"], ["@overlay/api/jwt"])
+        self.assertEqual(self.ws.read("api/skew-mobile")["baseline_superseded_by"], hit["baseline_superseded_by"])
+
+    def test_rebasing_the_middle_clears_the_two_hop_notice(self):
+        self.ws.write("api/auth-edge", op="replace", extends=["api/jwt"])
+        self.assertNotIn("baseline_superseded_by", self.preview("mobile clock skew", "@overlay/api/skew-mobile"))
+        self.assertNotIn("baseline_superseded_by", self.ws.read("api/skew-mobile"))
+
+    def test_deleted_baseline_flagged_in_preview_as_in_read(self):
+        self.ws.write("api/auth-edge", op="delete")
+        hit = self.preview("mobile clock skew", "@overlay/api/skew-mobile")
+        expected = [{"source": "@overlay/api/skew-mobile", "ref": "api/auth-edge"}]
+        self.assertEqual(hit["missing_baselines"], expected)
+        self.assertEqual(self.ws.read("api/skew-mobile")["missing_baselines"], expected)
+
+    def test_unaffected_card_carries_no_notice(self):
+        hit = self.preview("JWT TTL", "@overlay/api/jwt")
+        self.assertNotIn("baseline_superseded_by", hit)
+        self.assertNotIn("missing_baselines", hit)
+
+
 class Scenario07StagedOpTransition(WorkspaceTestCase):
     def test_tombstone_keeps_original_base_and_apply_aborts(self):
         file = self.put_overlay("api/a", card_text("A", "Card A.", ["one"]))

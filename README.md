@@ -124,7 +124,9 @@ forwarding from untrusted mounts; untrusted replacements are still reported in
 `superseded_by_untrusted`. Two rival replacements are never guessed between (`competing_replacements`).
 `E extends B`: reading either returns the composed view (`baselines` / `extensions`). Extensions are
 never silently rebased: if `B` is superseded, `read(B)` reports `unrebased_extensions` and
-`read(E)` reports `baseline_superseded_by`.
+`read(E)` reports `baseline_superseded_by`. That notice covers the whole `extends` chain (a
+baseline of a baseline counts), `missing_baselines` names a reference on it that no longer resolves
+(a deleted baseline), and `search()` previews carry both.
 
 ## MCP server
 

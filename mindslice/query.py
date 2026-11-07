@@ -343,13 +343,18 @@ def _preview(ctx: _Ctx, address: str, group: dict[str, Any], max_neighbors: int)
         targets = ctx.lineage_targets(address, kind)
         if targets:
             out[kind] = targets
+    # Same notices as read(), over the whole extends closure: a superseded or deleted baseline of
+    # a baseline undermines this card too.
+    baselines, missing = _baseline_closure(ctx, address)
     replaced = []
-    for base in ctx.lineage_targets(address, "extends"):
+    for base in baselines:
         for r in ctx.lv.all_superseders(base):
             if r not in replaced:
                 replaced.append(r)
     if replaced:
         out["baseline_superseded_by"] = replaced
+    if missing:
+        out["missing_baselines"] = missing
     neighbors = _neighbors(ctx, address)
     out["neighbors"] = [ctx.brief(a) | {"direction": d} for a, d in neighbors[:max_neighbors]]
     out["total_neighbors"] = len(neighbors)
