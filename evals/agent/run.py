@@ -338,6 +338,18 @@ def check_freeze(data: Path | None) -> list[str]:
     return out
 
 
+def _deferred(d: Path) -> bool:
+    """A variance item marked deferred (its records.jsonl holds only a {"kind": "deferred"} line)."""
+    f = d / "records.jsonl"
+    if not f.exists():
+        return False
+    try:
+        lines = [json.loads(l) for l in f.read_text(encoding="utf-8").splitlines() if l.strip()]
+    except json.JSONDecodeError:
+        return False
+    return len(lines) == 1 and lines[0].get("kind") == "deferred"
+
+
 def tier1_work(root: Path, data: Path | None) -> list[tuple[Path, str, str, Any]]:
     """The frozen tier-1 schedule: the main model's three cells (each MemoryAgentBench chain first, being the
     longest, then the MEME haystacks round-robin across arms), the variance repeats, then agent-policy on Flash."""
@@ -421,6 +433,8 @@ def main(argv: list[str] | None = None) -> int:
     t1 = sub.add_parser("tier1", help="run tier 1 as frozen: the matrix, then the variance repeats, behind the quota gate")
     t1.add_argument("--jobs", type=int, default=12, help="haystacks run at once")
     t1.add_argument("--dry-run", action="store_true", help="print the schedule and exit")
+    t1.add_argument("--only", choices=("main", "variance"), help="only the matrix (tier1/) or only the variance repeats (tier1-var*/)")
+    t1.add_argument("--release-variance", action="store_true", help="remove the deferral markers of the variance repeats")
     sub.add_parser("prompts", help="print the prompts' SHA-256 digests")
     au = sub.add_parser("audit", help="value-matching audit worksheets (6.3) for a run's agent arms, or tally filled verdicts")
     au.add_argument("--run", required=True)
@@ -515,6 +529,24 @@ def main(argv: list[str] | None = None) -> int:
         from . import agy
 
         work = tier1_work(root, data)
+        if args.only == "main":
+            work = [w for w in work if w[0].name == "tier1"]
+        elif args.only == "variance":
+            work = [w for w in work if w[0].name.startswith("tier1-var")]
+            deferred = [w for w in work if _deferred(arm_dir(w[0], w[1], w[2]) / slug(w[3].key))]
+            if deferred and not args.dry_run:
+                print(f"{len(deferred)} variance items are still marked deferred; remove the markers first "
+                      "(python -m evals.agent tier1 --release-variance)", file=sys.stderr)
+                return 2
+        if args.release_variance:
+            n = 0
+            for run, a, m, h in tier1_work(root, data):
+                d = arm_dir(run, a, m) / slug(h.key)
+                if run.name.startswith("tier1-var") and _deferred(d):
+                    (d / "records.jsonl").unlink()
+                    n += 1
+            print(f"released {n} deferred variance items")
+            return 0
         if args.dry_run:
             for i, (run, a, m, h) in enumerate(work):
                 print(i, run.name, f"{a}@{m}", h.key)
