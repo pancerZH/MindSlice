@@ -1,0 +1,104 @@
+{
+ "tier": "1",
+ "sessions": {
+  "meme": 475,
+  "mab": 231
+ },
+ "per_arm": {
+  "agent-default@gemini-3.8-flash-medium": {
+   "wall_s_meme": 86.6,
+   "wall_s_mab": 96.3,
+   "input_tokens_meme": 194458,
+   "input_tokens_mab": 466201,
+   "output_tokens_meme": 8471,
+   "output_tokens_mab": 6554,
+   "smoke_sessions": 71,
+   "smoke_input_tokens": 26306691,
+   "token_multiple": 942.7,
+   "tier_session_hours": 17.6,
+   "tier_input_tokens_M": 200.1,
+   "tier_output_tokens_M": 5.54,
+   "longest_haystack_hours": 6.2
+  },
+  "agent-default@gemini-4-argon-medium": {
+   "wall_s_meme": 85.9,
+   "wall_s_mab": 97.8,
+   "input_tokens_meme": 32963,
+   "input_tokens_mab": 47014,
+   "output_tokens_meme": 1732,
+   "output_tokens_mab": 2462,
+   "smoke_sessions": 71,
+   "smoke_input_tokens": 2986716,
+   "token_multiple": 107.0,
+   "tier_session_hours": 17.6,
+   "tier_input_tokens_M": 26.5,
+   "tier_output_tokens_M": 1.39,
+   "longest_haystack_hours": 6.3
+  },
+  "agent-overlay@gemini-3.8-flash-medium": {
+   "wall_s_meme": 218.1,
+   "wall_s_mab": 120.1,
+   "input_tokens_meme": 472682,
+   "input_tokens_mab": 617431,
+   "output_tokens_meme": 26325,
+   "output_tokens_mab": 8530,
+   "smoke_sessions": 71,
+   "smoke_input_tokens": 40218875,
+   "token_multiple": 1441.3,
+   "tier_session_hours": 36.5,
+   "tier_input_tokens_M": 367.2,
+   "tier_output_tokens_M": 14.47,
+   "longest_haystack_hours": 7.7
+  },
+  "agent-overlay@gemini-4-argon-medium": {
+   "wall_s_meme": 116.9,
+   "wall_s_mab": 79.6,
+   "input_tokens_meme": 65071,
+   "input_tokens_mab": 40915,
+   "output_tokens_meme": 3109,
+   "output_tokens_mab": 991,
+   "smoke_sessions": 71,
+   "smoke_input_tokens": 3508881,
+   "token_multiple": 125.7,
+   "tier_session_hours": 20.5,
+   "tier_input_tokens_M": 40.4,
+   "tier_output_tokens_M": 1.71,
+   "longest_haystack_hours": 5.1
+  },
+  "agent-policy@gemini-3.8-flash-medium": {
+   "wall_s_meme": 90.0,
+   "wall_s_mab": 96.3,
+   "input_tokens_meme": 220461,
+   "input_tokens_mab": 466680,
+   "output_tokens_meme": 9209,
+   "output_tokens_mab": 6366,
+   "smoke_sessions": 71,
+   "smoke_input_tokens": 26978816,
+   "token_multiple": 966.8,
+   "tier_session_hours": 18.1,
+   "tier_input_tokens_M": 212.5,
+   "tier_output_tokens_M": 5.84,
+   "longest_haystack_hours": 6.2
+  },
+  "agent-policy@gemini-4-argon-medium": {
+   "wall_s_meme": 72.4,
+   "wall_s_mab": 106.7,
+   "input_tokens_meme": 31597,
+   "input_tokens_mab": 48980,
+   "output_tokens_meme": 1679,
+   "output_tokens_mab": 2581,
+   "smoke_sessions": 71,
+   "smoke_input_tokens": 3042994,
+   "token_multiple": 109.0,
+   "tier_session_hours": 16.4,
+   "tier_input_tokens_M": 26.3,
+   "tier_output_tokens_M": 1.39,
+   "longest_haystack_hours": 6.8
+  }
+ },
+ "all_arms_session_hours": 126.7,
+ "wall_clock_hours": {
+  "8": 15.8,
+  "16": 7.9
+ }
+}

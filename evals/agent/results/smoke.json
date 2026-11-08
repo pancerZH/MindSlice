@@ -1,0 +1,2358 @@
+{
+ "arms": {
+  "agent-default@gemini-3.8-flash-medium": {
+   "pooled": {
+    "stale-first": {
+     "mean": 0.0,
+     "low": 0.0,
+     "high": 0.0,
+     "n": 68
+    },
+    "stale@10": {
+     "mean": 0.0,
+     "low": 0.0,
+     "high": 0.0,
+     "n": 68
+    },
+    "current@10": {
+     "mean": 0.9659,
+     "low": 0.9205,
+     "high": 1.0,
+     "n": 88
+    },
+    "retired": {
+     "mean": 0.9221,
+     "low": 0.8571,
+     "high": 0.974,
+     "n": 77
+    },
+    "lost": {
+     "mean": 0.0602,
+     "low": 0.0324,
+     "high": 0.0926,
+     "n": 216
+    },
+    "forgotten": {
+     "mean": 1.0,
+     "low": 1.0,
+     "high": 1.0,
+     "n": 4
+    },
+    "history-named@10": {
+     "mean": 0.9333,
+     "low": 0.8,
+     "high": 1.0,
+     "n": 5
+    }
+   },
+   "groups": {
+    "mab-sh/conflict": {
+     "current@10": {
+      "mean": 0.9839,
+      "low": 0.9516,
+      "high": 1.0,
+      "n": 62
+     },
+     "stale-first": {
+      "mean": 0.0,
+      "low": 0.0,
+      "high": 0.0,
+      "n": 62
+     },
+     "stale@10": {
+      "mean": 0.0,
+      "low": 0.0,
+      "high": 0.0,
+      "n": 62
+     }
+    },
+    "mab-sh/other": {
+     "current@10": {
+      "mean": 1.0,
+      "low": 1.0,
+      "high": 1.0,
+      "n": 20
+     }
+    },
+    "mab/conflict": {
+     "retired": {
+      "mean": 1.0,
+      "low": 1.0,
+      "high": 1.0,
+      "n": 62
+     }
+    },
+    "mab/fact": {
+     "lost": {
+      "mean": 0.0,
+      "low": 0.0,
+      "high": 0.0,
+      "n": 82
+     }
+    },
+    "meme/Abs-hop1": {
+     "stale@10": {
+      "mean": 0.2,
+      "low": 0.0,
+      "high": 0.6,
+      "n": 5
+     }
+    },
+    "meme/Agg": {
+     "current@10": {
+      "mean": 0.6667,
+      "low": 0.4,
+      "high": 0.9333,
+      "n": 5
+     }
+    },
+    "meme/Cas-hop1": {
+     "current@10": {
+      "mean": 0.6,
+      "low": 0.2,
+      "high": 1.0,
+      "n": 5
+     },
+     "stale-first": {
+      "mean": 0.0,
+      "low": 0.0,
+      "high": 0.0,
+      "n": 5
+     },
+     "stale@10": {
+      "mean": 0.0,
+      "low": 0.0,
+      "high": 0.0,
+      "n": 5
+     }
+    },
+    "meme/Cas-hop2": {
+     "current@10": {
+      "mean": 1.0,
+      "low": 1.0,
+      "high": 1.0,
+      "n": 1
+     },
+     "stale-first": {
+      "mean": 0.0,
+      "low": 0.0,
+      "high": 0.0,
+      "n": 1
+     },
+     "stale@10": {
+      "mean": 0.0,
+      "low": 0.0,
+      "high": 0.0,
+      "n": 1
+     }
+    },
+    "meme/Del": {
+     "forgotten": {
+      "mean": 1.0,
+      "low": 1.0,
+      "high": 1.0,
+      "n": 4
+     },
+     "stale@10": {
+      "mean": 0.0,
+      "low": 0.0,
+      "high": 0.0,
+      "n": 5
+     }
+    },
+    "meme/ER": {
+     "current@10": {
+      "mean": 1.0,
+      "low": 1.0,
+      "high": 1.0,
+      "n": 5
+     }
+    },
+    "meme/Tr": {
+     "history-named@10": {
+      "mean": 0.9333,
+      "low": 0.8,
+      "high": 1.0,
+      "n": 5
+     }
+    },
+    "meme/before-Abs-hop1": {
+     "current@10": {
+      "mean": 0.6,
+      "low": 0.2,
+      "high": 1.0,
+      "n": 5
+     }
+    },
+    "meme/before-Cas-hop1": {
+     "current@10": {
+      "mean": 1.0,
+      "low": 1.0,
+      "high": 1.0,
+      "n": 5
+     }
+    },
+    "meme/before-Cas-hop2": {
+     "current@10": {
+      "mean": 1.0,
+      "low": 1.0,
+      "high": 1.0,
+      "n": 1
+     }
+    },
+    "meme/before-Del": {
+     "current@10": {
+      "mean": 0.75,
+      "low": 0.25,
+      "high": 1.0,
+      "n": 4
+     }
+    },
+    "meme/before-ER": {
+     "current@10": {
+      "mean": 1.0,
+      "low": 1.0,
+      "high": 1.0,
+      "n": 5
+     }
+    },
+    "meme/dependent": {
+     "lost": {
+      "mean": 0.1667,
+      "low": 0.0,
+      "high": 0.4167,
+      "n": 12
+     }
+    },
+    "meme/plain": {
+     "lost": {
+      "mean": 0.0648,
+      "low": 0.0185,
+      "high": 0.1111,
+      "n": 108
+     }
+    },
+    "meme/root": {
+     "retired": {
+      "mean": 0.4,
+      "low": 0.0,
+      "high": 0.8,
+      "n": 5
+     }
+    },
+    "meme/rule": {
+     "lost": {
+      "mean": 0.2857,
+      "low": 0.0714,
+      "high": 0.5714,
+      "n": 14
+     }
+    },
+    "meme/tracking": {
+     "retired": {
+      "mean": 0.7,
+      "low": 0.4,
+      "high": 1.0,
+      "n": 10
+     }
+    }
+   },
+   "telemetry": {
+    "haystacks": 6,
+    "failed_haystacks": [],
+    "sessions": 71,
+    "tool_calls": 1641,
+    "calls_per_session_mean": 23.11,
+    "calls_per_session_median": 24,
+    "calls_per_session_max": 40,
+    "tools": {
+     "manifest": 87,
+     "write": 562,
+     "search": 544,
+     "read": 448
+    },
+    "ops": {
+     "create": 549,
+     "append": 7,
+     "delete": 5,
+     "replace": 1
+    },
+    "writes_with_supersedes": 177,
+    "writes_with_extends": 16,
+    "tool_errors": 21,
+    "cap_hits": 0,
+    "non_mcp_tool_calls": 0,
+    "non_mcp_denied": 2,
+    "trace_mismatches": 0,
+    "client_rejected_calls": 0,
+    "no_done": 0,
+    "retries": 0,
+    "wall_s_total": 6595.5,
+    "wall_s_median": 93.04,
+    "wall_s_max": 265.09,
+    "overlay_cards_per_haystack": 90.7,
+    "input_tokens": 11021378,
+    "output_tokens": 513268,
+    "thinking_tokens": 369812,
+    "cached_tokens": 15285313
+   }
+  },
+  "agent-default@gemini-4-argon-medium": {
+   "pooled": {
+    "stale-first": {
+     "mean": 0.0147,
+     "low": 0.0,
+     "high": 0.0441,
+     "n": 68
+    },
+    "stale@10": {
+     "mean": 0.1176,
+     "low": 0.0441,
+     "high": 0.1912,
+     "n": 68
+    },
+    "current@10": {
+     "mean": 0.9886,
+     "low": 0.9659,
+     "high": 1.0,
+     "n": 88
+    },
+    "retired": {
+     "mean": 0.9221,
+     "low": 0.8571,
+     "high": 0.974,
+     "n": 77
+    },
+    "lost": {
+     "mean": 0.0139,
+     "low": 0.0,
+     "high": 0.0324,
+     "n": 216
+    },
+    "forgotten": {
+     "mean": 1.0,
+     "low": 1.0,
+     "high": 1.0,
+     "n": 4
+    },
+    "history-named@10": {
+     "mean": 1.0,
+     "low": 1.0,
+     "high": 1.0,
+     "n": 5
+    }
+   },
+   "groups": {
+    "mab-sh/conflict": {
+     "current@10": {
+      "mean": 1.0,
+      "low": 1.0,
+      "high": 1.0,
+      "n": 62
+     },
+     "stale-first": {
+      "mean": 0.0,
+      "low": 0.0,
+      "high": 0.0,
+      "n": 62
+     },
+     "stale@10": {
+      "mean": 0.0968,
+      "low": 0.0323,
+      "high": 0.1774,
+      "n": 62
+     }
+    },
+    "mab-sh/other": {
+     "current@10": {
+      "mean": 1.0,
+      "low": 1.0,
+      "high": 1.0,
+      "n": 20
+     }
+    },
+    "mab/conflict": {
+     "retired": {
+      "mean": 0.9677,
+      "low": 0.9194,
+      "high": 1.0,
+      "n": 62
+     }
+    },
+    "mab/fact": {
+     "lost": {
+      "mean": 0.0,
+      "low": 0.0,
+      "high": 0.0,
+      "n": 82
+     }
+    },
+    "meme/Abs-hop1": {
+     "stale@10": {
+      "mean": 0.6,
+      "low": 0.2,
+      "high": 1.0,
+      "n": 5
+     }
+    },
+    "meme/Agg": {
+     "current@10": {
+      "mean": 0.8,
+      "low": 0.6667,
+      "high": 0.9333,
+      "n": 5
+     }
+    },
+    "meme/Cas-hop1": {
+     "current@10": {
+      "mean": 0.8,
+      "low": 0.4,
+      "high": 1.0,
+      "n": 5
+     },
+     "stale-first": {
+      "mean": 0.2,
+      "low": 0.0,
+      "high": 0.6,
+      "n": 5
+     },
+     "stale@10": {
+      "mean": 0.4,
+      "low": 0.0,
+      "high": 0.8,
+      "n": 5
+     }
+    },
+    "meme/Cas-hop2": {
+     "current@10": {
+      "mean": 1.0,
+      "low": 1.0,
+      "high": 1.0,
+      "n": 1
+     },
+     "stale-first": {
+      "mean": 0.0,
+      "low": 0.0,
+      "high": 0.0,
+      "n": 1
+     },
+     "stale@10": {
+      "mean": 0.0,
+      "low": 0.0,
+      "high": 0.0,
+      "n": 1
+     }
+    },
+    "meme/Del": {
+     "forgotten": {
+      "mean": 1.0,
+      "low": 1.0,
+      "high": 1.0,
+      "n": 4
+     },
+     "stale@10": {
+      "mean": 0.0,
+      "low": 0.0,
+      "high": 0.0,
+      "n": 5
+     }
+    },
+    "meme/ER": {
+     "current@10": {
+      "mean": 1.0,
+      "low": 1.0,
+      "high": 1.0,
+      "n": 5
+     }
+    },
+    "meme/Tr": {
+     "history-named@10": {
+      "mean": 1.0,
+      "low": 1.0,
+      "high": 1.0,
+      "n": 5
+     }
+    },
+    "meme/before-Abs-hop1": {
+     "current@10": {
+      "mean": 0.8,
+      "low": 0.4,
+      "high": 1.0,
+      "n": 5
+     }
+    },
+    "meme/before-Cas-hop1": {
+     "current@10": {
+      "mean": 1.0,
+      "low": 1.0,
+      "high": 1.0,
+      "n": 5
+     }
+    },
+    "meme/before-Cas-hop2": {
+     "current@10": {
+      "mean": 1.0,
+      "low": 1.0,
+      "high": 1.0,
+      "n": 1
+     }
+    },
+    "meme/before-Del": {
+     "current@10": {
+      "mean": 1.0,
+      "low": 1.0,
+      "high": 1.0,
+      "n": 4
+     }
+    },
+    "meme/before-ER": {
+     "current@10": {
+      "mean": 1.0,
+      "low": 1.0,
+      "high": 1.0,
+      "n": 5
+     }
+    },
+    "meme/dependent": {
+     "lost": {
+      "mean": 0.0833,
+      "low": 0.0,
+      "high": 0.25,
+      "n": 12
+     }
+    },
+    "meme/plain": {
+     "lost": {
+      "mean": 0.0,
+      "low": 0.0,
+      "high": 0.0,
+      "n": 108
+     }
+    },
+    "meme/root": {
+     "retired": {
+      "mean": 0.6,
+      "low": 0.2,
+      "high": 1.0,
+      "n": 5
+     }
+    },
+    "meme/rule": {
+     "lost": {
+      "mean": 0.1429,
+      "low": 0.0,
+      "high": 0.3571,
+      "n": 14
+     }
+    },
+    "meme/tracking": {
+     "retired": {
+      "mean": 0.8,
+      "low": 0.5,
+      "high": 1.0,
+      "n": 10
+     }
+    }
+   },
+   "telemetry": {
+    "haystacks": 6,
+    "failed_haystacks": [],
+    "sessions": 71,
+    "tool_calls": 1025,
+    "calls_per_session_mean": 14.44,
+    "calls_per_session_median": 15,
+    "calls_per_session_max": 27,
+    "tools": {
+     "manifest": 70,
+     "write": 563,
+     "search": 170,
+     "read": 222
+    },
+    "ops": {
+     "create": 396,
+     "replace": 157,
+     "append": 5,
+     "delete": 5
+    },
+    "writes_with_supersedes": 23,
+    "writes_with_extends": 22,
+    "tool_errors": 0,
+    "cap_hits": 0,
+    "non_mcp_tool_calls": 0,
+    "non_mcp_denied": 0,
+    "trace_mismatches": 0,
+    "client_rejected_calls": 0,
+    "no_done": 0,
+    "retries": 0,
+    "wall_s_total": 6647.9,
+    "wall_s_median": 83.52,
+    "wall_s_max": 300.58,
+    "overlay_cards_per_haystack": 65.2,
+    "input_tokens": 1157402,
+    "output_tokens": 156553,
+    "thinking_tokens": 15048,
+    "cached_tokens": 1829314
+   }
+  },
+  "agent-overlay@gemini-3.8-flash-medium": {
+   "pooled": {
+    "stale-first": {
+     "mean": 0.2647,
+     "low": 0.1618,
+     "high": 0.3824,
+     "n": 68
+    },
+    "stale@10": {
+     "mean": 0.3676,
+     "low": 0.25,
+     "high": 0.4853,
+     "n": 68
+    },
+    "current@10": {
+     "mean": 0.9773,
+     "low": 0.9432,
+     "high": 1.0,
+     "n": 88
+    },
+    "retired": {
+     "mean": 0.6753,
+     "low": 0.5714,
+     "high": 0.7792,
+     "n": 77
+    },
+    "lost": {
+     "mean": 0.0139,
+     "low": 0.0,
+     "high": 0.0324,
+     "n": 216
+    },
+    "forgotten": {
+     "mean": 0.5,
+     "low": 0.0,
+     "high": 1.0,
+     "n": 4
+    },
+    "history-named@10": {
+     "mean": 1.0,
+     "low": 1.0,
+     "high": 1.0,
+     "n": 5
+    }
+   },
+   "groups": {
+    "mab-sh/conflict": {
+     "current@10": {
+      "mean": 0.9839,
+      "low": 0.9516,
+      "high": 1.0,
+      "n": 62
+     },
+     "stale-first": {
+      "mean": 0.2903,
+      "low": 0.1774,
+      "high": 0.4032,
+      "n": 62
+     },
+     "stale@10": {
+      "mean": 0.4032,
+      "low": 0.2903,
+      "high": 0.5161,
+      "n": 62
+     }
+    },
+    "mab-sh/other": {
+     "current@10": {
+      "mean": 1.0,
+      "low": 1.0,
+      "high": 1.0,
+      "n": 20
+     }
+    },
+    "mab/conflict": {
+     "retired": {
+      "mean": 0.5968,
+      "low": 0.4839,
+      "high": 0.7097,
+      "n": 62
+     }
+    },
+    "mab/fact": {
+     "lost": {
+      "mean": 0.0,
+      "low": 0.0,
+      "high": 0.0,
+      "n": 82
+     }
+    },
+    "meme/Abs-hop1": {
+     "stale@10": {
+      "mean": 0.0,
+      "low": 0.0,
+      "high": 0.0,
+      "n": 5
+     }
+    },
+    "meme/Agg": {
+     "current@10": {
+      "mean": 0.4,
+      "low": 0.1333,
+      "high": 0.6,
+      "n": 5
+     }
+    },
+    "meme/Cas-hop1": {
+     "current@10": {
+      "mean": 0.8,
+      "low": 0.4,
+      "high": 1.0,
+      "n": 5
+     },
+     "stale-first": {
+      "mean": 0.0,
+      "low": 0.0,
+      "high": 0.0,
+      "n": 5
+     },
+     "stale@10": {
+      "mean": 0.0,
+      "low": 0.0,
+      "high": 0.0,
+      "n": 5
+     }
+    },
+    "meme/Cas-hop2": {
+     "current@10": {
+      "mean": 1.0,
+      "low": 1.0,
+      "high": 1.0,
+      "n": 1
+     },
+     "stale-first": {
+      "mean": 0.0,
+      "low": 0.0,
+      "high": 0.0,
+      "n": 1
+     },
+     "stale@10": {
+      "mean": 0.0,
+      "low": 0.0,
+      "high": 0.0,
+      "n": 1
+     }
+    },
+    "meme/Del": {
+     "forgotten": {
+      "mean": 0.5,
+      "low": 0.0,
+      "high": 1.0,
+      "n": 4
+     },
+     "stale@10": {
+      "mean": 0.6,
+      "low": 0.2,
+      "high": 1.0,
+      "n": 5
+     }
+    },
+    "meme/ER": {
+     "current@10": {
+      "mean": 1.0,
+      "low": 1.0,
+      "high": 1.0,
+      "n": 5
+     }
+    },
+    "meme/Tr": {
+     "history-named@10": {
+      "mean": 1.0,
+      "low": 1.0,
+      "high": 1.0,
+      "n": 5
+     }
+    },
+    "meme/before-Abs-hop1": {
+     "current@10": {
+      "mean": 0.8,
+      "low": 0.4,
+      "high": 1.0,
+      "n": 5
+     }
+    },
+    "meme/before-Cas-hop1": {
+     "current@10": {
+      "mean": 1.0,
+      "low": 1.0,
+      "high": 1.0,
+      "n": 5
+     }
+    },
+    "meme/before-Cas-hop2": {
+     "current@10": {
+      "mean": 1.0,
+      "low": 1.0,
+      "high": 1.0,
+      "n": 1
+     }
+    },
+    "meme/before-Del": {
+     "current@10": {
+      "mean": 1.0,
+      "low": 1.0,
+      "high": 1.0,
+      "n": 4
+     }
+    },
+    "meme/before-ER": {
+     "current@10": {
+      "mean": 1.0,
+      "low": 1.0,
+      "high": 1.0,
+      "n": 5
+     }
+    },
+    "meme/dependent": {
+     "lost": {
+      "mean": 0.0833,
+      "low": 0.0,
+      "high": 0.25,
+      "n": 12
+     }
+    },
+    "meme/plain": {
+     "lost": {
+      "mean": 0.0,
+      "low": 0.0,
+      "high": 0.0,
+      "n": 108
+     }
+    },
+    "meme/root": {
+     "retired": {
+      "mean": 1.0,
+      "low": 1.0,
+      "high": 1.0,
+      "n": 5
+     }
+    },
+    "meme/rule": {
+     "lost": {
+      "mean": 0.1429,
+      "low": 0.0,
+      "high": 0.3571,
+      "n": 14
+     }
+    },
+    "meme/tracking": {
+     "retired": {
+      "mean": 1.0,
+      "low": 1.0,
+      "high": 1.0,
+      "n": 10
+     }
+    }
+   },
+   "telemetry": {
+    "haystacks": 6,
+    "failed_haystacks": [],
+    "sessions": 71,
+    "tool_calls": 2051,
+    "calls_per_session_mean": 28.89,
+    "calls_per_session_median": 30,
+    "calls_per_session_max": 44,
+    "tools": {
+     "manifest": 76,
+     "search": 1085,
+     "read": 735,
+     "write": 155
+    },
+    "ops": {
+     "create": 132,
+     "replace": 3,
+     "delete": 3
+    },
+    "writes_with_supersedes": 132,
+    "writes_with_extends": 23,
+    "tool_errors": 19,
+    "cap_hits": 20,
+    "non_mcp_tool_calls": 0,
+    "non_mcp_denied": 4,
+    "trace_mismatches": 0,
+    "client_rejected_calls": 5,
+    "no_done": 20,
+    "retries": 0,
+    "wall_s_total": 10976.3,
+    "wall_s_median": 144.52,
+    "wall_s_max": 378.13,
+    "overlay_cards_per_haystack": 21.3,
+    "input_tokens": 12839786,
+    "output_tokens": 1050482,
+    "thinking_tokens": 932797,
+    "cached_tokens": 27379089
+   }
+  },
+  "agent-overlay@gemini-4-argon-medium": {
+   "pooled": {
+    "stale-first": {
+     "mean": 0.0,
+     "low": 0.0,
+     "high": 0.0,
+     "n": 68
+    },
+    "stale@10": {
+     "mean": 0.0,
+     "low": 0.0,
+     "high": 0.0,
+     "n": 68
+    },
+    "current@10": {
+     "mean": 0.9886,
+     "low": 0.9659,
+     "high": 1.0,
+     "n": 88
+    },
+    "retired": {
+     "mean": 1.0,
+     "low": 1.0,
+     "high": 1.0,
+     "n": 77
+    },
+    "lost": {
+     "mean": 0.0,
+     "low": 0.0,
+     "high": 0.0,
+     "n": 216
+    },
+    "forgotten": {
+     "mean": 1.0,
+     "low": 1.0,
+     "high": 1.0,
+     "n": 4
+    },
+    "history-named@10": {
+     "mean": 1.0,
+     "low": 1.0,
+     "high": 1.0,
+     "n": 5
+    }
+   },
+   "groups": {
+    "mab-sh/conflict": {
+     "current@10": {
+      "mean": 0.9839,
+      "low": 0.9516,
+      "high": 1.0,
+      "n": 62
+     },
+     "stale-first": {
+      "mean": 0.0,
+      "low": 0.0,
+      "high": 0.0,
+      "n": 62
+     },
+     "stale@10": {
+      "mean": 0.0,
+      "low": 0.0,
+      "high": 0.0,
+      "n": 62
+     }
+    },
+    "mab-sh/other": {
+     "current@10": {
+      "mean": 1.0,
+      "low": 1.0,
+      "high": 1.0,
+      "n": 20
+     }
+    },
+    "mab/conflict": {
+     "retired": {
+      "mean": 1.0,
+      "low": 1.0,
+      "high": 1.0,
+      "n": 62
+     }
+    },
+    "mab/fact": {
+     "lost": {
+      "mean": 0.0,
+      "low": 0.0,
+      "high": 0.0,
+      "n": 82
+     }
+    },
+    "meme/Abs-hop1": {
+     "stale@10": {
+      "mean": 0.4,
+      "low": 0.0,
+      "high": 0.8,
+      "n": 5
+     }
+    },
+    "meme/Agg": {
+     "current@10": {
+      "mean": 0.5333,
+      "low": 0.4,
+      "high": 0.6667,
+      "n": 5
+     }
+    },
+    "meme/Cas-hop1": {
+     "current@10": {
+      "mean": 1.0,
+      "low": 1.0,
+      "high": 1.0,
+      "n": 5
+     },
+     "stale-first": {
+      "mean": 0.0,
+      "low": 0.0,
+      "high": 0.0,
+      "n": 5
+     },
+     "stale@10": {
+      "mean": 0.0,
+      "low": 0.0,
+      "high": 0.0,
+      "n": 5
+     }
+    },
+    "meme/Cas-hop2": {
+     "current@10": {
+      "mean": 1.0,
+      "low": 1.0,
+      "high": 1.0,
+      "n": 1
+     },
+     "stale-first": {
+      "mean": 0.0,
+      "low": 0.0,
+      "high": 0.0,
+      "n": 1
+     },
+     "stale@10": {
+      "mean": 0.0,
+      "low": 0.0,
+      "high": 0.0,
+      "n": 1
+     }
+    },
+    "meme/Del": {
+     "forgotten": {
+      "mean": 1.0,
+      "low": 1.0,
+      "high": 1.0,
+      "n": 4
+     },
+     "stale@10": {
+      "mean": 0.0,
+      "low": 0.0,
+      "high": 0.0,
+      "n": 5
+     }
+    },
+    "meme/ER": {
+     "current@10": {
+      "mean": 1.0,
+      "low": 1.0,
+      "high": 1.0,
+      "n": 5
+     }
+    },
+    "meme/Tr": {
+     "history-named@10": {
+      "mean": 1.0,
+      "low": 1.0,
+      "high": 1.0,
+      "n": 5
+     }
+    },
+    "meme/before-Abs-hop1": {
+     "current@10": {
+      "mean": 1.0,
+      "low": 1.0,
+      "high": 1.0,
+      "n": 5
+     }
+    },
+    "meme/before-Cas-hop1": {
+     "current@10": {
+      "mean": 1.0,
+      "low": 1.0,
+      "high": 1.0,
+      "n": 5
+     }
+    },
+    "meme/before-Cas-hop2": {
+     "current@10": {
+      "mean": 1.0,
+      "low": 1.0,
+      "high": 1.0,
+      "n": 1
+     }
+    },
+    "meme/before-Del": {
+     "current@10": {
+      "mean": 1.0,
+      "low": 1.0,
+      "high": 1.0,
+      "n": 4
+     }
+    },
+    "meme/before-ER": {
+     "current@10": {
+      "mean": 1.0,
+      "low": 1.0,
+      "high": 1.0,
+      "n": 5
+     }
+    },
+    "meme/dependent": {
+     "lost": {
+      "mean": 0.0,
+      "low": 0.0,
+      "high": 0.0,
+      "n": 12
+     }
+    },
+    "meme/plain": {
+     "lost": {
+      "mean": 0.0,
+      "low": 0.0,
+      "high": 0.0,
+      "n": 108
+     }
+    },
+    "meme/root": {
+     "retired": {
+      "mean": 1.0,
+      "low": 1.0,
+      "high": 1.0,
+      "n": 5
+     }
+    },
+    "meme/rule": {
+     "lost": {
+      "mean": 0.0,
+      "low": 0.0,
+      "high": 0.0,
+      "n": 14
+     }
+    },
+    "meme/tracking": {
+     "retired": {
+      "mean": 1.0,
+      "low": 1.0,
+      "high": 1.0,
+      "n": 10
+     }
+    }
+   },
+   "telemetry": {
+    "haystacks": 6,
+    "failed_haystacks": [],
+    "sessions": 71,
+    "tool_calls": 739,
+    "calls_per_session_mean": 10.41,
+    "calls_per_session_median": 11,
+    "calls_per_session_max": 22,
+    "tools": {
+     "manifest": 70,
+     "search": 235,
+     "read": 212,
+     "write": 222
+    },
+    "ops": {
+     "create": 212,
+     "delete": 1,
+     "append": 3,
+     "replace": 6
+    },
+    "writes_with_supersedes": 216,
+    "writes_with_extends": 36,
+    "tool_errors": 6,
+    "cap_hits": 0,
+    "non_mcp_tool_calls": 0,
+    "non_mcp_denied": 0,
+    "trace_mismatches": 0,
+    "client_rejected_calls": 0,
+    "no_done": 0,
+    "retries": 0,
+    "wall_s_total": 6584.3,
+    "wall_s_median": 75.53,
+    "wall_s_max": 427.16,
+    "overlay_cards_per_haystack": 35.2,
+    "input_tokens": 1216895,
+    "output_tokens": 123311,
+    "thinking_tokens": 50183,
+    "cached_tokens": 2291986
+   }
+  },
+  "agent-policy@gemini-3.8-flash-medium": {
+   "pooled": {
+    "stale-first": {
+     "mean": 0.0147,
+     "low": 0.0,
+     "high": 0.0441,
+     "n": 68
+    },
+    "stale@10": {
+     "mean": 0.0147,
+     "low": 0.0,
+     "high": 0.0441,
+     "n": 68
+    },
+    "current@10": {
+     "mean": 0.9659,
+     "low": 0.9205,
+     "high": 1.0,
+     "n": 88
+    },
+    "retired": {
+     "mean": 0.8961,
+     "low": 0.8182,
+     "high": 0.961,
+     "n": 77
+    },
+    "lost": {
+     "mean": 0.0324,
+     "low": 0.0093,
+     "high": 0.0556,
+     "n": 216
+    },
+    "forgotten": {
+     "mean": 1.0,
+     "low": 1.0,
+     "high": 1.0,
+     "n": 4
+    },
+    "history-named@10": {
+     "mean": 1.0,
+     "low": 1.0,
+     "high": 1.0,
+     "n": 5
+    }
+   },
+   "groups": {
+    "mab-sh/conflict": {
+     "current@10": {
+      "mean": 0.9677,
+      "low": 0.9194,
+      "high": 1.0,
+      "n": 62
+     },
+     "stale-first": {
+      "mean": 0.0161,
+      "low": 0.0,
+      "high": 0.0484,
+      "n": 62
+     },
+     "stale@10": {
+      "mean": 0.0161,
+      "low": 0.0,
+      "high": 0.0484,
+      "n": 62
+     }
+    },
+    "mab-sh/other": {
+     "current@10": {
+      "mean": 1.0,
+      "low": 1.0,
+      "high": 1.0,
+      "n": 20
+     }
+    },
+    "mab/conflict": {
+     "retired": {
+      "mean": 0.9839,
+      "low": 0.9516,
+      "high": 1.0,
+      "n": 62
+     }
+    },
+    "mab/fact": {
+     "lost": {
+      "mean": 0.0122,
+      "low": 0.0,
+      "high": 0.0366,
+      "n": 82
+     }
+    },
+    "meme/Abs-hop1": {
+     "stale@10": {
+      "mean": 0.2,
+      "low": 0.0,
+      "high": 0.6,
+      "n": 5
+     }
+    },
+    "meme/Agg": {
+     "current@10": {
+      "mean": 0.6,
+      "low": 0.4,
+      "high": 0.8,
+      "n": 5
+     }
+    },
+    "meme/Cas-hop1": {
+     "current@10": {
+      "mean": 0.8,
+      "low": 0.4,
+      "high": 1.0,
+      "n": 5
+     },
+     "stale-first": {
+      "mean": 0.0,
+      "low": 0.0,
+      "high": 0.0,
+      "n": 5
+     },
+     "stale@10": {
+      "mean": 0.0,
+      "low": 0.0,
+      "high": 0.0,
+      "n": 5
+     }
+    },
+    "meme/Cas-hop2": {
+     "current@10": {
+      "mean": 1.0,
+      "low": 1.0,
+      "high": 1.0,
+      "n": 1
+     },
+     "stale-first": {
+      "mean": 0.0,
+      "low": 0.0,
+      "high": 0.0,
+      "n": 1
+     },
+     "stale@10": {
+      "mean": 0.0,
+      "low": 0.0,
+      "high": 0.0,
+      "n": 1
+     }
+    },
+    "meme/Del": {
+     "forgotten": {
+      "mean": 1.0,
+      "low": 1.0,
+      "high": 1.0,
+      "n": 4
+     },
+     "stale@10": {
+      "mean": 0.0,
+      "low": 0.0,
+      "high": 0.0,
+      "n": 5
+     }
+    },
+    "meme/ER": {
+     "current@10": {
+      "mean": 1.0,
+      "low": 1.0,
+      "high": 1.0,
+      "n": 5
+     }
+    },
+    "meme/Tr": {
+     "history-named@10": {
+      "mean": 1.0,
+      "low": 1.0,
+      "high": 1.0,
+      "n": 5
+     }
+    },
+    "meme/before-Abs-hop1": {
+     "current@10": {
+      "mean": 0.6,
+      "low": 0.2,
+      "high": 1.0,
+      "n": 5
+     }
+    },
+    "meme/before-Cas-hop1": {
+     "current@10": {
+      "mean": 1.0,
+      "low": 1.0,
+      "high": 1.0,
+      "n": 5
+     }
+    },
+    "meme/before-Cas-hop2": {
+     "current@10": {
+      "mean": 1.0,
+      "low": 1.0,
+      "high": 1.0,
+      "n": 1
+     }
+    },
+    "meme/before-Del": {
+     "current@10": {
+      "mean": 0.75,
+      "low": 0.25,
+      "high": 1.0,
+      "n": 4
+     }
+    },
+    "meme/before-ER": {
+     "current@10": {
+      "mean": 1.0,
+      "low": 1.0,
+      "high": 1.0,
+      "n": 5
+     }
+    },
+    "meme/dependent": {
+     "lost": {
+      "mean": 0.1667,
+      "low": 0.0,
+      "high": 0.4167,
+      "n": 12
+     }
+    },
+    "meme/plain": {
+     "lost": {
+      "mean": 0.0185,
+      "low": 0.0,
+      "high": 0.0463,
+      "n": 108
+     }
+    },
+    "meme/root": {
+     "retired": {
+      "mean": 0.2,
+      "low": 0.0,
+      "high": 0.6,
+      "n": 5
+     }
+    },
+    "meme/rule": {
+     "lost": {
+      "mean": 0.1429,
+      "low": 0.0,
+      "high": 0.3571,
+      "n": 14
+     }
+    },
+    "meme/tracking": {
+     "retired": {
+      "mean": 0.7,
+      "low": 0.4,
+      "high": 1.0,
+      "n": 10
+     }
+    }
+   },
+   "telemetry": {
+    "haystacks": 6,
+    "failed_haystacks": [],
+    "sessions": 71,
+    "tool_calls": 1658,
+    "calls_per_session_mean": 23.35,
+    "calls_per_session_median": 24,
+    "calls_per_session_max": 41,
+    "tools": {
+     "manifest": 81,
+     "write": 567,
+     "search": 569,
+     "read": 441
+    },
+    "ops": {
+     "create": 553,
+     "delete": 5,
+     "replace": 4,
+     "append": 3
+    },
+    "writes_with_supersedes": 179,
+    "writes_with_extends": 20,
+    "tool_errors": 21,
+    "cap_hits": 4,
+    "non_mcp_tool_calls": 0,
+    "non_mcp_denied": 1,
+    "trace_mismatches": 0,
+    "client_rejected_calls": 1,
+    "no_done": 4,
+    "retries": 0,
+    "wall_s_total": 6680.2,
+    "wall_s_median": 94.04,
+    "wall_s_max": 235.59,
+    "overlay_cards_per_haystack": 91.3,
+    "input_tokens": 11375256,
+    "output_tokens": 523056,
+    "thinking_tokens": 373496,
+    "cached_tokens": 15603560
+   }
+  },
+  "agent-policy@gemini-4-argon-medium": {
+   "pooled": {
+    "stale-first": {
+     "mean": 0.0,
+     "low": 0.0,
+     "high": 0.0,
+     "n": 68
+    },
+    "stale@10": {
+     "mean": 0.0441,
+     "low": 0.0,
+     "high": 0.1029,
+     "n": 68
+    },
+    "current@10": {
+     "mean": 0.9886,
+     "low": 0.9659,
+     "high": 1.0,
+     "n": 88
+    },
+    "retired": {
+     "mean": 0.9351,
+     "low": 0.8831,
+     "high": 0.987,
+     "n": 77
+    },
+    "lost": {
+     "mean": 0.0046,
+     "low": 0.0,
+     "high": 0.0139,
+     "n": 216
+    },
+    "forgotten": {
+     "mean": 1.0,
+     "low": 1.0,
+     "high": 1.0,
+     "n": 4
+    },
+    "history-named@10": {
+     "mean": 1.0,
+     "low": 1.0,
+     "high": 1.0,
+     "n": 5
+    }
+   },
+   "groups": {
+    "mab-sh/conflict": {
+     "current@10": {
+      "mean": 0.9839,
+      "low": 0.9516,
+      "high": 1.0,
+      "n": 62
+     },
+     "stale-first": {
+      "mean": 0.0,
+      "low": 0.0,
+      "high": 0.0,
+      "n": 62
+     },
+     "stale@10": {
+      "mean": 0.0323,
+      "low": 0.0,
+      "high": 0.0806,
+      "n": 62
+     }
+    },
+    "mab-sh/other": {
+     "current@10": {
+      "mean": 1.0,
+      "low": 1.0,
+      "high": 1.0,
+      "n": 20
+     }
+    },
+    "mab/conflict": {
+     "retired": {
+      "mean": 0.9677,
+      "low": 0.9194,
+      "high": 1.0,
+      "n": 62
+     }
+    },
+    "mab/fact": {
+     "lost": {
+      "mean": 0.0,
+      "low": 0.0,
+      "high": 0.0,
+      "n": 82
+     }
+    },
+    "meme/Abs-hop1": {
+     "stale@10": {
+      "mean": 0.6,
+      "low": 0.2,
+      "high": 1.0,
+      "n": 5
+     }
+    },
+    "meme/Agg": {
+     "current@10": {
+      "mean": 0.6667,
+      "low": 0.4667,
+      "high": 0.8667,
+      "n": 5
+     }
+    },
+    "meme/Cas-hop1": {
+     "current@10": {
+      "mean": 1.0,
+      "low": 1.0,
+      "high": 1.0,
+      "n": 5
+     },
+     "stale-first": {
+      "mean": 0.0,
+      "low": 0.0,
+      "high": 0.0,
+      "n": 5
+     },
+     "stale@10": {
+      "mean": 0.2,
+      "low": 0.0,
+      "high": 0.6,
+      "n": 5
+     }
+    },
+    "meme/Cas-hop2": {
+     "current@10": {
+      "mean": 1.0,
+      "low": 1.0,
+      "high": 1.0,
+      "n": 1
+     },
+     "stale-first": {
+      "mean": 0.0,
+      "low": 0.0,
+      "high": 0.0,
+      "n": 1
+     },
+     "stale@10": {
+      "mean": 0.0,
+      "low": 0.0,
+      "high": 0.0,
+      "n": 1
+     }
+    },
+    "meme/Del": {
+     "forgotten": {
+      "mean": 1.0,
+      "low": 1.0,
+      "high": 1.0,
+      "n": 4
+     },
+     "stale@10": {
+      "mean": 0.0,
+      "low": 0.0,
+      "high": 0.0,
+      "n": 5
+     }
+    },
+    "meme/ER": {
+     "current@10": {
+      "mean": 1.0,
+      "low": 1.0,
+      "high": 1.0,
+      "n": 5
+     }
+    },
+    "meme/Tr": {
+     "history-named@10": {
+      "mean": 1.0,
+      "low": 1.0,
+      "high": 1.0,
+      "n": 5
+     }
+    },
+    "meme/before-Abs-hop1": {
+     "current@10": {
+      "mean": 0.8,
+      "low": 0.4,
+      "high": 1.0,
+      "n": 5
+     }
+    },
+    "meme/before-Cas-hop1": {
+     "current@10": {
+      "mean": 1.0,
+      "low": 1.0,
+      "high": 1.0,
+      "n": 5
+     }
+    },
+    "meme/before-Cas-hop2": {
+     "current@10": {
+      "mean": 1.0,
+      "low": 1.0,
+      "high": 1.0,
+      "n": 1
+     }
+    },
+    "meme/before-Del": {
+     "current@10": {
+      "mean": 1.0,
+      "low": 1.0,
+      "high": 1.0,
+      "n": 4
+     }
+    },
+    "meme/before-ER": {
+     "current@10": {
+      "mean": 1.0,
+      "low": 1.0,
+      "high": 1.0,
+      "n": 5
+     }
+    },
+    "meme/dependent": {
+     "lost": {
+      "mean": 0.0833,
+      "low": 0.0,
+      "high": 0.25,
+      "n": 12
+     }
+    },
+    "meme/plain": {
+     "lost": {
+      "mean": 0.0,
+      "low": 0.0,
+      "high": 0.0,
+      "n": 108
+     }
+    },
+    "meme/root": {
+     "retired": {
+      "mean": 0.6,
+      "low": 0.2,
+      "high": 1.0,
+      "n": 5
+     }
+    },
+    "meme/rule": {
+     "lost": {
+      "mean": 0.0,
+      "low": 0.0,
+      "high": 0.0,
+      "n": 14
+     }
+    },
+    "meme/tracking": {
+     "retired": {
+      "mean": 0.9,
+      "low": 0.7,
+      "high": 1.0,
+      "n": 10
+     }
+    }
+   },
+   "telemetry": {
+    "haystacks": 6,
+    "failed_haystacks": [],
+    "sessions": 71,
+    "tool_calls": 1014,
+    "calls_per_session_mean": 14.28,
+    "calls_per_session_median": 14,
+    "calls_per_session_max": 23,
+    "tools": {
+     "manifest": 66,
+     "write": 558,
+     "search": 195,
+     "read": 195
+    },
+    "ops": {
+     "create": 551,
+     "delete": 5,
+     "replace": 2
+    },
+    "writes_with_supersedes": 176,
+    "writes_with_extends": 17,
+    "tool_errors": 0,
+    "cap_hits": 0,
+    "non_mcp_tool_calls": 0,
+    "non_mcp_denied": 0,
+    "trace_mismatches": 0,
+    "client_rejected_calls": 0,
+    "no_done": 0,
+    "retries": 0,
+    "wall_s_total": 6718.5,
+    "wall_s_median": 76.03,
+    "wall_s_max": 302.13,
+    "overlay_cards_per_haystack": 91.0,
+    "input_tokens": 1164025,
+    "output_tokens": 160707,
+    "thinking_tokens": 20833,
+    "cached_tokens": 1878969
+   }
+  },
+  "flat": {
+   "pooled": {
+    "stale-first": {
+     "mean": 0.7059,
+     "low": 0.5882,
+     "high": 0.8235,
+     "n": 68
+    },
+    "stale@10": {
+     "mean": 0.9853,
+     "low": 0.9559,
+     "high": 1.0,
+     "n": 68
+    },
+    "current@10": {
+     "mean": 1.0,
+     "low": 1.0,
+     "high": 1.0,
+     "n": 88
+    },
+    "retired": {
+     "mean": 0.0,
+     "low": 0.0,
+     "high": 0.0,
+     "n": 77
+    },
+    "lost": {
+     "mean": 0.0,
+     "low": 0.0,
+     "high": 0.0,
+     "n": 216
+    },
+    "forgotten": {
+     "mean": 0.0,
+     "low": 0.0,
+     "high": 0.0,
+     "n": 4
+    },
+    "history-named@10": {
+     "mean": 0.9333,
+     "low": 0.8,
+     "high": 1.0,
+     "n": 5
+    }
+   },
+   "groups": {
+    "mab-sh/conflict": {
+     "current@10": {
+      "mean": 1.0,
+      "low": 1.0,
+      "high": 1.0,
+      "n": 62
+     },
+     "stale-first": {
+      "mean": 0.7258,
+      "low": 0.6129,
+      "high": 0.8387,
+      "n": 62
+     },
+     "stale@10": {
+      "mean": 1.0,
+      "low": 1.0,
+      "high": 1.0,
+      "n": 62
+     }
+    },
+    "mab-sh/other": {
+     "current@10": {
+      "mean": 1.0,
+      "low": 1.0,
+      "high": 1.0,
+      "n": 20
+     }
+    },
+    "mab/conflict": {
+     "retired": {
+      "mean": 0.0,
+      "low": 0.0,
+      "high": 0.0,
+      "n": 62
+     }
+    },
+    "mab/fact": {
+     "lost": {
+      "mean": 0.0,
+      "low": 0.0,
+      "high": 0.0,
+      "n": 82
+     }
+    },
+    "meme/Abs-hop1": {
+     "stale@10": {
+      "mean": 1.0,
+      "low": 1.0,
+      "high": 1.0,
+      "n": 5
+     }
+    },
+    "meme/Agg": {
+     "current@10": {
+      "mean": 0.2667,
+      "low": 0.1333,
+      "high": 0.3333,
+      "n": 5
+     }
+    },
+    "meme/Cas-hop1": {
+     "current@10": {
+      "mean": 1.0,
+      "low": 1.0,
+      "high": 1.0,
+      "n": 5
+     },
+     "stale-first": {
+      "mean": 0.6,
+      "low": 0.2,
+      "high": 1.0,
+      "n": 5
+     },
+     "stale@10": {
+      "mean": 1.0,
+      "low": 1.0,
+      "high": 1.0,
+      "n": 5
+     }
+    },
+    "meme/Cas-hop2": {
+     "current@10": {
+      "mean": 1.0,
+      "low": 1.0,
+      "high": 1.0,
+      "n": 1
+     },
+     "stale-first": {
+      "mean": 0.0,
+      "low": 0.0,
+      "high": 0.0,
+      "n": 1
+     },
+     "stale@10": {
+      "mean": 0.0,
+      "low": 0.0,
+      "high": 0.0,
+      "n": 1
+     }
+    },
+    "meme/Del": {
+     "forgotten": {
+      "mean": 0.0,
+      "low": 0.0,
+      "high": 0.0,
+      "n": 4
+     },
+     "stale@10": {
+      "mean": 0.8,
+      "low": 0.4,
+      "high": 1.0,
+      "n": 5
+     }
+    },
+    "meme/ER": {
+     "current@10": {
+      "mean": 1.0,
+      "low": 1.0,
+      "high": 1.0,
+      "n": 5
+     }
+    },
+    "meme/Tr": {
+     "history-named@10": {
+      "mean": 0.9333,
+      "low": 0.8,
+      "high": 1.0,
+      "n": 5
+     }
+    },
+    "meme/before-Abs-hop1": {
+     "current@10": {
+      "mean": 1.0,
+      "low": 1.0,
+      "high": 1.0,
+      "n": 5
+     }
+    },
+    "meme/before-Cas-hop1": {
+     "current@10": {
+      "mean": 1.0,
+      "low": 1.0,
+      "high": 1.0,
+      "n": 5
+     }
+    },
+    "meme/before-Cas-hop2": {
+     "current@10": {
+      "mean": 0.0,
+      "low": 0.0,
+      "high": 0.0,
+      "n": 1
+     }
+    },
+    "meme/before-Del": {
+     "current@10": {
+      "mean": 1.0,
+      "low": 1.0,
+      "high": 1.0,
+      "n": 4
+     }
+    },
+    "meme/before-ER": {
+     "current@10": {
+      "mean": 1.0,
+      "low": 1.0,
+      "high": 1.0,
+      "n": 5
+     }
+    },
+    "meme/dependent": {
+     "lost": {
+      "mean": 0.0,
+      "low": 0.0,
+      "high": 0.0,
+      "n": 12
+     }
+    },
+    "meme/plain": {
+     "lost": {
+      "mean": 0.0,
+      "low": 0.0,
+      "high": 0.0,
+      "n": 108
+     }
+    },
+    "meme/root": {
+     "retired": {
+      "mean": 0.0,
+      "low": 0.0,
+      "high": 0.0,
+      "n": 5
+     }
+    },
+    "meme/rule": {
+     "lost": {
+      "mean": 0.0,
+      "low": 0.0,
+      "high": 0.0,
+      "n": 14
+     }
+    },
+    "meme/tracking": {
+     "retired": {
+      "mean": 0.0,
+      "low": 0.0,
+      "high": 0.0,
+      "n": 10
+     }
+    }
+   },
+   "telemetry": {
+    "haystacks": 6,
+    "failed_haystacks": [],
+    "sessions": 71,
+    "tool_calls": 0,
+    "calls_per_session_mean": 0.0,
+    "calls_per_session_median": 0,
+    "calls_per_session_max": 0,
+    "tools": {},
+    "ops": {},
+    "writes_with_supersedes": 0,
+    "writes_with_extends": 0,
+    "tool_errors": 0,
+    "cap_hits": 0,
+    "non_mcp_tool_calls": 0,
+    "non_mcp_denied": 0,
+    "trace_mismatches": 0,
+    "client_rejected_calls": 0,
+    "no_done": 0,
+    "retries": 0,
+    "wall_s_total": 1.0,
+    "wall_s_median": 0.01,
+    "wall_s_max": 0.033,
+    "overlay_cards_per_haystack": 99.5,
+    "input_tokens": 0,
+    "output_tokens": 0,
+    "thinking_tokens": 0,
+    "cached_tokens": 0
+   }
+  },
+  "oracle": {
+   "pooled": {
+    "stale-first": {
+     "mean": 0.0,
+     "low": 0.0,
+     "high": 0.0,
+     "n": 68
+    },
+    "stale@10": {
+     "mean": 0.0,
+     "low": 0.0,
+     "high": 0.0,
+     "n": 68
+    },
+    "current@10": {
+     "mean": 1.0,
+     "low": 1.0,
+     "high": 1.0,
+     "n": 88
+    },
+    "retired": {
+     "mean": 0.9221,
+     "low": 0.8571,
+     "high": 0.974,
+     "n": 77
+    },
+    "lost": {
+     "mean": 0.0,
+     "low": 0.0,
+     "high": 0.0,
+     "n": 216
+    },
+    "forgotten": {
+     "mean": 0.75,
+     "low": 0.25,
+     "high": 1.0,
+     "n": 4
+    },
+    "history-named@10": {
+     "mean": 1.0,
+     "low": 1.0,
+     "high": 1.0,
+     "n": 5
+    }
+   },
+   "groups": {
+    "mab-sh/conflict": {
+     "current@10": {
+      "mean": 1.0,
+      "low": 1.0,
+      "high": 1.0,
+      "n": 62
+     },
+     "stale-first": {
+      "mean": 0.0,
+      "low": 0.0,
+      "high": 0.0,
+      "n": 62
+     },
+     "stale@10": {
+      "mean": 0.0,
+      "low": 0.0,
+      "high": 0.0,
+      "n": 62
+     }
+    },
+    "mab-sh/other": {
+     "current@10": {
+      "mean": 1.0,
+      "low": 1.0,
+      "high": 1.0,
+      "n": 20
+     }
+    },
+    "mab/conflict": {
+     "retired": {
+      "mean": 1.0,
+      "low": 1.0,
+      "high": 1.0,
+      "n": 62
+     }
+    },
+    "mab/fact": {
+     "lost": {
+      "mean": 0.0,
+      "low": 0.0,
+      "high": 0.0,
+      "n": 82
+     }
+    },
+    "meme/Abs-hop1": {
+     "stale@10": {
+      "mean": 0.0,
+      "low": 0.0,
+      "high": 0.0,
+      "n": 5
+     }
+    },
+    "meme/Agg": {
+     "current@10": {
+      "mean": 0.4,
+      "low": 0.3333,
+      "high": 0.5333,
+      "n": 5
+     }
+    },
+    "meme/Cas-hop1": {
+     "current@10": {
+      "mean": 1.0,
+      "low": 1.0,
+      "high": 1.0,
+      "n": 5
+     },
+     "stale-first": {
+      "mean": 0.0,
+      "low": 0.0,
+      "high": 0.0,
+      "n": 5
+     },
+     "stale@10": {
+      "mean": 0.0,
+      "low": 0.0,
+      "high": 0.0,
+      "n": 5
+     }
+    },
+    "meme/Cas-hop2": {
+     "current@10": {
+      "mean": 1.0,
+      "low": 1.0,
+      "high": 1.0,
+      "n": 1
+     },
+     "stale-first": {
+      "mean": 0.0,
+      "low": 0.0,
+      "high": 0.0,
+      "n": 1
+     },
+     "stale@10": {
+      "mean": 0.0,
+      "low": 0.0,
+      "high": 0.0,
+      "n": 1
+     }
+    },
+    "meme/Del": {
+     "forgotten": {
+      "mean": 0.75,
+      "low": 0.25,
+      "high": 1.0,
+      "n": 4
+     },
+     "stale@10": {
+      "mean": 0.0,
+      "low": 0.0,
+      "high": 0.0,
+      "n": 5
+     }
+    },
+    "meme/ER": {
+     "current@10": {
+      "mean": 1.0,
+      "low": 1.0,
+      "high": 1.0,
+      "n": 5
+     }
+    },
+    "meme/Tr": {
+     "history-named@10": {
+      "mean": 1.0,
+      "low": 1.0,
+      "high": 1.0,
+      "n": 5
+     }
+    },
+    "meme/before-Abs-hop1": {
+     "current@10": {
+      "mean": 1.0,
+      "low": 1.0,
+      "high": 1.0,
+      "n": 5
+     }
+    },
+    "meme/before-Cas-hop1": {
+     "current@10": {
+      "mean": 1.0,
+      "low": 1.0,
+      "high": 1.0,
+      "n": 5
+     }
+    },
+    "meme/before-Cas-hop2": {
+     "current@10": {
+      "mean": 0.0,
+      "low": 0.0,
+      "high": 0.0,
+      "n": 1
+     }
+    },
+    "meme/before-Del": {
+     "current@10": {
+      "mean": 1.0,
+      "low": 1.0,
+      "high": 1.0,
+      "n": 4
+     }
+    },
+    "meme/before-ER": {
+     "current@10": {
+      "mean": 1.0,
+      "low": 1.0,
+      "high": 1.0,
+      "n": 5
+     }
+    },
+    "meme/dependent": {
+     "lost": {
+      "mean": 0.0,
+      "low": 0.0,
+      "high": 0.0,
+      "n": 12
+     }
+    },
+    "meme/plain": {
+     "lost": {
+      "mean": 0.0,
+      "low": 0.0,
+      "high": 0.0,
+      "n": 108
+     }
+    },
+    "meme/root": {
+     "retired": {
+      "mean": 1.0,
+      "low": 1.0,
+      "high": 1.0,
+      "n": 5
+     }
+    },
+    "meme/rule": {
+     "lost": {
+      "mean": 0.0,
+      "low": 0.0,
+      "high": 0.0,
+      "n": 14
+     }
+    },
+    "meme/tracking": {
+     "retired": {
+      "mean": 0.4,
+      "low": 0.1,
+      "high": 0.7,
+      "n": 10
+     }
+    }
+   },
+   "telemetry": {
+    "haystacks": 6,
+    "failed_haystacks": [],
+    "sessions": 71,
+    "tool_calls": 0,
+    "calls_per_session_mean": 0.0,
+    "calls_per_session_median": 0,
+    "calls_per_session_max": 0,
+    "tools": {},
+    "ops": {},
+    "writes_with_supersedes": 0,
+    "writes_with_extends": 0,
+    "tool_errors": 0,
+    "cap_hits": 0,
+    "non_mcp_tool_calls": 0,
+    "non_mcp_denied": 0,
+    "trace_mismatches": 0,
+    "client_rejected_calls": 0,
+    "no_done": 0,
+    "retries": 0,
+    "wall_s_total": 2.6,
+    "wall_s_median": 0.014,
+    "wall_s_max": 0.175,
+    "overlay_cards_per_haystack": 97.8,
+    "input_tokens": 0,
+    "output_tokens": 0,
+    "thinking_tokens": 0,
+    "cached_tokens": 0
+   }
+  }
+ }
+}

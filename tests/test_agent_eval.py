@@ -1,0 +1,286 @@
+"""The agent-in-the-loop runner (evals/agent): prompts, transcripts, value judgments, scripted agents,
+the MCP proxy and the agy adapter's offline parts. No language model and no benchmark data are needed:
+the scripted agents run on the synthetic episodes of ``test_external_eval``.
+"""
+
+from __future__ import annotations
+
+import json
+import os
+import re
+import subprocess
+import sys
+import tempfile
+import unittest
+from pathlib import Path
+
+from evals.agent import agy, prompts, score
+from evals.agent.judge import Judge, card_text, is_stale, states
+from evals.agent.run import gate
+from evals.agent.runner import run_haystack
+from evals.agent.sessions import MAB_BATCH, agent_sessions, flat
+from evals.agent.tools import Dispatcher, summarize_calls
+from evals.external.corpus import Session, Turn
+from evals.external.datasets import Haystack, Question, fact_values, mab_haystack, meme, words
+from mindslice import Workspace
+from tests.test_external_eval import _write, meme_episode
+
+REPO = Path(__file__).resolve().parents[1]
+OFFLINE = ("flat", "oracle", "scripted-flat", "scripted-oracle", "scripted-overlay")
+
+
+def synthetic_meme() -> Haystack:
+    with tempfile.TemporaryDirectory() as tmp:
+        _write(Path(tmp), "meme-nofiller", [meme_episode()])
+        (h,) = list(meme("meme-nofiller", Path(tmp)))
+    return h
+
+
+def synthetic_mab(n_filler: int = 120) -> Haystack:
+    """A MemoryAgentBench-shaped context: conflicting facts among unrelated ones, three judged questions."""
+    facts = ["The capital of Romania is Bucharest.", "Leonte Rautu is employed by University of Bucharest.",
+             "Le Petit Parisien was created in the country of France.", "The capital of France is Paris."]
+    facts += [f"Person{i} Surname{i} is a citizen of Country{i % 7}." for i in range(n_filler)]
+    facts += ["The capital of Romania is Rajanpur.", "The capital of France is Harare.",
+              "The headquarters of University of Bucharest is located in the city of Bucharest.",
+              "The headquarters of University of Bucharest is located in the city of Ankara."]
+    context = "\n".join(f"{i}. {t}" for i, t in enumerate(facts))
+    questions = ["What is the capital of Romania?", "What is the capital of France?",
+                 "Which city is the headquarter of University of Bucharest located in?", "Who is Person3 Surname3 a citizen of?"]
+    answers = [["Rajanpur"], ["Harare"], ["Ankara"], ["Country3"]]
+    return mab_haystack("factconsolidation_sh_test", context, questions, answers, [f"q{i}" for i in range(4)])
+
+
+class PromptTests(unittest.TestCase):
+    def test_prompts_are_the_plans_verbatim(self):
+        plan = (REPO / "evals" / "agent_test.md").read_text(encoding="utf-8")
+        quotes = []
+        for block in re.split(r"\n\s*\n", plan):
+            lines = [l.strip() for l in block.split("\n")]
+            if lines and all(l.startswith(">") for l in lines):
+                quotes.append(" ".join(l.lstrip(">").strip() for l in lines))
+        self.assertIn(prompts.TASK, quotes)
+        self.assertIn(prompts.POLICY, quotes)
+        self.assertIn(prompts.OVERLAY, quotes)
+        # "> Session {i} of {n}, {date}:" / ">" / "> {transcript}": a header line, a blank line, the transcript.
+        self.assertIn("Session {i} of {n}, {date}:  {transcript}", quotes)
+        self.assertEqual(prompts.session_message(1, 5, "2023/03/01 (Wed) 09:00", "T"), "Session 1 of 5, 2023/03/01 (Wed) 09:00:\n\nT")
+
+    def test_system_prompts(self):
+        from mindslice.mcp_server import INSTRUCTIONS
+
+        self.assertEqual(prompts.system_prompt("agent-default"), INSTRUCTIONS + "\n\n" + prompts.TASK)
+        self.assertTrue(prompts.system_prompt("agent-overlay").endswith(prompts.POLICY + "\n\n" + prompts.OVERLAY))
+        self.assertEqual(prompts.session_message(2, 5, "", "x"), "Session 2 of 5:\n\nx")
+        self.assertEqual(len(set(prompts.digests().values())), len(prompts.digests()))
+
+
+class SessionTests(unittest.TestCase):
+    def test_meme_transcripts_are_the_card_lines(self):
+        h = synthetic_meme()
+        s = agent_sessions(h)
+        self.assertEqual([x.index for x in s], [0, 1, 2, 3])
+        self.assertEqual(s[0].date, "2023/03/01 (Wed) 10:00")
+        lines = s[0].transcript.split("\n")
+        self.assertEqual(lines[0], "Assistant: Hi! How can I help you today?")
+        self.assertEqual(lines[1], "User: My health condition is lactose intolerance.")
+        card_bullets = [l for c in s[0].cards for l in c.body if not l.startswith("Date: ")]
+        self.assertEqual(lines, card_bullets)  # exactly the turn lines of the session's round cards
+        self.assertEqual(sum(len(x.cards) for x in s), len(flat(h).cards))
+
+    def test_mab_batches(self):
+        h = synthetic_mab()
+        s = agent_sessions(h)
+        n = len(h.sessions[0].turns)
+        self.assertEqual(len(s), -(-n // MAB_BATCH))
+        self.assertEqual(s[0].transcript.split("\n")[0], f"Facts 1-{MAB_BATCH} of {n}, in the order they were stated:")
+        self.assertEqual(s[-1].transcript.split("\n")[0],
+                         f"Facts {MAB_BATCH * (len(s) - 1) + 1}-{n} of {n}, in the order they were stated:")
+        self.assertEqual(len(s[0].transcript.split("\n")), MAB_BATCH + 1)
+        self.assertEqual(s[0].transcript.split("\n")[1], "The capital of Romania is Bucharest.")
+        self.assertEqual(s[0].date, "")
+
+
+class JudgeTests(unittest.TestCase):
+    def test_states_whole_words_and_anchors(self):
+        t = card_text("Facts", [], "Le Petit Parisien was created in the country of France.",
+                      "- The capital of France is Paris.\n- Leonte Rautu is employed by University of Bucharest.")
+        self.assertTrue(states(t, "paris"))
+        self.assertFalse(states(card_text("x", [], "Le Petit Parisien", ""), "paris"))
+        self.assertTrue(states(t, "paris", ["france", "capital"]))  # same line
+        self.assertFalse(states(t, "bucharest", ["romania"]))  # anchors on no line with the value
+        self.assertTrue(is_stale(t, ["paris"], ["harare"], ["france"]))
+        self.assertFalse(is_stale(card_text("x", [], "France: capital Paris, now Harare", ""), ["paris"], ["harare"], ["france"]))
+        self.assertTrue(states(card_text("x", [], "I drive a Therwyn Compact.", ""), "therwyn compact"))
+        self.assertTrue(states(card_text("x", [], "Reading The Quorath Codex (book).", ""), "the quorath codex (book)"))
+
+    def test_mab_values_never_anchor_on_themselves(self):
+        h = synthetic_mab()
+        v = {q.id: q.meta["values"] for q in h.questions}
+        self.assertEqual(v["q2"]["stale"], ["bucharest"])
+        self.assertNotIn("bucharest", v["q2"]["anchors"])
+        self.assertEqual(v["q0"], {"current": ["rajanpur"], "stale": ["bucharest"], "anchors": ["romania"], "latest": True})
+
+
+class ScriptedAgentTests(unittest.TestCase):
+    """agent_test.md 7.4: the scripted agents reproduce flat and oracle through the four tools (CI gate)."""
+
+    @classmethod
+    def setUpClass(cls):
+        cls.tmp = tempfile.TemporaryDirectory()
+        root = Path(cls.tmp.name)
+        cls.runs = {}
+        for h in (synthetic_meme(), synthetic_mab()):
+            for arm in OFFLINE:
+                cls.runs.setdefault(arm, []).extend(run_haystack(h, arm, root / arm / h.key.replace("/", "__")))
+
+    @classmethod
+    def tearDownClass(cls):
+        cls.tmp.cleanup()
+
+    def test_gate(self):
+        g = gate(self.runs)
+        for pair in ("scripted-flat vs flat", "scripted-oracle vs oracle"):
+            for metric, row in g[pair].items():
+                self.assertEqual(row["disagree"], 0, (pair, metric))
+                self.assertEqual(row["only_one_side"], 0, (pair, metric))
+        for metric, row in g["scripted-overlay vs oracle"].items():
+            self.assertEqual(row["paired"]["mean"], 0.0, metric)
+
+    def test_expected_values(self):
+        u = {a: score.pooled(score.units(r)) for a, r in self.runs.items()}
+        self.assertEqual(u["flat"]["retired"]["mean"], 0.0)
+        self.assertEqual(u["oracle"]["retired"]["mean"], 1.0)
+        self.assertEqual(u["oracle"]["stale-first"]["mean"], 0.0)
+        self.assertGreater(u["flat"]["stale-first"]["mean"], 0.0)
+        self.assertEqual(u["flat"]["lost"]["mean"], 0.0)
+        self.assertEqual(u["oracle"]["lost"]["mean"], 0.0)
+        self.assertEqual(u["flat"]["forgotten"]["mean"], 0.0)  # the request round itself states the value
+        # Mode B deletes the partner card, but the anniversary-gift dependent ("I bought James a watch") stays.
+        self.assertEqual(u["oracle"]["forgotten"]["mean"], 0.0)
+        self.assertEqual(u["scripted-overlay"]["history-named@10"]["mean"], 1.0)
+
+    def test_lost_follows_dependencies(self):
+        """After the root change, the 1- and 2-hop dependents' old values no longer count as current."""
+        recs = [r for r in self.runs["flat"] if r["kind"] == "value" and r["dataset"] == "meme-nofiller" and r["point"] == "end"]
+        cats = {r["value"]: r["category"] for r in recs}
+        self.assertNotIn("quelmithin", cats)
+        self.assertNotIn("crysthene pool", cats)
+        self.assertNotIn("james", cats)  # deleted
+        self.assertEqual(cats["multivitamin"], "rule")
+        self.assertEqual(cats["high blood pressure"], "plain")
+        self.assertEqual(cats["xylorim scooter"], "plain")
+        before = {r["value"] for r in self.runs["flat"] if r["kind"] == "value" and r["point"] == 2}
+        self.assertIn("quelmithin", before)
+        self.assertIn("james", before)
+
+    def test_overlay_writes_lineage_only(self):
+        sessions = [r for r in self.runs["scripted-overlay"] if r["kind"] == "session" and r["dataset"] == "meme-nofiller"]
+        writes = sum(r["ops"].get("create", 0) for r in sessions)
+        flat_writes = sum(r["ops"].get("create", 0) for r in self.runs["scripted-flat"] if r["kind"] == "session" and r["dataset"] == "meme-nofiller")
+        self.assertLess(writes, flat_writes)
+        self.assertGreater(sum(r["with_supersedes"] for r in sessions), 0)
+
+
+class ToolTests(unittest.TestCase):
+    def test_dispatcher_cap_and_summary(self):
+        with tempfile.TemporaryDirectory() as tmp:
+            ws = Workspace.init(Path(tmp) / "ws")
+            try:
+                d = Dispatcher(ws, None, 0, cap=2)
+                ok = d("write", {"id": "a", "content": ["- x"], "summary": "x"})
+                self.assertFalse(ok["isError"])
+                bad = d("read", {"address": "@overlay/missing"})
+                self.assertTrue(bad["isError"])
+                refused = d("manifest", {})
+                self.assertTrue(refused["isError"])
+                self.assertEqual(json.loads(refused["content"][0]["text"])["error"], "CallLimit")
+                self.assertTrue(d.cap_hit)
+            finally:
+                ws.close()
+        rows = [{"tool": "write", "arguments": {"op": "create", "supersedes": ["@overlay/x"]}},
+                {"tool": "write", "arguments": {"op": "delete"}, "is_error": True},
+                {"tool": "search", "arguments": {}}, {"tool": "read", "arguments": {}, "refused": True}]
+        s = summarize_calls(rows)
+        self.assertEqual((s["tool_calls"], s["ops"], s["with_supersedes"], s["tool_errors"], s["cap_hit"]),
+                         (4, {"create": 1, "delete": 1}, 1, 1, True))
+
+    def test_mcp_proxy_relays_logs_and_caps(self):
+        with tempfile.TemporaryDirectory() as tmp:
+            Workspace.init(Path(tmp) / "ws").close()
+            log = Path(tmp) / "calls.jsonl"
+            msgs = [{"jsonrpc": "2.0", "id": 1, "method": "initialize", "params": {"protocolVersion": "2025-06-18"}},
+                    {"jsonrpc": "2.0", "method": "notifications/initialized"},
+                    {"jsonrpc": "2.0", "id": 2, "method": "tools/list"},
+                    {"jsonrpc": "2.0", "id": 3, "method": "tools/call", "params": {"name": "write", "arguments": {"id": "a", "content": ["- x"], "summary": "x"}}},
+                    {"jsonrpc": "2.0", "id": 4, "method": "tools/call", "params": {"name": "search", "arguments": {"query": "x"}}},
+                    {"jsonrpc": "2.0", "id": 5, "method": "tools/call", "params": {"name": "manifest", "arguments": {}}}]
+            proc = subprocess.run([sys.executable, "-m", "evals.agent.mcp_proxy", "--workspace", str(Path(tmp) / "ws"),
+                                   "--log", str(log), "--session", "7", "--cap", "2", "--context", '{"arm": "t"}'],
+                                  input="\n".join(json.dumps(m) for m in msgs) + "\n", capture_output=True, text=True,
+                                  cwd=REPO, env={**os.environ, "PYTHONPATH": str(REPO)}, timeout=60)
+            answers = [json.loads(l) for l in proc.stdout.splitlines()]
+            self.assertEqual([a["id"] for a in answers], [1, 2, 3, 4, 5])
+            self.assertIn("instructions", answers[0]["result"])
+            self.assertEqual([t["name"] for t in answers[1]["result"]["tools"]], ["manifest", "search", "read", "write"])
+            self.assertFalse(answers[3]["result"]["isError"])
+            self.assertTrue(answers[4]["result"]["isError"])
+            rows = [json.loads(l) for l in log.read_text().splitlines()]
+            calls = [r for r in rows if r["kind"] == "tools/call"]
+            self.assertEqual([(r["tool"], r["refused"], r["session"], r["arm"]) for r in calls],
+                             [("write", False, 7, "t"), ("search", False, 7, "t"), ("manifest", True, 7, "t")])
+            self.assertTrue(log.with_name("calls.jsonl.cap").exists())
+
+
+class AgyOfflineTests(unittest.TestCase):
+    def test_config_files(self):
+        with tempfile.TemporaryDirectory() as tmp:
+            cwd = Path(tmp) / "cwd"
+            agy.write_config(cwd, "SYSTEM PROMPT", Path(tmp) / "ws", Path(tmp) / "calls.jsonl", 3, 40, {"arm": "x"})
+            md = (cwd / ".agents" / "agents" / f"{agy.AGENT}.md").read_text()
+            self.assertTrue(md.startswith("---\n") and md.endswith("---\nSYSTEM PROMPT\n"))
+            self.assertIn("excludeDefaultComponents: true", md)
+            cfg = json.loads((cwd / ".agents" / "plugins" / agy.PLUGIN / "mcp_config.json").read_text())
+            server = cfg["mcpServers"][agy.SERVER]
+            self.assertEqual(server["args"][:2], ["-m", "evals.agent.mcp_proxy"])
+            self.assertIn("--cap", server["args"])
+
+    def test_trace_parsing(self):
+        """The CLI's stream-json shape (agy 1.5.3): one ACTIVE and one DONE step_update per tool call."""
+        name = lambda t: f"mcp_{agy.PLUGIN}_{agy.SERVER}_{t}"
+        self.assertEqual(agy.mcp_name(name("search")), "search")
+        self.assertIsNone(agy.mcp_name("read_file"))
+        self.assertIsNone(agy.mcp_name("list_resources"))
+        step = lambda i, state, tool, **kw: {"event": "step_update", "step_update": {"conversation_id": "c", "step_index": i,
+                                              "state": state, "step_type": "tool", "tool_name": tool, "tool_info": {"name": tool, **kw}}}
+        events = [{"event": "init", "init": {"tools": ["run_command"]}},
+                  {"event": "step_update", "step_update": {"step_index": 0, "state": "DONE", "step_type": "user_input"}},
+                  step(2, "ACTIVE", name("manifest")), step(2, "DONE", name("manifest"), output="{}"),
+                  step(4, "ACTIVE", "run_command"), step(4, "DONE", "run_command", error="denied"),
+                  {"event": "step_update", "step_update": {"step_index": 5, "state": "DONE", "step_type": "error_message"}},
+                  {"event": "result", "result": {"status": "SUCCESS", "response": "DONE\n", "usage": {"input_tokens": 5}}}]
+        calls = agy.tool_calls(events)
+        self.assertEqual([(c["name"], c["states"]) for c in calls], [(name("manifest"), ["ACTIVE", "DONE"]), ("run_command", ["ACTIVE", "DONE"])])
+        self.assertEqual(calls[1]["error"], "denied")
+        self.assertEqual(agy.error_steps(events), 1)
+        self.assertEqual(agy.result_of(events)["response"], "DONE\n")
+
+    def test_trace_check(self):
+        c = lambda tool, *states, error=None: {"name": f"mcp_{agy.PLUGIN}_{agy.SERVER}_{tool}", "states": list(states),
+                                                 **({"error": error} if error else {})}
+        rows = [{"tool": "manifest"}, {"tool": "search"}, {"tool": "write"}]
+        # A search the CLI rejected (missing query) and the model retried: consistent.
+        traced = [c("manifest", "ACTIVE", "DONE"), c("search", "ACTIVE", "ERROR", error="invalid arguments:\n- missing property 'query'"),
+                  c("search", "ACTIVE", "DONE"), c("write", "ACTIVE", "DONE")]
+        self.assertTrue(agy.rejected_by_cli(traced[1]))
+        self.assertFalse(agy.rejected_by_cli(c("read", "ACTIVE", "ERROR", error='{"error": "NotFoundError"}')))  # the server's
+        self.assertEqual(agy.trace_check(traced, rows), {"ok": True, "client_rejected": 1, "untraced_refused": 0})
+        # A traced call that ran but never reached the proxy: mismatch.
+        self.assertFalse(agy.trace_check(traced[:1] + [c("read", "ACTIVE", "DONE")] + traced[2:], rows)["ok"])
+        # Stopped at the cap with a refused call in flight: consistent; an unrefused untraced call: mismatch.
+        self.assertTrue(agy.trace_check(traced, rows + [{"tool": "read", "refused": True}])["ok"])
+        self.assertFalse(agy.trace_check(traced, rows + [{"tool": "read"}])["ok"])
+        self.assertTrue(agy.trace_check(traced + [c("write", "ACTIVE")], rows)["ok"])  # still running when stopped
+
+if __name__ == "__main__":
+    unittest.main()

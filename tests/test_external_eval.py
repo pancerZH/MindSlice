@@ -11,11 +11,13 @@ import json
 import math
 import tempfile
 import unittest
+from collections import Counter
 from pathlib import Path
 
 from evals.external import hints, sources
 from evals.external.corpus import Card, Session, Turn, add_files, address, make_card, round_cards, rounds, summary_line
-from evals.external.datasets import label_fact, locomo, longmemeval, meme
+from evals.external.datasets import (fact_values, label_fact, locomo, longmemeval, meme, normalize_text, normalize_value,
+                                     subject_anchors, words)
 from evals.external.harness import run_in_tmp
 from evals.external.checks import CHECKS
 from evals.external.parquet import rle_hybrid, snappy_decompress
@@ -221,6 +223,62 @@ class CompilerTests(unittest.TestCase):
                  2: "The capital of Romania is Rajanpur.", 3: "Paris is the capital of France."}
         self.assertEqual(label_fact("What is the capital of Romania?", ["Rajanpur"], facts)[:2], (2, "labeled"))
         self.assertEqual(label_fact("What is the capital of Peru?", ["Lima"], facts)[1], "no fact ends with an answer")
+
+
+class ValueExportTests(unittest.TestCase):
+    """agent_test.md 6.1: each question's units also as normalized value strings."""
+
+    def test_normalization(self):
+        self.assertEqual(normalize_value("  Quelmithin. "), "quelmithin")
+        self.assertEqual(normalize_value("“Xelvari  Dawn,”"), "xelvari dawn")
+        self.assertEqual(normalize_value("The Quorath Codex (book)"), "the quorath codex (book)")  # brackets stay
+        self.assertEqual(normalize_value("Jen’s —"), "jen's")
+        self.assertEqual(normalize_value("ＡBC"), "abc")  # NFKC
+        self.assertEqual(normalize_text("I  drive\na  Zyvanta Sedan."), "i drive a zyvanta sedan.")
+
+    def test_meme_values(self):
+        with tempfile.TemporaryDirectory() as tmp:
+            _write(Path(tmp), "meme-filler32k", [meme_episode()])
+            (h,) = list(meme("meme-filler32k", Path(tmp)))
+        v = {x.id: x.meta["values"] for x in h.questions}
+        self.assertEqual(v["pl_900/before0"], {"current": ["quelmithin"]})  # the pre-change value is current
+        self.assertEqual(v["pl_900/after0"], {"stale": ["quelmithin"], "current": ["multivitamin"]})
+        self.assertEqual(v["pl_900/after1"], {"stale": ["crysthene pool"], "current": ["velthari studio"]})
+        self.assertEqual(v["pl_900/after2"], {"stale": ["tutoring"], "current": []})
+        self.assertEqual(v["pl_900/after3"], {"stale": ["james"], "deleted": ["james"]})
+        self.assertEqual(v["pl_900/after4"], {"history": ["zyvanta sedan", "therwyn compact", "xylorim scooter"]})
+        timeline = {e["unit"]: e for e in h.info["timeline"]}
+        self.assertEqual(timeline["0#15"], {"entity": "medication", "unit": "0#15", "session": 0, "kind": "rule",
+                                            "value": "multivitamin", "source": "health_condition"})
+        self.assertEqual(timeline["3#1"]["kind"], "value")
+        self.assertEqual(timeline["3#3"]["kind"], "delete")
+        self.assertIsNone(timeline["0#3"]["source"])
+        self.assertEqual([e["unit"] for e in h.info["timeline"]],
+                         sorted(timeline, key=lambda u: tuple(map(int, u.split("#")))))  # chronological
+
+    def test_mab_values_and_anchors(self):
+        facts = {0: "The capital of Romania is Bucharest.", 1: "Bucharest is located in the continent of Europe.",
+                 2: "The capital of Romania is Rajanpur.", 3: "The capital of France is Paris.",
+                 4: "Paris is located in the continent of Europe."}
+        df = Counter(w for t in facts.values() for w in set(words(t)))
+        n, _, prefix = label_fact("What is the capital of Romania?", ["Rajanpur"], facts)
+        self.assertEqual(prefix, "The capital of Romania is")
+        v = fact_values(facts, n, prefix, [0], [], df)
+        self.assertEqual(v, {"current": ["rajanpur"], "stale": ["bucharest"], "anchors": ["romania"], "latest": True})
+        self.assertNotIn("stale", fact_values(facts, 0, prefix, [], [2], df))  # not the latest: no stale value
+        # No prefix word is rare enough (5 facts: at most 0.05 each): the rarest ones name the subject.
+        self.assertEqual(subject_anchors("Paris is located in the continent of", df, len(facts)),
+                         ["paris", "located", "continent"])
+
+    def test_longmemeval_current_value(self):
+        data = [{"question_id": "q1", "question_type": "knowledge-update", "question": "What is my 5K best?",
+                 "question_date": "2023/06/01", "answer": "25:50.", "answer_session_ids": ["a"],
+                 "haystack_session_ids": ["a"], "haystack_dates": ["2023/05/30 (Tue) 10:00"],
+                 "haystack_sessions": [[{"role": "user", "content": "My 5K best is 25:50.", "has_answer": True}]]}]
+        with tempfile.TemporaryDirectory() as tmp:
+            _write(Path(tmp), "longmemeval-s", data)
+            (h,) = list(longmemeval(Path(tmp)))
+        self.assertEqual(h.questions[0].meta["values"], {"current": ["25:50"]})
 
 
 class AblationPairingTests(unittest.TestCase):

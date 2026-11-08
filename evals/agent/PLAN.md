@@ -1,0 +1,232 @@
+# Agent-in-the-loop lineage test: frozen plan
+
+Frozen on 2026-11-07, **before the first tier-1 call**, after the runner and scorer were validated offline
+(section 7 of [`../agent_test.md`](../agent_test.md)) and the smoke tier ran. Everything here can be checked
+mechanically: `python -m evals.agent freeze --check` compares the current code, prompts, CLI version and
+haystack lists with [`results/freeze.json`](results/freeze.json), and a tier-1 run refuses to start if any
+of them changed. The specification is `agent_test.md`; where this plan decides something the specification
+leaves open, it says so.
+
+**Frozen digests** (SHA-256; `freeze.json` has the rest):
+
+| What | Value |
+| --- | --- |
+| Engine `mindslice/*.py` at `f0ba04a` (clean) | `fcc7ed17449a5aa770ad5d133278be55fa67b415ec2c49eaefd60c0a8edfd5a5` |
+| Scorer: `evals/agent/{judge,plan,score,sessions}.py` + `evals/external/datasets.py` | `432973dc71d3b1f221d67c9affe657e2fb322cc58523cfb4b165c47b75a69d1c` |
+| Runner: every file that runs or scores a session (`run.RUNNER_FILES` + `evals/external/{datasets,corpus,harness}.py`) | `1beb8014c703cadb485bda42f0dee720302bf95c2beb7b7c22154574df9404f1` |
+| `agy --version` | `1.5.3` |
+| Audit sample seed | `20261106` |
+
+## 1. What runs
+
+| | |
+| --- | --- |
+| Engine | `mindslice/` at commit `f0ba04a` (engine digest in `freeze.json`); unchanged from the smoke tier to the end of tier 1 |
+| Agent arms | `agent-default` (4.2), `agent-policy` (4.2 + 4.3), `agent-overlay` (4.2 + 4.3 + 4.4) |
+| Reference arms | `flat` (Mode A) and `oracle` (Mode B), re-scored with the same value-based scorer; offline |
+| Models | `gemini-3.8-flash-medium` (Gemini 3.8 Flash, Medium) and `gemini-4-argon-medium` (Gemini 4 Argon, Medium), exact ids from `agy models` |
+| Main model | `gemini-4-argon-medium` (the more capable one): it runs the variance repeats (8.4) |
+| Client | Antigravity CLI `agy` 1.5.3, one fresh `agy --print` conversation per session (never `--continue` / `--conversation`) |
+| Flags | `--model <id> --effort medium --agent mindslice-memory-keeper --output-format stream-json --dangerously-skip-permissions --disable-slash-commands`; the session message is passed as `--print=<message>` |
+| Model parameters | The provider's defaults (temperature, max output tokens); effort `medium` (the model ids also name it). Nothing else is set |
+| Tools | Real MCP over stdio (4.1, first bullet): `evals.agent.mcp_proxy`, a logging wrapper around `python -m mindslice -w <workspace> mcp`, writes straight to `@overlay` (no `--stage-writes`) |
+| Call cap | 40 tool calls per session; the 41st is refused by the proxy and the CLI is stopped (the session ends; counted) |
+| Session timeout | 1,800 s; a provider failure or timeout is retried on the same session after restoring `overlay/` (up to 3 retries, backoff 30 / 120 / 300 s); then the haystack is marked failed and stays in every denominator as failed |
+
+### How the CLI is confined to the four tools
+
+Each session runs in a new, empty working directory outside the repository holding only:
+
+- `.agents/agents/mindslice-memory-keeper.md`: a custom main agent. Its body is the arm's system prompt,
+  verbatim (section 2); its frontmatter is `mainAgent: true`, `subagent: false`,
+  `excludeDefaultComponents: true`. The last drops the CLI's default prompt sections and its built-in tools
+  (files, shell, browser, web).
+- `.agents/plugins/mindslice-eval/mcp_config.json`: the MCP server (the proxy above) with its four tools
+  declared `eager`, so the model gets `manifest`, `search`, `read` and `write` as functions with the shipped
+  schemas and descriptions (named `mcp_mindslice-eval_mindslice_<tool>`), not through the CLI's lazy
+  `call_mcp_tool` dispatcher (with it, Flash wrote the call as text and the turn failed: smoke ledger).
+- `.agents/hooks.json`: a `PreToolUse` hook (`evals.agent.tool_gate`) that denies any call that isn't an
+  MCP tool. Three framework tools remain declared after `excludeDefaultComponents` (`list_resources`,
+  `read_resource`, `manage_task`; none touches files); the hook keeps them from running.
+
+Checked per session from the `stream-json` trace: **non-MCP tool calls that ran** (must be 0), denied
+attempts (reported), and that the traced MindSlice calls equal the proxy's `tools/call` log in order.
+Before the smoke tier a fresh conversation was asked whether its context held anything from earlier
+conversations (summaries, knowledge items, memories) right after a scored session: it answered `NONE`, with
+2.9k input tokens (the system prompt and the tool schemas).
+
+What the specification asks that this client can't give exactly: the CLI may add its own framing around the
+system prompt and the tool declarations (not visible to us), and the MCP server's `instructions` reach the
+model only through the system prompt, as 4.2 prescribes.
+
+## 2. Prompts (verbatim from agent_test.md; SHA-256 of the UTF-8 text)
+
+The system prompt of an arm is its parts joined by a blank line (`"\n\n"`). `INSTRUCTIONS` is
+`mindslice/mcp_server.py`'s string.
+
+| Part | SHA-256 |
+| --- | --- |
+| `INSTRUCTIONS` | `6d15c0ab673648d90bc1ce741e94a29e4cae79b641e05904c12d33e40fe3a542` |
+| Task prompt (4.2) | `6139ec46c73c2612c2d79b585fa12cce8e7a552bff4267ab2e90707d522a7244` |
+| Policy paragraph (4.3) | `57b4e310927d408330b23fb0701ff31e4c2296a4c9cdf964a8c32c0f9f509957` |
+| Overlay addendum (4.4) | `cbde5dacde870f7d0d8f1d0b3a2337aeb46c0ce14198336e0c6baf791b5a014f` |
+| System prompt, `agent-default` = INSTRUCTIONS + task | `4f2d6962e4725639d9da5224124ba2b11beb3c0435af2ac30058d784d13c320b` |
+| System prompt, `agent-policy` = + policy | `a62dedfb304bc951928cec366a69c3805965efa6034eba59bf5c09e4e9e47177` |
+| System prompt, `agent-overlay` = + policy + addendum | `5eb8cc0563acd799fcec912a9317863785bec5d15ce232b4988fd08ec9af6300` |
+
+**Task prompt (4.2):**
+
+> You are the long-term memory keeper for one user. You will be shown their conversations with an
+> assistant, one session at a time, in the order they happened. Use the MindSlice tools to record what is
+> worth remembering about the user for future conversations, and keep that memory accurate and up to date.
+> You will not be asked questions about it. When you have finished with this session, reply with DONE.
+
+**Policy paragraph (4.3):**
+
+> Before you write, search for cards about the same thing. If the new information replaces something
+> already recorded (a changed value, a new preference, a correction), write the new card with
+> `supersedes` naming the old card's address, rather than leaving both active or deleting the old one,
+> and restate anything in the old card that is still true. If it refines, adds an exception or an
+> if-then rule to, or depends on something that stays true (a choice made because of an earlier
+> preference or plan), write it with `extends` naming that card, so it is flagged if that card later
+> changes. If you can't tell which, use `extends`: it hides nothing. If the user asks you to forget
+> something, delete the cards that state it. Put each fact that can change on its own card, and keep its
+> concrete values, names, dates, conditions and the user's own wording; the summary states the fact.
+
+**Overlay addendum (4.4):**
+
+> Every session is already stored verbatim in the read-only `@history` slice. Don't copy it: write to
+> `@overlay` only to keep that history accurate. When a value changes, write a card with the new value
+> that `supersedes` every card stating the old one, in `@history` or `@overlay`. When something depends
+> on or adds a rule to an earlier fact, write a card restating it that `extends` the card holding that
+> fact and `supersedes` the `@history` card it came from. When the user asks you to forget something,
+> write a card that `supersedes` each `@history` card stating it and restates the rest of that card
+> (you can still delete your own `@overlay` cards). In every replacement, restate any other fact from
+> the old card that is still true.
+
+**Session message (4.2):** `Session {i} of {n}, {date}:`, a blank line, the transcript (`Session {i} of {n}:`
+when the dataset has no date, as MemoryAgentBench). The transcript is the turn lines of the round cards
+(`Speaker: text`, continuation lines indented, `[[` as `[ [`); a MemoryAgentBench batch is
+`Facts {a}-{b} of {N}, in the order they were stated:` and then the facts, one per line, without numbers.
+`tests/test_agent_eval.py` checks every quoted text against agent_test.md.
+
+**MemoryAgentBench batches hold 10 facts, not 50** (a change from 4.2, made in the smoke tier, which may
+change transcript formatting and the call cap, 8.2). At 50, the batch can't fit the 40-call cap: 9 of 10
+batches hit it for `agent-default` and `agent-policy` on Flash, which then wrote 114 and 156 of the 455
+facts' cards and lost 0.77 and 0.72 of the judged current values; the metric measured the cap. The policy's
+own procedure (search, read the old card, write) takes about 3 calls per fact, so 10 facts fit 40 calls. At
+10, Argon never hit the cap (at most 27 calls in a batch) and neither did Flash's `agent-default` (at most
+40); Flash's `agent-policy` hit it in 4 of 46 batches and Flash's `agent-overlay` in 20 of 46, where it
+reads `@history` one card at a time. Those are the agent's own call budget, the case the cap exists for,
+not the batch size: the cap stays at 40, and cap hits are reported per arm.
+
+## 3. Data and tiers
+
+Same files, compilers and question positions as `evals/external` (MEME's before-change questions right
+after their session; everything else after the last session).
+
+| Tier | Haystacks | Sessions | Reading volume |
+| --- | --- | --- | --- |
+| Smoke (never scored for lines) | MEME `nofiller` `pl_001`-`pl_005`; MemoryAgentBench `factconsolidation_sh_6k` | 25 + 46 batches | 0.027M tokens (chars / 4) |
+| 1 | MEME `nofiller`, the other 95 episodes (below); MemoryAgentBench `factconsolidation_sh_32k` | 475 + 231 batches | 0.42M tokens |
+
+Tier-1 MEME episodes: pl_006 to pl_050 (45) and sw_001 to sw_050 (50); the full list is in `freeze.json`.
+
+**Variance repeats (8.4).** `agent-policy` with the main model, 3 more times, on 20 MEME episodes drawn once
+from the tier-1 list with `random.Random(20261106).sample` (sorted keys): pl_006, pl_007, pl_009, pl_012,
+pl_017, pl_020, pl_023, pl_027, pl_033, pl_036, pl_040, pl_041, pl_045, pl_047, pl_049, sw_007, sw_030,
+sw_035, sw_039, sw_041. Reported as the spread of each pooled metric over the four runs (tier 1 plus three
+repeats), beside the lines.
+
+## 4. Scoring (frozen code: `judge.py`, `plan.py`, `score.py`, `sessions.py`, `evals/external/datasets.py`)
+
+Definitions are agent_test.md 6.1-6.2; the decisions below are this plan's, made on `flat` and `oracle`
+only, before any LLM run ([`results/scorer_validation.md`](results/scorer_validation.md) has the evidence):
+
+- **States.** The normalized value (NFKC, quotes straightened, casefolded, whitespace collapsed, surrounding
+  punctuation stripped) occurs in the card's normalized title, aliases, summary or body, not continuing a
+  longer word. **MemoryAgentBench:** only on a line that also holds every subject anchor word of the judged
+  fact (its prefix words found in at most 1% of the context's facts, never the values' own words).
+- **Matchable values.** A value counts only if its own flat card states it; the rest are excluded from that
+  metric and counted. A question needs a matchable stale value for `stale@10`, and a matchable current value
+  as well for `stale-first`.
+- **Questions per metric.** `stale-first`: MEME Cascade (1- and 2-hop) and MemoryAgentBench conflicts.
+  `stale@10`: the same (MEME Absence and Deletion reported as groups). `current@10`: MEME Cascade and every
+  judged MemoryAgentBench question (share of the question's current values on the page). `retired`: every
+  matchable update (MEME value changes: Tracking steps, root changes, others; MemoryAgentBench conflicts),
+  right after its session, over every active card. `lost`: every matchable current value at every question
+  point (MEME: before-change point and end; dependents and rules reported separately). `forgotten`: every
+  MEME deletion with a matchable value, right after its session. `history-named@10`: MEME Tracking.
+- **Intervals.** 95% percentile bootstrap over units, 2,000 replicates, seed 20261106; differences between
+  arms paired by unit (question, update, value or deletion).
+- **Reference ceilings** (tier 1, the same scorer): `oracle` scores `retired` 0.904 and `forgotten` 0.921,
+  not 1: its turn-level lineage leaves later rounds that mention an old value active (scorer_validation.md,
+  section 2). G2 and G5 are read against those.
+
+## 5. Lines (final values, unchanged from agent_test.md 8)
+
+Pooled over tier 1, per agent arm and model.
+
+| Line | Claim | Statistic | Line |
+| --- | --- | --- | --- |
+| G1 | The agent's lineage cuts stale-first substantially | `stale-first`, flat minus agent, paired | ≥ 0.30 |
+| G2 | The agent retires most stale facts | `retired` | ≥ 0.70 |
+| G3 | Its memory keeps the current fact findable | `current@10`, agent minus flat, paired | ≥ −0.05 |
+| G4 | It rarely hides a true fact | `lost`, all current values | ≤ 0.05 |
+| G5 | It forgets on request | `forgotten` | ≥ 0.90 |
+
+Verdicts as in `evals/external/PLAN.md`: **confirmed** (the 95% interval clears the line: its low end for
+G1-G3 and G5, its high end for G4), **point pass** (only the mean does), **miss**. The lines were kept at the
+specification's suggestions; the smoke tier's numbers were not used to set them.
+
+## 6. Audit (6.3), before reading the lines
+
+Per agent arm and model, a fixed random sample (`random.Random(20261106)`, records sorted by haystack, id and
+point) of up to 50 `retired` failures and 50 `lost` cases, judged by opening the saved workspace files
+(`python -m evals.agent audit`; worksheets in `results/audit/`). If more than 20% of either sample is a
+matching error, that arm's lines are reported as unreliable instead of read.
+
+## 7. Cost of tier 1 (measured on the smoke tier, 8.2) and how it is run
+
+Per session, from the complete smoke tier (`python -m evals.agent project`; [`results/projection.json`](results/projection.json)).
+"Context" is what the model read: uncached input plus cache reads, which the CLI reports separately.
+
+| Arm, model | MEME session: wall, context | MAB batch (10 facts): wall, context | Tier 1 session-hours | Tier 1 context |
+| --- | --- | --- | --- | --- |
+| `agent-default`, Flash | 87 s, 194k | 96 s, 466k | 17.6 h | 200M |
+| `agent-policy`, Flash | 90 s, 220k | 96 s, 467k | 18.1 h | 212M |
+| `agent-overlay`, Flash | 218 s, 473k | 120 s, 617k | 36.5 h | 367M |
+| `agent-default`, Argon | 86 s, 33k | 98 s, 47k | 17.6 h | 26M |
+| `agent-policy`, Argon | 72 s, 32k | 107 s, 49k | 16.4 h | 26M |
+| `agent-overlay`, Argon | 117 s, 65k | 80 s, 41k | 20.5 h | 40M |
+
+Tier 1 is 475 MEME sessions and 231 MemoryAgentBench batches per arm and model: **127 session-hours and
+about 870M context tokens** for all six, plus about 6 session-hours (2M tokens) for the variance repeats.
+The token multiple (context per token of dialogue read) is 37-76 for Argon and 230-550 for Flash on MEME:
+Flash takes more steps and thinks more, and every step re-sends the conversation. A haystack's sessions run
+in order, so the 231-batch MemoryAgentBench chain alone takes 5-8 h; at 16 haystacks at once the tier needs
+at least 8 h, at 8, about 16 h.
+
+**Quota.** The CLI's Gemini quota is a weekly and a five-hour percentage. The smoke tier and its diagnostics
+(about 480 sessions, about 130M context tokens) took the weekly limit from 96% to 81% and the five-hour one
+from 94% to 35%. Scaled by tokens, tier 1 needs about 93% of a week (about 130% scaled by sessions); Flash is
+about 90% of it, and Flash `agent-overlay` alone about 40%. One five-hour window is worth about a quarter of
+the week, so tier 1 needs at least four or five windows. **It does not fit the 81% left before the weekly
+reset (2026-11-14T00:17Z)**, so, as instructed, the run pauses here, after this freeze, until the schedule
+is chosen. Nothing in sections 1-6 depends on that choice; running arms in a different order or across the
+reset changes no rule. A provider failure is retried 3 times (backoff 30 / 120 / 300 s) and then marks the
+haystack failed, so an exhausted quota must not be run into: the schedule has to stop before it.
+
+## 8. Ledger
+
+| When | What | Informed by |
+| --- | --- | --- |
+| Phase 1 | Value export, scorer, runner, scripted agents; Gate 1 passed on all of tier 1 (0 disagreements for `scripted-flat` and `scripted-oracle`; `scripted-overlay` differs from `oracle` only on 12 unpooled `current@10` questions) | flat / oracle / scripted only |
+| Phase 1 | Whole-word matching; MemoryAgentBench subject anchors (and their exclusion of value words); matchable values | flat / oracle disagreements with card-level |
+| Smoke, before any scored session | Diagnostics on an empty workspace: with the CLI's lazy `call_mcp_tool`, Flash wrote the call as text and the turn failed ("malformed function call"); the four tools were then declared `eager` and the model listed exactly them plus `list_resources`, `read_resource`, `manage_task`. Isolation check (NONE) | plumbing |
+| Smoke | A Flash `agent-overlay` session called `list_resources`: added the `PreToolUse` gate. In the smoke tier, 7 non-MCP attempts (all Flash: `list_resources` denied by the gate, and one misspelt tool name), none of which ran | plumbing |
+| Smoke | MemoryAgentBench batch-50 runs hit the cap (section 2); batches set to 10 facts; the cap stays 40; Gate 1 re-run with 10-fact batches: unchanged. The remaining two batch-50 runs (Argon `agent-policy`, `agent-overlay`) were stopped to save quota; batch 10 was then run for every arm and model | plumbing (cap and transcript formatting, 8.2) |
+| Smoke | The trace-vs-proxy check counted calls the CLI rejected before the server (missing `query`, a misspelt tool name: 7 calls) and one call still running when the CLI was stopped at the cap as mismatches; corrected (`agy.trace_check`), re-applied to every smoke session (`retrace`): 466 sessions, 0 mismatches | plumbing |
+| Smoke | Token telemetry counts cache reads (Argon's per-step `input_tokens` excludes them); value records carry the entity (for the audit) | plumbing |
+| Smoke | No prompt wording changed. No line changed | |
+| Freeze | This plan and `results/freeze.json` committed before any tier-1 call; tier 1 paused for scheduling (section 7) | |
