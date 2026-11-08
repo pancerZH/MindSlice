@@ -339,6 +339,171 @@ class AgyOfflineTests(unittest.TestCase):
         self.assertFalse(agy.trace_check(traced, rows + [{"tool": "read"}])["ok"])
         self.assertTrue(agy.trace_check(traced + [c("write", "ACTIVE")], rows)["ok"])  # still running when stopped
 
+class _MockStrata:
+    """A stand-in for the Strata server: answers /v1/chat/completions with ``script(body, n)``; keeps every request."""
+
+    def __init__(self, script):
+        import http.server
+        import threading
+
+        outer = self
+        self.requests: list[dict] = []
+        self.script = script
+
+        class Handler(http.server.BaseHTTPRequestHandler):
+            def log_message(self, *a):  # quiet
+                pass
+
+            def do_GET(self):
+                body = json.dumps({"object": "list", "data": [{"id": "mock-model", "meta": {"n_ctx": 4096}}]}).encode()
+                self.send_response(200)
+                self.send_header("Content-Type", "application/json")
+                self.end_headers()
+                self.wfile.write(body)
+
+            def do_POST(self):
+                req = json.loads(self.rfile.read(int(self.headers["Content-Length"])))
+                outer.requests.append(req)
+                status, answer = outer.script(req, len(outer.requests))
+                data = json.dumps(answer).encode()
+                self.send_response(status)
+                self.send_header("Content-Type", "application/json")
+                self.send_header("Content-Length", str(len(data)))
+                self.end_headers()
+                self.wfile.write(data)
+
+        self.server = http.server.ThreadingHTTPServer(("127.0.0.1", 0), Handler)
+        self.url = f"http://127.0.0.1:{self.server.server_address[1]}"
+        threading.Thread(target=self.server.serve_forever, daemon=True).start()
+
+    def close(self):
+        self.server.shutdown()
+        self.server.server_close()
+
+
+def _answer(content=None, calls=(), prompt=100, cached=40, completion=10, finish=None):
+    msg = {"role": "assistant", "content": content, "reasoning_content": "thinking..."}
+    if calls:
+        msg["tool_calls"] = [{"id": f"call_{i}_{name}", "type": "function", "function": {"name": name, "arguments": args}}
+                             for i, (name, args) in enumerate(calls)]
+    return 200, {"choices": [{"message": msg, "finish_reason": finish or ("tool_calls" if calls else "stop")}],
+                 "usage": {"prompt_tokens": prompt, "completion_tokens": completion, "total_tokens": prompt + completion,
+                           "prompt_tokens_details": {"cached_tokens": cached}},
+                 "timings": {"cache_n": cached, "prompt_n": prompt - cached, "prompt_ms": 5.0, "predicted_ms": 7.0}}
+
+
+class StrataTests(unittest.TestCase):
+    """The Strata client (``strata.py``) against a mocked server, with the real MCP proxy and MindSlice server."""
+
+    def _task(self, tmp: Path, h=None):
+        from evals.agent.agents import SessionTask
+        from evals.agent.sessions import agent_sessions, flat
+
+        h = h or synthetic_meme()
+        s = agent_sessions(h, flat(h))[0]
+        ws = Workspace.init(tmp / "ws")
+        self.addCleanup(ws.close)
+        return SessionTask("agent-policy", h, s, "SYSTEM", "SESSION MESSAGE", ws, tmp)
+
+    def test_session_loop_over_mcp(self):
+        from evals.agent import strata
+
+        def script(req, n):
+            msgs = req["messages"]
+            if len(msgs) == 2:
+                return _answer(calls=[("manifest", "{}")])
+            if len(msgs) == 4:
+                return _answer(calls=[("search", json.dumps({"query": "health condition"}))], prompt=150, cached=120)
+            return _answer("DONE", prompt=200, cached=180)
+
+        srv = _MockStrata(script)
+        self.addCleanup(srv.close)
+        with tempfile.TemporaryDirectory() as tmp:
+            task = self._task(Path(tmp))
+            out = strata.StrataAgent("agent-policy", model="mock-model", url=srv.url).run_session(task)
+        self.assertFalse(out.failed, out.meta)
+        self.assertEqual(out.reply, "DONE")
+        self.assertEqual([r["tool"] for r in out.calls], ["manifest", "search"])
+        self.assertTrue(out.meta["trace_matches_proxy"])
+        self.assertEqual(out.meta["num_turns"], 3)
+        self.assertEqual(out.meta["usage"]["input_tokens"], (100 - 40) + (150 - 120) + (200 - 180))
+        self.assertEqual(out.meta["usage"]["cached_tokens"], 40 + 120 + 180)
+        self.assertEqual(out.meta["usage"]["output_tokens"], 30)
+        first, last = srv.requests[0], srv.requests[-1]
+        self.assertEqual([t["function"]["name"] for t in first["tools"]], ["manifest", "search", "read", "write"])
+        self.assertEqual(first["messages"], [{"role": "system", "content": "SYSTEM"}, {"role": "user", "content": "SESSION MESSAGE"}])
+        self.assertEqual((first["temperature"], first["top_k"], first["model"]), (1.0, 20, "mock-model"))
+        self.assertEqual(last["messages"][2]["reasoning_content"], "thinking...")  # the assistant turn goes back whole
+        self.assertEqual(last["messages"][3]["role"], "tool")
+        self.assertEqual(last["messages"][3]["tool_call_id"], "call_0_manifest")
+        self.assertIn("cards", last["messages"][3]["content"])  # the real manifest result
+
+    def test_cap_ends_the_session(self):
+        from evals.agent import strata
+
+        srv = _MockStrata(lambda req, n: _answer(calls=[("manifest", "{}")]))
+        self.addCleanup(srv.close)
+        with tempfile.TemporaryDirectory() as tmp:
+            out = strata.StrataAgent("agent-policy", model="mock-model", url=srv.url, cap=3).run_session(self._task(Path(tmp)))
+        self.assertFalse(out.failed)
+        self.assertTrue(out.meta["cap_hit"])
+        self.assertEqual(out.meta["finished_reason"], "call_cap")
+        self.assertEqual(len(out.calls), 4)
+        self.assertEqual([r["refused"] for r in out.calls], [False, False, False, True])
+        self.assertEqual(len(srv.requests), 4)  # no model turn after the refused call
+
+    def test_unknown_tools_and_bad_arguments_are_not_forwarded(self):
+        from evals.agent import strata
+
+        def script(req, n):
+            if n == 1:
+                return _answer(calls=[("run_command", "{}"), ("search", "not json"), ("read", "[1]")])
+            return _answer("DONE")
+
+        srv = _MockStrata(script)
+        self.addCleanup(srv.close)
+        with tempfile.TemporaryDirectory() as tmp:
+            out = strata.StrataAgent("agent-policy", model="mock-model", url=srv.url).run_session(self._task(Path(tmp)))
+        self.assertEqual(out.calls, [])
+        self.assertEqual((out.meta["non_mcp_denied"], out.meta["client_rejected_calls"]), (1, 2))
+        self.assertEqual(out.meta["non_mcp_denied_tools"], ["run_command"])
+        tool_msgs = [m for m in srv.requests[1]["messages"] if m["role"] == "tool"]
+        self.assertEqual(len(tool_msgs), 3)
+        self.assertIn("Unknown tool", tool_msgs[0]["content"])
+
+    def test_http_failure_is_retried_then_fails(self):
+        from evals.agent import strata
+
+        srv = _MockStrata(lambda req, n: (500, {"error": "boom"}))
+        self.addCleanup(srv.close)
+        with tempfile.TemporaryDirectory() as tmp:
+            task = self._task(Path(tmp))
+            (task.ws.root / "overlay" / "keep.md").write_text("---\ntitle: Keep\n---\nkept\n")
+            out = strata.StrataAgent("agent-policy", model="mock-model", url=srv.url, retries=1, backoff=(0,)).run_session(task)
+            self.assertTrue((task.ws.root / "overlay" / "keep.md").exists())
+        self.assertTrue(out.failed)
+        self.assertIn("HTTP 500", out.meta["error"])
+        self.assertEqual(out.meta["retries"], 1)
+        self.assertEqual(len(srv.requests), 2)
+
+    def test_run_haystack_with_strata(self):
+        from evals.agent import strata
+
+        def script(req, n):
+            return _answer(calls=[("manifest", "{}")]) if len(req["messages"]) == 2 else _answer("DONE")
+
+        srv = _MockStrata(script)
+        self.addCleanup(srv.close)
+        h = synthetic_meme()
+        with tempfile.TemporaryDirectory() as tmp:
+            recs = run_haystack(h, "agent-policy", Path(tmp) / "out", agent=strata.StrataAgent("agent-policy", model="mock-model", url=srv.url))
+        sess = [r for r in recs if r["kind"] == "session"]
+        self.assertTrue(sess)
+        self.assertTrue(all(r["tool_calls"] == 1 and r["reply"] == "DONE" and not r["failed"] for r in sess))
+        self.assertTrue(all(r["usage"]["input_tokens"] == 60 * 2 and r["usage"]["cached_tokens"] == 80 for r in sess))
+        self.assertIsNone(next(r for r in recs if r["kind"] == "haystack")["failed"])
+
+
 class MatcherV2Test(unittest.TestCase):
     """The rules matcher v2 documents (``matcher2.py``), and the two-way audit correction (``audit2``)."""
 

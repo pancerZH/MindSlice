@@ -367,6 +367,53 @@ def check_freeze(data: Path | None) -> list[str]:
     return out
 
 
+QWEN_FREEZE = RESULTS / "freeze_qwen.json"
+STRATA_FILES = ("strata.py",)  # the Strata client; everything else that runs a session is in RUNNER_FILES
+
+
+def strata_digest() -> str:
+    return _digest([HERE / f for f in STRATA_FILES])
+
+
+def qwen_facts(data: Path | None, url: str | None = None) -> dict[str, Any]:
+    """What the Qwen tier-1 run (PLAN.md section 10) freezes, checked before its first call."""
+    from . import strata
+    from .score import LINES
+    from .tools import CAP
+
+    env = environment()
+    try:
+        server = strata.server_info(url or strata.URL)
+    except strata.StrataError as exc:
+        server = {"error": str(exc)}
+    return {"engine_digest": env["engine_digest"], "engine_dirty": env["engine_dirty"], "runner_digest": runner_digest(),
+            "strata_digest": strata_digest(), "prompts": digests(), "model": strata.MODEL, "url": url or strata.URL,
+            "server_models": [m["id"] for m in server.get("models", [])], "server_n_ctx": next(
+                (m["meta"].get("n_ctx") for m in server.get("models", []) if m.get("meta")), None),
+            "server_slots": server.get("total_slots"), "sampling": strata.SAMPLING, "max_tokens": strata.MAX_TOKENS,
+            "max_turns": strata.MAX_TURNS, "session_timeout_s": strata.TIMEOUT_S, "retries": strata.RETRIES, "cap": CAP,
+            "jobs": 1, "arms": ["agent-policy", "agent-overlay"], "order": "agent-policy on all 95 episodes, then agent-overlay",
+            "haystacks": [h.key for h in tier_haystacks("1", data) if h.key not in TIER1_DROPPED],
+            "matcher": "v3", "matcher_v3_digest": json.loads((RESULTS / "freeze_v3.json").read_text())["matcher_v3_digest"],
+            "audit": {"seed": AUDIT_SEED, "retired_failures": 50, "lost_cases": 50, "passes": 15, "unreliable_above": 0.20},
+            "lines": [{k: l[k] for k in ("id", "stat", "line")} for l in LINES]}
+
+
+def check_qwen_freeze(data: Path | None, url: str | None = None) -> list[str]:
+    if not QWEN_FREEZE.exists():
+        return [f"{QWEN_FREEZE} is missing: run `python -m evals.agent freeze-qwen` and commit PLAN.md first"]
+    frozen = json.loads(QWEN_FREEZE.read_text(encoding="utf-8"))
+    now = qwen_facts(data, url)
+    keys = ("engine_digest", "runner_digest", "strata_digest", "prompts", "model", "server_n_ctx", "sampling", "max_tokens",
+            "max_turns", "cap", "haystacks", "matcher_v3_digest", "lines")
+    out = [f"{k} changed since the freeze" for k in keys if frozen.get(k) != now.get(k)]
+    if frozen["model"] not in now["server_models"]:
+        out.append(f"the server doesn't serve {frozen['model']} (it serves {now['server_models']})")
+    if now["engine_dirty"]:
+        out.append("mindslice/ has uncommitted changes")
+    return out
+
+
 def _deferred(d: Path) -> bool:
     """A variance item marked deferred (its records.jsonl holds only a {"kind": "deferred"} line)."""
     f = d / "records.jsonl"
@@ -450,6 +497,18 @@ def main(argv: list[str] | None = None) -> int:
     a.add_argument("--effort", default="medium")
     a.add_argument("--no-freeze-check", action="store_true", help="allow a non-smoke run that doesn't match the freeze (record why)")
     a.add_argument("--quota-gate", action="store_true", help="pause new sessions while the CLI's quota is low (tier1 always does)")
+    st = sub.add_parser("strata", help="LLM arms through a local Strata server (OpenAI chat completions) over real MCP stdio")
+    st.add_argument("--tier", default="smoke")
+    st.add_argument("--arms", default="agent-policy")
+    st.add_argument("--model", default=None, help="the served model id (default: strata.MODEL)")
+    st.add_argument("--run", required=True)
+    st.add_argument("--haystacks", help="comma-separated haystack keys (default: the whole tier; tier 1 as run: MEME only)")
+    st.add_argument("--max-sessions", type=int, help="stop each haystack after this many sessions (plumbing checks)")
+    st.add_argument("--jobs", type=int, default=1, help="haystacks at once (Strata has one slot: keep 1)")
+    st.add_argument("--url", default=None)
+    st.add_argument("--no-freeze-check", action="store_true", help="allow a non-smoke run that doesn't match freeze_qwen.json")
+    fq = sub.add_parser("freeze-qwen", help="write results/freeze_qwen.json (the Qwen tier-1 run, PLAN.md section 10)")
+    fq.add_argument("--url", default=None)
     rt = sub.add_parser("retrace", help="recompute the trace-vs-proxy check of a run's LLM sessions from the saved files")
     rt.add_argument("--run", required=True)
     pj = sub.add_parser("project", help="tier-1 runtime and token projection from a smoke run")
@@ -605,6 +664,37 @@ def main(argv: list[str] | None = None) -> int:
         gate = agy.QuotaGate(log_path=root / "tier1" / "quota.jsonl", log=log)
         (root / "tier1").mkdir(parents=True, exist_ok=True)
         return agy.run_work(work, args.jobs, "medium", gate, None, {"tier": "1", "matrix": [list(c) for c in MATRIX]})
+    if args.command == "freeze-qwen":
+        facts = qwen_facts(data, args.url)
+        if facts["model"] not in facts["server_models"]:
+            print(f"the server doesn't serve {facts['model']}: {facts['server_models']}", file=sys.stderr)
+            return 2
+        QWEN_FREEZE.write_text(json.dumps({"frozen": time.strftime("%Y-%m-%dT%H:%M:%SZ", time.gmtime()), **facts}, indent=1) + "\n")
+        print(f"wrote {QWEN_FREEZE}")
+        return 0
+    if args.command == "strata":
+        from . import strata
+
+        model = args.model or strata.MODEL
+        url = args.url or strata.URL
+        hs = tier_haystacks(args.tier, data)
+        if args.tier == "1":  # tier 1 as run: MEME only (PLAN.md)
+            hs = [h for h in hs if h.key not in TIER1_DROPPED]
+        if args.haystacks:
+            keep = set(args.haystacks.split(","))
+            hs = [h for h in hs if h.key in keep]
+        arms = [a for a in args.arms.split(",") if a]
+        if args.tier != "smoke" and not args.no_freeze_check:
+            problems = check_qwen_freeze(data, url)
+            if model != strata.MODEL:
+                problems.append(f"model {model} is not the frozen {strata.MODEL}")
+            if problems:
+                print("refusing to run tier", args.tier, "\n" + "\n".join(problems), file=sys.stderr)
+                return 2
+        if args.jobs != 1:
+            print(f"warning: --jobs {args.jobs}; Strata serves one sequence at a time", file=sys.stderr)
+        work = [(root / args.run, a, model, h) for a in arms for h in hs]
+        return strata.run_work(work, args.jobs, url, args.max_sessions, {"tier": args.tier, "arms": arms, "model": model})
     if args.command == "agy":
         if args.tier != "smoke" and not args.no_freeze_check:
             problems = check_freeze(data)
