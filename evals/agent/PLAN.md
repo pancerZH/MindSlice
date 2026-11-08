@@ -266,6 +266,9 @@ haystacks are kept, an unfinished one starts over.
 | After the lines | Exploratory, not a line: a fixed sample of 40 first-ranked Cascade cards stating both the old and the new value, all correctly updated (REPORT.md) | |
 | Re-score, 2026-11-08 | Matcher v2 built from the audit's error classes and validated (section 9). Five audit verdicts corrected when v2 disagreed with them: the worksheet showed only 3 lines per card (4 `retired` failures were real: a hidden line names the old value) and one `lost` case was judged without seeing that its card was inactive. Tier 1 re-scored with v2: post-hoc, reported apart | the tier-1 audit |
 | Confirmatory run pre-registered | Section 9, before its first call | |
+| Confirmatory run started, 2026-11-08 16:11Z | 231 batches, quota gate on | |
+| v2 audit of tier 1, 2026-11-08 (post-hoc; v2 unchanged) | Both ways (`audit2.py`): 6.3 on v2's flagged cases (verdicts of the tier-1 audit kept for cases it had judged), plus 15 v2 passes per cell and 20 values the frozen matcher called lost that v2 keeps (Flash; on Argon all had been hand-judged). Verdict rules as in the tier-1 audit; a link or line that presents the old value as current (including "Related: [[card named after it]]") is a real failure. `retired`: 0-2% matching errors in every cell; `lost`: 17%, 44%, 0%, 67% (Argon default, policy, overlay; Flash), so Argon `agent-policy` and Flash stay unreliable by the rule. The report adds a two-way correction (`audit2.corrected`), not a line | the v2 worksheets |
+| After the v2 lines | Exploratory, not lines: Absence pages audited by sample (10 per cell, seed 20261106; `results/audit/tier1-v2/absence/`), and `retired` failures split into link-only and prose by re-judging offenders with `[[...]]` links removed (REPORT.md) | |
 
 ## 9. Confirmatory run: MemoryAgentBench 32k with matcher v2 (pre-registered 2026-11-08, before its first call)
 

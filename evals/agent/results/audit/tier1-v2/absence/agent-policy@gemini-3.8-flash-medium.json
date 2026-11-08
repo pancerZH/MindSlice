@@ -1,0 +1,185 @@
+{
+ "cell": "agent-policy@gemini-3.8-flash-medium",
+ "population": 10,
+ "cases": [
+  {
+   "id": "pl_022/after2",
+   "point": "end",
+   "query": "What's my work schedule?",
+   "stale": [
+    "9-to-5 fixed"
+   ],
+   "evidence": {
+    "@overlay/personal/work-hours": [
+     "The user has a fixed 9-to-5 work schedule, which depends on their studies at Quivira Springs Community College; if that changes, their schedule would change.",
+     "- The user's work hours are fixed 9-to-5 as of March 2023.",
+     "- This fixed 9-to-5 work schedule depends on the fact that the user is studying at [[personal/education|Quivira Springs Community College]]."
+    ]
+   },
+   "verdict": "correct",
+   "note": "states the schedule as current"
+  },
+  {
+   "id": "pl_039/after2",
+   "point": "end",
+   "query": "How do I get to work?",
+   "stale": [
+    "bike"
+   ],
+   "evidence": {
+    "@overlay/work/bike-commute": [
+     "bike to work",
+     "work commute by bike",
+     "The user takes their bike to work, a routine that depends on studying for an MS in CS at Quessara University and would change if their school changes.",
+     "- The user takes their bike to work (reported March 2023)."
+    ],
+    "@overlay/finance/road-bike-purchase": [
+     "- The planned road bike purchase connects to the user's cycling activities, including their [[work/bike-commute|bike commute to work]]."
+    ]
+   },
+   "verdict": "correct",
+   "note": "states the bike commute as current"
+  },
+  {
+   "id": "pl_041/after3",
+   "point": "end",
+   "query": "What's my exercise routine?",
+   "stale": [
+    "yoga 2x/week"
+   ],
+   "evidence": {
+    "@overlay/health/exercise-routine": [
+     "yoga 2x/week",
+     "The user practices yoga 2x/week; routine remains yoga 2x/week following the change in health condition.",
+     "- The user's exercise routine is yoga 2x/week (stated March 2023).",
+     "- Following the change in health condition to [[health/lactose-intolerance]], the exercise routine remains yoga 2x/week."
+    ],
+    "@overlay/health/workout-facility": [
+     "The user works out at Zorathel Peak Gym for yoga 2x/week; if their exercise routine changes, they will work out at Velthari Studio.",
+     "- Attending Zorathel Peak Gym is for the user's [[health/exercise-routine]] of yoga 2x/week."
+    ]
+   },
+   "verdict": "correct",
+   "note": "asserts the routine 'remains' after its premise changed"
+  },
+  {
+   "id": "sw_031/after3",
+   "point": "end",
+   "query": "What token format do we use?",
+   "stale": [
+    "zenthos-session-v1"
+   ],
+   "evidence": {
+    "@overlay/security/zenthos-session-auth-middleware": [
+     "zenthos-session-middleware v1.8",
+     "The auth middleware is zenthos-session-middleware v1.8, switched from oathkeeper-mtls-proxy v4.1 following the auth method change to Session Cookie + CSRF.",
+     "- The auth middleware is zenthos-session-middleware v1.8."
+    ]
+   },
+   "verdict": "matching error",
+   "note": "another entity's value (the auth middleware) shares the words"
+  },
+  {
+   "id": "sw_048/after3",
+   "point": "end",
+   "query": "What authentication method do we use?",
+   "stale": [
+    "saml 2.0 sso"
+   ],
+   "evidence": {
+    "@overlay/security/auth-method-oauth": [
+     "SAML 2.0 SSO",
+     "- Switching auth providers to Kryptal Auth ([[security/auth-kryptal]]) updated the authentication method from SAML 2.0 SSO to OAuth 2.0 + PKCE."
+    ]
+   },
+   "verdict": "matching error",
+   "note": "the card marks the dependent as changed, affected, invalidated or past (words v2 doesn't treat as past markers)"
+  },
+  {
+   "id": "pl_044/after3",
+   "point": "end",
+   "query": "What's my exercise routine?",
+   "stale": [
+    "walking daily"
+   ],
+   "evidence": {
+    "@overlay/health/yoga-exercise-routine": [
+     "daily walking",
+     "- Daily walking has been superseded by this yoga twice-weekly routine."
+    ],
+    "@overlay/health/thandrel-ymca-workout-facility": [
+     "- The facility change was activated upon switching the exercise routine from walking daily to yoga 2x/week."
+    ]
+   },
+   "verdict": "matching error",
+   "note": "the card marks the dependent as changed, affected, invalidated or past (words v2 doesn't treat as past markers)"
+  },
+  {
+   "id": "sw_004/after2",
+   "point": "end",
+   "query": "Who receives the weekly report?",
+   "stale": [
+    "taehyun kim"
+   ],
+   "evidence": {
+    "@overlay/team/lead-minjun-lee": [
+     "- Coordinates with project approval authority Taehyun Kim ([[project/approval-authority]]) and escalation contact Jiwon Han ([[project/escalation-contact]])."
+    ]
+   },
+   "verdict": "matching error",
+   "note": "the same person in another role (approval authority)"
+  },
+  {
+   "id": "pl_047/after3",
+   "point": "end",
+   "query": "Where is my office?",
+   "stale": [
+    "tesswick bay"
+   ],
+   "evidence": {
+    "@overlay/career/office-quivira-springs": [
+     "Tesswick Bay office",
+     "- The office change from Tesswick Bay also impacts the previous bike commute mode ([[career/commute-mode]])."
+    ],
+    "@overlay/career/commute-mode": [
+     "User's commute mode of biking changed due to the office moving from Tesswick Bay to Quivira Springs.",
+     "- The user's commute mode of biking to work changed as a result of the office relocating from Tesswick Bay to Quivira Springs ([[career/office-quivira-springs]]) (as of March 2023).",
+     "- Biking to work was explicitly dependent on the office being located in Tesswick Bay, per the conditional rule previously established."
+    ]
+   },
+   "verdict": "matching error",
+   "note": "the card marks the dependent as changed, affected, invalidated or past (words v2 doesn't treat as past markers)"
+  },
+  {
+   "id": "pl_043/after2",
+   "point": "end",
+   "query": "What family event do I have coming up?",
+   "stale": [
+    "baby shower"
+   ],
+   "evidence": {
+    "@overlay/personal/partner": [
+     "- Sarah is the user's partner in their shared personal events, including an upcoming baby shower ([[personal/baby-shower]])."
+    ]
+   },
+   "verdict": "correct",
+   "note": "an upcoming baby shower, as current"
+  },
+  {
+   "id": "pl_046/after3",
+   "point": "end",
+   "query": "What's my sleep schedule?",
+   "stale": [
+    "11pm-5:30am (early riser)"
+   ],
+   "evidence": {
+    "@overlay/user/health/sleep-schedule": [
+     "The user usually sleeps 11pm-5:30am (early riser), tied to their health condition ([[user/health/acid-reflux]])."
+    ]
+   },
+   "verdict": "correct",
+   "note": "states the sleep schedule as current"
+  }
+ ],
+ "rule": "Abs-hop1 questions whose first page v2 says holds an unwarned stale card: correct when a card on it presents the old dependent value as current; a matching error when every flagged card marks it as changed, affected, invalidated, superseded or past, or the words belong to another entity"
+}

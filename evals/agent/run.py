@@ -499,10 +499,15 @@ def main(argv: list[str] | None = None) -> int:
         if adir.is_dir():
             from . import audit as auditmod
 
+            from . import audit2
+
             summary["audit"] = {}
             for vp in sorted(adir.glob("*.json")):
                 v = json.loads(vp.read_text(encoding="utf-8"))
-                if vp.stem in arms:
+                if vp.stem in arms and "passes" in v["cases"]:  # matcher v2: audited both ways
+                    summary["audit"][vp.stem] = {"tally": audit2.tally(v), "corrected": audit2.corrected(arms[vp.stem], v),
+                                                 "two_way": True}
+                elif vp.stem in arms:
                     summary["audit"][vp.stem] = {"tally": auditmod.tally(v), "corrected": audit_corrected(arms[vp.stem], v)}
         if args.variance:
             key = f"agent-policy@{MAIN_MODEL}"

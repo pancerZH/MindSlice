@@ -37,7 +37,23 @@ def render_run(name: str, summary: dict[str, Any]) -> str:
             o.append(f"| {a} | " + " | ".join(f"{l['point']:.3f} [{l['low']:.3f}, {l['high']:.3f}] **{l['verdict']}**"
                                                if not math.isnan(l["point"]) else "–" for l in s["lines"]) + " |")
         o += ["", "; ".join(f"{l['id']}: {l['stat']}, line {l['line']}" for l in LINES), ""]
-    if summary.get("audit"):
+    if summary.get("audit") and all(e.get("two_way") for e in summary["audit"].values()):
+        o += ["## Audit of value matching, both ways (6.3 and the matcher-v2 audit)", "",
+              "Flagged: up to 50 `retired` failures and 50 `lost` cases per cell (seed 20261106; cases the tier-1 audit "
+              "judged keep their verdict). More than 20% matching errors in either: that cell's lines are reported as "
+              "unreliable (PLAN.md section 6). The other way: 15 updates v2 counts as retired, and up to 20 values the "
+              "frozen matcher called lost that v2 keeps. The corrected values remove the flagged matching errors and add "
+              "the misses at the sampled share; they are not lines.", "",
+              "| Cell | `retired` errors | `lost` errors | Lines | Missed in passes | Wrong in flips | "
+              "`retired` raw / corrected | `lost` raw / corrected |", "| --- | --- | --- | --- | --- | --- | --- | --- |"]
+        for a, e in summary["audit"].items():
+            t, c = e["tally"], e["corrected"]
+            fmt = lambda k: f"{t[k]['errors']} / {t[k]['judged']} ({t[k]['share']:.0%})" if t.get(k) and t[k]["judged"] else "–"
+            o.append(f"| {a} | {fmt('retired')} | {fmt('lost')} | {'reliable' if t['reliable'] else '**unreliable**'} | "
+                     f"{fmt('passes')} | {fmt('flips')} | {c['retired']['raw']:.3f} / {c['retired']['corrected']:.3f} | "
+                     f"{c['lost']['raw']:.3f} / {c['lost']['corrected']:.3f} |")
+        o.append("")
+    elif summary.get("audit"):
         o += ["## Audit of value matching (6.3)", "",
               "Each `retired` failure and `lost` case (all of them when fewer than 50, else a fixed sample, seed "
               "20261106) judged from the workspace as it was at the judgment point. More than 20% matching errors "

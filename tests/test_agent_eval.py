@@ -339,5 +339,45 @@ class AgyOfflineTests(unittest.TestCase):
         self.assertFalse(agy.trace_check(traced, rows + [{"tool": "read"}])["ok"])
         self.assertTrue(agy.trace_check(traced + [c("write", "ACTIVE")], rows)["ok"])  # still running when stopped
 
+class MatcherV2Test(unittest.TestCase):
+    """The rules matcher v2 documents (``matcher2.py``), and the two-way audit correction (``audit2``)."""
+
+    def test_paraphrase_and_formats(self) -> None:
+        from evals.agent import matcher2 as m2
+
+        self.assertTrue(m2.states(m2.Text("Current anime: Thyrelion"), "thyrelion (anime)"))  # type tag optional
+        self.assertTrue(m2.states(m2.Text("Meets every Thursday at 2 pm"), "every thursday 2pm"))
+        self.assertTrue(m2.states(m2.Text("Commute: about ten minutes"), "10 min"))
+        self.assertFalse(m2.states(m2.Text("Thyrelion is a game"), "a history documentary series"))
+
+    def test_past_markers_aliases_and_masks(self) -> None:
+        from evals.agent import matcher2 as m2
+
+        self.assertFalse(m2.presents_old(m2.Text("Subscribed to Thyranote (switched from Xelvoria)"), "xelvoria"))
+        self.assertTrue(m2.presents_old(m2.Text("Subscribed to Xelvoria"), "xelvoria"))
+        self.assertFalse(m2.presents_old(m2.Text(title="Subscription", aliases=["Xelvoria"], body="Thyranote"), "xelvoria"))
+        self.assertFalse(m2.presents_old(m2.Text("Packages via Synthari Modules"), "synthari", others=["synthari modules"]))
+        self.assertFalse(m2.is_stale(m2.Text("Xelvoria\nNow Thyranote"), ["xelvoria"], ["thyranote"]))
+        self.assertFalse(m2.states_current(m2.Text("Previously cooking"), "cooking"))
+        self.assertTrue(m2.states_current(m2.Text("Cooking, previously cycling"), "cooking"))
+
+    def test_two_way_correction(self) -> None:
+        from evals.agent import audit2
+
+        recs = ([{"kind": "update", "matchable": True, "retired": False}] * 10 + [{"kind": "update", "matchable": True, "retired": True}] * 90
+                + [{"kind": "value", "matchable": True, "lost": True}] * 4 + [{"kind": "value", "matchable": True, "lost": False}] * 96)
+        ws = {"population": {"retired": 10, "lost": 4, "passes": 90, "flips": 0},
+              "cases": {"retired": [{"verdict": "matching error"}] * 2 + [{"verdict": "correct"}] * 8,
+                        "lost": [{"verdict": "matching error"}] * 4,
+                        "passes": [{"verdict": "missed"}] + [{"verdict": "correct"}] * 9, "flips": []}}
+        t = audit2.tally(ws)
+        self.assertEqual((t["retired"]["errors"], t["lost"]["share"], t["passes"]["share"]), (2, 1.0, 0.1))
+        self.assertFalse(t["reliable"])
+        c = audit2.corrected(recs, ws)
+        self.assertEqual((c["retired"]["raw"], c["retired"]["corrected"]), (0.9, 0.83))  # 8 real + 9 missed of 100
+        self.assertEqual((c["lost"]["raw"], c["lost"]["corrected"]), (0.04, 0.0))
+        self.assertTrue(c["retired"]["exact"])
+
+
 if __name__ == "__main__":
     unittest.main()

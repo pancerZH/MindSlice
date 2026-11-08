@@ -1,0 +1,178 @@
+{
+ "cell": "agent-default@gemini-4-argon-medium",
+ "population": 40,
+ "cases": [
+  {
+   "id": "pl_019/after2",
+   "point": "end",
+   "query": "What type of home do I live in?",
+   "stale": [
+    "single-family house"
+   ],
+   "evidence": {
+    "@overlay/personal/home": [
+     "single-family house",
+     "The user's single-family house home depended on being single and would change if their relationship status changed; as of 2023-03-05, the user is now in a relationship.",
+     "- Earlier on 2023-03-05, the user stated their home was a single-family house, which depended on being single ([[personal/relationship-status]]) and would change if their relationship status changed."
+    ]
+   },
+   "verdict": "matching error",
+   "note": "the card marks the dependent as changed, affected, invalidated or past (words v2 doesn't treat as past markers)"
+  },
+  {
+   "id": "pl_029/after2",
+   "point": "end",
+   "query": "What's my current financial goal?",
+   "stale": [
+    "maxing out retirement fund"
+   ],
+   "evidence": {
+    "@overlay/user/financial-goal": [
+     "maxing out retirement fund",
+     "- On 2023-03-05, the user changed schools and started an MS in CS at Quessara University ([[user/education-quessara-university]]), meaning their financial priorities and goals have shifted from maxing out their retirement fund (they are also planning a big purchase of an engagement ring, [[user/planned-purchase]])."
+    ],
+    "@overlay/user/education-quessara-university": [
+     "- Changing schools from Quivira Springs Community College to Quessara University triggers the user's conditional work schedule change to hybrid (3 office + 2 remote) ([[user/work-schedule]]) and shifts their financial priorities away from maxing out their retirement fund ([[user/financial-goal]])."
+    ]
+   },
+   "verdict": "matching error",
+   "note": "the card marks the dependent as changed, affected, invalidated or past (words v2 doesn't treat as past markers)"
+  },
+  {
+   "id": "pl_037/after2",
+   "point": "end",
+   "query": "What type of home do I live in?",
+   "stale": [
+    "shared house"
+   ],
+   "evidence": {
+    "@overlay/user/relationship-status": [
+     "- In Session 4 (2023-03-02, 21:15), the user stated that two facts explicitly depended on being separated: their upcoming child's school event ([[user/school-event]]) and their home being a shared house ([[user/living-situation]]), and stated: \"If my relationship status changes, we will plan none currently.\""
+    ],
+    "@overlay/user/living-situation": [
+     "shared house",
+     "The user's shared house living situation (from 2023-03-02) depended on being separated; since the user is now divorced (2023-03-03), that living situation has changed. Previously lived alone.",
+     "- On 2023-03-02 (Session 4, 21:15), the user stated that their home was a shared house, and that this explicitly depended on the fact that they were separated ([[user/relationship-status]]); if their relationship status changed, their living situation would change."
+    ]
+   },
+   "verdict": "matching error",
+   "note": "the card marks the dependent as changed, affected, invalidated or past (words v2 doesn't treat as past markers)"
+  },
+  {
+   "id": "sw_003/after3",
+   "point": "end",
+   "query": "What's our staging URL?",
+   "stale": [
+    "sandbox.thandrel.io/aurora"
+   ],
+   "evidence": {
+    "@overlay/team/deployment-target-thandrel-infra": [
+     "  - Settings that depended on deploying to Velturis Edge without a specified replacement ([[team/staging-environment]] `sandbox.thandrel.io/aurora`, [[team/docker-image]] `zephyra-hub/aurora:prod`, and [[team/dockerfile]] `infra/zephyra/Dockerfile`) had Velturis Edge as their premise."
+    ]
+   },
+   "verdict": "matching error",
+   "note": "the card marks the dependent as changed, affected, invalidated or past (words v2 doesn't treat as past markers)"
+  },
+  {
+   "id": "pl_007/after2",
+   "point": "end",
+   "query": "How long is my commute?",
+   "stale": [
+    "20 min"
+   ],
+   "evidence": {
+    "@overlay/user/commute": [
+     "- While living in Pyresta Meadow, the user's commute time was about 20 minutes, which depended on living in Pyresta Meadow (stated 2023/03/02)."
+    ]
+   },
+   "verdict": "matching error",
+   "note": "the card marks the dependent as changed, affected, invalidated or past (words v2 doesn't treat as past markers)"
+  },
+  {
+   "id": "sw_016/after3",
+   "point": "end",
+   "query": "What's our build tool?",
+   "stale": [
+    "karnex bundler"
+   ],
+   "evidence": {
+    "@overlay/project/build-tool": [
+     "Karnex Bundler",
+     "- Per the rule established on 2023-03-04, switching frameworks away from Synthari changes the build tool from Karnex Bundler to Tarvex CLI (which in turn changes the build command to `tarvex compile --debug`, see [[project/build-command]])."
+    ],
+    "@overlay/project/build-command": [
+     "- Per the transitive rule established on 2023-03-04: migrating the application framework from Synthari to Moxira changed the build tool from Karnex Bundler to Tarvex CLI, which in turn changed the build command from `pyronis pack --optimize` to `tarvex compile --debug`."
+    ]
+   },
+   "verdict": "matching error",
+   "note": "the card marks the dependent as changed, affected, invalidated or past (words v2 doesn't treat as past markers)"
+  },
+  {
+   "id": "sw_028/after3",
+   "point": "end",
+   "query": "What's our log drain endpoint?",
+   "stale": [
+    "drain.zephyra.io/proj-42"
+   ],
+   "evidence": {
+    "@overlay/team/deployment-platform-narvex-cloud": [
+     "- Moving deployment from Orinthal Serve to Narvex Cloud changes the dependent deployment configuration: [[team/ci-config]] becomes `zephyra-pipeline.json`, [[team/deploy-command]] becomes `zephyra push --target prod`, [[team/docker-image]] becomes `thandrel-images/aurora:release`, and the Orinthal Serve [[team/log-drain]] (`drain.zephyra.io/proj-42`) and [[team/dockerfile-path]] (`infra/korinth/Dockerfile`) are invalidated."
+    ]
+   },
+   "verdict": "matching error",
+   "note": "the card marks the dependent as changed, affected, invalidated or past (words v2 doesn't treat as past markers)"
+  },
+  {
+   "id": "sw_009/after3",
+   "point": "end",
+   "query": "What Docker image do we use?",
+   "stale": [
+    "velturis-cr/aurora:main"
+   ],
+   "evidence": {
+    "@overlay/team/deployment-orinthal-serve": [
+     "- Moving deployment away from `Narvex Cloud` to `Orinthal Serve` also invalidates the `Narvex Cloud`-dependent Docker image (`velturis-cr/aurora:main`, see [[team/docker-image]]) and Dockerfile (`deploy/Dockerfile.velturis`, see [[team/dockerfile]])."
+    ]
+   },
+   "verdict": "matching error",
+   "note": "the card marks the dependent as changed, affected, invalidated or past (words v2 doesn't treat as past markers)"
+  },
+  {
+   "id": "sw_042/after2",
+   "point": "end",
+   "query": "Who reviews our code?",
+   "stale": [
+    "emily cho"
+   ],
+   "evidence": {
+    "@overlay/team/code-reviews": [
+     "Emily Cho",
+     "- On 2023-03-04, Yuna Park became the new team lead ([[team/team-lead]]), invalidating Seokjin Kang's code review assignment to Emily Cho (a new code reviewer has not yet been specified)."
+    ]
+   },
+   "verdict": "matching error",
+   "note": "the card marks the dependent as changed, affected, invalidated or past (words v2 doesn't treat as past markers)"
+  },
+  {
+   "id": "sw_041/after3",
+   "point": "end",
+   "query": "What's the database connection string?",
+   "stale": [
+    "pyravar://data-primary:3306/aurora"
+   ],
+   "evidence": {
+    "@overlay/team/database-connection-string": [
+     "pyravar://data-primary:3306/aurora",
+     "The database connection string was pyravar://data-primary:3306/aurora under Vorathis DB (depends on the database, which switched to Pyravar Data on 2023/03/05).",
+     "- The database connection string was reported on 2023/03/04 as `pyravar://data-primary:3306/aurora` when the team used Vorathis DB, with the note that it depended on the current database ([[team/database]]) and would change if the team changed databases."
+    ],
+    "@overlay/team/database": [
+     "- Dependent infrastructure: [[team/orm]] (switched to Pyravar Mapper), [[team/model-syntax]] (switched to Pyravar.entity), [[team/database-backups]] (switched to daily at midnight KST), and [[team/database-connection-string]] (pyravar://data-primary:3306/aurora)."
+    ]
+   },
+   "verdict": "correct",
+   "note": "the database card lists the old connection string as live infrastructure, unmarked"
+  }
+ ],
+ "rule": "Abs-hop1 questions whose first page v2 says holds an unwarned stale card: correct when a card on it presents the old dependent value as current; a matching error when every flagged card marks it as changed, affected, invalidated, superseded or past, or the words belong to another entity"
+}

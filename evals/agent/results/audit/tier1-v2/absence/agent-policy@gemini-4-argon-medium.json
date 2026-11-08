@@ -1,0 +1,158 @@
+{
+ "cell": "agent-policy@gemini-4-argon-medium",
+ "population": 33,
+ "cases": [
+  {
+   "id": "pl_018/after2",
+   "point": "end",
+   "query": "What am I currently learning?",
+   "stale": [
+    "spanish"
+   ],
+   "evidence": {
+    "@overlay/user/education-jd-belvona-harbor-law": [
+     "- Because the user changed schools from Vorenthal Business School to Belvona Harbor Law, cards that depended on Vorenthal Business School apply their school-change rules: [[user/commute-school-change-commuter-rail]], [[user/commute-walking-to-work]], and [[user/language-learning-spanish]]."
+    ]
+   },
+   "verdict": "matching error",
+   "note": "the card marks the dependent as changed, affected, invalidated or past (words v2 doesn't treat as past markers)"
+  },
+  {
+   "id": "pl_022/after2",
+   "point": "end",
+   "query": "What's my work schedule?",
+   "stale": [
+    "9-to-5 fixed"
+   ],
+   "evidence": {
+    "@overlay/profile/education-online-bootcamp-coding": [
+     "- Because the user changed their school/education from Quivira Springs Community College to an online coding bootcamp, dependent cards [[plans/financial-goal]] (which shifts from saving for kids' education fund to saving for wedding when school changes) and [[profile/work-hours]] (9-to-5 fixed schedule, which changes if school changes) are affected."
+    ]
+   },
+   "verdict": "matching error",
+   "note": "the card marks the dependent as changed, affected, invalidated or past (words v2 doesn't treat as past markers)"
+  },
+  {
+   "id": "pl_021/after3",
+   "point": "end",
+   "query": "What insurance do I have?",
+   "stale": [
+    "marketplace health plan"
+   ],
+   "evidence": {
+    "@overlay/user/health-insurance-changed": [
+     "marketplace health plan",
+     "- The user explicitly stated on 2023-03-04: \"I have marketplace health plan for insurance — this is through my employer (I work at Thalwren Inc.); if my employer changes, this would change.\""
+    ]
+   },
+   "verdict": "matching error",
+   "note": "the card marks the dependent as changed, affected, invalidated or past (words v2 doesn't treat as past markers)"
+  },
+  {
+   "id": "pl_027/after2",
+   "point": "end",
+   "query": "What regular appointments do I have?",
+   "stale": [
+    "physical therapy (2x/week)"
+   ],
+   "evidence": {
+    "@overlay/user/profile/location-orinthal-park": [
+     "- Moving from Pyresta Meadow also affects their regular physical therapy (2x/week) appointment that depended on living in Pyresta Meadow (see [[user/health/physical-therapy]])."
+    ]
+   },
+   "verdict": "matching error",
+   "note": "the card marks the dependent as changed, affected, invalidated or past (words v2 doesn't treat as past markers)"
+  },
+  {
+   "id": "pl_008/after3",
+   "point": "end",
+   "query": "What insurance do I have?",
+   "stale": [
+    "interim coverage plan"
+   ],
+   "evidence": {
+    "@overlay/career/employer-caeltura-systems": [
+     "- Because the user changed their employer from Thalwren Inc. to Caeltura Systems, facts that depended on Thalwren Inc. are affected: their office location changes from Thornvale Crossing to Tesswick Bay ([[career/office-location]]), their work project changes from backend migration to a marketing campaign ([[career/current-project]]), their commute method switches from walking to the bus ([[career/commute-method]]), their interim coverage insurance plan through Thalwren Inc. changes ([[career/insurance]]), and their favorite restaurant near the Thornvale Crossing office (Zefiro's Kitchen, [[personal/favorite-restaurant]]) would change."
+    ]
+   },
+   "verdict": "matching error",
+   "note": "the card marks the dependent as changed, affected, invalidated or past (words v2 doesn't treat as past markers)"
+  },
+  {
+   "id": "sw_012/after3",
+   "point": "end",
+   "query": "What migration tool do we use?",
+   "stale": [
+    "zyndra alter"
+   ],
+   "evidence": {
+    "@overlay/project/database-thalnex": [
+     "- Note: Zyndra Alter for database migrations depended on using Keldaris DB (see [[project/database-migrations]])."
+    ]
+   },
+   "verdict": "matching error",
+   "note": "the card marks the dependent as changed, affected, invalidated or past (words v2 doesn't treat as past markers)"
+  },
+  {
+   "id": "pl_037/after2",
+   "point": "end",
+   "query": "What type of home do I live in?",
+   "stale": [
+    "shared house"
+   ],
+   "evidence": {
+    "@overlay/user/relationship-status-divorced": [
+     "- Note: Earlier plans and living arrangements that depended on being separated (such as [[user/child-school-event]] and [[user/home-shared-house]]) are affected by this relationship status change from separated to divorced."
+    ]
+   },
+   "verdict": "matching error",
+   "note": "the card marks the dependent as changed, affected, invalidated or past (words v2 doesn't treat as past markers)"
+  },
+  {
+   "id": "pl_043/after2",
+   "point": "end",
+   "query": "What family event do I have coming up?",
+   "stale": [
+    "baby shower"
+   ],
+   "evidence": {
+    "@overlay/personal/relationship-status-engaged": [
+     "- Note: Earlier plans that depended on the user's prior relationship status include [[personal/travel-plans]] (conditional island getaway if relationship status changes) and [[personal/upcoming-event-baby-shower]] (superseded by [[personal/upcoming-event-half-marathon]])."
+    ]
+   },
+   "verdict": "matching error",
+   "note": "the card marks the dependent as changed, affected, invalidated or past (words v2 doesn't treat as past markers)"
+  },
+  {
+   "id": "pl_028/after3",
+   "point": "end",
+   "query": "What insurance do I have?",
+   "stale": [
+    "interim coverage plan"
+   ],
+   "evidence": {
+    "@overlay/user/work/employer-quenlix-group": [
+     "- Per [[user/work/insurance]], changing employer from Caeltura Systems affects their interim coverage plan insurance."
+    ]
+   },
+   "verdict": "matching error",
+   "note": "the card marks the dependent as changed, affected, invalidated or past (words v2 doesn't treat as past markers)"
+  },
+  {
+   "id": "sw_021/after2",
+   "point": "end",
+   "query": "Who receives the weekly report?",
+   "stale": [
+    "taehyun kim"
+   ],
+   "evidence": {
+    "@overlay/project/team-lead-seokjin-kang": [
+     "- Per [[project/weekly-report-recipient]], Taehyun Kim's assignment as weekly report recipient by former team lead Alex Kim is subject to change when the team lead changes."
+    ]
+   },
+   "verdict": "matching error",
+   "note": "the card marks the dependent as changed, affected, invalidated or past (words v2 doesn't treat as past markers)"
+  }
+ ],
+ "rule": "Abs-hop1 questions whose first page v2 says holds an unwarned stale card: correct when a card on it presents the old dependent value as current; a matching error when every flagged card marks it as changed, affected, invalidated, superseded or past, or the words belong to another entity"
+}
