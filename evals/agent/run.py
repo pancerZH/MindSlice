@@ -38,6 +38,13 @@ RESULTS = HERE / "results"
 RUNS_ENV = "MINDSLICE_AGENT_RUNS"
 OFFLINE_ARMS = ("flat", "oracle", "scripted-flat", "scripted-oracle", "scripted-overlay")
 LLM_ARMS = ("agent-default", "agent-policy", "agent-overlay")
+MODELS = ("gemini-3.8-flash-medium", "gemini-4-argon-medium")
+MAIN_MODEL = "gemini-4-argon-medium"  # the more capable of the two: the variance repeats use it (8.4)
+FLASH = "gemini-3.8-flash-medium"
+# Tier 1's matrix (PLAN.md, re-frozen before any tier-1 call): every arm on the main model, and agent-policy
+# on Flash. Flash agent-default and agent-overlay were left out on the smoke tier's cost and cap evidence.
+MATRIX = (("agent-default", MAIN_MODEL), ("agent-policy", MAIN_MODEL), ("agent-overlay", MAIN_MODEL), ("agent-policy", FLASH))
+EXCLUDED = (("agent-default", FLASH), ("agent-overlay", FLASH))
 SCORER_FILES = ("judge.py", "plan.py", "score.py", "sessions.py")
 
 
@@ -107,8 +114,46 @@ def summarize(arms: dict[str, list[dict[str, Any]]], flat_arm: str = "flat") -> 
     for a, recs in arms.items():
         out["arms"][a] = {"pooled": score.pooled(us[a]), "groups": score.groups_table(us[a]),
                           "telemetry": score.telemetry(recs)}
-        if flat_arm in us and a != flat_arm:
+        if flat_arm in us and a != flat_arm and a.startswith("agent-"):
             out["arms"][a]["lines"] = score.lines(us[a], us[flat_arm])
+    out["comparisons"] = comparisons(us)
+    return out
+
+
+COMPARISONS = (
+    ("agent-policy minus agent-default (Argon)", f"agent-policy@{MAIN_MODEL}", f"agent-default@{MAIN_MODEL}"),
+    ("agent-overlay minus agent-policy (Argon)", f"agent-overlay@{MAIN_MODEL}", f"agent-policy@{MAIN_MODEL}"),
+    ("Argon minus Flash (agent-policy)", f"agent-policy@{MAIN_MODEL}", f"agent-policy@{FLASH}"),
+)
+
+
+def comparisons(us: dict[str, dict[str, dict[str, float]]]) -> dict[str, Any]:
+    """The plan's paired differences between cells, per pooled metric (paired by unit)."""
+    out = {}
+    for name, a, b in COMPARISONS:
+        if a in us and b in us:
+            out[name] = {m: score.paired(us[a], us[b], m, gs) for m, gs in score.POOLED.items()}
+    return out
+
+
+def variance(main: list[dict[str, Any]], repeats: list[list[dict[str, Any]]], episodes: list[str]) -> dict[str, Any]:
+    """Run-to-run spread of agent-policy on the main model over the fixed episodes: each pooled metric in the
+    tier-1 run and each repeat, restricted to those episodes."""
+    keep = set(episodes)
+    runs = [main] + repeats
+    per = []
+    for recs in runs:
+        u = score.units([r for r in recs if r["haystack"] in keep])
+        per.append({m: score.stat(u, m, gs) for m, gs in score.POOLED.items()})
+    out: dict[str, Any] = {"runs": len(runs), "episodes": len(keep), "metrics": {}}
+    for m in score.POOLED:
+        xs = [p[m]["mean"] for p in per if p[m]["n"]]
+        if not xs:
+            continue
+        mu = sum(xs) / len(xs)
+        sd = (sum((x - mu) ** 2 for x in xs) / (len(xs) - 1)) ** 0.5 if len(xs) > 1 else 0.0
+        out["metrics"][m] = {"per_run": [round(x, 4) for x in xs], "mean": round(mu, 4), "sd": round(sd, 4),
+                             "min": round(min(xs), 4), "max": round(max(xs), 4), "n_per_run": per[0][m]["n"]}
     return out
 
 
@@ -241,8 +286,6 @@ def _digest(files) -> str:
 RUNNER_FILES = ("agents.py", "agy.py", "judge.py", "mcp_proxy.py", "plan.py", "prompts.py", "runner.py", "score.py",
                 "sessions.py", "tool_gate.py", "tools.py")  # all that runs a session or scores one (not CLI or rendering)
 FREEZE = RESULTS / "freeze.json"
-MODELS = ("gemini-3.8-flash-medium", "gemini-4-argon-medium")
-MAIN_MODEL = "gemini-4-argon-medium"  # the more capable of the two: the variance repeats use it (8.4)
 VARIANCE_EPISODES, VARIANCE_REPEATS, AUDIT_SEED = 20, 3, 20261106
 
 
@@ -271,6 +314,9 @@ def frozen_facts(data: Path | None) -> dict[str, Any]:
             "main_model": MAIN_MODEL, "agent_frontmatter": agy.FRONTMATTER, "eager_tools": list(agy.MCP_TOOLS),
             "tool_gate": "PreToolUse: allow mcp_* only", "cap": CAP, "session_timeout_s": agy.TIMEOUT_S,
             "retries": agy.RETRIES, "arms": list(LLM_ARMS),
+            "matrix": [list(c) for c in MATRIX], "excluded": [list(c) for c in EXCLUDED],
+            "schedule": "tier 1: main-model cells (MemoryAgentBench chains first, then MEME), the variance repeats, then agent-policy on Flash",
+            "quota_gate": {"min_5h": agy.QUOTA_MIN_5H, "min_weekly": agy.QUOTA_MIN_WEEKLY, "group": agy.QUOTA_GROUP},
             "tiers": {t: [h.key for h in tier_haystacks(t, data)] for t in ("smoke", "1")},
             "variance": {"arm": "agent-policy", "model": MAIN_MODEL, "repeats": VARIANCE_REPEATS,
                          "episodes": variance_episodes(data)},
@@ -285,11 +331,30 @@ def check_freeze(data: Path | None) -> list[str]:
     frozen = json.loads(FREEZE.read_text(encoding="utf-8"))
     now = frozen_facts(data)
     keys = ("engine_digest", "scorer_digest", "runner_digest", "prompts", "agy_version", "agy_flags", "agent_frontmatter",
-            "cap", "tiers", "variance", "lines")
+            "cap", "tiers", "variance", "lines", "matrix", "quota_gate")
     out = [f"{k} changed since the freeze" for k in keys if frozen.get(k) != now.get(k)]
     if now["engine_dirty"]:
         out.append("mindslice/ has uncommitted changes")
     return out
+
+
+def tier1_work(root: Path, data: Path | None) -> list[tuple[Path, str, str, Any]]:
+    """The frozen tier-1 schedule: the main model's three cells (each MemoryAgentBench chain first, being the
+    longest, then the MEME haystacks round-robin across arms), the variance repeats, then agent-policy on Flash."""
+    hs = tier_haystacks("1", data)
+    by_key = {h.key: h for h in hs}
+    mab = [h for h in hs if h.dataset == "mab-sh"]
+    meme = [h for h in hs if h.dataset != "mab-sh"]
+    main = [c for c in MATRIX if c[1] == MAIN_MODEL]
+    rest = [c for c in MATRIX if c[1] != MAIN_MODEL]
+    run = root / "tier1"
+    work = [(run, a, m, h) for h in mab for a, m in main]
+    work += [(run, a, m, h) for h in meme for a, m in main]
+    for r in range(1, VARIANCE_REPEATS + 1):
+        work += [(root / f"tier1-var{r}", "agent-policy", MAIN_MODEL, by_key[k]) for k in variance_episodes(data)]
+    for a, m in rest:
+        work += [(run, a, m, h) for h in mab + meme]
+    return work
 
 
 def scorer_digest() -> str:
@@ -333,6 +398,8 @@ def main(argv: list[str] | None = None) -> int:
     r.add_argument("--flat-from", help="another run whose flat arm pairs with this one (G1, G3)")
     r.add_argument("--write", help="also write results/<NAME>.md and .json")
     r.add_argument("--no-lines", action="store_true", help="omit G1-G5 (the smoke tier is never scored for lines)")
+    r.add_argument("--oracle-from", help="another run whose oracle arm is shown beside (reference only)")
+    r.add_argument("--variance", help="comma-separated repeat runs of agent-policy on the main model (8.4)")
     a = sub.add_parser("agy", help="LLM arms through the Antigravity CLI over real MCP stdio")
     a.add_argument("--tier", default="smoke")
     a.add_argument("--arms", default=",".join(LLM_ARMS))
@@ -343,6 +410,7 @@ def main(argv: list[str] | None = None) -> int:
     a.add_argument("--jobs", type=int, default=1, help="haystacks run at once (each runs its sessions in order)")
     a.add_argument("--effort", default="medium")
     a.add_argument("--no-freeze-check", action="store_true", help="allow a non-smoke run that doesn't match the freeze (record why)")
+    a.add_argument("--quota-gate", action="store_true", help="pause new sessions while the CLI's quota is low (tier1 always does)")
     rt = sub.add_parser("retrace", help="recompute the trace-vs-proxy check of a run's LLM sessions from the saved files")
     rt.add_argument("--run", required=True)
     pj = sub.add_parser("project", help="tier-1 runtime and token projection from a smoke run")
@@ -350,6 +418,9 @@ def main(argv: list[str] | None = None) -> int:
     c = sub.add_parser("levels", help="value-based vs card-level judgments for flat and oracle")
     c.add_argument("--run", required=True)
     c.add_argument("--write", help="also write results/<NAME>.md")
+    t1 = sub.add_parser("tier1", help="run tier 1 as frozen: the matrix, then the variance repeats, behind the quota gate")
+    t1.add_argument("--jobs", type=int, default=12, help="haystacks run at once")
+    t1.add_argument("--dry-run", action="store_true", help="print the schedule and exit")
     sub.add_parser("prompts", help="print the prompts' SHA-256 digests")
     au = sub.add_parser("audit", help="value-matching audit worksheets (6.3) for a run's agent arms, or tally filled verdicts")
     au.add_argument("--run", required=True)
@@ -379,7 +450,13 @@ def main(argv: list[str] | None = None) -> int:
         arms = load_run(root / args.run)
         if args.flat_from and "flat" not in arms:
             arms["flat"] = load_arm(root / args.flat_from / "flat")
+        if args.oracle_from and "oracle" not in arms:
+            arms["oracle"] = load_arm(root / args.oracle_from / "oracle")
         summary = summarize(arms)
+        if args.variance:
+            key = f"agent-policy@{MAIN_MODEL}"
+            reps = [load_arm(root / r / key) for r in args.variance.split(",") if r]
+            summary["variance"] = variance(arms.get(key, []), reps, variance_episodes(data))
         if args.no_lines:
             for a in summary["arms"].values():
                 a.pop("lines", None)
@@ -434,9 +511,29 @@ def main(argv: list[str] | None = None) -> int:
         FREEZE.write_text(json.dumps(facts, indent=1) + "\n", encoding="utf-8")
         print(json.dumps({k: v for k, v in facts.items() if k != "tiers"}, indent=1))
         return 0
+    if args.command == "tier1":
+        from . import agy
+
+        work = tier1_work(root, data)
+        if args.dry_run:
+            for i, (run, a, m, h) in enumerate(work):
+                print(i, run.name, f"{a}@{m}", h.key)
+            return 0
+        problems = check_freeze(data)
+        if problems:
+            print("refusing to run tier 1\n" + "\n".join(problems), file=sys.stderr)
+            return 2
+        log = lambda s: print(time.strftime("%H:%M:%S ") + s, file=sys.stderr, flush=True)
+        gate = agy.QuotaGate(log_path=root / "tier1" / "quota.jsonl", log=log)
+        (root / "tier1").mkdir(parents=True, exist_ok=True)
+        return agy.run_work(work, args.jobs, "medium", gate, None, {"tier": "1", "matrix": [list(c) for c in MATRIX]})
     if args.command == "agy":
         if args.tier != "smoke" and not args.no_freeze_check:
             problems = check_freeze(data)
+            outside = [f"{a}@{m}" for a in args.arms.split(",") if a for m in args.models.split(",") if m
+                       and (a, m) not in MATRIX]
+            if outside:
+                problems.append("not in the frozen tier-1 matrix: " + ", ".join(outside))
             if problems:
                 print("refusing to run tier", args.tier, "\n" + "\n".join(problems), file=sys.stderr)
                 return 2

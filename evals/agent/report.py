@@ -37,6 +37,21 @@ def render_run(name: str, summary: dict[str, Any]) -> str:
             o.append(f"| {a} | " + " | ".join(f"{l['point']:.3f} [{l['low']:.3f}, {l['high']:.3f}] **{l['verdict']}**"
                                                if not math.isnan(l["point"]) else "–" for l in s["lines"]) + " |")
         o += ["", "; ".join(f"{l['id']}: {l['stat']}, line {l['line']}" for l in LINES), ""]
+    if summary.get("comparisons"):
+        o += ["## Paired comparisons", "", "Mean difference over the units both cells scored, with the paired 95% interval.", "",
+              "| Comparison | " + " | ".join(ORDER) + " |", "| --- |" + " --- |" * len(ORDER)]
+        for name, ms in summary["comparisons"].items():
+            o.append(f"| {name} | " + " | ".join(ci(ms.get(m)) for m in ORDER) + " |")
+        o.append("")
+    if summary.get("variance"):
+        v = summary["variance"]
+        o += ["## Run-to-run variance (agent-policy, main model)", "",
+              f"{v['episodes']} fixed MEME episodes, {v['runs']} runs (tier 1 and the repeats); pooled value of each metric per run.", "",
+              "| Metric | n per run | Per run | Mean | SD | Range |", "| --- | --- | --- | --- | --- | --- |"]
+        for m, e in v["metrics"].items():
+            o.append(f"| {m} | {e['n_per_run']} | {', '.join(f'{x:.3f}' for x in e['per_run'])} | {e['mean']:.3f} | {e['sd']:.3f} | "
+                     f"{e['min']:.3f}-{e['max']:.3f} |")
+        o.append("")
     o += ["## By group", ""]
     groups = sorted({g for s in arms.values() for g in s["groups"]})
     for g in groups:

@@ -1,9 +1,9 @@
 {
- "engine_commit": "f0ba04a",
+ "engine_commit": "85fa682",
  "engine_digest": "fcc7ed17449a5aa770ad5d133278be55fa67b415ec2c49eaefd60c0a8edfd5a5",
  "engine_dirty": false,
  "scorer_digest": "432973dc71d3b1f221d67c9affe657e2fb322cc58523cfb4b165c47b75a69d1c",
- "runner_digest": "1beb8014c703cadb485bda42f0dee720302bf95c2beb7b7c22154574df9404f1",
+ "runner_digest": "e1567df5a8969bd21c7dfa292aed0b6f813b2f68f648b1d345e29725939a0b61",
  "prompts": {
   "INSTRUCTIONS": "6d15c0ab673648d90bc1ce741e94a29e4cae79b641e05904c12d33e40fe3a542",
   "TASK": "6139ec46c73c2612c2d79b585fa12cce8e7a552bff4267ab2e90707d522a7244",
@@ -48,6 +48,40 @@
   "agent-policy",
   "agent-overlay"
  ],
+ "matrix": [
+  [
+   "agent-default",
+   "gemini-4-argon-medium"
+  ],
+  [
+   "agent-policy",
+   "gemini-4-argon-medium"
+  ],
+  [
+   "agent-overlay",
+   "gemini-4-argon-medium"
+  ],
+  [
+   "agent-policy",
+   "gemini-3.8-flash-medium"
+  ]
+ ],
+ "excluded": [
+  [
+   "agent-default",
+   "gemini-3.8-flash-medium"
+  ],
+  [
+   "agent-overlay",
+   "gemini-3.8-flash-medium"
+  ]
+ ],
+ "schedule": "tier 1: main-model cells (MemoryAgentBench chains first, then MEME), the variance repeats, then agent-policy on Flash",
+ "quota_gate": {
+  "min_5h": 0.12,
+  "min_weekly": 0.05,
+  "group": "Gemini Models"
+ },
  "tiers": {
   "smoke": [
    "meme-nofiller/pl_001",

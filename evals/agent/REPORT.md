@@ -1,10 +1,14 @@
 # Agent-in-the-loop lineage test: report
 
-**Status (2026-11-07): built, validated, smoke tier run, plan frozen; tier 1 not run.** Tier 1 for three
-arms and two models needs about 93% of a weekly Gemini quota and at least four five-hour windows; 81% of the
-week was left when the plan was frozen, so the run is paused before its first call until the schedule is
-chosen ([PLAN.md](PLAN.md), section 7). **No line (G1-G5) has been read**; nothing below is a result of the
-test. The smoke tier is for plumbing and is never scored for lines (agent_test.md 5, 8.2).
+**Status (2026-11-08): built, validated, smoke tier run, plan re-frozen with a four-cell tier 1; tier 1
+running.** All six cells would need about 93% of a weekly Gemini quota with 81% left, so before any tier-1
+call the matrix was cut to the three arms on `gemini-4-argon-medium` and `agent-policy` on
+`gemini-3.8-flash-medium`. **Flash `agent-default` and Flash `agent-overlay` are excluded**: Flash reads 8-10
+times Argon's context per session, Flash `agent-overlay` alone would have taken about 42% of the six-cell
+budget while hitting the call cap in 20 of 46 MemoryAgentBench batches, and the two kept questions (prompt
+and architecture on the main model; model scaling under the policy) don't need them ([PLAN.md](PLAN.md),
+section 7). The decision used cost and cap telemetry only. **No line (G1-G5) has been read yet**; nothing
+below is a result of the test. The smoke tier is for plumbing and is never scored for lines (agent_test.md 5, 8.2).
 
 ## 1. The runner and the scorer, before any LLM call
 

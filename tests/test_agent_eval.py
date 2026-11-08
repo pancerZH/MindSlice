@@ -232,6 +232,63 @@ class ToolTests(unittest.TestCase):
             self.assertTrue(log.with_name("calls.jsonl.cap").exists())
 
 
+class QuotaGateTests(unittest.TestCase):
+    """The runner pauses new sessions while a quota bucket is low, until its reset (no model call involved)."""
+
+    def make(self, readings):
+        clock = {"t": 1000.0}
+        seq = iter(readings)
+        last = {"q": None}
+
+        def reader():
+            last["q"] = next(seq, last["q"])
+            return last["q"]
+
+        def sleep(s):
+            clock["t"] += s
+
+        gate = agy.QuotaGate(min_5h=0.12, min_weekly=0.05, reader=reader, sleep=sleep, now=lambda: clock["t"], ttl_s=60)
+        return gate, clock
+
+    @staticmethod
+    def q(five, weekly=0.8, reset=5000.0):
+        return {"5h": {"remaining": five, "reset": reset}, "weekly": {"remaining": weekly, "reset": 9e9}}
+
+    def test_no_wait_when_quota_is_fine(self):
+        gate, clock = self.make([self.q(0.5)])
+        self.assertEqual(gate.wait(), 0.0)
+        self.assertEqual(gate.pauses, [])
+
+    def test_waits_for_the_reset(self):
+        gate, clock = self.make([self.q(0.10), self.q(0.10), self.q(0.95)])
+        waited = gate.wait()
+        self.assertGreater(waited, 0)
+        self.assertEqual(len(gate.pauses), 1)
+        self.assertEqual(gate.pauses[0]["window"], "5h")
+        self.assertGreaterEqual(gate.pauses[0]["end"], 1000.0 + 30)
+
+    def test_weekly_and_unreadable(self):
+        gate, _ = self.make([self.q(0.9, weekly=0.03), self.q(0.9, weekly=0.9)])
+        self.assertEqual(gate.low(self.q(0.9, weekly=0.03)), "weekly")
+        self.assertIsNone(gate.low(None))  # can't read the quota: don't block on it
+
+    def test_quota_failures_are_recognized(self):
+        from evals.agent.agents import SessionOutcome
+
+        gate, _ = self.make([self.q(0.5)])
+        self.assertTrue(gate.is_quota_failure(SessionOutcome(meta={"error": "RESOURCE_EXHAUSTED: quota exceeded"})))
+        self.assertFalse(gate.is_quota_failure(SessionOutcome(meta={"error": "timeout after 1800s"})))
+        gate, _ = self.make([self.q(0.05)])
+        self.assertTrue(gate.is_quota_failure(SessionOutcome(meta={"error": "exit 3"})))  # failed while quota is low
+
+    def test_schedule_follows_the_matrix(self):
+        from evals.agent.run import EXCLUDED, MATRIX, MAIN_MODEL
+
+        self.assertEqual(len(MATRIX), 4)
+        self.assertEqual({m for _, m in MATRIX if _ != "agent-policy"}, {MAIN_MODEL})
+        self.assertFalse(set(MATRIX) & set(EXCLUDED))
+
+
 class AgyOfflineTests(unittest.TestCase):
     def test_config_files(self):
         with tempfile.TemporaryDirectory() as tmp:

@@ -27,6 +27,7 @@ from __future__ import annotations
 
 import json
 import os
+import re
 import shlex
 import shutil
 import signal
@@ -51,6 +52,14 @@ FLAGS = ("--output-format", "stream-json", "--dangerously-skip-permissions", "--
 TIMEOUT_S = 1800  # one session; the CLI's own --print-timeout is left at 0 (wait for the turn)
 RETRIES = 3
 BACKOFF_S = (30, 120, 300)
+# The quota gate: no session starts while the CLI's Gemini five-hour bucket is under 12% or its weekly bucket
+# under 5% (read with `agy -p /usage`, which calls no model); sessions already running finish. 12% leaves
+# room for the sessions in flight (the smoke tier used about 0.1-0.5% of a five-hour window per session).
+QUOTA_MIN_5H = 0.12
+QUOTA_MIN_WEEKLY = 0.05
+QUOTA_GROUP = "Gemini Models"
+QUOTA_ERROR = re.compile(r"quota|rate.?limit|resource.?exhausted|\b429\b|too many requests|limit (?:reached|exceeded)", re.I)
+MAX_QUOTA_WAITS = 12  # per session: a quota failure waits for the reset and retries without using a retry
 
 FRONTMATTER = {
     "name": AGENT,
@@ -195,13 +204,98 @@ def result_of(events: list[dict[str, Any]]) -> dict[str, Any]:
 # ---------------------------------------------------------------------------
 
 
+def read_usage(timeout: int = 90) -> dict[str, dict[str, Any]] | None:
+    """The CLI's Gemini quota buckets: {"5h": {"remaining": 0.34, "reset": epoch}, "weekly": {...}}."""
+    from datetime import datetime
+
+    try:
+        out = subprocess.run([AGY, "-p", "/usage", "--output-format", "json"], capture_output=True, text=True,
+                             timeout=timeout, cwd=Path.home()).stdout
+        data = json.loads(out)["command"]["data"]
+    except (OSError, subprocess.SubprocessError, ValueError, KeyError, TypeError):
+        return None
+    buckets = {}
+    for g in data.get("groups", []):
+        if g.get("name") != QUOTA_GROUP:
+            continue
+        for b in g.get("buckets", []):
+            try:
+                reset = datetime.fromisoformat(b["reset_time"].replace("Z", "+00:00")).timestamp()
+                buckets[b["window"]] = {"remaining": float(b["remaining_fraction"]), "reset": reset}
+            except (KeyError, ValueError, TypeError):
+                continue
+    return buckets or None
+
+
+class QuotaGate:
+    """Shared by every worker: ``wait()`` before a session blocks while a quota bucket is low, until it resets."""
+
+    def __init__(self, min_5h: float = QUOTA_MIN_5H, min_weekly: float = QUOTA_MIN_WEEKLY, reader=read_usage,
+                 sleep=time.sleep, now=time.time, ttl_s: float = 60.0, log_path: Path | None = None, log=None) -> None:
+        self.min = {"5h": min_5h, "weekly": min_weekly}
+        self.reader, self.sleep, self.now, self.ttl_s = reader, sleep, now, ttl_s
+        self.log_path, self.log = log_path, log or (lambda s: None)
+        self.lock = threading.Lock()
+        self._cache: tuple[float, Any] = (-1e18, None)
+        self.pauses: list[dict[str, Any]] = []
+
+    def read(self, force: bool = False):
+        t, q = self._cache
+        if force or self.now() - t > self.ttl_s:
+            q = self.reader()
+            self._cache = (self.now(), q)
+        return q
+
+    def low(self, q) -> str | None:
+        if not q:
+            return None  # unreadable: don't block (a quota failure is still caught after the attempt)
+        for window in ("weekly", "5h"):
+            b = q.get(window)
+            if b and b["remaining"] < self.min[window]:
+                return window
+        return None
+
+    def wait(self, force: bool = False) -> float:
+        """Block until no bucket is low; returns the seconds waited."""
+        waited = 0.0
+        with self.lock:
+            q = self.read(force)
+            window = self.low(q)
+            if window is None:
+                return 0.0
+            start = self.now()
+            pause = {"window": window, "remaining": q[window]["remaining"], "start": start, "reset": q[window]["reset"]}
+            self.log(f"quota: {window} bucket at {q[window]['remaining']:.1%}; pausing new sessions until its reset "
+                     f"({time.strftime('%Y-%m-%d %H:%M:%SZ', time.gmtime(q[window]['reset']))})")
+            while window is not None:
+                until = q[window]["reset"] + 60
+                self.sleep(max(30.0, min(600.0, until - self.now())))
+                q = self.read(force=True)
+                window = self.low(q)
+            waited = self.now() - start
+            pause.update(end=self.now(), waited_s=round(waited, 1), after=q)
+            self.pauses.append(pause)
+            self.log(f"quota: resumed after {waited / 60:.0f} min")
+            if self.log_path is not None:
+                with open(self.log_path, "a", encoding="utf-8") as fh:
+                    fh.write(json.dumps(pause) + "\n")
+        return waited
+
+    def is_quota_failure(self, outcome: SessionOutcome) -> bool:
+        if QUOTA_ERROR.search(str(outcome.meta.get("error") or "")):
+            return True
+        return self.low(self.read(force=True)) is not None
+
+
 class AgyAgent:
     tools = True
 
     def __init__(self, arm: str, model: str, effort: str = "medium", cap: int = CAP, timeout_s: int = TIMEOUT_S,
-                 retries: int = RETRIES, frontmatter: dict[str, Any] | None = None, backoff=BACKOFF_S) -> None:
+                 retries: int = RETRIES, frontmatter: dict[str, Any] | None = None, backoff=BACKOFF_S,
+                 gate: QuotaGate | None = None) -> None:
         self.arm, self.model, self.effort, self.cap = arm, model, effort, cap
         self.timeout_s, self.retries, self.frontmatter, self.backoff = timeout_s, retries, frontmatter, backoff
+        self.gate = gate
 
     def command(self, message: str) -> list[str]:
         return [AGY, f"--print={message}", "--model", self.model, "--effort", self.effort, "--agent", AGENT, *FLAGS]
@@ -216,18 +310,32 @@ class AgyAgent:
         backup = sdir / "overlay.before"
         shutil.copytree(overlay, backup)
         log = task.workdir / "calls.jsonl"
-        attempts = []
-        for attempt in range(self.retries + 1):
+        attempts: list[dict[str, Any]] = []
+        attempt = retries = quota_waits = 0
+        waited = 0.0
+        while True:
+            if self.gate is not None:
+                waited += self.gate.wait()
             if attempt:
                 shutil.rmtree(overlay)
                 shutil.copytree(backup, overlay)
-                time.sleep(self.backoff[min(attempt - 1, len(self.backoff) - 1)])
             outcome = self._attempt(task, sdir, log, attempt)
             attempts.append({k: outcome.meta.get(k) for k in ("exit_code", "status", "finished_reason", "error", "wall_s")})
             if not outcome.failed or outcome.meta.get("fatal"):
                 break
+            attempt += 1
+            if self.gate is not None and quota_waits < MAX_QUOTA_WAITS and self.gate.is_quota_failure(outcome):
+                quota_waits += 1  # wait for the reset (next loop) and run the session again; not a retry
+                attempts[-1]["quota"] = True
+                continue
+            if retries >= self.retries:
+                break
+            retries += 1
+            time.sleep(self.backoff[min(retries - 1, len(self.backoff) - 1)])
         outcome.meta["attempts"] = attempts
-        outcome.meta["retries"] = len(attempts) - 1
+        outcome.meta["retries"] = retries
+        outcome.meta["quota_waits"] = quota_waits
+        outcome.meta["quota_wait_s"] = round(waited, 1)
         shutil.rmtree(backup, ignore_errors=True)
         return outcome
 
@@ -330,9 +438,51 @@ def _read_jsonl(path: Path) -> list[dict[str, Any]]:
 # ---------------------------------------------------------------------------
 
 
-def run_tier(args, data, run: Path) -> int:
+def run_work(work: list[tuple[Path, str, str, Any]], jobs: int, effort: str = "medium", gate: QuotaGate | None = None,
+             max_sessions: int | None = None, meta: dict[str, Any] | None = None) -> int:
+    """Run (run directory, arm, model, haystack) items, ``jobs`` haystacks at a time, in the order given (a
+    worker takes the next item when it is free; a haystack's sessions run in order). Done haystacks
+    (``records.jsonl`` present) are skipped, so a stopped run resumes where it was."""
     from .run import arm_dir, environment, slug
     from .runner import run_haystack
+
+    lock = threading.Lock()
+    stamp = int(time.time())
+    for run in dict.fromkeys(w[0] for w in work):
+        run.mkdir(parents=True, exist_ok=True)
+        info = {"items": sum(1 for w in work if w[0] == run), "effort": effort, "agy": agy_version(), "flags": list(FLAGS),
+                "agent_frontmatter": FRONTMATTER, "cap": CAP, "environment": environment(),
+                "quota_gate": {"min_5h": QUOTA_MIN_5H, "min_weekly": QUOTA_MIN_WEEKLY} if gate else None,
+                "started": time.strftime("%Y-%m-%dT%H:%M:%S%z"), **(meta or {})}
+        (run / f"run-{stamp}.json").write_text(json.dumps(info, indent=1) + "\n")
+    failures = 0
+
+    def job(run: Path, arm: str, model: str, h) -> str:
+        out = arm_dir(run, arm, model) / slug(h.key)
+        if (out / "records.jsonl").exists():
+            return f"skip {run.name} {arm}@{model} {h.key} (done)"
+        agent = AgyAgent(arm=arm, model=model, effort=effort, gate=gate)
+        if max_sessions:
+            agent = _Limited(agent, max_sessions)
+        t0 = time.time()
+        recs = run_haystack(h, arm, out, agent=agent, log=lambda s: _print(lock, f"{run.name} {model} {s}"))
+        failed = next((r["failed"] for r in recs if r["kind"] == "haystack"), None)
+        return f"{run.name} {arm}@{model} {h.key}: {time.time() - t0:.0f}s" + (f" FAILED ({failed})" if failed else "")
+
+    with ThreadPoolExecutor(max_workers=max(1, jobs)) as pool:
+        futs = [pool.submit(job, *w) for w in work]
+        for f in as_completed(futs):
+            try:
+                line = f.result()
+            except Exception as exc:  # a crash in one haystack must not stop the others
+                failures += 1
+                line = f"ERROR {type(exc).__name__}: {exc}"
+            failures += "FAILED" in line
+            _print(lock, line)
+    return 1 if failures else 0
+
+
+def run_tier(args, data, run: Path) -> int:
     from .sessions import tier_haystacks
 
     hs = tier_haystacks(args.tier, data)
@@ -341,31 +491,10 @@ def run_tier(args, data, run: Path) -> int:
         hs = [h for h in hs if h.key in keep]
     arms = [a for a in args.arms.split(",") if a]
     models = [m for m in args.models.split(",") if m]
+    gate = QuotaGate(log_path=run / "quota.jsonl", log=lambda s: print(s, file=sys.stderr, flush=True)) if args.quota_gate else None
     run.mkdir(parents=True, exist_ok=True)
-    meta = {"tier": args.tier, "arms": arms, "models": models, "effort": args.effort, "agy": agy_version(),
-            "flags": list(FLAGS), "agent_frontmatter": FRONTMATTER, "cap": CAP, "environment": environment(),
-            "started": time.strftime("%Y-%m-%dT%H:%M:%S%z")}
-    (run / f"run-{int(time.time())}.json").write_text(json.dumps(meta, indent=1) + "\n")
-    lock = threading.Lock()
-
-    def job(arm: str, model: str, h) -> str:
-        out = arm_dir(run, arm, model) / slug(h.key)
-        if (out / "records.jsonl").exists():
-            return f"skip {arm}@{model} {h.key} (done)"
-        agent = AgyAgent(arm=arm, model=model, effort=args.effort)
-        if args.max_sessions:
-            agent = _Limited(agent, args.max_sessions)
-        t0 = time.time()
-        recs = run_haystack(h, arm, out, agent=agent, log=lambda s: _print(lock, s))
-        failed = next((r["failed"] for r in recs if r["kind"] == "haystack"), None)
-        return f"{arm}@{model} {h.key}: {time.time() - t0:.0f}s" + (f" FAILED ({failed})" if failed else "")
-
-    work = [(a, m, h) for m in models for a in arms for h in hs]
-    with ThreadPoolExecutor(max_workers=max(1, args.jobs)) as pool:
-        futs = [pool.submit(job, *w) for w in work]
-        for f in as_completed(futs):
-            _print(lock, f.result())
-    return 0
+    work = [(run, a, m, h) for m in models for a in arms for h in hs]
+    return run_work(work, args.jobs, args.effort, gate, args.max_sessions, {"tier": args.tier, "arms": arms, "models": models})
 
 
 class _Limited:

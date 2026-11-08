@@ -1,7 +1,8 @@
 # Agent-in-the-loop lineage test: frozen plan
 
 Frozen on 2026-11-07, **before the first tier-1 call**, after the runner and scorer were validated offline
-(section 7 of [`../agent_test.md`](../agent_test.md)) and the smoke tier ran. Everything here can be checked
+(section 7 of [`../agent_test.md`](../agent_test.md)) and the smoke tier ran; **re-frozen on 2026-11-08,
+still before any tier-1 call**, with tier 1 reduced to four cells (section 1, ledger). Everything here can be checked
 mechanically: `python -m evals.agent freeze --check` compares the current code, prompts, CLI version and
 haystack lists with [`results/freeze.json`](results/freeze.json), and a tier-1 run refuses to start if any
 of them changed. The specification is `agent_test.md`; where this plan decides something the specification
@@ -13,7 +14,7 @@ leaves open, it says so.
 | --- | --- |
 | Engine `mindslice/*.py` at `f0ba04a` (clean) | `fcc7ed17449a5aa770ad5d133278be55fa67b415ec2c49eaefd60c0a8edfd5a5` |
 | Scorer: `evals/agent/{judge,plan,score,sessions}.py` + `evals/external/datasets.py` | `432973dc71d3b1f221d67c9affe657e2fb322cc58523cfb4b165c47b75a69d1c` |
-| Runner: every file that runs or scores a session (`run.RUNNER_FILES` + `evals/external/{datasets,corpus,harness}.py`) | `1beb8014c703cadb485bda42f0dee720302bf95c2beb7b7c22154574df9404f1` |
+| Runner: every file that runs or scores a session (`run.RUNNER_FILES` + `evals/external/{datasets,corpus,harness}.py`) | `e1567df5a8969bd21c7dfa292aed0b6f813b2f68f648b1d345e29725939a0b61` (re-freeze; was `1beb8014…` at the first freeze) |
 | `agy --version` | `1.5.3` |
 | Audit sample seed | `20261106` |
 
@@ -23,6 +24,7 @@ leaves open, it says so.
 | --- | --- |
 | Engine | `mindslice/` at commit `f0ba04a` (engine digest in `freeze.json`); unchanged from the smoke tier to the end of tier 1 |
 | Agent arms | `agent-default` (4.2), `agent-policy` (4.2 + 4.3), `agent-overlay` (4.2 + 4.3 + 4.4) |
+| **Tier-1 matrix** | **`agent-default`, `agent-policy` and `agent-overlay` on `gemini-4-argon-medium`; `agent-policy` on `gemini-3.8-flash-medium`**. Left out of tier 1: `agent-default` and `agent-overlay` on Flash (section 7). The smoke tier ran all six |
 | Reference arms | `flat` (Mode A) and `oracle` (Mode B), re-scored with the same value-based scorer; offline |
 | Models | `gemini-3.8-flash-medium` (Gemini 3.8 Flash, Medium) and `gemini-4-argon-medium` (Gemini 4 Argon, Medium), exact ids from `agy models` |
 | Main model | `gemini-4-argon-medium` (the more capable one): it runs the variance repeats (8.4) |
@@ -165,7 +167,10 @@ only, before any LLM run ([`results/scorer_validation.md`](results/scorer_valida
 
 ## 5. Lines (final values, unchanged from agent_test.md 8)
 
-Pooled over tier 1, per agent arm and model.
+Pooled over tier 1, for each of the four cells. Also reported, with no line, the paired differences that
+answer the two questions the matrix keeps: `agent-policy` minus `agent-default` and `agent-overlay` minus
+`agent-policy` on Argon (prompt and architecture), and Argon minus Flash under `agent-policy` (model), on
+every pooled metric, paired by unit.
 
 | Line | Claim | Statistic | Line |
 | --- | --- | --- | --- |
@@ -200,22 +205,39 @@ Per session, from the complete smoke tier (`python -m evals.agent project`; [`re
 | `agent-policy`, Argon | 72 s, 32k | 107 s, 49k | 16.4 h | 26M |
 | `agent-overlay`, Argon | 117 s, 65k | 80 s, 41k | 20.5 h | 40M |
 
-Tier 1 is 475 MEME sessions and 231 MemoryAgentBench batches per arm and model: **127 session-hours and
-about 870M context tokens** for all six, plus about 6 session-hours (2M tokens) for the variance repeats.
-The token multiple (context per token of dialogue read) is 37-76 for Argon and 230-550 for Flash on MEME:
-Flash takes more steps and thinks more, and every step re-sends the conversation. A haystack's sessions run
-in order, so the 231-batch MemoryAgentBench chain alone takes 5-8 h; at 16 haystacks at once the tier needs
-at least 8 h, at 8, about 16 h.
+Tier 1 is 475 MEME sessions and 231 MemoryAgentBench batches per cell. For all six cells that would be
+127 session-hours and about 870M context tokens; the token multiple (context per token of dialogue read)
+is 37-76 for Argon and 230-550 for Flash on MEME (Flash takes more steps and thinks more, and every step
+re-sends the conversation).
 
-**Quota.** The CLI's Gemini quota is a weekly and a five-hour percentage. The smoke tier and its diagnostics
-(about 480 sessions, about 130M context tokens) took the weekly limit from 96% to 81% and the five-hour one
-from 94% to 35%. Scaled by tokens, tier 1 needs about 93% of a week (about 130% scaled by sessions); Flash is
-about 90% of it, and Flash `agent-overlay` alone about 40%. One five-hour window is worth about a quarter of
-the week, so tier 1 needs at least four or five windows. **It does not fit the 81% left before the weekly
-reset (2026-11-14T00:17Z)**, so, as instructed, the run pauses here, after this freeze, until the schedule
-is chosen. Nothing in sections 1-6 depends on that choice; running arms in a different order or across the
-reset changes no rule. A provider failure is retried 3 times (backoff 30 / 120 / 300 s) and then marks the
-haystack failed, so an exhausted quota must not be run into: the schedule has to stop before it.
+**Quota.** The CLI's Gemini quota is a weekly and a five-hour fraction, "consumed proportionally to the cost
+of the tokens" (Flash and Pro-class models share it). The smoke tier and its diagnostics (about 480 sessions,
+about 130M context tokens) took the weekly bucket from 96% to 81% and the five-hour one from 94% to 34%. Six
+cells would need about 93% of a week by tokens (about 130% by sessions), more than was left.
+
+**The four-cell matrix (re-frozen before any tier-1 call).** Flash costs 8-10 times Argon's context per
+session (23-30 serial tool turns against 9-15), and Flash `agent-overlay` alone would take 367M tokens (about
+42% of the six-cell budget) while hitting the 40-call cap in 20 of 46 MemoryAgentBench batches, so a large
+part of its run would measure the cap. The matrix keeps what the two questions need: the progression
+`agent-default` -> `agent-policy` -> `agent-overlay` on the main model (about 93M tokens), and model scaling
+under the standard policy (`agent-policy` on Flash, about 212M). It drops Flash `agent-default` and Flash
+`agent-overlay`. The decision used the smoke tier's cost and cap telemetry only; no line, and no smoke metric
+of those two cells, entered it. Expected: about 305M tokens, about a third of a week, roughly 1.5 five-hour
+windows at the smoke tier's rate (Argon's tokens cost more than Flash's, so this is approximate).
+
+**Schedule** (`python -m evals.agent tier1`, from `freeze.json`): the three Argon cells (their 231-batch
+MemoryAgentBench chains first, the longest, then the MEME haystacks round-robin across arms), the three
+variance repeats, then `agent-policy` on Flash; 12 haystacks at a time, a free worker taking the next item.
+Session-hours: about 55 (Argon), 6 (repeats), 18 (Flash); the Flash MemoryAgentBench chain (about 6 h) starts
+when the Argon items have all started, so the tier takes roughly 11 hours plus quota pauses.
+
+**Quota gate.** No session starts while the Gemini five-hour bucket is under 12% or the weekly one under 5%
+(`agy -p /usage`, which calls no model, re-read every minute). Every worker then waits for that bucket's
+reset; sessions already running finish (12% leaves room for them: the smoke tier used about 0.1-0.5% of a
+five-hour window per session). A session that fails while quota is low, or with a quota or rate-limit error,
+is restored and run again after the wait without using one of its three retries (up to 12 such waits).
+Pauses are logged (`tier1/quota.jsonl`) and reported. A stopped run resumes where it was: finished
+haystacks are kept, an unfinished one starts over.
 
 ## 8. Ledger
 
@@ -230,3 +252,4 @@ haystack failed, so an exhausted quota must not be run into: the schedule has to
 | Smoke | Token telemetry counts cache reads (Argon's per-step `input_tokens` excludes them); value records carry the entity (for the audit) | plumbing |
 | Smoke | No prompt wording changed. No line changed | |
 | Freeze | This plan and `results/freeze.json` committed before any tier-1 call; tier 1 paused for scheduling (section 7) | |
+| Re-freeze, 2026-11-08 | Tier 1 reduced to four cells (section 7); `tier1` schedule and quota gate added (the runner code changed, so its digest); paired comparisons and the variance table added to the report. Lines, prompts, scorer and tiers unchanged | the smoke tier's cost and cap telemetry |
