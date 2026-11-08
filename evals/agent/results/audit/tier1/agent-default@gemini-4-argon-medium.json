@@ -34,8 +34,8 @@
      "@overlay/project/test-command",
      "@overlay/project/testing-tool"
     ],
-    "verdict": "matching error",
-    "note": "another entity's value contains the old framework name (no dependency in MEME)"
+    "verdict": "correct",
+    "note": "corrected after the re-score: the worksheet showed only 3 lines per card; a hidden line names the old value as current"
    },
    {
     "id": "meme-nofiller/pl_014/update/1#7",
@@ -1189,8 +1189,8 @@
       "- As of March 3, 2023, the user has an upcoming Thanksgiving gathering / get-together and asked for planning tips."
      ]
     },
-    "verdict": "matching error",
-    "note": "stated in other words (annotation format, word order, or escaped line breaks in a verbatim text)"
+    "verdict": "correct",
+    "note": "corrected after the re-score: the only card stating it as current was inactive (superseded); the other mention marks it as past"
    },
    {
     "id": "meme-nofiller/pl_010/3#7",

@@ -466,8 +466,8 @@
     "cards_stating_current": [
      "@overlay/project/framework-synthari"
     ],
-    "verdict": "matching error",
-    "note": "another entity's value contains the old framework name (no dependency in MEME)"
+    "verdict": "correct",
+    "note": "corrected after the re-score: the worksheet showed only 3 lines per card; a hidden line names the old value as current"
    },
    {
     "id": "meme-nofiller/pl_024/update/2#5",

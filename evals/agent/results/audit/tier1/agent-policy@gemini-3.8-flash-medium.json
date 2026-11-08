@@ -365,8 +365,8 @@
      "@overlay/health/sleep-schedule-1am-9am",
      "@overlay/health/yoga-exercise-routine"
     ],
-    "verdict": "matching error",
-    "note": "line marks the value as past ('treated and resolved', 'previously')"
+    "verdict": "correct",
+    "note": "corrected after the re-score: the worksheet showed only 3 lines per card; a hidden line names the old value as current"
    },
    {
     "id": "meme-nofiller/sw_021/update/4#1",
@@ -558,8 +558,8 @@
     "cards_stating_current": [
      "@overlay/tech-stack/synthari-framework"
     ],
-    "verdict": "matching error",
-    "note": "another entity's value contains the old framework name (no dependency in MEME)"
+    "verdict": "correct",
+    "note": "corrected after the re-score: the worksheet showed only 3 lines per card; a hidden line names the old value as current"
    },
    {
     "id": "meme-nofiller/pl_022/update/1#5",
