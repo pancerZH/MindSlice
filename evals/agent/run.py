@@ -438,6 +438,7 @@ def main(argv: list[str] | None = None) -> int:
     r.add_argument("--no-lines", action="store_true", help="omit G1-G5 (the smoke tier is never scored for lines)")
     r.add_argument("--oracle-from", help="another run whose oracle arm is shown beside (reference only)")
     r.add_argument("--variance", help="comma-separated repeat runs of agent-policy on the main model (8.4)")
+    r.add_argument("--haystacks", help="comma-separated haystack keys: restrict every arm to them (a run on part of a tier)")
     a = sub.add_parser("agy", help="LLM arms through the Antigravity CLI over real MCP stdio")
     a.add_argument("--tier", default="smoke")
     a.add_argument("--arms", default=",".join(LLM_ARMS))
@@ -494,6 +495,9 @@ def main(argv: list[str] | None = None) -> int:
             arms["oracle"] = load_arm(root / args.oracle_from / "oracle")
         if args.run.startswith("tier1"):  # tier 1 as run: the dropped haystacks are out of every arm (PLAN.md)
             arms = {a: [r for r in recs if r.get("haystack") not in TIER1_DROPPED] for a, recs in arms.items()}
+        if args.haystacks:
+            keep = set(args.haystacks.split(","))
+            arms = {a: [r for r in recs if r.get("haystack") in keep] for a, recs in arms.items()}
         summary = summarize(arms)
         adir = RESULTS / "audit" / args.run
         if adir.is_dir():

@@ -480,8 +480,8 @@
       "- Note on other upcoming events: Earlier on 2023/03/03 (Fri) 09:24, the user also mentioned having a baby shower coming up ([[@overlay/events/baby-shower]]), which depended on being in a relationship ([[@overlay/personal/relationship-status]])."
      ]
     },
-    "verdict": "correct",
-    "note": "from the tier-1 audit"
+    "verdict": "matching error",
+    "note": "corrected 2026-11-08 (v3 check): the line reports an earlier statement ('Earlier ... mentioned ... which depended on being in a relationship'), past by the verdict rule; the Absence audit judged the same line a matching error"
    }
   ],
   "lost": [

@@ -379,5 +379,70 @@ class MatcherV2Test(unittest.TestCase):
         self.assertTrue(c["retired"]["exact"])
 
 
+class MatcherV3Test(unittest.TestCase):
+    """v3's changes over v2 (``matcher3.py``), each on the wording the audits found."""
+
+    def test_lcs(self) -> None:
+        import random
+
+        from evals.agent.matcher3 import lcs
+
+        def dp(a, b):
+            prev = [0] * (len(b) + 1)
+            for x in a:
+                cur = [0]
+                for j, y in enumerate(b, 1):
+                    cur.append(prev[j - 1] + 1 if x == y else max(prev[j], cur[j - 1]))
+                prev = cur
+            return prev[-1]
+
+        r = random.Random(7)
+        for _ in range(200):
+            a = [r.choice("abcd") for _ in range(r.randint(0, 30))]
+            b = [r.choice("abcde") for _ in range(r.randint(0, 60))]
+            self.assertEqual(lcs(a, b), dp(a, b))
+
+    def test_formats_and_inflection(self) -> None:
+        from evals.agent import matcher3 as m3
+
+        cur = lambda text, v: m3.states_current(m3.Text(text), v)
+        self.assertTrue(cur("Sleeps 11:00 PM to 5:30 AM; an early riser", "11pm-5:30am (early riser)"))
+        self.assertTrue(cur("Every Thursday at 2:00 PM", "every thursday 2pm"))
+        self.assertTrue(cur("Any team member is allowed to approve", "any team member can approve"))
+        self.assertEqual(m3._norm_word("continuously"), m3._norm_word("continuous"))
+        self.assertEqual(m3._norm_word("stories"), m3._norm_word("story"))
+        for a, b in (("engaged", "engaging"), ("separated", "separate"), ("engaged", "engagement"), ("dating", "date")):
+            self.assertNotEqual(m3._norm_word(a), m3._norm_word(b))  # MEME's statuses stay apart from ordinary words
+        self.assertFalse(m3.presents_old(m3.Text("An engaging book about separate rooms"), "engaged"))
+        self.assertTrue(cur("I have a college reunion coming up. Everyone's paths have changed.", "college reunion"))
+
+    def test_long_values(self) -> None:
+        from evals.agent import matcher3 as m3
+
+        v = ("try not to become a man of success, but rather try to become a man of value. look around at how people "
+             "want to get more out of life than they put in. a man of value will give more than he receives")
+        abridged = 'Philosophy: "Try not to become a man of success, but rather try to become a man of value... A man of value will give more than he receives."'
+        full = '- Word for word: "' + v + '"'
+        self.assertTrue(m3.states_current(m3.Text("Life Philosophy\n" + abridged + "\n" + full), v))  # v2: 0.61
+        self.assertFalse(m3.states_current(m3.Text("Life Philosophy\n" + abridged), v))
+        log = "deadlockdetected: transactions 4821 and 4823 are deadlocked on table aurora_orders. query 1 was update orders set status shipped"
+        bullets = "- Line 1: DeadlockDetected: transactions 4821 and 4823 are deadlocked on table aurora_orders.\n- Line 2: Query 1 was UPDATE orders SET status shipped"
+        self.assertTrue(m3.states_current(m3.Text(bullets), log))
+
+    def test_past_markers(self) -> None:
+        from evals.agent import matcher3 as m3
+
+        old = lambda text, v: m3.presents_old(m3.Text(text), v)
+        self.assertFalse(old("Moving to Orinthal Serve also invalidates the Docker image (velturis-cr/aurora:main).", "velturis-cr/aurora:main"))
+        self.assertFalse(old("Assigned to Seoyun Choi, which is subject to change now that Sarah Chen leads.", "seoyun choi"))
+        self.assertFalse(old("Switching frameworks changes the build tool from Karnex Bundler to Tarvex CLI.", "karnex bundler"))
+        self.assertFalse(old("[[events/baby-shower]] (superseded by [[events/half-marathon]])", "baby shower"))
+        self.assertTrue(old("The user has a fixed 9-to-5 schedule; if their studies change, it would change.", "9-to-5 fixed"))
+        self.assertTrue(old("Routine remains yoga 2x/week following the change in health condition.", "yoga 2x/week"))
+        self.assertFalse(m3.states_current(m3.Text("Switched from Xelvoria to Thyranote"), "xelvoria"))
+        self.assertFalse(old("Health changed from A to B, so medication [[m/dyntheral]] (Dyntheral likely changed).", "dyntheral"))
+        self.assertTrue(m3.states_current(m3.Text("The hobby is not affected: still cooking"), "cooking"))
+
+
 if __name__ == "__main__":
     unittest.main()

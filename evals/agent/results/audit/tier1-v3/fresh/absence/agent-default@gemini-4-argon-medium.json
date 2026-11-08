@@ -1,0 +1,19 @@
+{
+ "cell": "agent-default@gemini-4-argon-medium",
+ "rule": "Fresh labels for matcher v3 (cases where v3 and v2 disagree and no audit had judged them; every case v3 newly flags, and 20 of the pages it clears, seed 20261106), judged before any change made after seeing them. Verdict rules as in the tier-1 and v2 audits",
+ "cases": [
+  {
+   "id": "pl_006/after3",
+   "point": "end",
+   "head": "Q: What medication am I taking? [Abs-hop1] stale=['dyntheral'] current=[]",
+   "evidence": {
+    "@overlay/health/condition-anxiety-disorder": [
+     "- Because the user's health condition changed from pre-diabetes to anxiety disorder, dependent health routines and appointments have updated accordingly: regular appointment [[health/appointment-physical-therapy]] (physical therapy 2x/week), exercise routine [[health/exercise-routine-cycling]] (cycling weekends at [[health/gym-kaelstrom-fitness]]), and medication [[health/medication-dyntheral]] (Dyntheral was for pre-diabetes and likely changed)."
+    ]
+   },
+   "direction": "v3 newly stale",
+   "verdict": "matching error",
+   "note": "the card marks Dyntheral as 'likely changed'; v3's 'from X to Y' resume re-opened the rest of the line"
+  }
+ ]
+}

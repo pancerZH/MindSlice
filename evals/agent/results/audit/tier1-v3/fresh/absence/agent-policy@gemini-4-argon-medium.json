@@ -1,0 +1,19 @@
+{
+ "cell": "agent-policy@gemini-4-argon-medium",
+ "rule": "Fresh labels for matcher v3 (cases where v3 and v2 disagree and no audit had judged them; every case v3 newly flags, and 20 of the pages it clears, seed 20261106), judged before any change made after seeing them. Verdict rules as in the tier-1 and v2 audits",
+ "cases": [
+  {
+   "id": "pl_014/after3",
+   "point": "end",
+   "head": "Q: What medication am I taking? [Abs-hop1] stale=['velnorath'] current=[]",
+   "evidence": {
+    "@overlay/user/health-pre-diabetes": [
+     "- Because the user's health condition changed from chronic migraine to pre-diabetes, dependent habits and plans conditioned on their health condition also shift: regular appointment ([[user/appointment-dentist]]: dentist every 6 months -> dermatologist monthly), exercise routine ([[user/exercise-routine-pilates]]: pilates 3x/week -> yoga 2x/week), workout facility ([[user/workout-facility-pyravar-crossfit]]: Pyravar CrossFit -> Kaelstrom Fitness), and migraine medication ([[user/medication-velnorath]]: Velnorath likely changes)."
+    ]
+   },
+   "direction": "v3 newly stale",
+   "verdict": "matching error",
+   "note": "the card says 'Velnorath likely changes'; v3's 'from X to Y' resume re-opened the rest of the line"
+  }
+ ]
+}

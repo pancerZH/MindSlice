@@ -160,8 +160,8 @@
      "@overlay/personal/relationship-status",
      "@history/s004/r000"
     ],
-    "verdict": "correct",
-    "note": ""
+    "verdict": "matching error",
+    "note": "corrected 2026-11-08 (v3 check): the line reports an earlier statement ('Earlier ... mentioned ... which depended on being in a relationship'), past by the verdict rule; the Absence audit judged the same line a matching error"
    },
    {
     "id": "meme-nofiller/pl_033/update/1#5",

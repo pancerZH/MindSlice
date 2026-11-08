@@ -269,35 +269,14 @@ haystacks are kept, an unfinished one starts over.
 | Confirmatory run started, 2026-11-08 16:11Z | 231 batches, quota gate on | |
 | v2 audit of tier 1, 2026-11-08 (post-hoc; v2 unchanged) | Both ways (`audit2.py`): 6.3 on v2's flagged cases (verdicts of the tier-1 audit kept for cases it had judged), plus 15 v2 passes per cell and 20 values the frozen matcher called lost that v2 keeps (Flash; on Argon all had been hand-judged). Verdict rules as in the tier-1 audit; a link or line that presents the old value as current (including "Related: [[card named after it]]") is a real failure. `retired`: 0-2% matching errors in every cell; `lost`: 17%, 44%, 0%, 67% (Argon default, policy, overlay; Flash), so Argon `agent-policy` and Flash stay unreliable by the rule. The report adds a two-way correction (`audit2.corrected`), not a line | the v2 worksheets |
 | After the v2 lines | Exploratory, not lines: Absence pages audited by sample (10 per cell, seed 20261106; `results/audit/tier1-v2/absence/`), and `retired` failures split into link-only and prose by re-judging offenders with `[[...]]` links removed (REPORT.md) | |
+| Matcher v3, 2026-11-08 (post-hoc for tier 1) | Built in new files (`matcher3.py`, `rescore3.py`; v2 and `rescore.py` untouched, digests checked) from the error classes of the v2 and Absence audits: time formats, modal verbs, "-ies"/"-ly", LCS coverage for long values, more past markers (sentence-scoped). Checked: identical to v2 on `flat` and `oracle` (0 differing units); on the 60 cases where it disagreed with v2 and no audit had judged them, a fresh sample (every case it newly flagged, 20 of the pages it cleared) found the cleared pages right (20/20) and 2 of its 3 new flags wrong, from one rule ("from X to Y" resumes as current), which was then removed (back to v2's behaviour); the stemmer was cut back to "-ies"/"-ly" after `oracle` showed collisions ("engaged"/"engaging"), and "may" kept as a word (a month) after the fresh sample showed it. One tier-1 audit verdict corrected: the same line had been judged both ways (overlay `pl_043/update/4#1`, now a matching error, as the Absence audit had it) | the v2, Absence and fresh audits |
+| v3 frozen, 2026-11-08 17:10Z | `results/freeze_v3.json`; registered as a secondary scoring of the confirmatory run (section 9a) before any of its records was read | |
 
-## 9. Confirmatory run: MemoryAgentBench 32k with matcher v2 (pre-registered 2026-11-08, before its first call)
+### 9a. Matcher v3 as a secondary scoring (registered 2026-11-08 17:10Z, before any record of this run was read)
 
-Tier 1's lines were unreliable under the audit rule: the frozen matcher (`judge.py`) counts an agent's own
-wording as a lost fact (REPORT.md). Matcher v2 (`matcher2.py`) was then built from the audit's error classes,
-validated on `flat` and `oracle` (MEME and MemoryAgentBench, against card-level judgments) and on the 255
-hand-judged tier-1 cases (254 agree, in-sample), and **frozen** here
-(`results/freeze_confirm.json`, digest `228d623eeeb7898b8ab128add51a092a475652591838e328af8b8091c62ff885`).
-Re-scoring tier 1 with it is post-hoc. This run is not: v2 has never seen it.
-
-| | |
-| --- | --- |
-| Cell | `agent-policy` on `gemini-4-argon-medium` (main model) |
-| Haystack | MemoryAgentBench `factconsolidation_sh_32k` (dropped from tier 1, never scored): 2,310 facts, 231 batches of 10, 66 judged questions (44 conflicts) |
-| Setup | Exactly tier 1's (same runner digest, prompts, `agy` 1.5.3 and flags, 40-call cap, quota gate) |
-| Scoring | Matcher v2 as frozen; `flat` reference: the offline `flat` arm of the same haystack, re-scored with v2 |
-| Not used | The 28 batches of this cell that ran before tier 1 dropped this haystack (`tier1-dropped/`, unread) |
-
-**Lines** (the same values as section 5; MemoryAgentBench has no deletions, so no G5):
-
-| Line | Statistic | Line |
-| --- | --- | --- |
-| G1 | `stale-first`, flat minus agent, paired (44 conflicts) | ≥ 0.30 |
-| G2 | `retired` (44 conflicts) | ≥ 0.70 |
-| G3 | `current@10`, agent minus flat, paired (66 questions) | ≥ −0.05 |
-| G4 | `lost` (every judged current value) | ≤ 0.05 (upper bound for confirmed) |
-
-Verdicts as in section 5. **Audit first** (6.3 with v2): up to 50 `retired` failures and 50 `lost` cases
-(seed 20261106) judged on the workspace at the judgment point; more than 20% matching errors in either sample
-and the lines are reported as unreliable. With 44 conflicts and 63 current values, the sample is the whole
-population. The reference arms on this haystack under v2: flat `stale-first` 0.795, `current@10` 0.970;
-oracle `stale-first` 0.000, `retired` 0.955.
+Matcher v3 (`matcher3.py`, applied through `rescore3.py`) fixes the error classes the v2 audits found
+(REPORT.md, "Matcher v3"). It was built on tier 1 only and frozen in `results/freeze_v3.json` (digest
+`604902208468affb9ca2fc8d386e453024e058b6a2137add8a7f4153e85848a9`). The confirmatory run is scored with v2
+as registered above (**primary**) and with v3 (**secondary**): the same lines, the same `flat` reference
+(`gate1-v3`), and the same audit rule (6.3 with v3, every flagged case; a case flagged by both matchers is
+judged once). If the two disagree on a verdict, v2's is the registered one and v3's is reported beside it.
