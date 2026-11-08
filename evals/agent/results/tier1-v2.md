@@ -26,14 +26,14 @@ n per metric: agent-default@gemini-4-argon-medium: stale-first 156, stale@10 156
 
 G1: stale-first, flat minus arm (paired), line 0.3; G2: retired, line 0.7; G3: current@10, arm minus flat (paired), line -0.05; G4: lost, all current values (lower is better), line 0.05; G5: forgotten, line 0.9
 
-## Audit of value matching, both ways (6.3 and the matcher-v2 audit)
+## Audit of value matching, both ways (6.3, and the other way)
 
-Flagged: up to 50 `retired` failures and 50 `lost` cases per cell (seed 20261106; cases the tier-1 audit judged keep their verdict). More than 20% matching errors in either: that cell's lines are reported as unreliable (PLAN.md section 6). The other way: 15 updates v2 counts as retired, and up to 20 values the frozen matcher called lost that v2 keeps. The corrected values remove the flagged matching errors and add the misses at the sampled share; they are not lines.
+Flagged: up to 50 `retired` failures and 50 `lost` cases per cell (seed 20261106; cases the tier-1 audit judged keep their verdict). More than 20% matching errors in either: that cell's lines are reported as unreliable (PLAN.md section 6). The other way: 15 updates the matcher counts as retired, and up to 20 values the frozen matcher called lost that it keeps. The corrected values remove the flagged matching errors and add the misses at the sampled share; they are not lines.
 
 | Cell | `retired` errors | `lost` errors | Lines | Missed in passes | Wrong in flips | `retired` raw / corrected | `lost` raw / corrected |
 | --- | --- | --- | --- | --- | --- | --- | --- |
 | agent-default@gemini-4-argon-medium | 0 / 50 (0%) | 2 / 12 (17%) | reliable | 0 / 15 (0%) | – | 0.779 / 0.779 | 0.004 / 0.003 |
-| agent-overlay@gemini-4-argon-medium | 0 / 23 (0%) | 0 / 7 (0%) | reliable | 0 / 15 (0%) | – | 0.918 / 0.918 | 0.002 / 0.002 |
+| agent-overlay@gemini-4-argon-medium | 1 / 23 (4%) | 0 / 7 (0%) | reliable | 0 / 15 (0%) | – | 0.918 / 0.922 | 0.002 / 0.002 |
 | agent-policy@gemini-3.8-flash-medium | 1 / 50 (2%) | 22 / 33 (67%) | **unreliable** | 0 / 15 (0%) | 0 / 20 (0%) | 0.676 / 0.683 | 0.011 / 0.004 |
 | agent-policy@gemini-4-argon-medium | 0 / 50 (0%) | 4 / 9 (44%) | **unreliable** | 1 / 15 (7%) | – | 0.730 / 0.681 | 0.003 / 0.002 |
 

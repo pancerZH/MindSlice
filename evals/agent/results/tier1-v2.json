@@ -2039,9 +2039,9 @@
    "tally": {
     "retired": {
      "judged": 23,
-     "errors": 0,
-     "matching_errors": 0,
-     "share": 0.0
+     "errors": 1,
+     "matching_errors": 1,
+     "share": 0.043
     },
     "lost": {
      "judged": 7,
@@ -2068,12 +2068,12 @@
      "n": 281,
      "flagged": 23,
      "audited": 23,
-     "matching_errors": 0,
+     "matching_errors": 1,
      "other_population": 258,
      "other_audited": 15,
      "other_errors": 0,
      "raw": 0.9181,
-     "corrected": 0.9181,
+     "corrected": 0.9217,
      "exact": true
     },
     "lost": {

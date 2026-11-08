@@ -38,11 +38,11 @@ def render_run(name: str, summary: dict[str, Any]) -> str:
                                                if not math.isnan(l["point"]) else "–" for l in s["lines"]) + " |")
         o += ["", "; ".join(f"{l['id']}: {l['stat']}, line {l['line']}" for l in LINES), ""]
     if summary.get("audit") and all(e.get("two_way") for e in summary["audit"].values()):
-        o += ["## Audit of value matching, both ways (6.3 and the matcher-v2 audit)", "",
+        o += ["## Audit of value matching, both ways (6.3, and the other way)", "",
               "Flagged: up to 50 `retired` failures and 50 `lost` cases per cell (seed 20261106; cases the tier-1 audit "
               "judged keep their verdict). More than 20% matching errors in either: that cell's lines are reported as "
-              "unreliable (PLAN.md section 6). The other way: 15 updates v2 counts as retired, and up to 20 values the "
-              "frozen matcher called lost that v2 keeps. The corrected values remove the flagged matching errors and add "
+              "unreliable (PLAN.md section 6). The other way: 15 updates the matcher counts as retired, and up to 20 values "
+              "the frozen matcher called lost that it keeps. The corrected values remove the flagged matching errors and add "
               "the misses at the sampled share; they are not lines.", "",
               "| Cell | `retired` errors | `lost` errors | Lines | Missed in passes | Wrong in flips | "
               "`retired` raw / corrected | `lost` raw / corrected |", "| --- | --- | --- | --- | --- | --- | --- | --- |"]
