@@ -160,6 +160,31 @@ def variance(main: list[dict[str, Any]], repeats: list[list[dict[str, Any]]], ep
     return out
 
 
+def audit_corrected(records: list[dict[str, Any]], verdicts: dict[str, Any]) -> dict[str, Any]:
+    """``retired`` and ``lost`` with the audit's matching errors taken out (6.3; not a pre-registered line).
+
+    Failures (``retired``) and losses (``lost``) the audit judged matching errors are counted as passes.
+    When the audit judged every case the correction is exact; when it judged a sample, the sample's share
+    of matching errors is applied to the whole population."""
+    out: dict[str, Any] = {}
+    for kind, metric, key in (("retired", "retired", "update"), ("lost", "lost", "value")):
+        units = [r for r in records if r["kind"] == key and r.get("matchable")]
+        n = len(units)
+        bad = sum(1 for r in units if r.get(metric) is (kind == "lost")) if kind == "lost" else \
+            sum(1 for r in units if r.get("retired") is False)
+        rows = verdicts["cases"].get(kind, [])
+        judged = [r for r in rows if r.get("verdict")]
+        errors = sum(1 for r in judged if r["verdict"] == "matching error")
+        share = errors / len(judged) if judged else 0.0
+        exact = len(judged) == bad
+        true_bad = (bad - errors) if exact else bad * (1 - share)
+        raw = (1 - bad / n) if kind == "retired" else bad / n
+        fixed = (1 - true_bad / n) if kind == "retired" else true_bad / n
+        out[metric] = {"n": n, "flagged": bad, "audited": len(judged), "matching_errors": errors,
+                       "share": round(share, 3), "raw": round(raw, 4), "corrected": round(fixed, 4), "exact": exact}
+    return out
+
+
 def gate(arms: dict[str, list[dict[str, Any]]]) -> dict[str, Any]:
     """Gate 1 (agent_test.md 7.4): each scripted agent against the arm it must reproduce, unit by unit."""
     us = {a: score.units(r) for a, r in arms.items()}
@@ -467,7 +492,18 @@ def main(argv: list[str] | None = None) -> int:
             arms["flat"] = load_arm(root / args.flat_from / "flat")
         if args.oracle_from and "oracle" not in arms:
             arms["oracle"] = load_arm(root / args.oracle_from / "oracle")
+        if args.run.startswith("tier1"):  # tier 1 as run: the dropped haystacks are out of every arm (PLAN.md)
+            arms = {a: [r for r in recs if r.get("haystack") not in TIER1_DROPPED] for a, recs in arms.items()}
         summary = summarize(arms)
+        adir = RESULTS / "audit" / args.run
+        if adir.is_dir():
+            from . import audit as auditmod
+
+            summary["audit"] = {}
+            for vp in sorted(adir.glob("*.json")):
+                v = json.loads(vp.read_text(encoding="utf-8"))
+                if vp.stem in arms:
+                    summary["audit"][vp.stem] = {"tally": auditmod.tally(v), "corrected": audit_corrected(arms[vp.stem], v)}
         if args.variance:
             key = f"agent-policy@{MAIN_MODEL}"
             reps = [load_arm(root / r / key) for r in args.variance.split(",") if r]

@@ -1,0 +1,659 @@
+{
+ "arm": "agent-overlay@gemini-4-argon-medium",
+ "population": {
+  "retired": 17,
+  "lost": 5
+ },
+ "cases": {
+  "retired": [
+   {
+    "id": "meme-nofiller/pl_014/update/1#7",
+    "dir": "meme-nofiller__pl_014",
+    "update_kind": "tracking",
+    "session": 1,
+    "stale": [
+     "daily journal subscription"
+    ],
+    "current": [
+     "dranthazon"
+    ],
+    "anchors": [],
+    "offenders": {
+     "@history/s000/r001": [
+      "I've been subscribed to a Daily Journal subscription. It really helps me keep track of my thoughts and daily activities. Do you think journaling can offer any specific benefits?",
+      "- User: I've been subscribed to a Daily Journal subscription. It really helps me keep track of my thoughts and daily activities. Do you think journaling can offer any specific benefits?"
+     ]
+    },
+    "cards_stating_current": [
+     "@history/s001/r003",
+     "@history/s001/r004"
+    ],
+    "verdict": "correct",
+    "note": ""
+   },
+   {
+    "id": "meme-nofiller/pl_014/update/2#5",
+    "dir": "meme-nofiller__pl_014",
+    "update_kind": "tracking",
+    "session": 2,
+    "stale": [
+     "daily journal subscription",
+     "dranthazon"
+    ],
+    "current": [
+     "pyrethon plus"
+    ],
+    "anchors": [],
+    "offenders": {
+     "@history/s001/r004": [
+      "I imagine the variety on Dranthazon keeps things fresh. Do you have any favorite shows or genres that you always look forward to watching?",
+      "- User: I imagine the variety on Dranthazon keeps things fresh. Do you have any favorite shows or genres that you always look forward to watching?",
+      "- Assistant: Absolutely, the variety really does keep things interesting! Many viewers often gravitate towards genres like drama, comedy, or thrillers, as each offers something unique. Some also enjoy documentaries or nature shows for a change of pace and to learn something new. What kind of shows o"
+     ]
+    },
+    "cards_stating_current": [
+     "@overlay/user/subscriptions",
+     "@history/s002/r002"
+    ],
+    "verdict": "correct",
+    "note": ""
+   },
+   {
+    "id": "meme-nofiller/sw_034/update/4#1",
+    "dir": "meme-nofiller__sw_034",
+    "update_kind": "root",
+    "session": 4,
+    "stale": [
+     "veltrion"
+    ],
+    "current": [
+     "synthari"
+    ],
+    "anchors": [],
+    "offenders": {
+     "@history/s000/r000": [
+      "The team's design system is Veltrion UI Kit v2. It's pretty slick for creating consistent UI components. Have you worked with design systems before? What's your approach to integrating them into projects?",
+      "- User: The team's design system is Veltrion UI Kit v2. It's pretty slick for creating consistent UI components. Have you worked with design systems before? What's your approach to integrating them into projects?",
+      "- Assistant: It sounds like Veltrion UI Kit v2 is a great choice for maintaining consistency across your components. When integrating a design system, I usually start by familiarizing myself with the guidelines and components provided in the kit. It’s helpful to create a dedicated space in the proje"
+     ]
+    },
+    "cards_stating_current": [
+     "@overlay/project/framework",
+     "@history/s004/r000"
+    ],
+    "verdict": "matching error",
+    "note": "another entity's value contains the old framework name (no dependency in MEME)"
+   },
+   {
+    "id": "meme-nofiller/pl_019/update/2#5",
+    "dir": "meme-nofiller__pl_019",
+    "update_kind": "tracking",
+    "session": 2,
+    "stale": [
+     "a daily news podcast"
+    ],
+    "current": [
+     "thyrelion (anime)"
+    ],
+    "anchors": [],
+    "offenders": {
+     "@history/s001/r003": [
+      "I currently listen to a daily news podcast to keep up with current events. What about you? Do you have a favorite podcast or news source?",
+      "- User: I currently listen to a daily news podcast to keep up with current events. What about you? Do you have a favorite podcast or news source?",
+      "- Assistant: Listening to a daily news podcast is a great way to stay informed! There are so many excellent options out there. Some popular news podcasts include \"Up First\" by NPR, which provides a quick overview of the day's top stories, and \"The Daily\" from The New York Times, which often dives de"
+     ]
+    },
+    "cards_stating_current": [
+     "@overlay/user/current-media",
+     "@history/s002/r002"
+    ],
+    "verdict": "correct",
+    "note": ""
+   },
+   {
+    "id": "meme-nofiller/pl_009/update/4#1",
+    "dir": "meme-nofiller__pl_009",
+    "update_kind": "root",
+    "session": 4,
+    "stale": [
+     "tendinitis"
+    ],
+    "current": [
+     "chronic migraine"
+    ],
+    "anchors": [],
+    "offenders": {
+     "@overlay/subscriptions/xelvoria": [
+      "managing running and former tendinitis",
+      "The user is subscribed to Xelvoria for health and fitness insights and strategies to manage their running (and formerly their tendinitis, now resolved).",
+      "- Xelvoria's content was helpful in providing insights and strategies for managing the user's health and fitness, especially with their running ([[@history/s001/r000]]) and their former tendinitis issues (which were treated and resolved as of 2023/03/05; see [[health/chronic-migraine]])."
+     ]
+    },
+    "cards_stating_current": [
+     "@overlay/health/chronic-migraine",
+     "@overlay/health/dietary-restriction-no-alcohol",
+     "@overlay/health/exercise-routine-yoga",
+     "@history/s004/r000"
+    ],
+    "verdict": "matching error",
+    "note": "line marks the value as past ('formerly', 'had')"
+   },
+   {
+    "id": "meme-nofiller/pl_043/update/4#1",
+    "dir": "meme-nofiller__pl_043",
+    "update_kind": "root",
+    "session": 4,
+    "stale": [
+     "in a relationship"
+    ],
+    "current": [
+     "engaged"
+    ],
+    "anchors": [],
+    "offenders": {
+     "@overlay/events/half-marathon": [
+      "- Note on other upcoming events: Earlier on 2023/03/03 (Fri) 09:24, the user also mentioned having a baby shower coming up ([[@overlay/events/baby-shower]]), which depended on being in a relationship ([[@overlay/personal/relationship-status]])."
+     ]
+    },
+    "cards_stating_current": [
+     "@overlay/personal/partner-sarah",
+     "@overlay/personal/relationship-status",
+     "@history/s004/r000"
+    ],
+    "verdict": "correct",
+    "note": ""
+   },
+   {
+    "id": "meme-nofiller/pl_033/update/1#5",
+    "dir": "meme-nofiller__pl_033",
+    "update_kind": "tracking",
+    "session": 1,
+    "stale": [
+     "the veldrakon spiral (tv)"
+    ],
+    "current": [
+     "a daily news podcast"
+    ],
+    "anchors": [],
+    "offenders": {
+     "@history/s000/r002": [
+      "My current media is The Veldrakon Spiral (TV). It's been an interesting watch. Have you seen it?",
+      "- User: My current media is The Veldrakon Spiral (TV). It's been an interesting watch. Have you seen it?"
+     ]
+    },
+    "cards_stating_current": [
+     "@history/s001/r002"
+    ],
+    "verdict": "correct",
+    "note": ""
+   },
+   {
+    "id": "meme-nofiller/pl_034/update/1#5",
+    "dir": "meme-nofiller__pl_034",
+    "update_kind": "tracking",
+    "session": 1,
+    "stale": [
+     "xelvoria"
+    ],
+    "current": [
+     "thyranote"
+    ],
+    "anchors": [],
+    "offenders": {
+     "@overlay/woodworking/xelvoria-subscription": [
+      "Xelvoria Subscription for Woodworking Resources",
+      "Xelvoria subscription",
+      "Xelvoria resources",
+      "The user is subscribed to Xelvoria, a platform offering woodworking resources and tutorials.",
+      "- The user is subscribed to Xelvoria, a platform that offers a variety of resources and tutorials related to their woodworking hobby."
+     ]
+    },
+    "cards_stating_current": [
+     "@history/s001/r002"
+    ],
+    "verdict": "correct",
+    "note": ""
+   },
+   {
+    "id": "meme-nofiller/pl_032/update/1#5",
+    "dir": "meme-nofiller__pl_032",
+    "update_kind": "tracking",
+    "session": 1,
+    "stale": [
+     "thyranote"
+    ],
+    "current": [
+     "zorvista premium"
+    ],
+    "anchors": [],
+    "offenders": {
+     "@history/s000/r001": [
+      "I’ve been subscribed to Thyranote. It’s been helpful for keeping track of my reading and notes. Have you ever used a similar service, or do you have a different method for managing your reading?",
+      "- User: I’ve been subscribed to Thyranote. It’s been helpful for keeping track of my reading and notes. Have you ever used a similar service, or do you have a different method for managing your reading?",
+      "- Assistant: Thyranote sounds like a useful tool for organizing your reading and notes! Many readers find that keeping track of their progress and jotting down thoughts really enhances their experience. While I don't use services myself, I know that some readers enjoy using apps like Goodreads for t"
+     ]
+    },
+    "cards_stating_current": [
+     "@overlay/user/subscription-zorvista-premium",
+     "@history/s001/r002"
+    ],
+    "verdict": "correct",
+    "note": ""
+   },
+   {
+    "id": "meme-nofiller/sw_001/update/4#1",
+    "dir": "meme-nofiller__sw_001",
+    "update_kind": "root",
+    "session": 4,
+    "stale": [
+     "synthari"
+    ],
+    "current": [
+     "veltrion"
+    ],
+    "anchors": [],
+    "offenders": {
+     "@history/s000/r003": [
+      "To run the dev server, use synthari launch --hmr. This setup is great for hot module replacement, which speeds up the development process. Do you have any tips for optimizing the local development environment, or are there common issues…",
+      "- User: To run the dev server, use synthari launch --hmr. This setup is great for hot module replacement, which speeds up the development process. Do you have any tips for optimizing the local development environment, or are there common issues you've encountered while using this command?"
+     ]
+    },
+    "cards_stating_current": [
+     "@overlay/project/quorix-forge-build-command",
+     "@overlay/project/quorix-forge-build-tool",
+     "@overlay/project/veltrion-framework",
+     "@history/s004/r000"
+    ],
+    "verdict": "matching error",
+    "note": "another entity's value contains the old framework name (no dependency in MEME)"
+   },
+   {
+    "id": "meme-nofiller/pl_044/update/1#5",
+    "dir": "meme-nofiller__pl_044",
+    "update_kind": "tracking",
+    "session": 1,
+    "stale": [
+     "xelvoria"
+    ],
+    "current": [
+     "zorvista premium"
+    ],
+    "anchors": [],
+    "offenders": {
+     "@history/s000/r001": [
+      "I’m also subscribed to Xelvoria. Have you heard of it? I find the content really engaging.",
+      "- User: I’m also subscribed to Xelvoria. Have you heard of it? I find the content really engaging.",
+      "- Assistant: Xelvoria sounds intriguing! While I might not have specific details about it, it's great to hear you find the content engaging. Many subscription-based platforms offer a range of topics, so it must have something that resonates with you. What type of content do you enjoy the most there?"
+     ]
+    },
+    "cards_stating_current": [
+     "@history/s001/r002"
+    ],
+    "verdict": "correct",
+    "note": ""
+   },
+   {
+    "id": "meme-nofiller/pl_039/update/1#5",
+    "dir": "meme-nofiller__pl_039",
+    "update_kind": "tracking",
+    "session": 1,
+    "stale": [
+     "whispers of zarinthea (tv)"
+    ],
+    "current": [
+     "a true crime podcast"
+    ],
+    "anchors": [],
+    "offenders": {
+     "@history/s000/r002": [
+      "My current media is Whispers of Zarinthea (TV). Have you heard of it? It's been pretty captivating with its storyline. What kind of shows do you usually watch?",
+      "- User: My current media is Whispers of Zarinthea (TV). Have you heard of it? It's been pretty captivating with its storyline. What kind of shows do you usually watch?"
+     ]
+    },
+    "cards_stating_current": [
+     "@history/s001/r002"
+    ],
+    "verdict": "correct",
+    "note": ""
+   },
+   {
+    "id": "meme-nofiller/pl_046/update/4#1",
+    "dir": "meme-nofiller__pl_046",
+    "update_kind": "root",
+    "session": 4,
+    "stale": [
+     "seasonal allergies"
+    ],
+    "current": [
+     "acid reflux"
+    ],
+    "anchors": [],
+    "offenders": {
+     "@overlay/relationships/partner-alex": [
+      "The user's partner is named Alex, who was supportive when the user had seasonal allergies."
+     ]
+    },
+    "cards_stating_current": [
+     "@overlay/health/current-condition-acid-reflux",
+     "@overlay/health/dietary-restriction-if-condition-changes",
+     "@overlay/health/exercise-routine-if-condition-changes",
+     "@overlay/health/sleep-schedule",
+     "@overlay/health/workout-facility-if-routine-changes"
+    ],
+    "verdict": "matching error",
+    "note": "line marks the value as past ('formerly', 'had')"
+   },
+   {
+    "id": "meme-nofiller/sw_038/update/4#1",
+    "dir": "meme-nofiller__sw_038",
+    "update_kind": "root",
+    "session": 4,
+    "stale": [
+     "synthari"
+    ],
+    "current": [
+     "dravex"
+    ],
+    "anchors": [],
+    "offenders": {
+     "@overlay/project/package-manager": [
+      "Team Package Manager: Synthari Modules",
+      "Synthari Modules",
+      "The team's package manager is Synthari Modules (updated on 2023/03/03, replacing Veltrion Pkg and Pyronis Bundle).",
+      "- As of 2023/03/03 (Fri) 02:24, the team's package manager is Synthari Modules to streamline dependency management."
+     ],
+     "@history/s001/r002": [
+      "To run the dev server, the team uses `synthari launch --hmr`. Hot Module Replacement is pretty convenient for development. Have you set it up in your local environment yet? What’s your experience been like with it?",
+      "- User: To run the dev server, the team uses `synthari launch --hmr`. Hot Module Replacement is pretty convenient for development. Have you set it up in your local environment yet? What’s your experience been like with it?"
+     ]
+    },
+    "cards_stating_current": [
+     "@overlay/project/build-command",
+     "@overlay/project/build-tool",
+     "@overlay/project/framework",
+     "@overlay/project/project-structure",
+     "@overlay/project/test-framework"
+    ],
+    "verdict": "matching error",
+    "note": "another entity's value contains the old framework name (no dependency in MEME)"
+   },
+   {
+    "id": "meme-nofiller/sw_011/update/4#1",
+    "dir": "meme-nofiller__sw_011",
+    "update_kind": "root",
+    "session": 4,
+    "stale": [
+     "quenthar"
+    ],
+    "current": [
+     "veltrion"
+    ],
+    "anchors": [],
+    "offenders": {
+     "@history/s000/r000": [
+      "Our team's design system is Quenthar Design v1. Have you worked with design systems like this before? What are some best practices for maintaining consistency in design when using a system?",
+      "- User: Our team's design system is Quenthar Design v1. Have you worked with design systems like this before? What are some best practices for maintaining consistency in design when using a system?",
+      "- Assistant: While I haven't specifically worked with Quenthar Design v1, I can definitely share some best practices for maintaining consistency in design systems. One effective approach is to ensure that all team members are familiar with the guidelines and components of the design system. Regularl"
+     ]
+    },
+    "cards_stating_current": [
+     "@overlay/team/build-command",
+     "@overlay/team/build-tool",
+     "@overlay/team/dev-server-command-if-switch",
+     "@overlay/team/dev-server-command",
+     "@overlay/team/framework"
+    ],
+    "verdict": "matching error",
+    "note": "another entity's value contains the old framework name (no dependency in MEME)"
+   },
+   {
+    "id": "meme-nofiller/pl_043/update/1#5",
+    "dir": "meme-nofiller__pl_043",
+    "update_kind": "tracking",
+    "session": 1,
+    "stale": [
+     "xelvoria"
+    ],
+    "current": [
+     "thyranote"
+    ],
+    "anchors": [],
+    "offenders": {
+     "@overlay/subscriptions/xelvoria": [
+      "Subscription to Xelvoria",
+      "Xelvoria subscription",
+      "The user is subscribed to Xelvoria, a platform for discovering new content alongside their knitting hobby.",
+      "- On 2023/03/01 (Wed) 09:00, the user stated they are subscribed to Xelvoria, a platform for discovering new content related to their knitting hobby (@history/s000/r000)."
+     ]
+    },
+    "cards_stating_current": [
+     "@overlay/subscriptions/thyranote",
+     "@history/s001/r002"
+    ],
+    "verdict": "correct",
+    "note": ""
+   },
+   {
+    "id": "meme-nofiller/sw_024/update/4#1",
+    "dir": "meme-nofiller__sw_024",
+    "update_kind": "root",
+    "session": 4,
+    "stale": [
+     "phalanx gate"
+    ],
+    "current": [
+     "kryptal auth"
+    ],
+    "anchors": [],
+    "offenders": {
+     "@overlay/team/login-endpoint": [
+      "- Securing the authentication flow at `/oathkeeper/mtls/handshake` involves handling certificates and validating requests alongside [[team/authentication]] (Phalanx Gate and Phalanx-HMAC-SHA256 token format)."
+     ]
+    },
+    "cards_stating_current": [
+     "@overlay/team/auth-method-switch-rule",
+     "@overlay/team/auth-middleware-switch-rule",
+     "@overlay/team/auth-middleware",
+     "@overlay/team/authentication-method",
+     "@overlay/team/authentication"
+    ],
+    "verdict": "correct",
+    "note": ""
+   }
+  ],
+  "lost": [
+   {
+    "id": "meme-nofiller/pl_010/0#5",
+    "dir": "meme-nofiller__pl_010",
+    "point": 3,
+    "category": "plain",
+    "value": "brunch with college friends monthly",
+    "entity": "social_gathering",
+    "anchors": [],
+    "near": {
+     "@history/s000/r002 (inactive)": [
+      "My regular social meetup is brunch with college friends monthly. It's a nice way to catch up and enjoy some good food together. Do you have any regular meetups with friends, or do you prefer to hang out more casually?",
+      "- User: My regular social meetup is brunch with college friends monthly. It's a nice way to catch up and enjoy some good food together. Do you have any regular meetups with friends, or do you prefer to hang out more casually?",
+      "- Assistant: Brunch with friends sounds like a lovely way to connect and enjoy some good food! Regular meetups can really strengthen friendships and create lasting memories. While I don’t have personal experiences, many people enjoy a mix of planned gatherings and casual hangouts, depending on their"
+     ],
+     "@overlay/social/regular-meetup-board-game-group": [
+      "Regular Social Meetup: Board Game Group and Game Preferences",
+      "regular social meetup",
+      "The user's regular social meetup is a board game group that meets regularly and favors strategy games as well as lighter, party-style games.",
+      "- The user's regular social meetup is a board game group that meets regularly to play different games (updated from their earlier monthly brunch with college friends in 2023/03/01)."
+     ],
+     "@history/s000/r004": [
+      "- Assistant: Living in a dormitory definitely comes with its own set of unique experiences and challenges! It’s a great way to meet new people and build a sense of community, which can be really beneficial during your college years. You might enjoy spontaneous social activities or study sessions wit"
+     ],
+     "@history/s000/r003 (inactive)": [
+      "- Assistant: Trying new places and exploring different cuisines is a fantastic way to keep brunch exciting! Many people enjoy brunch spots that offer a mix of sweet and savory options, like classic eggs benedict or pancakes alongside unique dishes. Some also love places with great coffee or fresh pa"
+     ],
+     "@history/s001/r000": [
+      "- Assistant: Pickleball is indeed a fun sport! It combines elements of tennis, badminton, and ping-pong, making it unique and engaging. The court is smaller than a tennis court, which allows for quick exchanges and strategic play. Many players enjoy the social aspect, as it's often played in doubles"
+     ],
+     "@history/s002/r000 (inactive)": [
+      "- Assistant: That sounds like a great way to spend time with friends! If you're looking for some engaging options, you might enjoy \"Catan,\" which involves trading and building settlements. \"Ticket to Ride\" is another favorite, where players collect train cards to complete routes across a map. For so"
+     ],
+     "@history/s002/r002": [
+      "I have a Thanksgiving gathering coming up. Do you have any tips for planning a successful get-together?",
+      "- User: I have a Thanksgiving gathering coming up. Do you have any tips for planning a successful get-together?",
+      "- Assistant: Planning a Thanksgiving gathering can be a lot of fun! Start by creating a guest list to determine how many people you'll be hosting, which will help you with food and seating arrangements. Consider sending out invitations or a group message to keep everyone informed. When it comes to f"
+     ],
+     "@history/s002/r003": [
+      "- Assistant: Those are wonderful ideas for creating a warm atmosphere! The autumn-themed decorations and gratitude wall can really add a special touch. If you’re leaning towards doing most of the cooking, it might be helpful to plan a menu that includes some traditional favorites alongside a few uni"
+     ]
+    },
+    "verdict": "correct",
+    "note": "its @history card superseded by a card that doesn't restate it"
+   },
+   {
+    "id": "meme-nofiller/sw_046/3#3",
+    "dir": "meme-nofiller__sw_046",
+    "point": 3,
+    "category": "dependent",
+    "value": "workspace with /services and /common",
+    "entity": "project_structure",
+    "anchors": [],
+    "near": {
+     "@history/s003/r001 (inactive)": [
+      "Our project follows a workspace with /services and /common — this is determined by which framework we use (we use Quenthar); if we switch frameworks, this would change. Any tips or things to watch out for?",
+      "- User: Our project follows a workspace with /services and /common — this is determined by which framework we use (we use Quenthar); if we switch frameworks, this would change. Any tips or things to watch out for?",
+      "- Assistant: That setup sounds organized! Just make sure to check how the new framework handles workspace structure and shared modules, as that can really impact your workflow. Are you considering any specific frameworks for the switch?"
+     ],
+     "@overlay/project/workspace-structure": [
+      "Project Workspace Structure: /services and /common",
+      "workspace structure",
+      "project workspace",
+      "/services and /common"
+     ],
+     "@history/s000/r000": [
+      "- Assistant: Hey! How can I help with the project?"
+     ],
+     "@history/s001/r000": [
+      "Our team's channel is #vortex-team. It's where we chat about everything related to the project. Do you think we should have specific threads for different topics, or just keep it casual?",
+      "- Assistant: Hey! How can I help with the project?",
+      "- User: Our team's channel is #vortex-team. It's where we chat about everything related to the project. Do you think we should have specific threads for different topics, or just keep it casual?"
+     ],
+     "@history/s001/r003": [
+      "The team's package manager is Pyronis Bundle. It's been pretty useful for handling our project dependencies. Do you have any recommendations for managing packages effectively with Pyronis Bundle? Like, how can I ensure we're keeping…",
+      "- User: The team's package manager is Pyronis Bundle. It's been pretty useful for handling our project dependencies. Do you have any recommendations for managing packages effectively with Pyronis Bundle? Like, how can I ensure we're keeping everything up to date without breaking changes?",
+      "- Assistant: Using Pyronis Bundle for managing your project dependencies sounds like a good choice. To keep everything up to date while minimizing the risk of breaking changes, consider adopting a regular update schedule where you review and update your dependencies. You could also use version range"
+     ],
+     "@history/s002/r000": [
+      "- Assistant: Hey! How can I help with the project?"
+     ],
+     "@history/s002/r001 (inactive)": [
+      "- User: Now the developer has switched again — the team's secret manager is Orinthal Sealed. It's a pretty solid choice for managing sensitive info. Have you worked with Orinthal Sealed before? What’s your take on best practices for managing secrets in a project?"
+     ],
+     "@history/s003/r000 (inactive)": [
+      "- Assistant: Hey! What else about the project?"
+     ],
+     "@overlay/project/build-command": [
+      "Project Build Command: tarvex compile --debug",
+      "- This is determined by the fact that we use Tarvex CLI (see [[project/build-tool]]) and the Quenthar framework (see [[@history/s001/r002]]); if that changes, this would change."
+     ],
+     "@overlay/project/build-tool": [
+      "Project Build Tool: Tarvex CLI (or Karnex Bundler on framework switch)",
+      "The project build tool is Tarvex CLI (determined by using the Quenthar framework); if the framework switches, the build tool will become Karnex Bundler."
+     ]
+    },
+    "verdict": "matching error",
+    "note": "stated in other words (annotation format, word order, or escaped line breaks in a verbatim text)"
+   },
+   {
+    "id": "meme-nofiller/pl_047/1#1",
+    "dir": "meme-nofiller__pl_047",
+    "point": "end",
+    "category": "plain",
+    "value": "basketball",
+    "entity": "sports",
+    "anchors": [],
+    "near": {
+     "@history/s000/r003 (inactive)": [
+      "I regularly meet up for pickup basketball on Saturdays. It's a great way to stay active and socialize. Do you think playing team sports has any benefits beyond just fitness?",
+      "- User: I regularly meet up for pickup basketball on Saturdays. It's a great way to stay active and socialize. Do you think playing team sports has any benefits beyond just fitness?",
+      "- Assistant: Absolutely! Playing team sports like basketball can offer a range of benefits beyond just physical fitness. It promotes teamwork and communication skills, as you need to collaborate with your teammates to succeed. Additionally, it can foster a sense of community and belonging, which is "
+     ],
+     "@history/s001/r000 (inactive)": [
+      "I play basketball. Do you think it's a good way to stay in shape? What do you think are the benefits of playing basketball regularly?",
+      "- User: I play basketball. Do you think it's a good way to stay in shape? What do you think are the benefits of playing basketball regularly?",
+      "- Assistant: Basketball is indeed a fantastic way to stay in shape! It offers a great cardiovascular workout, which can help improve your heart health and endurance. The game involves a lot of running, jumping, and quick lateral movements, which can enhance your agility and coordination.",
+      "Additionally, playing basketball can help build strength, especially in your legs, core, and upper body, as you engage in shooting, passing, and rebounding. Beyond the physical benefits, it also encourages teamwork and social interaction, which can be great for your mental well-being. Regularly play"
+     ],
+     "@history/s001/r001 (inactive)": [
+      "Do you play basketball often? I find that playing regularly helps me improve my skills and fitness level. Do you have a preferred position you like to play, or do you enjoy playing all over the court?",
+      "- User: Do you play basketball often? I find that playing regularly helps me improve my skills and fitness level. Do you have a preferred position you like to play, or do you enjoy playing all over the court?",
+      "- Assistant: Playing basketball regularly is a great way to see improvement in both skills and fitness! Many players enjoy the versatility of playing different positions, as it helps them develop a well-rounded game. Each position has its unique challenges and strategies, whether you prefer the agil"
+     ],
+     "@history/s004/r002 (inactive)": [
+      "I'm part of pickup basketball Saturdays. Please forget that. Do you have any thoughts on that?",
+      "- User: I'm part of pickup basketball Saturdays. Please forget that. Do you have any thoughts on that?"
+     ],
+     "@overlay/user/fitness-and-team-sports": [
+      "User's Fitness and Team Sports Discussion (Activity Forgotten on Request)",
+      "team sports benefits",
+      "- In earlier discussions (2023/03/01), the user noted that they enjoy staying active, socializing, staying in shape, and improving their skills and fitness level through regular team sports."
+     ]
+    },
+    "verdict": "correct",
+    "note": "every @history card stating it superseded without a restatement"
+   },
+   {
+    "id": "meme-nofiller/pl_029/2#5",
+    "dir": "meme-nofiller__pl_029",
+    "point": "end",
+    "category": "plain",
+    "value": "xelvari dawn (book)",
+    "entity": "media_consumption",
+    "anchors": [],
+    "near": {
+     "@history/s002/r002 (inactive)": [
+      "I've switched again — my current media is Xelvari Dawn (book). It's an intriguing read so far. Have you heard about it or read anything similar?",
+      "- User: I've switched again — my current media is Xelvari Dawn (book). It's an intriguing read so far. Have you heard about it or read anything similar?",
+      "- Assistant: \"Xelvari Dawn\" sounds intriguing! While I haven't read it, it seems to fit into the realm of fantasy or science fiction, which often features rich world-building and complex characters. If you're enjoying it, you might also like books by authors such as N.K. Jemisin or Brandon Sanderson"
+     ],
+     "@overlay/media/current-watching": [
+      "Current Media: Reading Book \"Xelvari Dawn\"",
+      "current media",
+      "current book",
+      "Xelvari Dawn"
+     ],
+     "@history/s000/r002 (inactive)": [
+      "My current media is \"Whispers of Zarinthea\" (TV). Have you seen it, or do you have any recommendations for similar shows?",
+      "- User: My current media is \"Whispers of Zarinthea\" (TV). Have you seen it, or do you have any recommendations for similar shows?"
+     ]
+    },
+    "verdict": "matching error",
+    "note": "stated in other words (annotation format, word order, or escaped line breaks in a verbatim text)"
+   },
+   {
+    "id": "meme-nofiller/pl_029/2#5",
+    "dir": "meme-nofiller__pl_029",
+    "point": 3,
+    "category": "plain",
+    "value": "xelvari dawn (book)",
+    "entity": "media_consumption",
+    "anchors": [],
+    "near": {
+     "@history/s002/r002 (inactive)": [
+      "I've switched again — my current media is Xelvari Dawn (book). It's an intriguing read so far. Have you heard about it or read anything similar?",
+      "- User: I've switched again — my current media is Xelvari Dawn (book). It's an intriguing read so far. Have you heard about it or read anything similar?",
+      "- Assistant: \"Xelvari Dawn\" sounds intriguing! While I haven't read it, it seems to fit into the realm of fantasy or science fiction, which often features rich world-building and complex characters. If you're enjoying it, you might also like books by authors such as N.K. Jemisin or Brandon Sanderson"
+     ],
+     "@overlay/media/current-watching": [
+      "Current Media: Reading Book \"Xelvari Dawn\"",
+      "current media",
+      "current book",
+      "Xelvari Dawn"
+     ],
+     "@history/s000/r002 (inactive)": [
+      "My current media is \"Whispers of Zarinthea\" (TV). Have you seen it, or do you have any recommendations for similar shows?",
+      "- User: My current media is \"Whispers of Zarinthea\" (TV). Have you seen it, or do you have any recommendations for similar shows?"
+     ]
+    },
+    "verdict": "matching error",
+    "note": "stated in other words (annotation format, word order, or escaped line breaks in a verbatim text)"
+   }
+  ]
+ }
+}

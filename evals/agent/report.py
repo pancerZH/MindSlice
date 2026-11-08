@@ -37,6 +37,20 @@ def render_run(name: str, summary: dict[str, Any]) -> str:
             o.append(f"| {a} | " + " | ".join(f"{l['point']:.3f} [{l['low']:.3f}, {l['high']:.3f}] **{l['verdict']}**"
                                                if not math.isnan(l["point"]) else "–" for l in s["lines"]) + " |")
         o += ["", "; ".join(f"{l['id']}: {l['stat']}, line {l['line']}" for l in LINES), ""]
+    if summary.get("audit"):
+        o += ["## Audit of value matching (6.3)", "",
+              "Each `retired` failure and `lost` case (all of them when fewer than 50, else a fixed sample, seed "
+              "20261106) judged from the workspace as it was at the judgment point. More than 20% matching errors "
+              "in either sample: that cell's lines are reported as unreliable (PLAN.md section 6). The corrected "
+              "values count the matching errors as passes (exact when every case was judged); they are not lines.", "",
+              "| Cell | `retired` errors | `lost` errors | Lines | `retired` raw / corrected | `lost` raw / corrected |",
+              "| --- | --- | --- | --- | --- | --- |"]
+        for a, e in summary["audit"].items():
+            t, c = e["tally"], e["corrected"]
+            fmt = lambda k: f"{t[k]['matching_errors']} / {t[k]['judged']} ({t[k]['share']:.0%})" if t.get(k) and t[k]["judged"] else "–"
+            o.append(f"| {a} | {fmt('retired')} | {fmt('lost')} | {'reliable' if t['reliable'] else '**unreliable**'} | "
+                     f"{c['retired']['raw']:.3f} / {c['retired']['corrected']:.3f} | {c['lost']['raw']:.3f} / {c['lost']['corrected']:.3f} |")
+        o.append("")
     if summary.get("comparisons"):
         o += ["## Paired comparisons", "", "Mean difference over the units both cells scored, with the paired 95% interval.", "",
               "| Comparison | " + " | ".join(ORDER) + " |", "| --- |" + " --- |" * len(ORDER)]
