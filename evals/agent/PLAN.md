@@ -273,6 +273,38 @@ haystacks are kept, an unfinished one starts over.
 | v3 frozen, 2026-11-08 17:10Z | `results/freeze_v3.json`; registered as a secondary scoring of the confirmatory run (section 9a) before any of its records was read | |
 | v3 audit, after its freeze (v3 unchanged) | Two-way 6.3 worksheets for v3 (`results/audit/tier1-v3/`), verdicts from the hand labels (`labels.py`); the populations are v2's but for one case each in `agent-overlay`, whose 5 new passes were judged (all correct). `retired` 0-2%, `lost` 17%, 29%, 0%, 15% matching errors: Argon `agent-policy` stays unreliable by the rule (one value at two points). Absence pages v3 still flags, unjudged: 25 audited (10 per cell, or all), 22 matching errors (cards that mark the change in their title or summary and quote the earlier statement in a body line) | the v3 worksheets |
 
+## 9. Confirmatory run: MemoryAgentBench 32k with matcher v2 (pre-registered 2026-11-08, before its first call)
+
+Tier 1's lines were unreliable under the audit rule: the frozen matcher (`judge.py`) counts an agent's own
+wording as a lost fact (REPORT.md). Matcher v2 (`matcher2.py`) was then built from the audit's error classes,
+validated on `flat` and `oracle` (MEME and MemoryAgentBench, against card-level judgments) and on the 255
+hand-judged tier-1 cases (254 agree, in-sample), and **frozen** here
+(`results/freeze_confirm.json`, digest `228d623eeeb7898b8ab128add51a092a475652591838e328af8b8091c62ff885`).
+Re-scoring tier 1 with it is post-hoc. This run is not: v2 has never seen it.
+
+| | |
+| --- | --- |
+| Cell | `agent-policy` on `gemini-4-argon-medium` (main model) |
+| Haystack | MemoryAgentBench `factconsolidation_sh_32k` (dropped from tier 1, never scored): 2,310 facts, 231 batches of 10, 66 judged questions (44 conflicts) |
+| Setup | Exactly tier 1's (same runner digest, prompts, `agy` 1.5.3 and flags, 40-call cap, quota gate) |
+| Scoring | Matcher v2 as frozen; `flat` reference: the offline `flat` arm of the same haystack, re-scored with v2 |
+| Not used | The 28 batches of this cell that ran before tier 1 dropped this haystack (`tier1-dropped/`, unread) |
+
+**Lines** (the same values as section 5; MemoryAgentBench has no deletions, so no G5):
+
+| Line | Statistic | Line |
+| --- | --- | --- |
+| G1 | `stale-first`, flat minus agent, paired (44 conflicts) | ≥ 0.30 |
+| G2 | `retired` (44 conflicts) | ≥ 0.70 |
+| G3 | `current@10`, agent minus flat, paired (66 questions) | ≥ −0.05 |
+| G4 | `lost` (every judged current value) | ≤ 0.05 (upper bound for confirmed) |
+
+Verdicts as in section 5. **Audit first** (6.3 with v2): up to 50 `retired` failures and 50 `lost` cases
+(seed 20261106) judged on the workspace at the judgment point; more than 20% matching errors in either sample
+and the lines are reported as unreliable. With 44 conflicts and 63 current values, the sample is the whole
+population. The reference arms on this haystack under v2: flat `stale-first` 0.795, `current@10` 0.970;
+oracle `stale-first` 0.000, `retired` 0.955.
+
 ### 9a. Matcher v3 as a secondary scoring (registered 2026-11-08 17:10Z, before any record of this run was read)
 
 Matcher v3 (`matcher3.py`, applied through `rescore3.py`) fixes the error classes the v2 audits found
