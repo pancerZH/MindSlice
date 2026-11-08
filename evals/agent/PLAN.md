@@ -134,6 +134,12 @@ after their session; everything else after the last session).
 
 Tier-1 MEME episodes: pl_006 to pl_050 (45) and sw_001 to sw_050 (50); the full list is in `freeze.json`.
 
+**MemoryAgentBench 32k was dropped from tier 1** (ledger, 2026-11-08 03:53Z) after the run's first 329
+sessions and before any tier-1 record was read: its 231-batch chains needed about a quarter of the week's
+quota and set the critical path. Tier 1 is therefore the 95 MEME episodes (1,136 questions); every line
+G1-G5 is computed on MEME alone, and its claims are MEME's. The 97 MemoryAgentBench sessions that ran are
+kept, unread and unscored, in `tier1-dropped/` of the runs directory.
+
 **Variance repeats (8.4).** `agent-policy` with the main model, 3 more times, on 20 MEME episodes drawn once
 from the tier-1 list with `random.Random(20261106).sample` (sorted keys): pl_006, pl_007, pl_009, pl_012,
 pl_017, pl_020, pl_023, pl_027, pl_033, pl_036, pl_040, pl_041, pl_045, pl_047, pl_049, sw_007, sw_030,
@@ -253,4 +259,5 @@ haystacks are kept, an unfinished one starts over.
 | Smoke | No prompt wording changed. No line changed | |
 | Freeze | This plan and `results/freeze.json` committed before any tier-1 call; tier 1 paused for scheduling (section 7) | |
 | Tier 1, 2026-11-08 03:50Z | **Order changed (user's decision): `agent-policy` on Flash runs before the variance repeats.** After 30 minutes the first quota reading showed Argon sessions cost about 0.027% of the week each (Pro-priced tokens: about as much as an average smoke session, not a tenth), so the matrix needs about 85% of the week with 75.5% left and 3-4 five-hour windows, not the 1.5 projected above from tokens. The repeats (about 8% of the week) were marked deferred in the running schedule, so no started work was lost, and run after the Flash cell. No rule changed | the quota gate's readings |
+| Tier 1, 2026-11-08 03:53Z | **MemoryAgentBench 32k dropped from tier 1 (user's decision); re-frozen** (`tier1_dropped` in `freeze.json`; the tier definition and every rule unchanged). Reason: the remaining Argon chains (about 600 batches, about 17% of the week) and Flash's (231, about 8%) left the plan short of quota (about 84% needed, 72% left) and set a 6.5-hour critical path. Decided on logs and quota readings only: no tier-1 record had been read. The runner was stopped (12 partial haystacks, 9 of them MEME, restart from scratch); 43 finished MEME haystacks kept; the three partial MemoryAgentBench chains (97 sessions) moved to `tier1-dropped/`, unscored. Order from here: Argon cells, Flash `agent-policy`, variance repeats (the deferral markers removed) | the quota gate's readings |
 | Re-freeze, 2026-11-08 | Tier 1 reduced to four cells (section 7); `tier1` schedule and quota gate added (the runner code changed, so its digest); paired comparisons and the variance table added to the report. Lines, prompts, scorer and tiers unchanged | the smoke tier's cost and cap telemetry |

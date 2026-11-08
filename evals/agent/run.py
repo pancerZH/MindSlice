@@ -45,6 +45,9 @@ FLASH = "gemini-3.8-flash-medium"
 # on Flash. Flash agent-default and agent-overlay were left out on the smoke tier's cost and cap evidence.
 MATRIX = (("agent-default", MAIN_MODEL), ("agent-policy", MAIN_MODEL), ("agent-overlay", MAIN_MODEL), ("agent-policy", FLASH))
 EXCLUDED = (("agent-default", FLASH), ("agent-overlay", FLASH))
+# Dropped from tier 1 after its first 329 sessions, before any tier-1 record was read (PLAN.md ledger): the
+# 231-batch MemoryAgentBench chain alone needed about a quarter of the week's quota. The tier itself is unchanged.
+TIER1_DROPPED = ("mab-sh/factconsolidation_sh_32k",)
 SCORER_FILES = ("judge.py", "plan.py", "score.py", "sessions.py")
 
 
@@ -315,7 +318,8 @@ def frozen_facts(data: Path | None) -> dict[str, Any]:
             "tool_gate": "PreToolUse: allow mcp_* only", "cap": CAP, "session_timeout_s": agy.TIMEOUT_S,
             "retries": agy.RETRIES, "arms": list(LLM_ARMS),
             "matrix": [list(c) for c in MATRIX], "excluded": [list(c) for c in EXCLUDED],
-            "schedule": "tier 1: main-model cells (MemoryAgentBench chains first, then MEME), the variance repeats, then agent-policy on Flash",
+            "schedule": "tier 1: main-model cells, then agent-policy on Flash, then the variance repeats",
+            "tier1_dropped": list(TIER1_DROPPED),
             "quota_gate": {"min_5h": agy.QUOTA_MIN_5H, "min_weekly": agy.QUOTA_MIN_WEEKLY, "group": agy.QUOTA_GROUP},
             "tiers": {t: [h.key for h in tier_haystacks(t, data)] for t in ("smoke", "1")},
             "variance": {"arm": "agent-policy", "model": MAIN_MODEL, "repeats": VARIANCE_REPEATS,
@@ -331,7 +335,7 @@ def check_freeze(data: Path | None) -> list[str]:
     frozen = json.loads(FREEZE.read_text(encoding="utf-8"))
     now = frozen_facts(data)
     keys = ("engine_digest", "scorer_digest", "runner_digest", "prompts", "agy_version", "agy_flags", "agent_frontmatter",
-            "cap", "tiers", "variance", "lines", "matrix", "quota_gate")
+            "cap", "tiers", "variance", "lines", "matrix", "quota_gate", "tier1_dropped")
     out = [f"{k} changed since the freeze" for k in keys if frozen.get(k) != now.get(k)]
     if now["engine_dirty"]:
         out.append("mindslice/ has uncommitted changes")
@@ -351,21 +355,18 @@ def _deferred(d: Path) -> bool:
 
 
 def tier1_work(root: Path, data: Path | None) -> list[tuple[Path, str, str, Any]]:
-    """The frozen tier-1 schedule: the main model's three cells (each MemoryAgentBench chain first, being the
-    longest, then the MEME haystacks round-robin across arms), the variance repeats, then agent-policy on Flash."""
-    hs = tier_haystacks("1", data)
+    """The tier-1 schedule as run: the main model's three cells (MEME haystacks round-robin across arms), then
+    agent-policy on Flash, then the variance repeats (PLAN.md ledger); the dropped haystacks left out."""
+    hs = [h for h in tier_haystacks("1", data) if h.key not in TIER1_DROPPED]
     by_key = {h.key: h for h in hs}
-    mab = [h for h in hs if h.dataset == "mab-sh"]
-    meme = [h for h in hs if h.dataset != "mab-sh"]
     main = [c for c in MATRIX if c[1] == MAIN_MODEL]
     rest = [c for c in MATRIX if c[1] != MAIN_MODEL]
     run = root / "tier1"
-    work = [(run, a, m, h) for h in mab for a, m in main]
-    work += [(run, a, m, h) for h in meme for a, m in main]
+    work = [(run, a, m, h) for h in hs for a, m in main]
+    for a, m in rest:
+        work += [(run, a, m, h) for h in hs]
     for r in range(1, VARIANCE_REPEATS + 1):
         work += [(root / f"tier1-var{r}", "agent-policy", MAIN_MODEL, by_key[k]) for k in variance_episodes(data)]
-    for a, m in rest:
-        work += [(run, a, m, h) for h in mab + meme]
     return work
 
 

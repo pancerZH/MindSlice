@@ -7,7 +7,10 @@ call the matrix was cut to the three arms on `gemini-4-argon-medium` and `agent-
 times Argon's context per session, Flash `agent-overlay` alone would have taken about 42% of the six-cell
 budget while hitting the call cap in 20 of 46 MemoryAgentBench batches, and the two kept questions (prompt
 and architecture on the main model; model scaling under the policy) don't need them ([PLAN.md](PLAN.md),
-section 7). The decision used cost and cap telemetry only. **No line (G1-G5) has been read yet**; nothing
+section 7). The decision used cost and cap telemetry only. After the first 329 tier-1 sessions the quota
+readings showed the four cells still wouldn't fit (Argon sessions cost about 0.028% of the week each), so
+**MemoryAgentBench 32k was dropped from tier 1** before any tier-1 record was read: the lines are MEME's
+(95 episodes, 1,136 questions). **No line (G1-G5) has been read yet**; nothing
 below is a result of the test. The smoke tier is for plumbing and is never scored for lines (agent_test.md 5, 8.2).
 
 ## 1. The runner and the scorer, before any LLM call

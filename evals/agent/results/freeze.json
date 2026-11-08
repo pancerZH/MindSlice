@@ -1,5 +1,5 @@
 {
- "engine_commit": "85fa682",
+ "engine_commit": "491e914",
  "engine_digest": "fcc7ed17449a5aa770ad5d133278be55fa67b415ec2c49eaefd60c0a8edfd5a5",
  "engine_dirty": false,
  "scorer_digest": "432973dc71d3b1f221d67c9affe657e2fb322cc58523cfb4b165c47b75a69d1c",
@@ -76,7 +76,10 @@
    "gemini-3.8-flash-medium"
   ]
  ],
- "schedule": "tier 1: main-model cells (MemoryAgentBench chains first, then MEME), the variance repeats, then agent-policy on Flash",
+ "schedule": "tier 1: main-model cells, then agent-policy on Flash, then the variance repeats",
+ "tier1_dropped": [
+  "mab-sh/factconsolidation_sh_32k"
+ ],
  "quota_gate": {
   "min_5h": 0.12,
   "min_weekly": 0.05,
