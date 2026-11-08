@@ -272,6 +272,8 @@ haystacks are kept, an unfinished one starts over.
 | Matcher v3, 2026-11-08 (post-hoc for tier 1) | Built in new files (`matcher3.py`, `rescore3.py`; v2 and `rescore.py` untouched, digests checked) from the error classes of the v2 and Absence audits: time formats, modal verbs, "-ies"/"-ly", LCS coverage for long values, more past markers (sentence-scoped). Changes made while checking, in order: the stemmer was cut back to "-ies"/"-ly" after `oracle` showed collisions ("engaged"/"engaging"), and "have changed" was scoped to its sentence after `flat` showed a user's turn losing a fact; a first look at the cases v3 newly flagged (no audit had judged them) found all 6 wrong: 4 from "may" as a stop word (a month), and "prior" and "was removed" missing, which were fixed; the other 2 came back in the recorded sample. Then the recorded fresh sample, drawn again: every case v3 newly flagged and 20 of the pages it cleared (seed 20261106; `results/audit/tier1-v3/fresh/`): the cleared pages right (20/20), 2 of the 3 new flags wrong (the third, a new loss, right), both from one rule ("from X to Y" resumes as current), which was then removed (back to v2's behaviour). After that, v3 newly flags nothing no audit has judged, and is identical to v2 on `flat` and `oracle` (0 differing units). One tier-1 audit verdict corrected: the same line had been judged both ways (overlay `pl_043/update/4#1`, now a matching error, as the Absence audit had it) | the v2, Absence and fresh audits |
 | v3 frozen, 2026-11-08 17:10Z | `results/freeze_v3.json`; registered as a secondary scoring of the confirmatory run (section 9a) before any of its records was read | |
 | v3 audit, after its freeze (v3 unchanged) | Two-way 6.3 worksheets for v3 (`results/audit/tier1-v3/`), verdicts from the hand labels (`labels.py`); the populations are v2's but for one case each in `agent-overlay`, whose 5 new passes were judged (all correct). `retired` 0-2%, `lost` 17%, 29%, 0%, 15% matching errors: Argon `agent-policy` stays unreliable by the rule (one value at two points). Absence pages v3 still flags, unjudged: 25 audited (10 per cell, or all), 22 matching errors (cards that mark the change in their title or summary and quote the earlier statement in a body line) | the v3 worksheets |
+| Strata smoke, 2026-11-08 18:25-19:15Z | `qwen3.8-flash-next-iq3_s` on the local Strata server through `strata.py` (OpenAI chat completions, real MCP stdio through `mcp_proxy.py`), MEME `pl_001`-`pl_005`, `--jobs 1`. `agent-policy`: 25 sessions, 0 failed, 11.6 calls per session (max 18), 0 cap hits, 0 non-MCP calls, every traced call = the proxy's log, 4 tool errors (an `if_match` on an absent card; 3 `write` calls with argument names the schema doesn't have, `related_note` and `address`, which the server answers with a `TypeError` although the schema says `additionalProperties: false`, an engine gap, not changed), 4 sessions ending with a summary instead of `DONE`; median 44 s per session, 3.8 min per episode. `agent-overlay`: 25 sessions, 0 failed, 13.6 calls (max 28), 0 cap hits, 1 tool error (a `read` of an absent card), 7 without `DONE`; median 54 s, 5.3 min per episode. No setting changed after the smoke tier | plumbing |
+| Qwen tier 1 pre-registered | Section 10, `results/freeze_qwen.json`, before its first tier-1 call | |
 
 ## 9. Confirmatory run: MemoryAgentBench 32k with matcher v2 (pre-registered 2026-11-08, before its first call)
 
@@ -313,3 +315,32 @@ Matcher v3 (`matcher3.py`, applied through `rescore3.py`) fixes the error classe
 as registered above (**primary**) and with v3 (**secondary**): the same lines, the same `flat` reference
 (`gate1-v3`), and the same audit rule (6.3 with v3, every flagged case; a case flagged by both matchers is
 judged once). If the two disagree on a verdict, v2's is the registered one and v3's is reported beside it.
+
+## 10. Tier 1 with a local model: `qwen3.8-flash-next-iq3_s` on Strata (pre-registered 2026-11-08, before its first tier-1 call)
+
+A local, 3-bit quantized model on the same benchmark as the Gemini cells, to compare against
+`gemini-4-argon-medium` and `gemini-3.8-flash-medium`. Frozen in `results/freeze_qwen.json` (the client's digest
+and everything below; `python -m evals.agent strata --tier 1` refuses to start if it no longer matches).
+
+| | |
+| --- | --- |
+| Cells, in order | `agent-policy`, then `agent-overlay` (all 95 episodes each; `agent-overlay` starts after `agent-policy` is complete) |
+| Model and server | `qwen3.8-flash-next-iq3_s` (IQ3_S) on the local Strata server (RTX 5070 Ti, `n_ctx` 262,144, one slot), `--jobs 1` |
+| Client | `strata.py`: a fresh `[system, user]` conversation per session; the four tools from `tools/list` through `mcp_proxy.py`; assistant turns sent back whole (`reasoning_content`, `tool_calls`) |
+| Settings | temperature 1.0, top_p 0.95, top_k 20 (the server's defaults, sent explicitly); `max_tokens` 32,768 per turn; 80 model turns; the 40-call cap; 3,600 s per session; 3 retries after restoring `overlay/` |
+| Haystacks | tier 1 as run: the 95 MEME `nofiller` episodes (MemoryAgentBench 32k out, as for the Gemini cells) |
+| Prompts | section 2, unchanged (the same system prompts and session messages) |
+| Scoring | matcher v3 as frozen (`results/freeze_v3.json`), references `flat` and `oracle` from `gate1-v3`; v2 also reported |
+| Lines | G1-G5, section 5 |
+| Audit | 6.3 with v3 before the lines are read: up to 50 `retired` failures and 50 `lost` cases per cell, and 15 passes (seed 20261106); more than 20% matching errors in either flagged sample and that cell's lines are reported as unreliable. A case the existing labels already judge (the same workspace can't recur, so in practice none) keeps its verdict |
+| Comparisons, no line | Qwen `agent-policy` against Argon and Flash `agent-policy`, and Qwen `agent-overlay` minus Qwen `agent-policy`, paired by unit, on every pooled metric |
+| Not scored | a cell that doesn't finish all 95 episodes (it is reported as incomplete, with its telemetry) |
+
+**How it differs from the Gemini cells, by construction.** There's no CLI: the system prompt and the tool
+declarations reach the model as given, where `agy` adds its own framing. `agy`'s CLI validates arguments
+against the schemas before sending them; this client forwards every call whose arguments are a JSON object,
+and the server's answer, an error included, is the model's feedback. A call to any other tool name, or with
+arguments that aren't a JSON object, is answered by the client with an error and not forwarded, as the CLI
+does. One run per cell, no variance repeats. Projected from the smoke tier: about 6 h for `agent-policy` and
+8.5 h for `agent-overlay`.
+
