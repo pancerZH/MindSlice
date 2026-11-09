@@ -8,13 +8,14 @@ import unittest
 from mindslice import tomlfmt
 from mindslice.addressing import (
     MountCatalog,
+    alias_from_name,
     extract_wikilinks,
     normalize_path,
     parse_address,
     resolve_ref,
     rewrite_wikilinks,
 )
-from mindslice.card import append_statements, parse_card, preview_text, statement_blocks
+from mindslice.card import append_statements, parse_card, preview_text, split_lead, statement_blocks
 from mindslice.errors import FrontmatterError, InvalidAddressError
 
 from .helpers import card_text
@@ -106,6 +107,64 @@ class CardParsingTests(unittest.TestCase):
         self.assertEqual(new_after, "\nJust a summary.\n\n- fact\n")
 
 
+class PlainMarkdownTests(unittest.TestCase):
+    def test_yaml_subset(self):
+        parsed = parse_card(
+            "---\n"
+            "title: \"Alpha: the project\"  # quoted, with a comment\n"
+            "tags: work, alpha\n"
+            "aliases: [project a, 'it''s alpha', \"b, c\"]\n"
+            "extends:\n"
+            "- notes/base\n"
+            "summary: >\n"
+            "  folded over\n"
+            "  two lines\n"
+            "description: plain text that\n"
+            "  continues here\n"
+            "draft: true\n"
+            "empty:\n"
+            "nested:\n"
+            "  key: value\n"
+            "inline: {a: 1}\n"
+            "...\n"
+            "\n"
+            "# Alpha\n"
+            "\n"
+            "Lead paragraph.\n"
+        )
+        self.assertEqual(parsed.frontmatter_format, "yaml")
+        self.assertEqual(parsed.errors, [])
+        self.assertEqual(parsed.title, "Alpha: the project")
+        self.assertEqual(parsed.tags, ["work", "alpha"])
+        self.assertEqual(parsed.aliases, ["project a", "it's alpha", "b, c"])
+        self.assertEqual(parsed.extends, ["notes/base"])
+        self.assertEqual(parsed.frontmatter["summary"], "folded over two lines")
+        self.assertEqual(parsed.frontmatter["description"], "plain text that continues here")
+        self.assertEqual(parsed.frontmatter["draft"], "true")
+        self.assertNotIn("empty", parsed.frontmatter)
+        self.assertEqual(len(parsed.warnings), 2)  # nested and inline mappings are skipped
+        self.assertEqual(parsed.after.lstrip("\n"), "# Alpha\n\nLead paragraph.\n")
+        self.assertEqual(parsed.index_parts(), ("Lead paragraph.", "# Alpha"))
+
+    def test_dashes_that_are_not_frontmatter(self):
+        for text in ("---\nJust a thematic break, then prose.\n---\n\nMore.\n",  # prose inside
+                     "---\ntitle: never closed\n\nBody.\n",  # unclosed
+                     "Intro.\n---\ntitle: x\n---\n"):  # not at the top
+            parsed = parse_card(text)
+            self.assertIsNone(parsed.frontmatter_format, text)
+            self.assertEqual(parsed.frontmatter, {}, text)
+            self.assertEqual(parsed.errors, [], text)
+
+    def test_lead_paragraph(self):
+        body = "# Title\n\n```\ncode\n```\n\nFirst prose\nparagraph.\n\n- bullet\n\nLater prose."
+        lead, rest = split_lead(body)
+        self.assertEqual(lead, "First prose paragraph.")
+        self.assertEqual(rest, "# Title\n\n```\ncode\n```\n\n- bullet\n\nLater prose.")
+        self.assertEqual(split_lead("- only\n- bullets"), ("", "- only\n- bullets"))
+        native = parse_card(card_text("T") + "\n# Heading\n\nProse.\n")
+        self.assertEqual(native.index_parts()[0], "")  # native cards keep the summary-under-frontmatter rule
+
+
 class AddressingTests(unittest.TestCase):
     def test_parse_and_normalize(self):
         self.assertEqual(parse_address("@project/api/auth-flow"), ("@project", "api/auth-flow"))
@@ -114,6 +173,23 @@ class AddressingTests(unittest.TestCase):
             with self.assertRaises(InvalidAddressError, msg=bad):
                 parse_address(bad)
         self.assertEqual(normalize_path("a//b/"), "a/b")
+
+    def test_any_existing_file_name_is_addressable_but_new_ids_are_link_safe(self):
+        name = "notes/2024-01-01 (draft) & Q&A, v2#3"
+        self.assertEqual(normalize_path(name), name)
+        self.assertEqual(parse_address("@notes/" + name), ("@notes", name))
+        for bad in ("a/.hidden", "a/../b", "a/ padded", "tab\there"):
+            with self.assertRaises(InvalidAddressError, msg=bad):
+                normalize_path(bad)
+        with self.assertRaises(InvalidAddressError):
+            normalize_path(name, strict=True)
+        self.assertEqual(normalize_path("team/lead-2026_11.v2", strict=True), "team/lead-2026_11.v2")
+
+    def test_alias_from_name(self):
+        self.assertEqual(alias_from_name("My Notes"), "@My-Notes")
+        self.assertEqual(alias_from_name("kb-en"), "@kb-en")
+        self.assertEqual(alias_from_name("_drafts"), "@s_drafts")
+        self.assertEqual(alias_from_name("笔记"), "@slice")
 
     def test_slice_relative_resolution_never_uses_other_mounts(self):
         cats = {"@db": MountCatalog(), "@overlay": MountCatalog()}

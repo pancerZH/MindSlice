@@ -21,7 +21,7 @@ from pathlib import Path
 from typing import Any, Iterator, Sequence
 
 from . import packer, query, staging as staging_mod, validation, writer
-from .addressing import normalize_alias
+from .addressing import alias_from_name, normalize_alias
 from .config import (
     MOUNTS_FILE,
     Mount,
@@ -32,7 +32,7 @@ from .config import (
     save_mounts,
 )
 from .errors import MountError, NotFoundError, WorkspaceNotFoundError
-from .index import Index, SyncStats
+from .index import FRONTMATTER_CODES, Index, SyncStats
 from .lineage import FollowSpec
 from .locking import WorkspaceLock
 from .staging import StagingArea
@@ -195,11 +195,19 @@ class Workspace:
     # Group B: slice management, linting & packaging
     # ------------------------------------------------------------------
     def mount(self, path: str | os.PathLike[str], alias: str | None = None, precedence: int = 50,
-              role: str = "baseline") -> dict[str, Any]:
+              role: str = "baseline", retire_overlay: bool = True) -> dict[str, Any]:
         """Mount a read-only slice directory.
 
         Relative paths are resolved against the current directory, falling back to the
         workspace root. ``mounts.toml`` stores ``./relative`` paths for slices inside the workspace.
+
+        Any directory of Markdown works as is: notes without frontmatter, or with legacy ``---`` YAML,
+        are indexed without conversion, and without ``alias`` or a ``slice.toml`` alias the directory
+        name becomes one (``My Notes`` -> ``@My-Notes``).
+
+        ``retire_overlay`` (default): ``@overlay`` cards this slice holds unchanged, as ``pack()``
+        exported them, are removed from the overlay so they don't shadow it, and references to them
+        from the overlay cards that stay are rewritten to the slice (``packer.retire_packed_copies``).
         """
         target = Path(path).expanduser()
         if not target.is_absolute():
@@ -212,7 +220,10 @@ class Workspace:
         if not isinstance(role, str) or not role.strip():
             raise MountError("role must be a non-empty string")
         sm = load_slice_manifest(target)
-        alias = normalize_alias(alias or sm.alias or target.name.removesuffix(".slice"))
+        if alias or sm.alias:
+            alias = normalize_alias(alias or sm.alias)
+        else:  # a plain folder: its name, made a valid alias
+            alias = alias_from_name(target.name.removesuffix(".slice"))
         with self._writing() as table:
             if alias == table.overlay.alias or table.get(alias) is not None:
                 raise MountError(f"alias {alias} is already mounted", alias=alias)
@@ -224,7 +235,11 @@ class Workspace:
             new = Mount(alias, portable_path(self.root, target), precedence, role.strip(), "slice", target)
             new_table = MountTable(table.overlay, [*table.mounts, new])
             save_mounts(self.root, new_table)
-            stats = self._sync(self._reload_table())
+            table = self._reload_table()
+            stats = self._sync(table)
+            retired = packer.retire_packed_copies(self, table, alias) if retire_overlay else {}
+            if retired:
+                self._sync(table)
             mounted = {m.alias for m in new_table.all()}
             missing = []
             for dep in sm.dependencies:
@@ -233,11 +248,16 @@ class Workspace:
                         missing.append(dep)
                 except ValueError:
                     missing.append(dep)
-            cards = sum(1 for r in self.index.all_cards(alias) if not r["is_overview"])
+            rows = [r for r in self.index.all_cards(alias) if not r["is_overview"]]
             result: dict[str, Any] = {
                 "alias": alias, "path": new.path, "precedence": precedence, "role": new.role,
-                "cards": cards, "sync": stats.to_dict(),
+                "cards": len(rows), "sync": stats.to_dict(),
             }
+            plain = sum(1 for r in rows if r["has_frontmatter"] == FRONTMATTER_CODES[None])
+            yaml = sum(1 for r in rows if r["has_frontmatter"] == FRONTMATTER_CODES["yaml"])
+            if plain or yaml:  # indexed as is: title from the heading or file name, summary from the first paragraph
+                result["formats"] = {"toml": len(rows) - plain - yaml, "yaml": yaml, "plain": plain}
+            result.update(retired)
             if missing:
                 result["missing_dependencies"] = missing
             if sm.errors:

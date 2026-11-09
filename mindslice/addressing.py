@@ -32,8 +32,26 @@ def normalize_alias(alias: str) -> str:
     return alias
 
 
-def normalize_path(path: str) -> str:
-    """Normalize a slice-relative card path (POSIX separators, no ``.md``)."""
+def alias_from_name(name: str) -> str:
+    """A valid alias derived from a directory or slice name (``My Notes`` -> ``@My-Notes``)."""
+    cleaned = re.sub(r"[^A-Za-z0-9_.-]+", "-", name.removeprefix("@")).strip("-.") or "slice"
+    if not cleaned[0].isalnum():
+        cleaned = "s" + cleaned
+    return normalize_alias(cleaned)
+
+
+def _control(seg: str) -> bool:
+    return any(ord(c) < 0x20 or 0x7F <= ord(c) < 0xA0 for c in seg)
+
+
+def normalize_path(path: str, strict: bool = False) -> str:
+    """Normalize a slice-relative card path (POSIX separators, no ``.md``).
+
+    Any existing file name is addressable (``2024-01-01 (draft) & notes``): only empty, ``.``/``..``,
+    hidden (leading-dot), space-padded and control-character segments are rejected. ``strict=True`` is
+    for naming a *new* card: segments must also be letters, digits, ``_``, ``-``, ``.`` and spaces, so
+    the id works as a ``[[wikilink]]`` target everywhere.
+    """
     raw = path
     path = (path or "").strip().replace("\\", "/")
     while path.startswith("./"):
@@ -47,7 +65,7 @@ def normalize_path(path: str) -> str:
     for seg in segments:
         if seg in (".", ".."):
             raise InvalidAddressError(f"card path may not contain '.' or '..' segments: {raw!r}")
-        if seg.startswith(".") or not _SEGMENT_RE.match(seg) or seg != seg.strip():
+        if seg.startswith(".") or seg != seg.strip() or _control(seg) or (strict and not _SEGMENT_RE.match(seg)):
             raise InvalidAddressError(
                 f"invalid card path segment {seg!r} in {raw!r} (use letters, digits, '_', '-', '.', spaces; no leading dot)"
             )

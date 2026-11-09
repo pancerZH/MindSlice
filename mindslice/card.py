@@ -18,11 +18,19 @@ Parsing is lenient (so the index can always make progress on hand-edited
 files); strictness lives in ``validate()``. Serialization keeps untouched parts
 of a card byte-for-byte so human formatting and TOML comments survive edits
 that don't concern them.
+
+Plain Markdown needs no conversion: a file without frontmatter takes its title
+from its first ``# heading`` (or its file name) and its summary from its first
+prose paragraph. Legacy ``---`` YAML frontmatter (Jekyll, Hugo, Obsidian) is
+read as a flat subset: scalars, ``[a, b]`` and ``- item`` lists, ``|``/``>``
+blocks. Nested mappings are skipped with a warning. ``write()`` keeps a YAML
+block verbatim unless it changes the card's fields, and then writes ``+++`` TOML.
 """
 
 from __future__ import annotations
 
 import hashlib
+import json
 import re
 import tomllib
 from dataclasses import dataclass, field
@@ -34,10 +42,12 @@ from .lexical import normalize
 from .errors import FrontmatterError
 
 FENCE = "+++"
+YAML_FENCE = "---"
 KNOWN_FIELDS = ("title", "aliases", "tags", "extends", "supersedes")
 LIST_FIELDS = ("aliases", "tags", "extends", "supersedes")
 SUMMARY_PREVIEW_CHARS = 240
 MAX_CARD_LINES = 50
+PARSER_VERSION = "2"  # in the index signature: "2" reads YAML frontmatter and plain-Markdown lead paragraphs
 
 _BLOCK_START_RE = re.compile(r"^(?:[-*+]\s|#|```|~~~|>|\||<|\d+[.)]\s|(?:-{3,}|\*{3,}|_{3,})\s*$|\+\+\+)")
 _BULLET_RE = re.compile(r"^[-*+]\s+")
@@ -66,11 +76,28 @@ class ParsedCard:
     body: str
     errors: list[str] = field(default_factory=list)
     warnings: list[str] = field(default_factory=list)
+    frontmatter_format: str | None = None  # "toml" (+++), "yaml" (legacy ---) or None (plain Markdown)
 
     # -- typed accessors -------------------------------------------------
     @property
     def has_frontmatter(self) -> bool:
         return self.raw_frontmatter is not None
+
+    @property
+    def is_card_format(self) -> bool:
+        """True for a native card (``+++`` TOML frontmatter); False for plain Markdown or YAML."""
+        return self.frontmatter_format == "toml"
+
+    def index_parts(self) -> tuple[str, str]:
+        """``(summary, body)`` as indexed and previewed.
+
+        A native card's summary is the paragraph right under its frontmatter. Plain Markdown and
+        YAML-fronted notes usually open with a heading, so their summary is their first prose
+        paragraph, taken out of the body so it is not counted twice.
+        """
+        if self.is_card_format or self.summary or self.errors:
+            return self.summary, self.body
+        return split_lead(self.body)
 
     def list_field(self, name: str) -> list[str]:
         value = self.frontmatter.get(name)
@@ -172,6 +199,7 @@ def parse_card(text: str) -> ParsedCard:
     """Parse card text leniently; problems are reported in ``errors`` / ``warnings``."""
     errors: list[str] = []
     warnings: list[str] = []
+    fmt: str | None = None
     try:
         raw_fm, after = split_frontmatter(text)
     except FrontmatterError as exc:
@@ -179,6 +207,7 @@ def parse_card(text: str) -> ParsedCard:
         raw_fm, after = None, normalize_newlines(text)
     frontmatter: dict[str, Any] = {}
     if raw_fm is not None:
+        fmt = "toml"
         try:
             frontmatter = tomllib.loads(raw_fm)
         except tomllib.TOMLDecodeError as exc:
@@ -188,8 +217,198 @@ def parse_card(text: str) -> ParsedCard:
         for name in LIST_FIELDS:
             if isinstance(frontmatter.get(name), str):
                 warnings.append(f"frontmatter field {name!r} should be a list of strings")
+    elif not errors:
+        yaml = split_yaml_frontmatter(text)
+        if yaml is not None:
+            fmt = "yaml"
+            raw_fm, after, frontmatter, yaml_warnings = yaml
+            warnings.extend(yaml_warnings)
+            errors.extend(schema_errors(frontmatter))
     summary, body = split_summary(after)
-    return ParsedCard(frontmatter, raw_fm, after, summary, body, errors, warnings)
+    return ParsedCard(frontmatter, raw_fm, after, summary, body, errors, warnings, fmt)
+
+
+# ---------------------------------------------------------------------------
+# Plain Markdown: lead paragraph and legacy YAML frontmatter
+# ---------------------------------------------------------------------------
+
+
+def split_lead(body: str) -> tuple[str, str]:
+    """``(first prose paragraph, body without it)``; the paragraph is what ``first_paragraph`` finds."""
+    lines = body.split("\n")
+    in_fence = False
+    start = None
+    for i, line in enumerate(lines):
+        stripped = line.strip()
+        if start is not None:
+            if not stripped or stripped.startswith(("```", "~~~")) or _BLOCK_START_RE.match(stripped):
+                end = i
+                break
+            continue
+        if stripped.startswith(("```", "~~~")):
+            in_fence = not in_fence
+            continue
+        if in_fence or not stripped or _BLOCK_START_RE.match(stripped) or line.startswith(("    ", "\t")):
+            continue
+        start = i
+    else:
+        end = len(lines)
+    if start is None:
+        return "", body
+    lead = " ".join(line.strip() for line in lines[start:end])
+    rest = lines[:start] + lines[end:]
+    while start < len(rest) and start > 0 and not rest[start].strip() and not rest[start - 1].strip():
+        del rest[start]  # collapse the blank line pair the paragraph left behind
+    return lead, "\n".join(rest).strip("\n")
+
+
+_YAML_KEY_RE = re.compile(r"^([A-Za-z0-9_][\w-]*)[ \t]*:(?:[ \t]+(.*?))?[ \t]*$")
+_YAML_BLOCK_SCALARS = ("|", ">", "|-", ">-", "|+", ">+")
+
+
+def split_yaml_frontmatter(text: str) -> tuple[str, str, dict[str, Any], list[str]] | None:
+    """``(raw, after, fields, warnings)`` for a leading ``---`` YAML block, or None when there is none.
+
+    A block counts only if it is closed (``---`` or ``...``) and every line is a ``key: value``
+    entry, a list item, an indented continuation or a comment; otherwise the ``---`` is a thematic
+    break and the text is plain Markdown.
+    """
+    text = normalize_newlines(text)
+    lines = text.split("\n")
+    if not lines or lines[0].rstrip() != YAML_FENCE:
+        return None
+    close = next((i for i in range(1, len(lines)) if lines[i].rstrip() in (YAML_FENCE, "...")), None)
+    if close is None:
+        return None
+    parsed = parse_yaml_subset(lines[1:close])
+    if parsed is None:
+        return None
+    fields, warnings = parsed
+    raw = "".join(line + "\n" for line in lines[1:close])
+    return raw, "\n".join(lines[close + 1 :]), fields, warnings
+
+
+def parse_yaml_subset(lines: list[str]) -> tuple[dict[str, Any], list[str]] | None:
+    """Flat YAML: ``key: scalar``, flow and block lists of scalars, block scalars. Values stay strings."""
+    fields: dict[str, Any] = {}
+    warnings: list[str] = []
+    i, n = 0, len(lines)
+    while i < n:
+        line = lines[i]
+        stripped = line.strip()
+        i += 1
+        if not stripped or stripped.startswith("#"):
+            continue
+        m = _YAML_KEY_RE.match(line)
+        if m is None:
+            return None  # prose or an indented line at the top level: not a frontmatter block
+        key, rest = m.group(1), _strip_yaml_comment(m.group(2) or "")
+        value: Any
+        if rest in _YAML_BLOCK_SCALARS:
+            block: list[str] = []
+            while i < n and (not lines[i].strip() or lines[i][:1] in (" ", "\t")):
+                block.append(lines[i].strip())
+                i += 1
+            while block and not block[-1]:
+                block.pop()
+            value = "\n".join(block) if rest[0] == "|" else " ".join(b for b in block if b)
+        elif rest.startswith("["):
+            while rest.count("[") > rest.count("]") and i < n:
+                rest += " " + lines[i].strip()
+                i += 1
+            items = _yaml_flow_list(rest)
+            if items is None:
+                warnings.append(f"YAML field {key!r} is not a flat list; ignored")
+                continue
+            value = items
+        elif rest.startswith("{"):
+            warnings.append(f"YAML field {key!r} is a mapping; ignored")
+            continue
+        elif rest == "":
+            items, nested = [], False
+            while i < n:
+                s = lines[i].strip()
+                if s and not s.startswith("#") and not (lines[i][:1] in (" ", "\t") or s == "-" or s.startswith("- ")):
+                    break
+                if s == "-" or s.startswith("- "):
+                    items.append(_yaml_scalar(s[1:].strip()))
+                elif s and not s.startswith("#"):
+                    nested = True
+                i += 1
+            if nested:
+                warnings.append(f"YAML field {key!r} is a nested mapping; ignored")
+                continue
+            if not items:
+                continue  # null
+            value = [v for v in items if v is not None]
+        else:
+            while i < n and lines[i].strip() and lines[i][:1] in (" ", "\t"):
+                rest += " " + lines[i].strip()  # a folded multi-line scalar
+                i += 1
+            value = _yaml_scalar(rest)
+            if value is None:
+                continue
+        if key in LIST_FIELDS and isinstance(value, str):
+            value = [v.strip() for v in value.split(",") if v.strip()] if key == "tags" else [value]
+        fields[key] = value
+    return fields, warnings
+
+
+def _strip_yaml_comment(value: str) -> str:
+    if value[:1] in ("'", '"'):
+        quote = value[0]
+        end = value.find(quote, 1)
+        while quote == "'" and end != -1 and value[end + 1 : end + 2] == "'":
+            end = value.find(quote, end + 2)
+        while quote == '"' and end != -1 and value[end - 1] == "\\":
+            end = value.find(quote, end + 1)
+        if end != -1:
+            tail = value[end + 1 :]
+            return value[: end + 1] if tail.strip().startswith("#") or not tail.strip() else value
+        return value
+    hash_at = value.find(" #")
+    return value[:hash_at].rstrip() if hash_at != -1 else value
+
+
+def _yaml_scalar(value: str) -> str | None:
+    value = _strip_yaml_comment(value.strip())
+    if len(value) >= 2 and value[0] == value[-1] == '"':
+        try:
+            return json.loads(value)
+        except json.JSONDecodeError:
+            return value[1:-1]
+    if len(value) >= 2 and value[0] == value[-1] == "'":
+        return value[1:-1].replace("''", "'")
+    if value in ("", "~", "null", "Null", "NULL"):
+        return None
+    return value
+
+
+def _yaml_flow_list(value: str) -> list[str] | None:
+    value = _strip_yaml_comment(value.strip())
+    if not (value.startswith("[") and value.endswith("]")):
+        return None
+    inner = value[1:-1]
+    if "[" in inner or "{" in inner:
+        return None
+    items: list[str] = []
+    current, quote = "", None
+    for ch in inner + ",":
+        if quote:
+            current += ch
+            if ch == quote:
+                quote = None
+        elif ch in ("'", '"') and not current.strip():
+            quote = ch
+            current += ch
+        elif ch == ",":
+            item = _yaml_scalar(current)
+            if item is not None:
+                items.append(item)
+            current = ""
+        else:
+            current += ch
+    return items
 
 
 def schema_errors(frontmatter: dict[str, Any]) -> list[str]:

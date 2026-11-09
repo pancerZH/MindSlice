@@ -68,7 +68,8 @@ def manifest(
             sm = load_slice_manifest(m.root)
             folders, root_cards, total = idx.folder_counts(m.alias)
             overview = idx.card(m.alias, OVERVIEW_PATH)
-            description = sm.description or (overview["preview"] if overview is not None else "")
+            entry_card = overview if overview is not None else _readme(idx, m.alias)
+            description = sm.description or (entry_card["preview"] if entry_card is not None else "")
             description, desc_truncated = truncate(_collapse(description), DESCRIPTION_CHARS)
             entry: dict[str, Any] = {
                 "alias": m.alias,
@@ -122,6 +123,15 @@ def manifest(
         if pending:
             result["staging"] = {"pending": pending}
         return result
+
+
+def _readme(idx, mount: str):
+    """A plain folder's README at its root: its description when there is no slice.toml or overview."""
+    for name in ("README", "readme", "Readme"):
+        row = idx.card(mount, name)
+        if row is not None:
+            return row
+    return None
 
 
 # ---------------------------------------------------------------------------

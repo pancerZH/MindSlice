@@ -115,12 +115,21 @@ TOOLS: list[dict[str, Any]] = [
             "card as its premise; if that baseline is later superseded or deleted, this card is flagged. A wrong "
             "supersedes hides a card that is still true and extends hides nothing, so when unsure, use extends. "
             "Use delete to forget on request or to remove a wrong card. stage=true buffers the change in staging/ "
-            "for human review."
+            "for human review. Name the id by the durable topic or slot it fills (team/lead, "
+            "subscriptions/streaming), never by its current value (team/lead-sarah-chen): ids and links outlive "
+            "values. When a write supersedes or deletes a card, the response lists affected_backlinks (cards that "
+            "[[link]] to it) and affected_extensions (cards that extend it). Fix them in the same session: rewrite "
+            "a card that still states the old value as current or links to a card named after it; rebase an "
+            "extension that still holds (replace with extends naming the replacement), else supersede or delete "
+            "it. A link to a slot can stay (read() follows supersedes). read_only items are in base slices: "
+            "supersede one only if it states the old value as current."
         ),
         "inputSchema": {
             "type": "object",
             "properties": {
-                "id": {"type": "string", "description": "overlay-relative card path without .md, e.g. \"api/auth-edge-cases\""},
+                "id": {"type": "string", "description": "overlay-relative card path without .md, named by durable topic or slot, "
+                       "e.g. \"team/lead\" (not \"team/lead-sarah-chen\"); if the slot's id is taken by the card being "
+                       "superseded, qualify it with the date of the change (\"team/lead-2026-11\"), not the new value"},
                 "op": {"type": "string", "enum": ["create", "replace", "append", "delete"], "default": "create"},
                 "content": {"type": ["string", "array"], "items": {"type": "string"}, "description": "card body (Markdown), or bullet statements for append"},
                 "summary": {"type": "string", "description": "1-2 sentence abstract (<= 240 chars) stating the key fact with its concrete value; shown in search previews"},
@@ -143,7 +152,11 @@ INSTRUCTIONS = (
     "relevant cards, and read() an address for full content (it composes extensions and follows replacements). "
     "Record durable learnings, user corrections and debugging lessons with write() into @overlay: prefer append "
     "to grow an existing card, extends when a card refines, adds an exception or if-then rule to, or depends on "
-    "another, supersedes to replace an outdated card (not delete), and delete only to forget on request."
+    "another, supersedes to replace an outdated card (not delete), and delete only to forget on request. Name a "
+    "card by the durable topic or slot it fills (team/lead, subscriptions/streaming), never by the value in it "
+    "(team/lead-sarah-chen, subscriptions/xelvoria). When a write supersedes or deletes a card, its response lists "
+    "affected_backlinks and affected_extensions, the cards that still link to or extend it: update or rebase each "
+    "of them in the same session."
 )
 
 

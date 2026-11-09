@@ -143,6 +143,8 @@ def build_parser() -> argparse.ArgumentParser:
     s.add_argument("--alias")
     s.add_argument("--precedence", type=int, default=50)
     s.add_argument("--role", default="baseline")
+    s.add_argument("--keep-overlay", action="store_true",
+                   help="keep @overlay copies of this slice's cards (by default, unchanged packed copies are retired)")
 
     s = sub.add_parser("unmount", help="remove a mount")
     s.add_argument("alias")
@@ -227,7 +229,8 @@ def _dispatch(ws: Workspace, args: argparse.Namespace, compact: bool) -> int:
         _emit(ws.write(args.id, args.op, _content(args), args.summary, args.title, args.tags, args.aliases,
                        args.extends, args.supersedes, args.stage, args.if_match), compact)
     elif cmd == "mount":
-        _emit(ws.mount(_cwd_path(args.path), args.alias, args.precedence, args.role), compact)
+        _emit(ws.mount(_cwd_path(args.path), args.alias, args.precedence, args.role,
+                       retire_overlay=not args.keep_overlay), compact)
     elif cmd == "unmount":
         _emit(ws.unmount(args.alias), compact)
     elif cmd == "validate":

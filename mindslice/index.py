@@ -22,12 +22,12 @@ from pathlib import Path
 from typing import Any, Iterable, Sequence
 
 from .addressing import MountCatalog, resolve_ref
-from .card import parse_card, preview_text, sha256_bytes
+from .card import PARSER_VERSION, parse_card, preview_text, sha256_bytes
 from .config import OVERVIEW_PATH, Mount, MountTable
 from .fsutil import iter_markdown
 from .lexical import QueryPlan, analyze_query, analyzer_signature, fold, index_text
 
-SCHEMA_VERSION = "1"  # table layout; text-analysis changes are tracked by lexical.analyzer_signature()
+SCHEMA_VERSION = "1"  # table layout; text-analysis and parsing changes are tracked by index_signature()
 BM25_WEIGHTS = (10.0, 5.0, 3.0, 2.0, 1.0)  # title, aliases, tags, summary, body
 TOKENIZER = "porter unicode61 remove_diacritics 2"
 LINK_KINDS = ("extends", "supersedes", "wikilink")
@@ -116,6 +116,17 @@ class Hit:
         return (-self.score, -r["precedence"], r["mount"], r["path"])
 
 
+FRONTMATTER_CODES = {None: 0, "toml": 1, "yaml": 2}  # cards.has_frontmatter
+
+
+def index_signature() -> str:
+    """What derived index content depends on besides the files: text analysis and card parsing.
+
+    A different value re-indexes every card (telemetry is kept).
+    """
+    return f"{analyzer_signature()}|parser-{PARSER_VERSION}"
+
+
 def mount_signature(table: MountTable) -> str:
     return json.dumps(
         [[m.alias, str(m.root), m.precedence, m.role, m.kind] for m in table.all()], sort_keys=True
@@ -202,7 +213,7 @@ class Index:
         return {(r[0], r[1]): (r[2], r[3], r[4]) for r in rows}
 
     def is_stale(self, table: MountTable, exclude: Sequence[Path] = ()) -> bool:
-        if self._meta("analyzer") != analyzer_signature():
+        if self._meta("analyzer") != index_signature():
             return True
         if self._meta("mounts_signature") != mount_signature(table):
             return True
@@ -225,10 +236,10 @@ class Index:
         conn = self.conn
         conn.execute("BEGIN IMMEDIATE")
         try:
-            analyzer = analyzer_signature()
+            analyzer = index_signature()
             if self._meta("analyzer") != analyzer:
-                # Text analysis changed (MindSlice upgrade or a new Unicode database): every
-                # card must be re-analyzed. Telemetry is kept.
+                # Text analysis or card parsing changed (MindSlice upgrade or a new Unicode
+                # database): every card must be re-analyzed. Telemetry is kept.
                 self._reset_derived()
                 self._set_meta("analyzer", analyzer)
             signature = mount_signature(table)
@@ -322,7 +333,8 @@ class Index:
         text = data.decode("utf-8", errors="replace")
         parsed = parse_card(text)
         title = parsed.display_title(path)
-        preview, _ = preview_text(parsed.summary, parsed.body, limit=10_000)
+        summary, body = parsed.index_parts()  # plain Markdown: the lead paragraph is the summary
+        preview, _ = preview_text(summary, body, limit=10_000)
         lines = text.count("\n") + (0 if text.endswith("\n") or not text else 1)
         cur = self.conn.execute(
             """INSERT INTO cards(mount, path, title, aliases, tags, extends, supersedes, summary, preview,
@@ -336,21 +348,21 @@ class Index:
                 json.dumps(parsed.tags, ensure_ascii=False),
                 json.dumps(parsed.extends, ensure_ascii=False),
                 json.dumps(parsed.supersedes, ensure_ascii=False),
-                parsed.summary,
+                summary,
                 preview,
                 digest,
                 mtime_ns,
                 size,
                 lines,
                 1 if path == OVERVIEW_PATH else 0,
-                1 if parsed.has_frontmatter else 0,
+                FRONTMATTER_CODES.get(parsed.frontmatter_format, 0),
                 json.dumps(parsed.errors, ensure_ascii=False),
                 json.dumps(parsed.warnings, ensure_ascii=False),
             ),
         )
         card_id = cur.lastrowid
         alias_text = " ".join(parsed.aliases + [path.replace("/", " ")])
-        fields = (title, alias_text, " ".join(parsed.tags), parsed.summary, parsed.body)
+        fields = (title, alias_text, " ".join(parsed.tags), summary, body)
         self.conn.execute(
             "INSERT INTO cards_fts(rowid, title, aliases, tags, summary, body) VALUES(?, ?, ?, ?, ?, ?)",
             (card_id, *(index_text(t) for t in fields)),
@@ -543,6 +555,17 @@ class Index:
                WHERE l.kind=? AND l.dst_mount=? AND l.dst_path=? AND l.resolved=1
                  AND NOT (l.src_mount = l.dst_mount AND l.src_path = l.dst_path)
                ORDER BY """ + order + " l.src_mount, l.src_path",
+            (kind, mount, path),
+        ).fetchall()
+
+    def dangling_inbound(self, kind: str, mount: str, path: str) -> list[sqlite3.Row]:
+        """Cards whose ``kind`` reference names ``(mount, path)`` by path but no longer resolves (a deleted target)."""
+        return self.conn.execute(
+            """SELECT DISTINCT l.src_mount, l.src_path, c.mtime_ns, m.precedence, m.role
+               FROM links l JOIN cards c ON c.mount = l.src_mount AND c.path = l.src_path
+               JOIN mounts m ON m.alias = l.src_mount
+               WHERE l.kind=? AND l.dst_mount=? AND l.dst_path=? AND l.resolved=0
+               ORDER BY m.precedence DESC, l.src_mount, l.src_path""",
             (kind, mount, path),
         ).fetchall()
 
