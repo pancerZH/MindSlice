@@ -31,6 +31,62 @@ def _snapshot(hdir: Path, point) -> dict[str, tuple[bool, m2.Text, str]]:
     return {a: (not txt.startswith("[INACTIVE] "), m2.Text(txt.removeprefix("[INACTIVE] ")), txt) for a, txt in cards.items()}
 
 
+def snapshots(hdir: Path, points) -> dict[str, dict[str, tuple[bool, m2.Text, str]]]:
+    """``_snapshot`` at several points with one replay (a long haystack, such as MemoryAgentBench's 231
+    sessions, would otherwise be replayed from the start for every point). Same workspace as ``audit.replay``."""
+    from evals.external.datasets import LOADERS
+    from mindslice import Workspace
+    from mindslice.mcp_server import MCPServer
+
+    from .judge import Judge
+    from .runner import HISTORY_ALIAS, HISTORY_ARMS, write_history
+    from .sessions import agent_sessions
+
+    recs = audit._records(hdir)
+    last = max(x["session"] for x in recs if x["kind"] == "session")
+    want = {str(p): (last if str(p) == "end" else int(p)) for p in points}
+    stops = set(want.values())
+    arm, key = recs[0]["arm"], recs[0]["haystack"]
+    rows = [json.loads(l) for l in (hdir / "calls.jsonl").read_text(encoding="utf-8").splitlines() if l.strip()]
+    rows = [r for r in rows if r.get("kind") == "tools/call" and r.get("tool") == "write" and not r.get("refused")]
+    final: dict[int, int] = {}
+    for r in rows:
+        final[r["session"]] = max(final.get(r["session"], 0), r.get("attempt", 0))
+    by_session: dict[int, list] = {}
+    for r in rows:
+        if r.get("attempt", 0) == final.get(r["session"]):
+            by_session.setdefault(r["session"], []).append(r)
+    taken: dict[int, dict] = {}
+    with tempfile.TemporaryDirectory() as t:
+        ws = Workspace.init(Path(t) / "ws")
+        try:
+            sessions = None
+            if arm in HISTORY_ARMS:
+                h = next(x for x in LOADERS[recs[0]["dataset"]](None) if x.key == key)
+                sessions = agent_sessions(h)
+                hist = ws.root / "history.slice"
+                hist.mkdir()
+                ws.mount(hist, alias=HISTORY_ALIAS, role="baseline")
+            server = MCPServer(ws)
+            for i in range(max(stops) + 1):
+                if sessions is not None:
+                    write_history(ws.root / "history.slice", sessions[i].cards)
+                for r in by_session.get(i, []):
+                    server._tools_call({"name": "write", "arguments": r["arguments"]})
+                if i in stops:
+                    ws.manifest(limit=1)
+                    judge = Judge(ws)
+                    judge.refresh()
+                    flags = judge.flags(judge.addresses())
+                    cards = audit._cards(Path(t) / "ws")
+                    taken[i] = {a: (bool(flags.get(a, (True, False))[0]),
+                                    m2.Text(txt), txt if flags.get(a, (True, False))[0] else "[INACTIVE] " + txt)
+                                for a, txt in cards.items()}
+        finally:
+            ws.close()
+    return {p: taken[i] for p, i in want.items()}
+
+
 def _others(key: str, data) -> list[str]:
     from evals.external.datasets import LOADERS
 
@@ -58,6 +114,14 @@ def worksheet(cell_dir: Path, orig_dir: Path, labels: dict | None, data=None, n_
     out: dict[str, Any] = {"cell": cell_dir.name, "population": {"retired": len(fail), "lost": len(lost), "passes": len(passed),
                                                                   "flips": len(flips)}, "cases": {}}
     cache: dict = {}
+    picked = {"retired": pick(fail, n_flag), "lost": pick(lost, n_flag), "passes": pick(passed, n_pass), "flips": pick(flips, n_flip)}
+    need: dict[str, set] = {}
+    for kind, rs in picked.items():
+        for h, r in rs:
+            need.setdefault(h, set()).add(str(r["session"] if kind in ("retired", "passes") else r["point"]))
+    for h, pts in need.items():
+        for p, snap_ in snapshots(orig_dir / h, pts).items():
+            cache[(h, p)] = snap_
 
     def snap(h, point):
         k = (h, str(point))
@@ -66,7 +130,7 @@ def worksheet(cell_dir: Path, orig_dir: Path, labels: dict | None, data=None, n_
         return cache[k]
 
     rows = []
-    for h, r in pick(fail, n_flag):
+    for h, r in picked["retired"]:
         old = lab_r.get(r["id"])
         s = snap(h, r["session"])
         others = _others(r["haystack"], data)
@@ -79,7 +143,7 @@ def worksheet(cell_dir: Path, orig_dir: Path, labels: dict | None, data=None, n_
                      "verdict": old["verdict"] if old else None, "note": ("from the tier-1 audit" if old else "")})
     out["cases"]["retired"] = rows
     rows = []
-    for h, r in pick(lost, n_flag):
+    for h, r in picked["lost"]:
         old = lab_l.get((r["id"], str(r["point"])))
         s = snap(h, r["point"])
         req = set(m2.value_parts(r["value"])[0]) | set(m2.tokens(str(r.get("entity", "")).replace("_", " ")))
@@ -91,7 +155,7 @@ def worksheet(cell_dir: Path, orig_dir: Path, labels: dict | None, data=None, n_
                      "verdict": old["verdict"] if old else None, "note": ("from the tier-1 audit" if old else "")})
     out["cases"]["lost"] = rows
     rows = []
-    for h, r in pick(passed, n_pass):
+    for h, r in picked["passes"]:
         s = snap(h, r["session"])
         words = set().union(*(set(m2.value_parts(v)[0]) for v in r["stale"]))
         ev = {a: [ln for ln, al in zip(t.lines, t.is_alias) if not al and set(m2.tokens(ln)) & words][:3]
@@ -101,7 +165,7 @@ def worksheet(cell_dir: Path, orig_dir: Path, labels: dict | None, data=None, n_
                      "evidence": dict(list(ev.items())[:5]), "verdict": None, "note": ""})
     out["cases"]["passes"] = rows
     rows = []
-    for h, r in pick(flips, n_flip):
+    for h, r in picked["flips"]:
         s = snap(h, r["point"])
         hold = {a: [ln for ln in s[a][1].lines if m2.states_current(m2.Text(ln), r["value"])][:2] or s[a][1].lines[:2]
                 for a in r["holders"][:2] if a in s}
