@@ -117,6 +117,46 @@ class MCPTests(WorkspaceTestCase):
         res = self.call("tools/call", {"name": name, "arguments": arguments})["result"]
         return res["isError"], json.loads(res["content"][0]["text"])
 
+    def test_argument_errors(self):
+        """Argument names that don't fit the schema get a standard invalid_arguments error, not a Python one."""
+        err, res = self.tool("write", address="api/jwt", content="x")
+        self.assertTrue(err)
+        self.assertEqual((res["error"], res["code"]), ("InvalidArgumentsError", "invalid_arguments"))
+        self.assertEqual(res["details"]["missing"], ["id"])
+        self.assertEqual(res["details"]["unexpected"], ["address"])
+        self.assertEqual(res["details"]["hints"], {"address": "id"})
+        self.assertIn("did you mean 'id'?", res["message"])
+        self.assertIn("Allowed arguments: id, op,", res["message"])
+        err, res = self.tool("read")
+        self.assertEqual((err, res["code"], res["details"]["missing"]), (True, "invalid_arguments", ["address"]))
+        err, res = self.tool("search", queries="token")
+        self.assertEqual(res["details"]["hints"], {"queries": "query"})
+        err, res = self.tool("write", id="api/new", body="text")
+        self.assertEqual((res["details"]["missing"], res["details"]["unexpected"]), ([], ["body"]))
+        err, res = self.tool("read", address="api/new")  # nothing was written
+        self.assertEqual((err, res["code"]), (True, "not_found"))
+        res = self.call("tools/call", {"name": "manifest", "arguments": ["not", "an", "object"]})["result"]
+        self.assertTrue(res["isError"])
+        self.assertEqual(json.loads(res["content"][0]["text"])["code"], "invalid_arguments")
+        err, res = self.tool("search", query="token expiration")  # a valid call is unchanged
+        self.assertFalse(err)
+
+    def test_leftover_errors_are_standard(self):
+        """A TypeError, KeyError or ValueError raised below the names check comes back as invalid_arguments too."""
+        orig = self.server.call_tool
+
+        def boom(name, arguments):
+            raise KeyError("x")
+
+        self.server.call_tool = boom
+        try:
+            err, res = self.tool("manifest")
+        finally:
+            self.server.call_tool = orig
+        self.assertTrue(err)
+        self.assertEqual((res["code"], res["details"]["cause"]), ("invalid_arguments", "KeyError"))
+        self.assertTrue(res["message"].startswith("manifest: the arguments could not be used"))
+
     def test_handshake_and_listing(self):
         init = self.call("initialize", {"protocolVersion": "2025-03-26", "capabilities": {}, "clientInfo": {"name": "t"}})
         self.assertEqual(init["result"]["protocolVersion"], "2025-03-26")

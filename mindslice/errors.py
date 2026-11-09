@@ -74,5 +74,11 @@ class UnresolvedExportDependencyError(MindSliceError):
     code = "unresolved_export_dependency"
 
 
+class InvalidArgumentsError(MindSliceError, ValueError):
+    """A tool call's arguments don't fit the tool: a required one is missing, or one isn't in its schema."""
+
+    code = "invalid_arguments"
+
+
 class LockTimeoutError(MindSliceError, TimeoutError):
     code = "lock_timeout"

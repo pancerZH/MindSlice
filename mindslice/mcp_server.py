@@ -9,12 +9,13 @@ agent writes into ``staging/`` for human review via ``diff``/``apply``).
 
 from __future__ import annotations
 
+import difflib
 import json
 import sys
 from typing import IO, Any
 
 from . import __version__
-from .errors import MindSliceError
+from .errors import InvalidArgumentsError, MindSliceError
 from .workspace import Workspace
 
 PROTOCOL_VERSIONS = ("2025-06-18", "2025-03-26", "2024-11-05")
@@ -205,12 +206,16 @@ class MCPServer:
         name = params.get("name")
         if name not in {t["name"] for t in TOOLS}:
             return _tool_result({"error": "UnknownTool", "message": f"unknown tool {name!r}"}, is_error=True)
+        arguments = params.get("arguments")
         try:
-            payload = self.call_tool(name, params.get("arguments") or {})
+            check_arguments(name, {} if arguments is None else arguments)
+            payload = self.call_tool(name, arguments or {})
         except MindSliceError as exc:
             return _tool_result(exc.to_dict(), is_error=True)
-        except (TypeError, ValueError, KeyError) as exc:
-            return _tool_result({"error": type(exc).__name__, "message": str(exc)}, is_error=True)
+        except (TypeError, ValueError, KeyError) as exc:  # raised below the arguments check: still the caller's input
+            err = InvalidArgumentsError(f"{name}: the arguments could not be used ({type(exc).__name__}: {exc}).",
+                                        tool=name, cause=type(exc).__name__)
+            return _tool_result(err.to_dict(), is_error=True)
         return _tool_result(payload)
 
     def serve(self, stdin: IO[str], stdout: IO[str]) -> None:
@@ -230,6 +235,39 @@ class MCPServer:
             if response is not None:
                 stdout.write(json.dumps(response, ensure_ascii=False) + "\n")
                 stdout.flush()
+
+
+# Names a caller is likely to use for another argument of the same tool (shown as a hint, never accepted).
+_ARGUMENT_HINTS = {"write": {"address": "id", "path": "id", "card": "id", "body": "content", "text": "content"},
+                   "read": {"id": "address", "path": "address", "card": "address"},
+                   "search": {"q": "query", "queries": "query", "text": "query"}}
+
+
+def check_arguments(name: str, arguments: Any) -> None:
+    """The tool call's argument names against the tool's input schema: a missing required argument or one the
+    schema doesn't have raises ``InvalidArgumentsError`` naming each, with the allowed names (and a hint where
+    a name looks like another argument). Values are not checked here; the tool checks them."""
+    schema = next(t["inputSchema"] for t in TOOLS if t["name"] == name)
+    if not isinstance(arguments, dict):
+        raise InvalidArgumentsError(f"{name}: arguments must be a JSON object, not {type(arguments).__name__}.", tool=name)
+    allowed = list(schema.get("properties", {}))
+    missing = [k for k in schema.get("required", []) if k not in arguments]
+    unexpected = sorted(k for k in arguments if k not in allowed) if schema.get("additionalProperties") is False else []
+    if not missing and not unexpected:
+        return
+    hints = {}
+    for k in unexpected:
+        guess = _ARGUMENT_HINTS.get(name, {}).get(k) or next(iter(difflib.get_close_matches(k, allowed, n=1, cutoff=0.75)), None)
+        if guess:
+            hints[k] = guess
+    parts = []
+    if missing:
+        parts.append("missing required argument" + ("s " if len(missing) > 1 else " ") + ", ".join(f"'{k}'" for k in missing))
+    if unexpected:
+        parts.append("unknown argument" + ("s " if len(unexpected) > 1 else " ") + ", ".join(
+            f"'{k}'" + (f" (did you mean '{hints[k]}'?)" if k in hints else "") for k in unexpected))
+    raise InvalidArgumentsError(f"{name}: " + "; ".join(parts) + ". Allowed arguments: " + ", ".join(allowed) + ".",
+                                tool=name, missing=missing, unexpected=unexpected, allowed=allowed, **({"hints": hints} if hints else {}))
 
 
 def _tool_result(payload: dict[str, Any], is_error: bool = False) -> dict[str, Any]:

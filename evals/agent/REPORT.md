@@ -83,7 +83,7 @@ What the local model does differently:
    proxy's log. 135 and 98 of 475 sessions end with a summary instead of `DONE`. Of `agent-policy`'s 81 tool
    errors, 30 are stale `if_match` values. Another 22 are argument names outside the schema (`address`,
    `body`, ...). The server answers those with a raw `TypeError` instead of a validation error, and 8 more
-   inputs raise a `KeyError`. Those are engine robustness gaps, recorded and left unchanged for the run.
+   inputs raise a `KeyError`. Those are engine robustness gaps. They were left unchanged for the run and fixed after every run had been scored: such calls now get a standard `invalid_arguments` error that names the bad arguments and the allowed ones (PLAN.md ledger).
    Tokens, all on the local GPU: 4.1M + 28.8M cached in and 1.9M out (`agent-policy`); 6.1M + 41.2M and 2.5M
    (`agent-overlay`).
 
