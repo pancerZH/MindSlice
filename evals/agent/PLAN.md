@@ -276,6 +276,7 @@ haystacks are kept, an unfinished one starts over.
 | Qwen tier 1 pre-registered | Section 10, `results/freeze_qwen.json`, before its first tier-1 call | |
 | Confirmatory run done, 2026-11-08 23:57Z | 231/231 sessions, no failed haystack (two sessions retried once after a provider error). Re-scored with v2 (registered) and v3 (secondary): identical. Audit first (recorded and committed before the lines were generated): 4 `retired` failures, 3 matching errors (one-word anchors match another subject's fact), no `lost` case, 15 passes correct. G1-G4 confirmed; by the rule, reported unreliable (the errors only lower `retired`; corrected 0.977) | |
 | Qwen `agent-policy` done, 2026-11-09 02:24Z | 95/95, no failed haystack, 7.1 h. Re-scored with v3 (and v2). Audit first (committed before the lines): `retired` 4/50 matching errors, `lost` 4/13, passes 0/15: unreliable by the rule (`lost`). G2 and G5 miss; `forgotten` failures checked by sample (exploratory): real. The report command gains `--add-arm` (the Gemini cells beside it) and the three section-10 comparisons | the v3 worksheet |
+| Qwen tier 1 done, 2026-11-09 11:45Z | `agent-overlay` 95/95, no failed haystack, 9.3 h; the engine unchanged throughout. Audit first (committed before the lines): `retired` 1/50 matching errors, `lost` 0/3, 2 of 15 passes missed: reliable. G1, G2 and G5 miss; G3 and G4 confirmed | the v3 worksheet |
 
 ## 9. Confirmatory run: MemoryAgentBench 32k with matcher v2 (pre-registered 2026-11-08, before its first call)
 

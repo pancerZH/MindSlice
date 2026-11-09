@@ -14,14 +14,16 @@ differences paired by unit.
 
 ## Qwen tier 1 (pre-registered, PLAN.md section 10): `qwen3.8-flash-next-iq3_s` on Strata, matcher v3
 
-[tier1-qwen-v3.md](tier1-qwen-v3.md). `agent-overlay` running.
+[tier1-qwen-v3.md](tier1-qwen-v3.md) (the Gemini cells beside it).
 
 | Cell | G1 cut (≥ 0.30) | G2 `retired` (≥ 0.70) | G3 `current@10` diff (≥ −0.05) | G4 `lost` (≤ 0.05) | G5 `forgotten` (≥ 0.90) | 6.3 rule |
 | --- | --- | --- | --- | --- | --- | --- |
 | `agent-policy` @ Qwen | 0.301 [0.224, 0.385] point pass | 0.566 [0.505, 0.623] **miss** | +0.032 [0.006, 0.063] confirmed | 0.004 [0.002, 0.007] confirmed | 0.609 [0.511, 0.707] **miss** | unreliable (`lost` 4/13; `retired` 4/50) |
+| `agent-overlay` @ Qwen | 0.256 [0.179, 0.327] **miss** | 0.392 [0.335, 0.452] **miss** | +0.025 [0.006, 0.051] confirmed | 0.001 [0.000, 0.002] confirmed | 0.315 [0.228, 0.413] **miss** | reliable (`retired` 1/50, `lost` 0/3; 2 of 15 passes missed) |
 
-Paired, Qwen minus Argon (`agent-policy`): `retired` −0.164 [−0.231, −0.103], `forgotten` −0.370 [−0.467, −0.272];
-Qwen minus Flash: `retired` −0.110 [−0.171, −0.050], `forgotten` −0.370 [−0.478, −0.272].
+Paired: Qwen minus Argon (`agent-policy`) `retired` −0.164 [−0.231, −0.103], `forgotten` −0.370 [−0.467, −0.272];
+Qwen minus Flash `retired` −0.110 [−0.171, −0.050]; `agent-overlay` minus `agent-policy` on Qwen `retired` −0.174
+[−0.242, −0.107], `forgotten` −0.293 [−0.435, −0.163] (on Argon `retired` +0.192).
 
 ## G1-G5 with matcher v3 (post-hoc re-score, audited both ways)
 

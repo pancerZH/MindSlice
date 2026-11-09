@@ -36,43 +36,56 @@ Tables: [results/confirm-mab32k-v2.md](results/confirm-mab32k-v2.md) (and `-v3`)
 `results/audit/confirm-mab32k-v2/`.
 
 **Qwen tier 1** (PLAN.md section 10): `qwen3.8-flash-next-iq3_s` (3-bit IQ3_S) on a local Strata server,
-through `strata.py`. `agent-policy` is done: 95/95 episodes, no failed haystack, 7.1 h, scored with matcher v3.
-`agent-overlay` is running.
+through `strata.py`. **Done:** both cells ran all 95 episodes with no failed haystack; `agent-policy` took 7.1 h and
+`agent-overlay` 9.3 h. Scored with matcher v3.
 
-| Line | Line value | Qwen `agent-policy` | Argon `agent-policy` | Flash `agent-policy` |
-| --- | --- | --- | --- | --- |
-| G1 `stale-first` cut | ≥ 0.30 | 0.301 [0.224, 0.385] point pass | 0.327 point pass | 0.327 point pass |
-| G2 `retired` | ≥ 0.70 | 0.566 [0.505, 0.623] **miss** (corrected 0.601) | 0.730 point pass | 0.676 miss |
-| G3 `current@10` diff | ≥ −0.05 | +0.032 [0.006, 0.063] confirmed | +0.032 confirmed | +0.032 confirmed |
-| G4 `lost` | ≤ 0.05 | 0.004 [0.002, 0.007] confirmed | 0.002 confirmed | 0.004 confirmed |
-| G5 `forgotten` | ≥ 0.90 | 0.609 [0.511, 0.707] **miss** | 0.978 confirmed | 0.978 confirmed |
-| Audit (6.3, v3): `retired` / `lost` matching errors | ≤ 20% | 4/50 · **4/13** (0 of 15 passes missed): unreliable by the rule (`lost`) | | |
+| Line | Line value | Qwen `agent-policy` | Qwen `agent-overlay` | Argon `agent-policy` | Argon `agent-overlay` | Flash `agent-policy` |
+| --- | --- | --- | --- | --- | --- | --- |
+| G1 `stale-first` cut | ≥ 0.30 | 0.301 [0.224, 0.385] point pass | 0.256 [0.179, 0.327] **miss** | 0.327 point pass | 0.321 point pass | 0.327 point pass |
+| G2 `retired` | ≥ 0.70 | 0.566 [0.505, 0.623] **miss** (corrected 0.601) | 0.392 [0.335, 0.452] **miss** (corrected 0.352) | 0.730 point pass | 0.922 confirmed | 0.676 miss |
+| G3 `current@10` diff | ≥ −0.05 | +0.032 confirmed | +0.025 [0.006, 0.051] confirmed | +0.032 confirmed | +0.032 confirmed | +0.032 confirmed |
+| G4 `lost` | ≤ 0.05 | 0.004 confirmed | 0.001 [0.000, 0.002] confirmed | 0.002 confirmed | 0.003 confirmed | 0.004 confirmed |
+| G5 `forgotten` | ≥ 0.90 | 0.609 [0.511, 0.707] **miss** | 0.315 [0.228, 0.413] **miss** | 0.978 confirmed | 0.946 point pass | 0.978 confirmed |
+| Audit (6.3, v3): `retired` / `lost` errors · missed in 15 passes | ≤ 20% | 4/50 · **4/13** · 0: unreliable (`lost`) | 1/50 · 0/3 · 2: **reliable** | | | |
 
-Paired by unit, Qwen minus Argon: `retired` −0.164 [−0.231, −0.103], `forgotten` −0.370 [−0.467, −0.272], `stale@10`
-+0.211 [0.147, 0.276]. Qwen minus Flash: `retired` −0.110 [−0.171, −0.050], `forgotten` −0.370 [−0.478, −0.272].
+Paired by unit (95% intervals):
 
-The `lost` errors only raise `lost`, so G4 holds, and G2 misses whatever the errors (corrected 0.601).
+| Comparison | `retired` | `forgotten` | `stale@10` |
+| --- | --- | --- | --- |
+| Qwen minus Argon (`agent-policy`) | −0.164 [−0.231, −0.103] | −0.370 [−0.467, −0.272] | +0.211 [0.147, 0.276] |
+| Qwen minus Flash (`agent-policy`) | −0.110 [−0.171, −0.050] | −0.370 [−0.478, −0.272] | +0.199 [0.128, 0.269] |
+| `agent-overlay` minus `agent-policy` (Qwen) | **−0.174 [−0.242, −0.107]** | **−0.293 [−0.435, −0.163]** | +0.340 [0.237, 0.442] |
+| `agent-overlay` minus `agent-policy` (Argon), for contrast | +0.192 [0.146, 0.242] | −0.033 [−0.098, 0.022] | +0.019 [0.000, 0.045] |
+
+`agent-policy`'s `lost` errors only raise `lost`, so G4 holds; G2 and G5 miss whatever the errors.
 
 What the local model does differently:
 
-1. **It doesn't forget everything it's asked to.** `forgotten` is 0.61, against 0.98 for both Gemini models. In a
-   sample of 12 failures, 8 are other cards that keep stating the deleted value as current; they are dependents
-   or links that weren't cleaned up ("They still take the bus to work"). The other 4 are its own notes about the
-   conversation, which quote the request together with the value ("My relationship status is in a
-   relationship. Please remove that from your memory.").
-2. **It keeps one card per value and leaves old ones active**, more than Flash. Many failures are present-tense
+1. **The architecture that helps Argon most hurts it.** With the raw history mounted read-only and only lineage to
+   write, Argon retires the most (0.922). Qwen retires less (0.392) and forgets less (0.315) than it does writing
+   its own cards. Most of its `agent-overlay` failures are raw `@history` rounds it never superseded: user turns
+   such as "I live in Thornvale Crossing" or "this depends on the fact that I'm single" stay active and
+   unwarned after the fact changes, so a stale card is on the first page of 55% of Cascade questions. It writes
+   lineage often (829 `supersedes`, 1,214 `extends`) but misses many of the rounds that state an old value.
+2. **It doesn't forget everything it's asked to.** In a sample of 12 `agent-policy` failures, 8 are other cards
+   that keep stating the deleted value as current; they are dependents or links that weren't cleaned up ("They
+   still take the bus to work"). The other 4 are its own notes about the conversation, which quote the request
+   together with the value ("My relationship status is in a relationship. Please remove that from your
+   memory."). In `agent-overlay` the deleted value also stays in the raw rounds.
+3. **It keeps one card per value and leaves old ones active** (`agent-policy`). Many failures are present-tense
    links to them: "secrets live in [[project/secret-manager-selvex]]", "team lead [[team/lead-sarah-chen]]".
    A stale card is on the first page of 21% of Cascade questions; on Argon it's 0%.
-3. **It does warn dependents.** 952 of its writes use `extends`. Every dependent card in the audited passes that
-   still names an old premise is `warned`.
-4. **It corrupts invented names.** Most of its real losses are names copied wrong: "Selvaria" for Xelvoria, "The
-   Vondrehl Pot" for The Ondreth Pot, "Vorentel SUV".
-5. **Plumbing.** 12.5 tool calls per session, 0 cap hits, 0 non-MCP calls, and every call matched the proxy's log.
-   135 of 475 sessions end with a summary instead of `DONE`. Of 81 tool errors, 30 are stale `if_match` values.
-   Another 22 are argument names outside the schema (`address`, `body`, ...). The server answers those with a
-   raw `TypeError`, not a validation error, even though the schemas say `additionalProperties: false`; 8 more
-   inputs raise a `KeyError`. Those are engine robustness gaps, recorded and not changed. 4.1M uncached plus
-   28.8M cached prompt tokens, 1.9M out; 47 s per session median, all on the local GPU.
+4. **It does warn dependents.** Every dependent card in the audited passes that still names an old premise is
+   `warned`.
+5. **It corrupts invented names.** Most of its real `agent-policy` losses are names copied wrong: "Selvaria" for
+   Xelvoria, "The Vondrehl Pot" for The Ondreth Pot, "Vorentel SUV".
+6. **Plumbing.** 12.5 and 14.0 tool calls per session, 0 cap hits, 0 non-MCP calls, and every call matched the
+   proxy's log. 135 and 98 of 475 sessions end with a summary instead of `DONE`. Of `agent-policy`'s 81 tool
+   errors, 30 are stale `if_match` values. Another 22 are argument names outside the schema (`address`,
+   `body`, ...). The server answers those with a raw `TypeError` instead of a validation error, and 8 more
+   inputs raise a `KeyError`. Those are engine robustness gaps, recorded and left unchanged for the run.
+   Tokens, all on the local GPU: 4.1M + 28.8M cached in and 1.9M out (`agent-policy`); 6.1M + 41.2M and 2.5M
+   (`agent-overlay`).
 
 Tables: [results/tier1-qwen-v3.md](results/tier1-qwen-v3.md); audit: `results/audit/tier1-qwen-v3/`.
 
