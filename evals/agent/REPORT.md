@@ -10,9 +10,32 @@ haystack failed. The frozen setup is [PLAN.md](PLAN.md). Tables:
 
 There is a short version in [results/summary.md](results/summary.md).
 
-**Status of the confirmatory run** (PLAN.md section 9: `agent-policy` on Argon, MemoryAgentBench 32k): running.
-Matcher v2 is its registered scorer. v3 was registered as a secondary scorer before any of its records was
-read (section 9a). Its result will be added here.
+**Confirmatory run: done** (PLAN.md section 9). `agent-policy` on Argon, MemoryAgentBench 32k (231 batches of 10
+facts, 2026-11-08 16:11Z-23:57Z), scored with matcher v2 as registered and v3 as registered secondary, which
+agree on every number. **G1-G4 confirmed:**
+
+| Line | Line value | Agent | `flat` | Verdict |
+| --- | --- | --- | --- | --- |
+| G1 `stale-first` cut, flat minus agent (44 conflicts) | ≥ 0.30 | 0.795 [0.659, 0.909] | `stale-first` 0.795 (agent 0.000) | **confirmed** |
+| G2 `retired` (44) | ≥ 0.70 | 0.909 [0.818, 0.977] | 0 | **confirmed** |
+| G3 `current@10`, agent minus flat (66) | ≥ −0.05 | 0.000 [0.000, 0.000] | 0.970 (agent 0.970) | **confirmed** |
+| G4 `lost` (63 values) | ≤ 0.05 | 0.000 [0.000, 0.000] | 0 | **confirmed** |
+
+`oracle`: `stale-first` 0.000, `retired` 0.955.
+
+By the audit rule as registered, this run's lines are still **reported as unreliable**:
+- 3 of its 4 `retired` failures are matching errors. MemoryAgentBench's subject anchors can be one generic word ("capital", "state"), so other subjects' facts match: England's capital for the United Kingdom's, the US head of government for its head of state.
+- The fourth failure is real: the General Motors card still lists Buick Regal among its products.
+
+But the errors only count real passes as failures, and none of the 15 sampled passes missed a stale card. So the raw values are bounds, and all four verdicts hold: corrected `retired` is 0.977.
+
+How the agent did it: one card per fact (2,309 creates), 837 of them with `supersedes`. 18.4 tool calls per
+session (max 31), 0 cap hits, 0 non-MCP calls, 4 tool errors, `DONE` in every session. 92 s median per
+session; 5.3M uncached + 10.1M cached tokens in, 0.6M out. Two sessions retried once after a provider error.
+Tables: [results/confirm-mab32k-v2.md](results/confirm-mab32k-v2.md) (and `-v3`); audit:
+`results/audit/confirm-mab32k-v2/`.
+
+**Qwen tier 1** (PLAN.md section 10: `qwen3.8-flash-next-iq3_s` on a local Strata server): running.
 
 ## Verdicts
 

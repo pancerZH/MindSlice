@@ -4,6 +4,14 @@ Tier 1 as run: MEME `nofiller`, 95 episodes (1,136 questions), four cells, 2026-
 [../REPORT.md](../REPORT.md). Brackets are 95% bootstrap intervals (2,000 replicates, seed 20261106),
 differences paired by unit.
 
+## Confirmatory run (pre-registered): MemoryAgentBench 32k, `agent-policy` @ Argon
+
+[confirm-mab32k-v2.md](confirm-mab32k-v2.md) (v2, registered; v3 identical: [confirm-mab32k-v3.md](confirm-mab32k-v3.md)).
+
+| G1 cut (≥ 0.30) | G2 `retired` (≥ 0.70) | G3 `current@10` diff (≥ −0.05) | G4 `lost` (≤ 0.05) | 6.3 rule |
+| --- | --- | --- | --- | --- |
+| 0.795 [0.659, 0.909] **confirmed** | 0.909 [0.818, 0.977] **confirmed** (corrected 0.977) | 0.000 [0.000, 0.000] **confirmed** | 0.000 [0.000, 0.000] **confirmed** | unreliable: 3 of 4 `retired` failures are matching errors (one-word subject anchors); 0 of 15 passes missed |
+
 ## G1-G5 with matcher v3 (post-hoc re-score, audited both ways)
 
 [tier1-v3.md](tier1-v3.md): `python -m evals.agent report --run tier1-v3 --flat-from gate1-v3 --oracle-from
@@ -86,4 +94,5 @@ which is why its `retired` is higher than v2's.
 | [projection.json](projection.json) | Tier-1 runtime and token projection from the smoke tier | from smoke |
 | [scorer_validation.md](scorer_validation.md) and its two tables | The runner against `evals/external`; value-based vs card-level judgments | no |
 | [gate1.md](gate1.md) | Gate 1: the scripted agents against `flat` and `oracle` on all of tier 1 | no |
-| [freeze.json](freeze.json), [freeze_confirm.json](freeze_confirm.json), [freeze_v3.json](freeze_v3.json) | Everything PLAN.md freezes; matcher v2 and the confirmatory run; matcher v3 as its secondary scorer | |
+| [confirm-mab32k-v2.md](confirm-mab32k-v2.md), [confirm-mab32k-v3.md](confirm-mab32k-v3.md) (and `.json`) | The confirmatory run, with v2 and v3 | yes |
+| [freeze.json](freeze.json), [freeze_confirm.json](freeze_confirm.json), [freeze_v3.json](freeze_v3.json), [freeze_qwen.json](freeze_qwen.json) | Everything PLAN.md freezes; matcher v2 and the confirmatory run; matcher v3 as its secondary scorer | |
