@@ -35,7 +35,47 @@ session; 5.3M uncached + 10.1M cached tokens in, 0.6M out. Two sessions retried 
 Tables: [results/confirm-mab32k-v2.md](results/confirm-mab32k-v2.md) (and `-v3`); audit:
 `results/audit/confirm-mab32k-v2/`.
 
-**Qwen tier 1** (PLAN.md section 10: `qwen3.8-flash-next-iq3_s` on a local Strata server): running.
+**Qwen tier 1** (PLAN.md section 10): `qwen3.8-flash-next-iq3_s` (3-bit IQ3_S) on a local Strata server,
+through `strata.py`. `agent-policy` is done: 95/95 episodes, no failed haystack, 7.1 h, scored with matcher v3.
+`agent-overlay` is running.
+
+| Line | Line value | Qwen `agent-policy` | Argon `agent-policy` | Flash `agent-policy` |
+| --- | --- | --- | --- | --- |
+| G1 `stale-first` cut | ≥ 0.30 | 0.301 [0.224, 0.385] point pass | 0.327 point pass | 0.327 point pass |
+| G2 `retired` | ≥ 0.70 | 0.566 [0.505, 0.623] **miss** (corrected 0.601) | 0.730 point pass | 0.676 miss |
+| G3 `current@10` diff | ≥ −0.05 | +0.032 [0.006, 0.063] confirmed | +0.032 confirmed | +0.032 confirmed |
+| G4 `lost` | ≤ 0.05 | 0.004 [0.002, 0.007] confirmed | 0.002 confirmed | 0.004 confirmed |
+| G5 `forgotten` | ≥ 0.90 | 0.609 [0.511, 0.707] **miss** | 0.978 confirmed | 0.978 confirmed |
+| Audit (6.3, v3): `retired` / `lost` matching errors | ≤ 20% | 4/50 · **4/13** (0 of 15 passes missed): unreliable by the rule (`lost`) | | |
+
+Paired by unit, Qwen minus Argon: `retired` −0.164 [−0.231, −0.103], `forgotten` −0.370 [−0.467, −0.272], `stale@10`
++0.211 [0.147, 0.276]. Qwen minus Flash: `retired` −0.110 [−0.171, −0.050], `forgotten` −0.370 [−0.478, −0.272].
+
+The `lost` errors only raise `lost`, so G4 holds, and G2 misses whatever the errors (corrected 0.601).
+
+What the local model does differently:
+
+1. **It doesn't forget everything it's asked to.** `forgotten` is 0.61, against 0.98 for both Gemini models. In a
+   sample of 12 failures, 8 are other cards that keep stating the deleted value as current; they are dependents
+   or links that weren't cleaned up ("They still take the bus to work"). The other 4 are its own notes about the
+   conversation, which quote the request together with the value ("My relationship status is in a
+   relationship. Please remove that from your memory.").
+2. **It keeps one card per value and leaves old ones active**, more than Flash. Many failures are present-tense
+   links to them: "secrets live in [[project/secret-manager-selvex]]", "team lead [[team/lead-sarah-chen]]".
+   A stale card is on the first page of 21% of Cascade questions; on Argon it's 0%.
+3. **It does warn dependents.** 952 of its writes use `extends`. Every dependent card in the audited passes that
+   still names an old premise is `warned`.
+4. **It corrupts invented names.** Most of its real losses are names copied wrong: "Selvaria" for Xelvoria, "The
+   Vondrehl Pot" for The Ondreth Pot, "Vorentel SUV".
+5. **Plumbing.** 12.5 tool calls per session, 0 cap hits, 0 non-MCP calls, and every call matched the proxy's log.
+   135 of 475 sessions end with a summary instead of `DONE`. Of 81 tool errors, 30 are stale `if_match` values.
+   Another 22 are argument names outside the schema (`address`, `body`, ...). The server answers those with a
+   raw `TypeError`, not a validation error, even though the schemas say `additionalProperties: false`; 8 more
+   inputs raise a `KeyError`. Those are engine robustness gaps, recorded and not changed. 4.1M uncached plus
+   28.8M cached prompt tokens, 1.9M out; 47 s per session median, all on the local GPU.
+
+Tables: [results/tier1-qwen-v3.md](results/tier1-qwen-v3.md); audit: `results/audit/tier1-qwen-v3/`.
+
 
 ## Verdicts
 

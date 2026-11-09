@@ -12,6 +12,17 @@ differences paired by unit.
 | --- | --- | --- | --- | --- |
 | 0.795 [0.659, 0.909] **confirmed** | 0.909 [0.818, 0.977] **confirmed** (corrected 0.977) | 0.000 [0.000, 0.000] **confirmed** | 0.000 [0.000, 0.000] **confirmed** | unreliable: 3 of 4 `retired` failures are matching errors (one-word subject anchors); 0 of 15 passes missed |
 
+## Qwen tier 1 (pre-registered, PLAN.md section 10): `qwen3.8-flash-next-iq3_s` on Strata, matcher v3
+
+[tier1-qwen-v3.md](tier1-qwen-v3.md). `agent-overlay` running.
+
+| Cell | G1 cut (≥ 0.30) | G2 `retired` (≥ 0.70) | G3 `current@10` diff (≥ −0.05) | G4 `lost` (≤ 0.05) | G5 `forgotten` (≥ 0.90) | 6.3 rule |
+| --- | --- | --- | --- | --- | --- | --- |
+| `agent-policy` @ Qwen | 0.301 [0.224, 0.385] point pass | 0.566 [0.505, 0.623] **miss** | +0.032 [0.006, 0.063] confirmed | 0.004 [0.002, 0.007] confirmed | 0.609 [0.511, 0.707] **miss** | unreliable (`lost` 4/13; `retired` 4/50) |
+
+Paired, Qwen minus Argon (`agent-policy`): `retired` −0.164 [−0.231, −0.103], `forgotten` −0.370 [−0.467, −0.272];
+Qwen minus Flash: `retired` −0.110 [−0.171, −0.050], `forgotten` −0.370 [−0.478, −0.272].
+
 ## G1-G5 with matcher v3 (post-hoc re-score, audited both ways)
 
 [tier1-v3.md](tier1-v3.md): `python -m evals.agent report --run tier1-v3 --flat-from gate1-v3 --oracle-from
@@ -94,5 +105,6 @@ which is why its `retired` is higher than v2's.
 | [projection.json](projection.json) | Tier-1 runtime and token projection from the smoke tier | from smoke |
 | [scorer_validation.md](scorer_validation.md) and its two tables | The runner against `evals/external`; value-based vs card-level judgments | no |
 | [gate1.md](gate1.md) | Gate 1: the scripted agents against `flat` and `oracle` on all of tier 1 | no |
+| [tier1-qwen-v3.md](tier1-qwen-v3.md), [tier1-qwen-v3.json](tier1-qwen-v3.json) | Qwen tier 1 with matcher v3 (with Argon and Flash `agent-policy` beside it) | yes, local |
 | [confirm-mab32k-v2.md](confirm-mab32k-v2.md), [confirm-mab32k-v3.md](confirm-mab32k-v3.md) (and `.json`) | The confirmatory run, with v2 and v3 | yes |
 | [freeze.json](freeze.json), [freeze_confirm.json](freeze_confirm.json), [freeze_v3.json](freeze_v3.json), [freeze_qwen.json](freeze_qwen.json) | Everything PLAN.md freezes; matcher v2 and the confirmatory run; matcher v3 as its secondary scorer | |

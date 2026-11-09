@@ -123,10 +123,15 @@ def summarize(arms: dict[str, list[dict[str, Any]]], flat_arm: str = "flat") -> 
     return out
 
 
+QWEN = "qwen3.8-flash-next-iq3_s"  # strata.MODEL
 COMPARISONS = (
     ("agent-policy minus agent-default (Argon)", f"agent-policy@{MAIN_MODEL}", f"agent-default@{MAIN_MODEL}"),
     ("agent-overlay minus agent-policy (Argon)", f"agent-overlay@{MAIN_MODEL}", f"agent-policy@{MAIN_MODEL}"),
     ("Argon minus Flash (agent-policy)", f"agent-policy@{MAIN_MODEL}", f"agent-policy@{FLASH}"),
+    # PLAN.md section 10 (the local model)
+    ("Qwen minus Argon (agent-policy)", f"agent-policy@{QWEN}", f"agent-policy@{MAIN_MODEL}"),
+    ("Qwen minus Flash (agent-policy)", f"agent-policy@{QWEN}", f"agent-policy@{FLASH}"),
+    ("agent-overlay minus agent-policy (Qwen)", f"agent-overlay@{QWEN}", f"agent-policy@{QWEN}"),
 )
 
 
@@ -486,6 +491,7 @@ def main(argv: list[str] | None = None) -> int:
     r.add_argument("--oracle-from", help="another run whose oracle arm is shown beside (reference only)")
     r.add_argument("--variance", help="comma-separated repeat runs of agent-policy on the main model (8.4)")
     r.add_argument("--haystacks", help="comma-separated haystack keys: restrict every arm to them (a run on part of a tier)")
+    r.add_argument("--add-arm", action="append", default=[], help="RUN/ARM: also load this arm from another run (comparisons)")
     a = sub.add_parser("agy", help="LLM arms through the Antigravity CLI over real MCP stdio")
     a.add_argument("--tier", default="smoke")
     a.add_argument("--arms", default=",".join(LLM_ARMS))
@@ -552,6 +558,9 @@ def main(argv: list[str] | None = None) -> int:
             arms["flat"] = load_arm(root / args.flat_from / "flat")
         if args.oracle_from and "oracle" not in arms:
             arms["oracle"] = load_arm(root / args.oracle_from / "oracle")
+        for spec in args.add_arm:
+            run_name, arm_name = spec.split("/", 1)
+            arms.setdefault(arm_name, load_arm(root / run_name / arm_name))
         if args.run.startswith("tier1"):  # tier 1 as run: the dropped haystacks are out of every arm (PLAN.md)
             arms = {a: [r for r in recs if r.get("haystack") not in TIER1_DROPPED] for a, recs in arms.items()}
         if args.haystacks:
