@@ -1,96 +1,128 @@
 # Agent-in-the-loop lineage test: report
 
-**Tier 1 is complete (2026-11-08).** Four cells (all three arms on `gemini-4-argon-medium`, `agent-policy`
-on `gemini-3.8-flash-medium`) wrote memory for 95 MEME `nofiller` episodes each through the Antigravity CLI
-over real MCP stdio: 1,900 sessions, plus 300 for three variance repeats of `agent-policy` on Argon. No
-haystack failed. The frozen setup is [PLAN.md](PLAN.md). Tables:
-- [results/tier1.md](results/tier1.md): frozen matcher, as pre-registered;
-- [results/tier1-v2.md](results/tier1-v2.md): matcher v2, post-hoc;
-- [results/tier1-v3.md](results/tier1-v3.md): matcher v3, post-hoc.
+Can an LLM agent that writes memory through MindSlice's four MCP tools keep stale facts behind current ones?
+Three runs answer it. All are scored by `evals/external`'s deterministic harness against lines frozen before the
+first call ([PLAN.md](PLAN.md)):
+
+| Run | What ran | Status and tables |
+| --- | --- | --- |
+| Tier 1 | MEME `nofiller`, 95 episodes: all three arms on `gemini-4-argon-medium`, `agent-policy` on `gemini-3.8-flash-medium`; 1,900 sessions plus 300 for three variance repeats, through the Antigravity CLI over real MCP stdio | done 2026-11-08, no failed haystack: [matcher v3](results/tier1-v3.md) (post-hoc), [v2](results/tier1-v2.md) (post-hoc), [frozen matcher](results/tier1.md) (as pre-registered) |
+| Confirmatory | `agent-policy` on Argon, MemoryAgentBench 32k (231 batches of 10 facts) | done 2026-11-08: **G1-G4 confirmed** ([tables](results/confirm-mab32k-v2.md)) |
+| Qwen tier 1 | `agent-policy` and `agent-overlay` on `qwen3.8-flash-next-iq3_s` (3-bit IQ3_S) on a local Strata server | done 2026-11-09, no failed haystack ([tables](results/tier1-qwen-v3.md)) |
 
 There is a short version in [results/summary.md](results/summary.md).
 
-**Confirmatory run: done** (PLAN.md section 9). `agent-policy` on Argon, MemoryAgentBench 32k (231 batches of 10
-facts, 2026-11-08 16:11Z-23:57Z), scored with matcher v2 as registered and v3 as registered secondary, which
-agree on every number. **G1-G4 confirmed:**
+## In short
 
-| Line | Line value | Agent | `flat` | Verdict |
-| --- | --- | --- | --- | --- |
-| G1 `stale-first` cut, flat minus agent (44 conflicts) | ≥ 0.30 | 0.795 [0.659, 0.909] | `stale-first` 0.795 (agent 0.000) | **confirmed** |
-| G2 `retired` (44) | ≥ 0.70 | 0.909 [0.818, 0.977] | 0 | **confirmed** |
-| G3 `current@10`, agent minus flat (66) | ≥ −0.05 | 0.000 [0.000, 0.000] | 0.970 (agent 0.970) | **confirmed** |
-| G4 `lost` (63 values) | ≤ 0.05 | 0.000 [0.000, 0.000] | 0 | **confirmed** |
+1. **Agents that write lineage keep the current fact first.** On MEME's Cascade questions a stale card ranks
+   first on 0-0.6% of pages in every Gemini cell (flat 33%, oracle 0.6%), and the current fact stays on the
+   first page (`current@10` 1.000; flat 0.968). On MemoryAgentBench 32k all four lines are confirmed
+   (`stale-first` cut 0.795, `retired` 0.909, `current@10` diff 0.000, `lost` 0.000).
+2. **How much stale memory they retire depends on the architecture and the model** (matcher v3, `retired`):
+   Argon `agent-overlay` 0.922, `agent-default` 0.779, `agent-policy` 0.730, Flash `agent-policy` 0.676; the
+   local Qwen 0.566 (`agent-policy`) and 0.392 (`agent-overlay`). Mounting the raw history and writing only
+   lineage helps Argon most (+0.192) and hurts Qwen most (−0.174).
+3. **They rarely lose a true fact** (`lost` at most 0.004 in every cell) and **forget on request** on Gemini
+   (`forgotten` 0.946-0.989). Qwen misses that line (0.315-0.609).
+4. **Their failures are mostly links and unflagged premises.** Half of Argon `agent-policy`'s `retired`
+   failures are links to a card named after the old value ("[[subscriptions/xelvoria]]"); Argon agents write
+   premise changes in prose, not with `extends`. After every run was scored, the engine and its shipped
+   guidance were changed to address both, unmeasured so far (What next).
+5. **By the pre-registered audit rule, the frozen matcher's lines are unreliable in every cell**; the post-hoc
+   matcher v3 makes three of the four Gemini cells readable (Verdicts).
 
-`oracle`: `stale-first` 0.000, `retired` 0.955.
+## Boundaries against RAG over raw history
 
-By the audit rule as registered, this run's lines are still **reported as unreliable**:
-- 3 of its 4 `retired` failures are matching errors. MemoryAgentBench's subject anchors can be one generic word ("capital", "state"), so other subjects' facts match: England's capital for the United Kingdom's, the US head of government for its head of state.
-- The fourth failure is real: the General Motors card still lists Buick Regal among its products.
+The usual alternative to a memory engine is RAG over the raw history: keep every turn, retrieve with dense
+embeddings and a reranker. [Bao et al. (2026)](https://arxiv.org/abs/2610.30755) find retrieval over raw history
+ahead of LLM-transformed memory stores on these benchmarks. Three things to keep in mind when reading this
+report's numbers against that alternative.
 
-But the errors only count real passes as failures, and none of the 15 sampled passes missed a stale card. So the raw values are bounds, and all four verdicts hold: corrected `retired` is 0.977.
+### (a) Token cost: replaying a benchmark is not using memory
 
-How the agent did it: one card per fact (2,309 creates), 837 of them with `supersedes`. 18.4 tool calls per
-session (max 31), 0 cap hits, 0 non-MCP calls, 4 tool errors, `DONE` in every session. 92 s median per
-session; 5.3M uncached + 10.1M cached tokens in, 0.6M out. Two sessions retried once after a provider error.
-Tables: [results/confirm-mab32k-v2.md](results/confirm-mab32k-v2.md) (and `-v3`); audit:
-`results/audit/confirm-mab32k-v2/`.
+The token totals here (Telemetry: about 17M context tokens for Argon `agent-policy` over 475 sessions, 30M for
+`agent-overlay`, 115M for Flash) price the *test*, and only its write side: the harness searches the questions
+itself, with no model. Three things inflate them that everyday use doesn't have:
 
-**Qwen tier 1** (PLAN.md section 10): `qwen3.8-flash-next-iq3_s` (3-bit IQ3_S) on a local Strata server,
-through `strata.py`. **Done:** both cells ran all 95 episodes with no failed haystack; `agent-policy` took 7.1 h and
-`agent-overlay` 9.3 h. Scored with matcher v3.
+- **A separate keeper.** Every session is a fresh conversation whose only job is memory: the agent reads the
+  transcript it is handed, then searches and writes. In use, the agent having the conversation already holds it
+  in context, and memory is a few extra tool calls in a session that happens anyway.
+- **Re-sent context.** Every tool step re-sends the system prompt, the four tool schemas and the conversation so
+  far. Context is therefore a multiple of the dialogue read: 37-76 for Argon and 230-550 for Flash on the smoke
+  tier (PLAN.md section 7). The multiple measures the CLI loop and the model's step count (14.6 tool calls per
+  session for Flash, 9.2 for Argon `agent-policy`), not the memory.
+- **Whole histories at once.** A replay compresses months of conversation into hours of back-to-back
+  sessions. In use, upkeep is spread over the sessions that produce it.
 
-| Line | Line value | Qwen `agent-policy` | Qwen `agent-overlay` | Argon `agent-policy` | Argon `agent-overlay` | Flash `agent-policy` |
-| --- | --- | --- | --- | --- | --- | --- |
-| G1 `stale-first` cut | ≥ 0.30 | 0.301 [0.224, 0.385] point pass | 0.256 [0.179, 0.327] **miss** | 0.327 point pass | 0.321 point pass | 0.327 point pass |
-| G2 `retired` | ≥ 0.70 | 0.566 [0.505, 0.623] **miss** (corrected 0.601) | 0.392 [0.335, 0.452] **miss** (corrected 0.352) | 0.730 point pass | 0.922 confirmed | 0.676 miss |
-| G3 `current@10` diff | ≥ −0.05 | +0.032 confirmed | +0.025 [0.006, 0.051] confirmed | +0.032 confirmed | +0.032 confirmed | +0.032 confirmed |
-| G4 `lost` | ≤ 0.05 | 0.004 confirmed | 0.001 [0.000, 0.002] confirmed | 0.002 confirmed | 0.003 confirmed | 0.004 confirmed |
-| G5 `forgotten` | ≥ 0.90 | 0.609 [0.511, 0.707] **miss** | 0.315 [0.228, 0.413] **miss** | 0.978 confirmed | 0.946 point pass | 0.978 confirmed |
-| Audit (6.3, v3): `retired` / `lost` errors · missed in 15 passes | ≤ 20% | 4/50 · **4/13** · 0: unreliable (`lost`) | 1/50 · 0/3 · 2: **reliable** | | | |
+Reading is what a working agent pays per question, and the engine bounds it. Measured on the saved final
+workspaces (every question at the end point; the exact MCP tool text; tokens estimated as characters ÷ 4;
+exploratory, not a line):
 
-Paired by unit (95% intervals):
+| Memory | `search(k=10)`, median (p90) | `read()` of the top result, median (p90) |
+| --- | --- | --- |
+| Argon `agent-policy`, MEME (663 questions, 95 episodes) | 2,406 (3,489) | 561 (1,130) |
+| Argon `agent-overlay`, MEME (raw rounds plus lineage) | 2,070 (2,650) | 464 (1,207) |
+| Argon `agent-policy`, MemoryAgentBench 32k (66 questions; 2,309 cards, about 274k tokens of memory) | 2,313 (2,683) | 294 (420) |
+| For comparison: the full text of the top 10 raw rounds (`@history` only, same MEME workspaces) | 2,536 (2,925) | |
 
-| Comparison | `retired` | `forgotten` | `stale@10` |
-| --- | --- | --- | --- |
-| Qwen minus Argon (`agent-policy`) | −0.164 [−0.231, −0.103] | −0.370 [−0.467, −0.272] | +0.211 [0.147, 0.276] |
-| Qwen minus Flash (`agent-policy`) | −0.110 [−0.171, −0.050] | −0.370 [−0.478, −0.272] | +0.199 [0.128, 0.269] |
-| `agent-overlay` minus `agent-policy` (Qwen) | **−0.174 [−0.242, −0.107]** | **−0.293 [−0.435, −0.163]** | +0.340 [0.237, 0.442] |
-| `agent-overlay` minus `agent-policy` (Argon), for contrast | +0.192 [0.146, 0.242] | −0.033 [−0.098, 0.022] | +0.019 [0.000, 0.045] |
+A question costs about 3k tokens of reading, and that doesn't grow with the memory: the 2,309-card memory
+reads like a MEME episode's. The marginal cost of consulting memory is that, set against a conversation that
+is running anyway. It is the same order as pasting the top 10 raw rounds into a prompt, so MindSlice doesn't
+read fewer tokens than raw retrieval. What differs is the page: the current fact first, stale ones redirected or
+flagged (In short, 1). Writing is where MindSlice spends more: lineage is a model's work (9-15 tool calls per
+session in tier 1), where raw-history RAG only embeds each turn.
 
-`agent-policy`'s `lost` errors only raise `lost`, so G4 holds; G2 and G5 miss whatever the errors.
+### (b) Retrieval: lexical FTS5, not dense retrieval with a reranker
 
-What the local model does differently:
+`search()` is BM25 over SQLite FTS5 with MindSlice's own script-aware analysis: no embeddings, no model.
+[`evals/external`](../external/REPORT.md) measured where that holds and where it breaks, on the benchmarks'
+own questions:
 
-1. **The architecture that helps Argon most hurts it.** With the raw history mounted read-only and only lineage to
-   write, Argon retires the most (0.922). Qwen retires less (0.392) and forgets less (0.315) than it does writing
-   its own cards. Most of its `agent-overlay` failures are raw `@history` rounds it never superseded: user turns
-   such as "I live in Thornvale Crossing" or "this depends on the fact that I'm single" stay active and
-   unwarned after the fact changes, so a stale card is on the first page of 55% of Cascade questions. It writes
-   lineage often (829 `supersedes`, 1,214 `extends`) but misses many of the rounds that state an old value.
-2. **It doesn't forget everything it's asked to.** In a sample of 12 `agent-policy` failures, 8 are other cards
-   that keep stating the deleted value as current; they are dependents or links that weren't cleaned up ("They
-   still take the bus to work"). The other 4 are its own notes about the conversation, which quote the request
-   together with the value ("My relationship status is in a relationship. Please remove that from your
-   memory."). In `agent-overlay` the deleted value also stays in the raw rounds.
-3. **It keeps one card per value and leaves old ones active** (`agent-policy`). Many failures are present-tense
-   links to them: "secrets live in [[project/secret-manager-selvex]]", "team lead [[team/lead-sarah-chen]]".
-   A stale card is on the first page of 21% of Cascade questions; on Argon it's 0%.
-4. **It does warn dependents.** Every dependent card in the audited passes that still names an old premise is
-   `warned`.
-5. **It corrupts invented names.** Most of its real `agent-policy` losses are names copied wrong: "Selvaria" for
-   Xelvoria, "The Vondrehl Pot" for The Ondreth Pot, "Vorentel SUV".
-6. **Plumbing.** 12.5 and 14.0 tool calls per session, 0 cap hits, 0 non-MCP calls, and every call matched the
-   proxy's log. 135 and 98 of 475 sessions end with a summary instead of `DONE`. Of `agent-policy`'s 81 tool
-   errors, 30 are stale `if_match` values. Another 22 are argument names outside the schema (`address`,
-   `body`, ...). The server answers those with a raw `TypeError` instead of a validation error, and 8 more
-   inputs raise a `KeyError`. Those are engine robustness gaps. They were left unchanged for the run and fixed after every run had been scored: such calls now get a standard `invalid_arguments` error that names the bad arguments and the allowed ones (PLAN.md ledger).
-   Tokens, all on the local GPU: 4.1M + 28.8M cached in and 1.9M out (`agent-policy`); 6.1M + 41.2M and 2.5M
-   (`agent-overlay`).
+- **Strong when the question reuses the evidence's words.** Recall@10 is 1.000 / 0.984 on LongMemEval's
+  single-session assistant / user questions, 1.000 on MEME's exact recall (its invented names included), and
+  0.976 on MemoryAgentBench. Search is deterministic (a rerun gives byte-identical pages), explainable
+  (`coverage`, `unmatched_terms`), handles Chinese and Japanese without a tokenizer, runs on the standard
+  library, and has nothing to re-embed when a card changes.
+- **Weak on implicit conversational paraphrase.** Recall@10 is 0.298 / 0.296 on LoCoMo multi-hop /
+  open-domain questions (turn cards), 0.395 on MEME's "What do I do in my free time?" (the evidence says
+  "hobby", "club"), and 0.756 on LongMemEval's single-session preferences (MRR 0.426: preferences are implied,
+  not named). Most first-page misses share none of the question's distinctive words with the evidence (LoCoMo
+  242 of 531; MEME `filler32k` 36 of 48).
 
-Tables: [results/tier1-qwen-v3.md](results/tier1-qwen-v3.md); audit: `results/audit/tier1-qwen-v3/`.
+The second group is what dense retrievers and cross-encoder rerankers are built for, and where raw-history RAG
+should recall more. No dense system has been run on this harness, so this report quotes no gap and claims no
+parity. Within MindSlice, the gap is narrowed by authoring and by the agent: aliases written by an agent
+following the `slice-builder` skill added +0.16 nDCG@5 on `evals/retrieval`'s vocabulary-gap queries
+(`holdout-3`), and an agent can rephrase after `unmatched_terms`. In this test, agent-written cards were found
+at least as well as the raw rounds (`current@10` 1.000 in every Gemini cell, flat 0.968). A dense retriever
+could sit above the engine as policy; by the zero-dependency design, none ships.
 
+### (c) What `agent-overlay` is, and its constraints
 
-## Verdicts
+`agent-overlay` is the configuration closest to raw-history RAG: every round stays verbatim in a read-only
+`@history` slice, and the agent writes only lineage over it into `@overlay` ([agent_test.md](../agent_test.md)
+4.4). Its constraints:
+
+- **It depends on the model.** It retires the most on Argon (0.922; +0.192 over `agent-policy`, with no
+  link-only failures) and the least on Qwen (0.392; −0.174 against Qwen's own `agent-policy`). Every raw round
+  that states an old value must be found and superseded, and a round the agent never supersedes stays active
+  and unwarned ("I live in Thornvale Crossing").
+- **Forgetting hides, it doesn't erase.** A superseded `@history` round leaves search results and the default
+  `read()`, which is what `forgotten` counts, but its text stays on disk, reachable with
+  `follow_supersedes=false` and named in `matched_via_superseded`. Erasing it takes a human edit of
+  `history.slice/`. Qwen's `forgotten` (0.315) is low partly because the deleted value stays in raw rounds it
+  didn't supersede.
+- **It works on whole rounds.** `supersedes` hides a whole round, so retiring one fact of a round that states
+  two hides both unless the replacement restates the other. That is the only way this arm can lose a fact
+  (`lost` 0.001-0.003).
+- **It takes more context.** 30M against 17M tokens over tier 1 on Argon, and 11.9 against 9.2 tool calls per
+  session. On Flash the smoke tier projected 367M tokens with the 40-call cap hit in 20 of 46 MemoryAgentBench
+  batches, so that cell was dropped before tier 1 (PLAN.md section 7).
+- **Something outside the agent writes the history.** Here the harness adds each session's rounds to
+  `history.slice/` before the agent's session; a deployment needs the same. The history then grows
+  uncompressed, and retrieval over it keeps the lexical limits of (b).
+
+## Tier 1 verdicts
 
 ### As pre-registered: unreliable
 
@@ -270,6 +302,89 @@ Paired by unit, 95% intervals ([results/tier1-v3.md](results/tier1-v3.md), "Pair
   0.030), `lost` 0.002-0.003, `stale-first` 0, `current@10` and `forgotten` 1 in every run. The architecture
   difference is far outside this spread. The prompt and model differences are about the size of it.
 
+## Confirmatory run: MemoryAgentBench 32k
+
+Pre-registered in PLAN.md section 9: `agent-policy` on Argon, MemoryAgentBench 32k (231 batches of 10
+facts, 2026-11-08 16:11Z-23:57Z), scored with matcher v2 as registered and v3 as registered secondary, which
+agree on every number. **G1-G4 confirmed:**
+
+| Line | Line value | Agent | `flat` | Verdict |
+| --- | --- | --- | --- | --- |
+| G1 `stale-first` cut, flat minus agent (44 conflicts) | ≥ 0.30 | 0.795 [0.659, 0.909] | `stale-first` 0.795 (agent 0.000) | **confirmed** |
+| G2 `retired` (44) | ≥ 0.70 | 0.909 [0.818, 0.977] | 0 | **confirmed** |
+| G3 `current@10`, agent minus flat (66) | ≥ −0.05 | 0.000 [0.000, 0.000] | 0.970 (agent 0.970) | **confirmed** |
+| G4 `lost` (63 values) | ≤ 0.05 | 0.000 [0.000, 0.000] | 0 | **confirmed** |
+
+`oracle`: `stale-first` 0.000, `retired` 0.955.
+
+By the audit rule as registered, this run's lines are still **reported as unreliable**:
+- 3 of its 4 `retired` failures are matching errors. MemoryAgentBench's subject anchors can be one generic word ("capital", "state"), so other subjects' facts match: England's capital for the United Kingdom's, the US head of government for its head of state.
+- The fourth failure is real: the General Motors card still lists Buick Regal among its products.
+
+But the errors only count real passes as failures, and none of the 15 sampled passes missed a stale card. So the raw values are bounds, and all four verdicts hold: corrected `retired` is 0.977.
+
+How the agent did it: one card per fact (2,309 creates), 837 of them with `supersedes`. 18.4 tool calls per
+session (max 31), 0 cap hits, 0 non-MCP calls, 4 tool errors, `DONE` in every session. 92 s median per
+session; 5.3M uncached + 10.1M cached tokens in, 0.6M out. Two sessions retried once after a provider error.
+Tables: [results/confirm-mab32k-v2.md](results/confirm-mab32k-v2.md) (and `-v3`); audit:
+`results/audit/confirm-mab32k-v2/`.
+
+## Tier 1 with a local model: Qwen
+
+Pre-registered in PLAN.md section 10: `qwen3.8-flash-next-iq3_s` (3-bit IQ3_S) on a local Strata server,
+through `strata.py`. **Done:** both cells ran all 95 episodes with no failed haystack; `agent-policy` took 7.1 h and
+`agent-overlay` 9.3 h. Scored with matcher v3.
+
+| Line | Line value | Qwen `agent-policy` | Qwen `agent-overlay` | Argon `agent-policy` | Argon `agent-overlay` | Flash `agent-policy` |
+| --- | --- | --- | --- | --- | --- | --- |
+| G1 `stale-first` cut | ≥ 0.30 | 0.301 [0.224, 0.385] point pass | 0.256 [0.179, 0.327] **miss** | 0.327 point pass | 0.321 point pass | 0.327 point pass |
+| G2 `retired` | ≥ 0.70 | 0.566 [0.505, 0.623] **miss** (corrected 0.601) | 0.392 [0.335, 0.452] **miss** (corrected 0.352) | 0.730 point pass | 0.922 confirmed | 0.676 miss |
+| G3 `current@10` diff | ≥ −0.05 | +0.032 confirmed | +0.025 [0.006, 0.051] confirmed | +0.032 confirmed | +0.032 confirmed | +0.032 confirmed |
+| G4 `lost` | ≤ 0.05 | 0.004 confirmed | 0.001 [0.000, 0.002] confirmed | 0.002 confirmed | 0.003 confirmed | 0.004 confirmed |
+| G5 `forgotten` | ≥ 0.90 | 0.609 [0.511, 0.707] **miss** | 0.315 [0.228, 0.413] **miss** | 0.978 confirmed | 0.946 point pass | 0.978 confirmed |
+| Audit (6.3, v3): `retired` / `lost` errors · missed in 15 passes | ≤ 20% | 4/50 · **4/13** · 0: unreliable (`lost`) | 1/50 · 0/3 · 2: **reliable** | | | |
+
+Paired by unit (95% intervals):
+
+| Comparison | `retired` | `forgotten` | `stale@10` |
+| --- | --- | --- | --- |
+| Qwen minus Argon (`agent-policy`) | −0.164 [−0.231, −0.103] | −0.370 [−0.467, −0.272] | +0.211 [0.147, 0.276] |
+| Qwen minus Flash (`agent-policy`) | −0.110 [−0.171, −0.050] | −0.370 [−0.478, −0.272] | +0.199 [0.128, 0.269] |
+| `agent-overlay` minus `agent-policy` (Qwen) | **−0.174 [−0.242, −0.107]** | **−0.293 [−0.435, −0.163]** | +0.340 [0.237, 0.442] |
+| `agent-overlay` minus `agent-policy` (Argon), for contrast | +0.192 [0.146, 0.242] | −0.033 [−0.098, 0.022] | +0.019 [0.000, 0.045] |
+
+`agent-policy`'s `lost` errors only raise `lost`, so G4 holds; G2 and G5 miss whatever the errors.
+
+What the local model does differently:
+
+1. **The architecture that helps Argon most hurts it.** With the raw history mounted read-only and only lineage to
+   write, Argon retires the most (0.922). Qwen retires less (0.392) and forgets less (0.315) than it does writing
+   its own cards. Most of its `agent-overlay` failures are raw `@history` rounds it never superseded: user turns
+   such as "I live in Thornvale Crossing" or "this depends on the fact that I'm single" stay active and
+   unwarned after the fact changes, so a stale card is on the first page of 55% of Cascade questions. It writes
+   lineage often (829 `supersedes`, 1,214 `extends`) but misses many of the rounds that state an old value.
+2. **It doesn't forget everything it's asked to.** In a sample of 12 `agent-policy` failures, 8 are other cards
+   that keep stating the deleted value as current; they are dependents or links that weren't cleaned up ("They
+   still take the bus to work"). The other 4 are its own notes about the conversation, which quote the request
+   together with the value ("My relationship status is in a relationship. Please remove that from your
+   memory."). In `agent-overlay` the deleted value also stays in the raw rounds.
+3. **It keeps one card per value and leaves old ones active** (`agent-policy`). Many failures are present-tense
+   links to them: "secrets live in [[project/secret-manager-selvex]]", "team lead [[team/lead-sarah-chen]]".
+   A stale card is on the first page of 21% of Cascade questions; on Argon it's 0%.
+4. **It does warn dependents.** Every dependent card in the audited passes that still names an old premise is
+   `warned`.
+5. **It corrupts invented names.** Most of its real `agent-policy` losses are names copied wrong: "Selvaria" for
+   Xelvoria, "The Vondrehl Pot" for The Ondreth Pot, "Vorentel SUV".
+6. **Plumbing.** 12.5 and 14.0 tool calls per session, 0 cap hits, 0 non-MCP calls, and every call matched the
+   proxy's log. 135 and 98 of 475 sessions end with a summary instead of `DONE`. Of `agent-policy`'s 81 tool
+   errors, 30 are stale `if_match` values. Another 22 are argument names outside the schema (`address`,
+   `body`, ...). The server answers those with a raw `TypeError` instead of a validation error, and 8 more
+   inputs raise a `KeyError`. Those are engine robustness gaps. They were left unchanged for the run and fixed after every run had been scored: such calls now get a standard `invalid_arguments` error that names the bad arguments and the allowed ones (PLAN.md ledger).
+   Tokens, all on the local GPU: 4.1M + 28.8M cached in and 1.9M out (`agent-policy`); 6.1M + 41.2M and 2.5M
+   (`agent-overlay`).
+
+Tables: [results/tier1-qwen-v3.md](results/tier1-qwen-v3.md); audit: `results/audit/tier1-qwen-v3/`.
+
 ## Telemetry
 
 | Cell | Tool calls / session (max) | Writes: create / replace / append / delete | With `supersedes` / `extends` | Cap hits | Non-MCP calls run (denied) | Context tokens (uncached + cache read) |
@@ -330,10 +445,17 @@ and about 65% of a weekly Gemini quota (81% to 16%, including the dropped Memory
 1. **Make premise changes visible to retrieval.** Argon agents already notice when a dependent's premise
    changes; they write it in prose. The `write` description could make that lineage instead: write dependents
    with `extends`, and when a card you extend is superseded, re-write what extends it. Then the card is `warned`,
-   and a reader that doesn't open it is protected too.
+   and a reader that doesn't open it is protected too. *Partly done after scoring (unmeasured):* a supersede
+   now returns the extensions to rebase (item 2), and the shipped `write` description says to rebase or retire
+   each one in the same session.
 2. **Prune links on supersede.** Link-only staleness is half of `agent-policy`'s failures. The server, or the
    instructions, could report the cards that link to a superseded card, so the agent can update them in the same
-   session.
+   session. *Done after every run was scored (unmeasured):* a `write()` that supersedes or deletes a card
+   returns `affected_backlinks` and `affected_extensions`, read from the index under the same lock, and the
+   shipped `INSTRUCTIONS` and `write` description ask the agent to update them in the same session and to name
+   cards by durable slot (`team/lead`, not `team/lead-sarah-chen`), so a link no longer spells the old value.
+   Whether agents act on it needs a fresh tier: the change alters `INSTRUCTIONS`, so the frozen prompt digests
+   no longer match and a run needs a new freeze (PLAN.md ledger).
 3. **A card-level status rule (v4), read on a fresh tier.** The Absence overcount left in v3 comes from cards
    whose title or summary says the value is former or changing, and which quote the old statement in a body
    line. Per the protocol, a new matcher is read on a tier it hasn't seen (for example MEME `filler32k`), not
