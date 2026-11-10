@@ -1,0 +1,95 @@
+test_corrupt_index_is_rebuilt (tests.test_workspace.FreshnessTests.test_corrupt_index_is_rebuilt) ... ERROR
+test_external_edits_create_rename_delete (tests.test_workspace.FreshnessTests.test_external_edits_create_rename_delete) ... ok
+test_hand_edited_mounts_toml (tests.test_workspace.FreshnessTests.test_hand_edited_mounts_toml) ... ok
+test_index_is_disposable_and_telemetry_survives_rebuild (tests.test_workspace.FreshnessTests.test_index_is_disposable_and_telemetry_survives_rebuild) ... ok
+test_rebuild_catches_same_mtime_and_size_edits (tests.test_workspace.FreshnessTests.test_rebuild_catches_same_mtime_and_size_edits) ... ok
+test_exclusive_lock_blocks_other_holders (tests.test_workspace.LockTests.test_exclusive_lock_blocks_other_holders) ... ok
+test_shared_locks_coexist_and_reenter (tests.test_workspace.LockTests.test_shared_locks_coexist_and_reenter) ... skipped 'msvcrt adapter has no shared mode; readers serialize on Windows'
+test_manifest_bounds (tests.test_workspace.ManifestSearchTests.test_manifest_bounds) ... ok
+test_read_by_alias_and_backlink_pagination (tests.test_workspace.ManifestSearchTests.test_read_by_alias_and_backlink_pagination) ... ok
+test_search_pagination_tags_and_neighbors (tests.test_workspace.ManifestSearchTests.test_search_pagination_tags_and_neighbors) ... ok
+test_summary_cap_and_overview_excluded (tests.test_workspace.ManifestSearchTests.test_summary_cap_and_overview_excluded) ... ok
+test_mount_unmount (tests.test_workspace.MountTests.test_mount_unmount) ... ok
+test_workspace_discovery (tests.test_workspace.MountTests.test_workspace_discovery) ... ok
+test_archives_are_deterministic (tests.test_workspace.PackTests.test_archives_are_deterministic) ... ok
+test_external_refs_become_dependencies (tests.test_workspace.PackTests.test_external_refs_become_dependencies) ... ok
+test_nothing_selected (tests.test_workspace.PackTests.test_nothing_selected) ... ok
+test_refuses_to_overwrite (tests.test_workspace.PackTests.test_refuses_to_overwrite) ... ok
+test_tag_filter (tests.test_workspace.PackTests.test_tag_filter) ... ok
+test_corrupt_journal_is_quarantined_without_touching_staging (tests.test_workspace.RobustnessTests.test_corrupt_journal_is_quarantined_without_touching_staging) ... ok
+test_directory_symlink_loop_is_scanned_once (tests.test_workspace.RobustnessTests.test_directory_symlink_loop_is_scanned_once) ... skipped 'directory symlinks require Windows Developer Mode or symlink privilege'
+test_readme_python_example (tests.test_workspace.RobustnessTests.test_readme_python_example) ... ok
+test_apply_rejects_cycle_closed_by_a_live_edit (tests.test_workspace.StagingTests.test_apply_rejects_cycle_closed_by_a_live_edit) ... ok
+test_apply_rejects_invalid_staged_card (tests.test_workspace.StagingTests.test_apply_rejects_invalid_staged_card) ... ok
+test_full_cycle (tests.test_workspace.StagingTests.test_full_cycle) ... ok
+test_orphan_staged_files_require_absence (tests.test_workspace.StagingTests.test_orphan_staged_files_require_absence) ... ok
+test_overlay_diff_classification (tests.test_workspace.StagingTests.test_overlay_diff_classification) ... ok
+test_staged_edits_preserve_base_and_create_then_delete_vanishes (tests.test_workspace.StagingTests.test_staged_edits_preserve_base_and_create_then_delete_vanishes) ... ok
+test_lints (tests.test_workspace.ValidateTests.test_lints) ... ok
+test_workspace_validation (tests.test_workspace.ValidateTests.test_workspace_validation) ... ok
+test_apply_recovers_after_process_exits_mid_batch (tests.test_workspace.WindowsCompatibilityTests.test_apply_recovers_after_process_exits_mid_batch) ... ok
+test_crlf_hash_and_if_match_use_raw_bytes (tests.test_workspace.WindowsCompatibilityTests.test_crlf_hash_and_if_match_use_raw_bytes) ... ok
+test_crlf_staging_preconditions_and_editor_conversion_conflict (tests.test_workspace.WindowsCompatibilityTests.test_crlf_staging_preconditions_and_editor_conversion_conflict) ... ok
+test_mount_paths_with_drive_letters_backslashes_spaces_and_unicode (tests.test_workspace.WindowsTests.test_mount_paths_with_drive_letters_backslashes_spaces_and_unicode) ... ok
+test_open_overlay_blocks_replace_and_delete_without_data_loss (tests.test_workspace.WindowsTests.test_open_overlay_blocks_replace_and_delete_without_data_loss) ... ok
+test_open_overlay_keeps_apply_journal_until_recovery (tests.test_workspace.WindowsTests.test_open_overlay_keeps_apply_journal_until_recovery) ... ok
+test_pack_with_open_source_and_existing_open_output (tests.test_workspace.WindowsTests.test_pack_with_open_source_and_existing_open_output) ... ok
+test_readers_serialize_and_nested_upgrade_keeps_lock (tests.test_workspace.WindowsTests.test_readers_serialize_and_nested_upgrade_keeps_lock) ... ok
+test_append_dedupes_and_unions_lists (tests.test_workspace.WriteTests.test_append_dedupes_and_unions_lists) ... ok
+test_base_slices_are_read_only (tests.test_workspace.WriteTests.test_base_slices_are_read_only) ... ok
+test_create_layout_and_idempotency (tests.test_workspace.WriteTests.test_create_layout_and_idempotency) ... ok
+test_cycles_rejected (tests.test_workspace.WriteTests.test_cycles_rejected) ... ok
+test_delete_is_idempotent (tests.test_workspace.WriteTests.test_delete_is_idempotent) ... ok
+test_invalid_ids_and_values (tests.test_workspace.WriteTests.test_invalid_ids_and_values) ... ok
+test_replace_preserves_hand_written_frontmatter (tests.test_workspace.WriteTests.test_replace_preserves_hand_written_frontmatter) ... ok
+test_replace_with_if_match_and_field_patching (tests.test_workspace.WriteTests.test_replace_with_if_match_and_field_patching) ... ok
+test_unresolved_lineage_warns (tests.test_workspace.WriteTests.test_unresolved_lineage_warns) ... ok
+test_parallel_processes_finish_an_inflight_apply (tests.test_interfaces.ConcurrencyTests.test_parallel_processes_finish_an_inflight_apply) ... ok
+test_parallel_processes_lose_no_writes (tests.test_interfaces.ConcurrencyTests.test_parallel_processes_lose_no_writes) ... ok
+
+======================================================================
+ERROR: test_corrupt_index_is_rebuilt (tests.test_workspace.FreshnessTests.test_corrupt_index_is_rebuilt)
+----------------------------------------------------------------------
+Traceback (most recent call last):
+  File "C:\Users\Wenzhe Zhang\Documents\workspace\MindSlice\mindslice\index.py", line 136, in _connect
+    conn = self._open()
+           ^^^^^^^^^^^^
+  File "C:\Users\Wenzhe Zhang\Documents\workspace\MindSlice\mindslice\index.py", line 153, in _open
+    conn.execute("PRAGMA journal_mode=WAL")
+sqlite3.DatabaseError: file is not a database
+
+During handling of the above exception, another exception occurred:
+
+Traceback (most recent call last):
+  File "C:\Users\Wenzhe Zhang\Documents\workspace\MindSlice\tests\test_workspace.py", line 171, in test_corrupt_index_is_rebuilt
+    self.assertEqual(self.ws.search("lynxes")["total_matches"], 1)
+                     ^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\Wenzhe Zhang\Documents\workspace\MindSlice\mindslice\workspace.py", line 181, in search
+    return query.search(self, query_text, source, tags, k, offset, max_neighbors, follow_supersedes)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\Wenzhe Zhang\Documents\workspace\MindSlice\mindslice\query.py", line 277, in search
+    with ws._reading() as table:
+         ^^^^^^^^^^^^^
+  File "contextlib.py", line 137, in __enter__
+  File "C:\Users\Wenzhe Zhang\Documents\workspace\MindSlice\mindslice\workspace.py", line 153, in _reading
+    if not self._needs_maintenance(table):
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\Wenzhe Zhang\Documents\workspace\MindSlice\mindslice\workspace.py", line 146, in _needs_maintenance
+    return self.staging.has_journal() or self.index.is_stale(table, self._exclude())
+                                         ^^^^^^^^^^
+  File "C:\Users\Wenzhe Zhang\Documents\workspace\MindSlice\mindslice\workspace.py", line 95, in index
+    self._index = Index(self.cache_dir / INDEX_FILE)
+                  ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\Wenzhe Zhang\Documents\workspace\MindSlice\mindslice\index.py", line 128, in __init__
+    self.conn = self._connect()
+                ^^^^^^^^^^^^^^^
+  File "C:\Users\Wenzhe Zhang\Documents\workspace\MindSlice\mindslice\index.py", line 143, in _connect
+    self._delete_db()
+  File "C:\Users\Wenzhe Zhang\Documents\workspace\MindSlice\mindslice\index.py", line 170, in _delete_db
+    os.unlink(str(self.db_path) + suffix)
+PermissionError: [WinError 32] The process cannot access the file because it is being used by another process: 'C:\\Users\\WENZHE~1\\AppData\\Local\\Temp\\mindslice-test-ylruykn2\\ws\\.cache\\index.sqlite'
+
+----------------------------------------------------------------------
+Ran 48 tests in 7.912s
+
+FAILED (errors=1, skipped=2)

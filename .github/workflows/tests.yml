@@ -12,9 +12,15 @@ jobs:
   unittest:
     # Text analysis depends on Python's Unicode database (mindslice/lexical.py), and the recorded eval
     # results were produced on Python 3.12 (Unicode 15.0.0): keep CI on the same minor version.
-    runs-on: ubuntu-24.04
+    strategy:
+      matrix:
+        # Pin the OS release; GitHub's standard x64 Windows runners use Windows Server.
+        os: [ubuntu-24.04, windows-2025]
+    runs-on: ${{ matrix.os }}
     timeout-minutes: 15
     steps:
+      - name: Preserve LF checkout bytes for frozen evaluation hashes
+        run: git config --global core.autocrlf false
       - uses: actions/checkout@v7
       - uses: actions/setup-python@v7
         with:

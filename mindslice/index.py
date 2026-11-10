@@ -132,6 +132,7 @@ class Index:
     # ------------------------------------------------------------------
     def _connect(self) -> sqlite3.Connection:
         self.db_path.parent.mkdir(parents=True, exist_ok=True)
+        conn = None
         try:
             conn = self._open()
             version = self._schema_version(conn)
@@ -140,6 +141,8 @@ class Index:
                 self._delete_db()
                 conn = self._open()
         except sqlite3.DatabaseError:
+            if conn is not None:
+                conn.close()
             self._delete_db()
             conn = self._open()
         conn.executescript(_SCHEMA)
@@ -149,11 +152,16 @@ class Index:
 
     def _open(self) -> sqlite3.Connection:
         conn = sqlite3.connect(self.db_path, timeout=5.0, check_same_thread=False, isolation_level=None)
-        conn.row_factory = sqlite3.Row
-        conn.execute("PRAGMA journal_mode=WAL")
-        conn.execute("PRAGMA synchronous=NORMAL")
-        conn.execute("PRAGMA foreign_keys=OFF")
-        conn.execute("SELECT 1").fetchone()  # surfaces 'file is not a database'
+        try:
+            conn.row_factory = sqlite3.Row
+            conn.execute("PRAGMA journal_mode=WAL")
+            conn.execute("PRAGMA synchronous=NORMAL")
+            conn.execute("PRAGMA foreign_keys=OFF")
+            conn.execute("SELECT 1").fetchone()  # surfaces 'file is not a database'
+        except BaseException:
+            # Windows cannot unlink a corrupt database while this handle is open.
+            conn.close()
+            raise
         return conn
 
     @staticmethod

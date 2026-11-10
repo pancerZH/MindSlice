@@ -1,0 +1,443 @@
+python.exe : test_journey_and_cold_restart
+(tests.functional.test_journeys.ColdStartJourney.test_journey_and_cold_restart) ... ok
+At line:2 char:77
++ ... | Out-Null; & ./.venv/windows-python/python.exe -m unittest discover  ...
++                 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+    + CategoryInfo          : NotSpecified: (test_journey_an...restart) ... ok:String) [], RemoteException
+    + FullyQualifiedErrorId : NativeCommandError
+
+test_replay_is_deterministic (tests.functional.test_journeys.ColdStartJourney.test_replay_is_deterministic) ... ok
+test_journey_and_cold_restart (tests.functional.test_journeys.FewSlicesJourney.test_journey_and_cold_restart) ... ok
+test_replay_is_deterministic (tests.functional.test_journeys.FewSlicesJourney.test_replay_is_deterministic) ... ok
+test_journey_and_cold_restart (tests.functional.test_journeys.ManySlicesJourney.test_journey_and_cold_restart) ... ok
+test_replay_is_deterministic (tests.functional.test_journeys.ManySlicesJourney.test_replay_is_deterministic) ... FAIL
+test_flat_partner_comes_from_the_same_dataset
+(tests.test_external_eval.AblationPairingTests.test_flat_partner_comes_from_the_same_dataset)
+MEME's filler32k and nofiller share question ids; a lineage record pairs with its own dataset's flat one. ... ok
+test_paths_sort_chronologically (tests.test_external_eval.CardTests.test_paths_sort_chronologically) ... ok
+test_rounds_and_rendering_match_write (tests.test_external_eval.CardTests.test_rounds_and_rendering_match_write) ...
+FAIL
+test_summary_line (tests.test_external_eval.CardTests.test_summary_line) ... ok
+test_locomo_evidence (tests.test_external_eval.CompilerTests.test_locomo_evidence) ... ok
+test_longmemeval_knowledge_update (tests.test_external_eval.CompilerTests.test_longmemeval_knowledge_update) ... ok
+test_mab_label_rule (tests.test_external_eval.CompilerTests.test_mab_label_rule) ... ok
+test_meme_judgments_and_lineage (tests.test_external_eval.CompilerTests.test_meme_judgments_and_lineage) ... ok
+test_meme_lineage_run_passes_every_structural_check
+(tests.test_external_eval.CompilerTests.test_meme_lineage_run_passes_every_structural_check) ... ok
+test_pinned_files_and_parquet_decoding
+(tests.test_external_eval.ExternalDataTests.test_pinned_files_and_parquet_decoding) ... skipped 'external datasets not
+fetched (python -m evals.external fetch)'
+test_h2b_is_lower_is_better (tests.test_external_eval.HintTests.test_h2b_is_lower_is_better) ... ok
+test_hint_threshold_and_top3 (tests.test_external_eval.HintTests.test_hint_threshold_and_top3) ... ok
+test_probes_cover_every_lineage_write_once_in_harness_order
+(tests.test_external_eval.HintTests.test_probes_cover_every_lineage_write_once_in_harness_order) ... ok
+test_query_drops_date_line (tests.test_external_eval.HintTests.test_query_drops_date_line) ... ok
+test_selection_rule (tests.test_external_eval.HintTests.test_selection_rule) ... ok
+test_auroc (tests.test_external_eval.MetricTests.test_auroc) ... ok
+test_snappy_and_rle (tests.test_external_eval.MetricTests.test_snappy_and_rle) ... ok
+test_state_metrics (tests.test_external_eval.MetricTests.test_state_metrics) ... ok
+test_parse_and_normalize (tests.test_formats.AddressingTests.test_parse_and_normalize) ... ok
+test_slice_relative_resolution_never_uses_other_mounts
+(tests.test_formats.AddressingTests.test_slice_relative_resolution_never_uses_other_mounts) ... ok
+test_append_after_summary_only (tests.test_formats.CardParsingTests.test_append_after_summary_only) ... ok
+test_invalid_schema (tests.test_formats.CardParsingTests.test_invalid_schema) ... ok
+test_no_frontmatter_and_heading_title (tests.test_formats.CardParsingTests.test_no_frontmatter_and_heading_title) ...
+ok
+test_standard_card (tests.test_formats.CardParsingTests.test_standard_card) ... ok
+test_statement_normalization_and_dedupe (tests.test_formats.CardParsingTests.test_statement_normalization_and_dedupe)
+... ok
+test_unclosed_frontmatter_is_reported (tests.test_formats.CardParsingTests.test_unclosed_frontmatter_is_reported) ...
+ok
+test_wikilinks_ignore_code (tests.test_formats.CardParsingTests.test_wikilinks_ignore_code) ... ok
+test_document_with_tables (tests.test_formats.TomlSerializerTests.test_document_with_tables) ... ok
+test_lone_surrogate_rejected (tests.test_formats.TomlSerializerTests.test_lone_surrogate_rejected) ... ok
+test_round_trip_unicode_and_escapes (tests.test_formats.TomlSerializerTests.test_round_trip_unicode_and_escapes) ... ok
+test_end_to_end (tests.test_interfaces.CLITests.test_end_to_end) ... ok
+test_errors_are_json_on_stderr (tests.test_interfaces.CLITests.test_errors_are_json_on_stderr) ... ok
+test_init_and_discovery (tests.test_interfaces.CLITests.test_init_and_discovery) ... ok
+test_markdown_read_notes_bypassed_replacements
+(tests.test_interfaces.CLITests.test_markdown_read_notes_bypassed_replacements) ... ok
+test_parallel_processes_finish_an_inflight_apply
+(tests.test_interfaces.ConcurrencyTests.test_parallel_processes_finish_an_inflight_apply) ... ok
+test_parallel_processes_lose_no_writes (tests.test_interfaces.ConcurrencyTests.test_parallel_processes_lose_no_writes)
+... ok
+test_handshake_and_listing (tests.test_interfaces.MCPTests.test_handshake_and_listing) ... ok
+test_stage_writes_policy (tests.test_interfaces.MCPTests.test_stage_writes_policy) ... ok
+test_stdio_subprocess (tests.test_interfaces.MCPTests.test_stdio_subprocess) ... ok
+test_tool_schemas_are_objects (tests.test_interfaces.MCPTests.test_tool_schemas_are_objects) ... ok
+test_tools (tests.test_interfaces.MCPTests.test_tools) ... ok
+test_cli_and_mcp_emit_utf8 (tests.test_interfaces.NonUtf8ConsoleTests.test_cli_and_mcp_emit_utf8) ... ok
+test_analyzer_change_reindexes_and_keeps_telemetry
+(tests.test_lexical.AnalyzerUpgradeTests.test_analyzer_change_reindexes_and_keeps_telemetry) ... ok
+test_boundaries_with_latin_digits_punctuation_and_emoji
+(tests.test_lexical.ChineseAnalysisTests.test_boundaries_with_latin_digits_punctuation_and_emoji) ... ok
+test_normalization (tests.test_lexical.ChineseAnalysisTests.test_normalization) ... ok
+test_query_plans (tests.test_lexical.ChineseAnalysisTests.test_query_plans) ... ok
+test_rare_and_traditional_ideographs (tests.test_lexical.ChineseAnalysisTests.test_rare_and_traditional_ideographs)
+... ok
+test_run_becomes_unigrams_then_contiguous_bigrams
+(tests.test_lexical.ChineseAnalysisTests.test_run_becomes_unigrams_then_contiguous_bigrams) ... ok
+test_fold (tests.test_lexical.EnglishAnalysisTests.test_fold) ... ok
+test_query_words_are_quoted_and_operators_are_plain_words
+(tests.test_lexical.EnglishAnalysisTests.test_query_words_are_quoted_and_operators_are_plain_words) ... ok
+test_signature_tracks_unicode_version (tests.test_lexical.EnglishAnalysisTests.test_signature_tracks_unicode_version)
+... ok
+test_spaced_text_passes_through (tests.test_lexical.EnglishAnalysisTests.test_spaced_text_passes_through) ... ok
+test_segmentation (tests.test_lexical.OtherScriptAnalysisTests.test_segmentation) ... ok
+test_substring_search (tests.test_lexical.OtherScriptSearchTests.test_substring_search) ... ok
+test_data_integrity_and_frozen_digests
+(tests.test_retrieval_eval.EvalDataTests.test_data_integrity_and_frozen_digests) ... FAIL
+test_splits_are_balanced (tests.test_retrieval_eval.EvalDataTests.test_splits_are_balanced) ... ok
+test_bootstrap_and_verdicts (tests.test_retrieval_eval.MetricTests.test_bootstrap_and_verdicts) ... ok
+test_ndcg_recall_mrr (tests.test_retrieval_eval.MetricTests.test_ndcg_recall_mrr) ... ok
+test_engine_has_not_regressed_against_recorded_results
+(tests.test_retrieval_eval.RegressionTests.test_engine_has_not_regressed_against_recorded_results) ... ok
+test_ranking_is_deterministic (tests.test_retrieval_eval.RegressionTests.test_ranking_is_deterministic) ... ok
+test_aliases_only_change_the_data (tests.test_retrieval_eval.SystemTests.test_aliases_only_change_the_data) ... ok
+test_patches_are_scoped_to_the_run (tests.test_retrieval_eval.SystemTests.test_patches_are_scoped_to_the_run) ... ok
+test_read_unqualified_selects_precedence_and_lists_shadows
+(tests.test_scenarios.Scenario01PathCollision.test_read_unqualified_selects_precedence_and_lists_shadows) ... ok
+test_search_returns_both_with_provenance
+(tests.test_scenarios.Scenario01PathCollision.test_search_returns_both_with_provenance) ... ok
+test_base_read_attaches_extension (tests.test_scenarios.Scenario02SamePathExtension.test_base_read_attaches_extension)
+... ok
+test_search_returns_both_with_extends_metadata
+(tests.test_scenarios.Scenario02SamePathExtension.test_search_returns_both_with_extends_metadata) ... ok
+test_unqualified_read_composes_baseline_and_delta
+(tests.test_scenarios.Scenario02SamePathExtension.test_unqualified_read_composes_baseline_and_delta) ... ok
+test_read_follows_supersession
+(tests.test_scenarios.Scenario03SupersessionTerminologyShift.test_read_follows_supersession) ... ok
+test_search_redirects_through_superseded_card
+(tests.test_scenarios.Scenario03SupersessionTerminologyShift.test_search_redirects_through_superseded_card) ... ok
+test_trust_allowlist_and_disabled_following
+(tests.test_scenarios.Scenario03SupersessionTerminologyShift.test_trust_allowlist_and_disabled_following) ... ok
+test_untrusted_search_does_not_redirect
+(tests.test_scenarios.Scenario03SupersessionTerminologyShift.test_untrusted_search_does_not_redirect) ... ok
+test_read_without_following (tests.test_scenarios.Scenario04SourceScopedSearch.test_read_without_following) ... ok
+test_source_filter_is_honored_and_stamped
+(tests.test_scenarios.Scenario04SourceScopedSearch.test_source_filter_is_honored_and_stamped) ... ok
+test_competing_replacements_are_not_guessed
+(tests.test_scenarios.Scenario05ReplacementChain.test_competing_replacements_are_not_guessed) ... ok
+test_read_resolves_transitively (tests.test_scenarios.Scenario05ReplacementChain.test_read_resolves_transitively) ...
+ok
+test_search_redirects_to_terminal_leaf_with_max_score
+(tests.test_scenarios.Scenario05ReplacementChain.test_search_redirects_to_terminal_leaf_with_max_score) ... ok
+test_rival_of_a_card_passed_through_is_reported
+(tests.test_scenarios.Scenario05bTrustAcrossThreeMounts.test_rival_of_a_card_passed_through_is_reported) ... ok
+test_trust_filter_resolves_a_fork
+(tests.test_scenarios.Scenario05bTrustAcrossThreeMounts.test_trust_filter_resolves_a_fork) ... ok
+test_untrusted_hop_stops_the_chain_mid_way
+(tests.test_scenarios.Scenario05bTrustAcrossThreeMounts.test_untrusted_hop_stops_the_chain_mid_way) ... ok
+test_read_baseline_forwards_and_flags_unrebased
+(tests.test_scenarios.Scenario06UnrebasedExtension.test_read_baseline_forwards_and_flags_unrebased) ... ok
+test_read_extension_composes_named_baseline
+(tests.test_scenarios.Scenario06UnrebasedExtension.test_read_extension_composes_named_baseline) ... ok
+test_rebasing_clears_notice (tests.test_scenarios.Scenario06UnrebasedExtension.test_rebasing_clears_notice) ... ok
+test_search_surfaces_baseline_superseded_by
+(tests.test_scenarios.Scenario06UnrebasedExtension.test_search_surfaces_baseline_superseded_by) ... ok
+test_deleted_baseline_flagged_in_preview_as_in_read
+(tests.test_scenarios.Scenario06bTwoHopAndDeletedBaselines.test_deleted_baseline_flagged_in_preview_as_in_read) ... ok
+test_rebasing_the_middle_clears_the_two_hop_notice
+(tests.test_scenarios.Scenario06bTwoHopAndDeletedBaselines.test_rebasing_the_middle_clears_the_two_hop_notice) ... ok
+test_two_hop_dependent_flagged_in_preview_as_in_read
+(tests.test_scenarios.Scenario06bTwoHopAndDeletedBaselines.test_two_hop_dependent_flagged_in_preview_as_in_read) ... ok
+test_unaffected_card_carries_no_notice
+(tests.test_scenarios.Scenario06bTwoHopAndDeletedBaselines.test_unaffected_card_carries_no_notice) ... ok
+test_shared_baseline_listed_once_in_composition_order
+(tests.test_scenarios.Scenario06cDiamondBaselines.test_shared_baseline_listed_once_in_composition_order) ... ok
+test_superseded_shared_root_flagged_once
+(tests.test_scenarios.Scenario06cDiamondBaselines.test_superseded_shared_root_flagged_once) ... ok
+test_tombstone_keeps_original_base_and_apply_aborts
+(tests.test_scenarios.Scenario07StagedOpTransition.test_tombstone_keeps_original_base_and_apply_aborts) ... ok
+test_existence_conflict (tests.test_scenarios.Scenario08StagedCreateVsExternalCreation.test_existence_conflict) ... ok
+test_include_deps_pulls_transitive_cards
+(tests.test_scenarios.Scenario09FilteredPackExcludedReference.test_include_deps_pulls_transitive_cards) ... ok
+test_qualified_overlay_reference_also_rejected
+(tests.test_scenarios.Scenario09FilteredPackExcludedReference.test_qualified_overlay_reference_also_rejected) ... ok
+test_rejects_without_include_deps
+(tests.test_scenarios.Scenario09FilteredPackExcludedReference.test_rejects_without_include_deps) ... ok
+test_pulls_chain_rewrites_alias_link_and_validates
+(tests.test_scenarios.Scenario09bTransitiveAliasedDependencies.test_pulls_chain_rewrites_alias_link_and_validates) ...
+ok
+test_slice_relative_scope_after_mount
+(tests.test_scenarios.Scenario10PackValidateMountRead.test_slice_relative_scope_after_mount) ... ok
+test_recovery_by_next_reader (tests.test_scenarios.Scenario11CrashDuringApply.test_recovery_by_next_reader) ... ok
+test_replay_finishes_batch_without_clobbering_external_edits
+(tests.test_scenarios.Scenario11CrashDuringApply.test_replay_finishes_batch_without_clobbering_external_edits) ... ok
+test_replay_is_idempotent (tests.test_scenarios.Scenario11CrashDuringApply.test_replay_is_idempotent) ... ok
+test_skipped_delete_is_rebuilt_from_the_journal_if_the_manifest_is_gone (tests.test_scenarios.Scenario11CrashDuringAppl
+y.test_skipped_delete_is_rebuilt_from_the_journal_if_the_manifest_is_gone) ... ok
+test_writer_recovers_before_executing
+(tests.test_scenarios.Scenario11CrashDuringApply.test_writer_recovers_before_executing) ... ok
+test_mixed_scripts_digits_and_width_variants
+(tests.test_search_chinese.ChineseMatchingTests.test_mixed_scripts_digits_and_width_variants) ... ok
+test_punctuation_quotes_and_spacing_in_queries
+(tests.test_search_chinese.ChineseMatchingTests.test_punctuation_quotes_and_spacing_in_queries) ... ok
+test_rare_ideographs_and_repeats (tests.test_search_chinese.ChineseMatchingTests.test_rare_ideographs_and_repeats) ...
+ok
+test_substrings_of_every_length_and_position
+(tests.test_search_chinese.ChineseMatchingTests.test_substrings_of_every_length_and_position) ... ok
+test_traditional_text_matches_traditional_queries
+(tests.test_search_chinese.ChineseMatchingTests.test_traditional_text_matches_traditional_queries) ... ok
+test_frontmatter_round_trip_with_quotes
+(tests.test_search_chinese.ChineseMetadataTests.test_frontmatter_round_trip_with_quotes) ... ok
+test_long_summary_preview_and_lint (tests.test_search_chinese.ChineseMetadataTests.test_long_summary_preview_and_lint)
+... ok
+test_manifest_description_truncation
+(tests.test_search_chinese.ChineseMetadataTests.test_manifest_description_truncation) ... ok
+test_paths_aliases_tags_and_wikilinks
+(tests.test_search_chinese.ChineseMetadataTests.test_paths_aliases_tags_and_wikilinks) ... ok
+test_validate_flags_broken_chinese_wikilink
+(tests.test_search_chinese.ChineseMetadataTests.test_validate_flags_broken_chinese_wikilink) ... ok
+test_field_weights_order_equal_coverage
+(tests.test_search_chinese.ChineseRankingTests.test_field_weights_order_equal_coverage) ... ok
+test_mixed_language_query_ranks_by_coverage
+(tests.test_search_chinese.ChineseRankingTests.test_mixed_language_query_ranks_by_coverage) ... ok
+test_spaced_words_coverage (tests.test_search_chinese.ChineseRankingTests.test_spaced_words_coverage) ... ok
+test_unspaced_compound_is_found_not_silently_missed
+(tests.test_search_chinese.ChineseRankingTests.test_unspaced_compound_is_found_not_silently_missed) ... ok
+test_verbatim_and_scattered_bigrams_are_both_found
+(tests.test_search_chinese.ChineseRankingTests.test_verbatim_and_scattered_bigrams_are_both_found) ... ok
+test_pack_chinese_paths (tests.test_search_chinese.ChineseWorkflowTests.test_pack_chinese_paths) ... ok
+test_staging_diff_and_apply (tests.test_search_chinese.ChineseWorkflowTests.test_staging_diff_and_apply) ... ok
+test_supersession_redirect_and_source_filter
+(tests.test_search_chinese.ChineseWorkflowTests.test_supersession_redirect_and_source_filter) ... ok
+test_write_append_and_dedupe (tests.test_search_chinese.ChineseWorkflowTests.test_write_append_and_dedupe) ... ok
+test_case_diacritics_and_stemming (tests.test_search_english.EnglishMatchingTests.test_case_diacritics_and_stemming)
+... ok
+test_duplicate_and_long_queries (tests.test_search_english.EnglishMatchingTests.test_duplicate_and_long_queries) ... ok
+test_empty_whitespace_and_punctuation_queries
+(tests.test_search_english.EnglishMatchingTests.test_empty_whitespace_and_punctuation_queries) ... ok
+test_fts_syntax_is_always_treated_as_text
+(tests.test_search_english.EnglishMatchingTests.test_fts_syntax_is_always_treated_as_text) ... ok
+test_identifiers_numbers_and_punctuation_inside_words
+(tests.test_search_english.EnglishMatchingTests.test_identifiers_numbers_and_punctuation_inside_words) ... ok
+test_k_zero_still_counts (tests.test_search_english.EnglishMatchingTests.test_k_zero_still_counts) ... ok
+test_path_words_are_searchable (tests.test_search_english.EnglishMatchingTests.test_path_words_are_searchable) ... ok
+test_prefix_queries (tests.test_search_english.EnglishMatchingTests.test_prefix_queries) ... ok
+test_bm25_orders_and_coverage_is_reported
+(tests.test_search_english.EnglishRankingTests.test_bm25_orders_and_coverage_is_reported) ... ok
+test_coverage_values_and_monotonic_order
+(tests.test_search_english.EnglishRankingTests.test_coverage_values_and_monotonic_order) ... ok
+test_field_weights_order_equal_coverage
+(tests.test_search_english.EnglishRankingTests.test_field_weights_order_equal_coverage) ... ok
+test_filler_words_barely_count (tests.test_search_english.EnglishRankingTests.test_filler_words_barely_count) ... ok
+test_precedence_breaks_exact_ties (tests.test_search_english.EnglishRankingTests.test_precedence_breaks_exact_ties)
+... ok
+test_a_typo_alone_finds_nothing_and_is_named
+(tests.test_search_feedback.UnmatchedTermsTests.test_a_typo_alone_finds_nothing_and_is_named) ... ok
+test_cache_from_the_suggestion_engine_is_cleaned_and_reindexed
+(tests.test_search_feedback.UnmatchedTermsTests.test_cache_from_the_suggestion_engine_is_cleaned_and_reindexed) ... ok
+test_fully_matched_queries_and_listings_report_nothing
+(tests.test_search_feedback.UnmatchedTermsTests.test_fully_matched_queries_and_listings_report_nothing) ... ok
+test_only_the_words_that_match_nothing_are_reported
+(tests.test_search_feedback.UnmatchedTermsTests.test_only_the_words_that_match_nothing_are_reported) ... ok
+test_scope_decides_what_counts_as_matched
+(tests.test_search_feedback.UnmatchedTermsTests.test_scope_decides_what_counts_as_matched) ... ok
+test_unspaced_runs_are_reported_whole
+(tests.test_search_feedback.UnmatchedTermsTests.test_unspaced_runs_are_reported_whole) ... ok
+test_words_are_reported_as_normalized_query_text
+(tests.test_search_feedback.UnmatchedTermsTests.test_words_are_reported_as_normalized_query_text) ... ok
+test_corrupt_index_is_rebuilt (tests.test_workspace.FreshnessTests.test_corrupt_index_is_rebuilt) ... ERROR
+test_external_edits_create_rename_delete
+(tests.test_workspace.FreshnessTests.test_external_edits_create_rename_delete) ... ok
+test_hand_edited_mounts_toml (tests.test_workspace.FreshnessTests.test_hand_edited_mounts_toml) ... ERROR
+test_index_is_disposable_and_telemetry_survives_rebuild
+(tests.test_workspace.FreshnessTests.test_index_is_disposable_and_telemetry_survives_rebuild) ... ok
+test_rebuild_catches_same_mtime_and_size_edits
+(tests.test_workspace.FreshnessTests.test_rebuild_catches_same_mtime_and_size_edits) ... ok
+test_exclusive_lock_blocks_other_holders (tests.test_workspace.LockTests.test_exclusive_lock_blocks_other_holders) ...
+ok
+test_shared_locks_coexist_and_reenter (tests.test_workspace.LockTests.test_shared_locks_coexist_and_reenter) ...
+skipped 'msvcrt adapter has no shared mode; readers serialize on Windows'
+test_manifest_bounds (tests.test_workspace.ManifestSearchTests.test_manifest_bounds) ... ok
+test_read_by_alias_and_backlink_pagination
+(tests.test_workspace.ManifestSearchTests.test_read_by_alias_and_backlink_pagination) ... ok
+test_search_pagination_tags_and_neighbors
+(tests.test_workspace.ManifestSearchTests.test_search_pagination_tags_and_neighbors) ... ok
+test_summary_cap_and_overview_excluded
+(tests.test_workspace.ManifestSearchTests.test_summary_cap_and_overview_excluded) ... ok
+test_mount_unmount (tests.test_workspace.MountTests.test_mount_unmount) ... ok
+test_workspace_discovery (tests.test_workspace.MountTests.test_workspace_discovery) ... ok
+test_archives_are_deterministic (tests.test_workspace.PackTests.test_archives_are_deterministic) ... ok
+test_external_refs_become_dependencies (tests.test_workspace.PackTests.test_external_refs_become_dependencies) ... ok
+test_nothing_selected (tests.test_workspace.PackTests.test_nothing_selected) ... ok
+test_refuses_to_overwrite (tests.test_workspace.PackTests.test_refuses_to_overwrite) ... ok
+test_tag_filter (tests.test_workspace.PackTests.test_tag_filter) ... ok
+test_corrupt_journal_is_quarantined_without_touching_staging
+(tests.test_workspace.RobustnessTests.test_corrupt_journal_is_quarantined_without_touching_staging) ... ok
+test_directory_symlink_loop_is_scanned_once
+(tests.test_workspace.RobustnessTests.test_directory_symlink_loop_is_scanned_once) ... ERROR
+test_readme_python_example (tests.test_workspace.RobustnessTests.test_readme_python_example) ... ok
+test_apply_rejects_cycle_closed_by_a_live_edit
+(tests.test_workspace.StagingTests.test_apply_rejects_cycle_closed_by_a_live_edit) ... ok
+test_apply_rejects_invalid_staged_card (tests.test_workspace.StagingTests.test_apply_rejects_invalid_staged_card) ...
+ok
+test_full_cycle (tests.test_workspace.StagingTests.test_full_cycle) ... ok
+test_orphan_staged_files_require_absence (tests.test_workspace.StagingTests.test_orphan_staged_files_require_absence)
+... ok
+test_overlay_diff_classification (tests.test_workspace.StagingTests.test_overlay_diff_classification) ... ok
+test_staged_edits_preserve_base_and_create_then_delete_vanishes
+(tests.test_workspace.StagingTests.test_staged_edits_preserve_base_and_create_then_delete_vanishes) ... ok
+test_lints (tests.test_workspace.ValidateTests.test_lints) ... ok
+test_workspace_validation (tests.test_workspace.ValidateTests.test_workspace_validation) ... ok
+test_append_dedupes_and_unions_lists (tests.test_workspace.WriteTests.test_append_dedupes_and_unions_lists) ... ok
+test_base_slices_are_read_only (tests.test_workspace.WriteTests.test_base_slices_are_read_only) ... ok
+test_create_layout_and_idempotency (tests.test_workspace.WriteTests.test_create_layout_and_idempotency) ... ok
+test_cycles_rejected (tests.test_workspace.WriteTests.test_cycles_rejected) ... ok
+test_delete_is_idempotent (tests.test_workspace.WriteTests.test_delete_is_idempotent) ... ok
+test_invalid_ids_and_values (tests.test_workspace.WriteTests.test_invalid_ids_and_values) ... ok
+test_replace_preserves_hand_written_frontmatter
+(tests.test_workspace.WriteTests.test_replace_preserves_hand_written_frontmatter) ... ok
+test_replace_with_if_match_and_field_patching
+(tests.test_workspace.WriteTests.test_replace_with_if_match_and_field_patching) ... ok
+test_unresolved_lineage_warns (tests.test_workspace.WriteTests.test_unresolved_lineage_warns) ... ok
+
+======================================================================
+ERROR: test_corrupt_index_is_rebuilt (tests.test_workspace.FreshnessTests.test_corrupt_index_is_rebuilt)
+----------------------------------------------------------------------
+Traceback (most recent call last):
+  File "C:\Users\Wenzhe Zhang\Documents\workspace\MindSlice\mindslice\index.py", line 136, in _connect
+    conn = self._open()
+           ^^^^^^^^^^^^
+  File "C:\Users\Wenzhe Zhang\Documents\workspace\MindSlice\mindslice\index.py", line 153, in _open
+    conn.execute("PRAGMA journal_mode=WAL")
+sqlite3.DatabaseError: file is not a database
+
+During handling of the above exception, another exception occurred:
+
+Traceback (most recent call last):
+  File "C:\Users\Wenzhe Zhang\Documents\workspace\MindSlice\tests\test_workspace.py", line 166, in
+test_corrupt_index_is_rebuilt
+    self.assertEqual(self.ws.search("lynxes")["total_matches"], 1)
+                     ^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\Wenzhe Zhang\Documents\workspace\MindSlice\mindslice\workspace.py", line 181, in search
+    return query.search(self, query_text, source, tags, k, offset, max_neighbors, follow_supersedes)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\Wenzhe Zhang\Documents\workspace\MindSlice\mindslice\query.py", line 277, in search
+    with ws._reading() as table:
+         ^^^^^^^^^^^^^
+  File "contextlib.py", line 137, in __enter__
+  File "C:\Users\Wenzhe Zhang\Documents\workspace\MindSlice\mindslice\workspace.py", line 153, in _reading
+    if not self._needs_maintenance(table):
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\Wenzhe Zhang\Documents\workspace\MindSlice\mindslice\workspace.py", line 146, in _needs_maintenance
+    return self.staging.has_journal() or self.index.is_stale(table, self._exclude())
+                                         ^^^^^^^^^^
+  File "C:\Users\Wenzhe Zhang\Documents\workspace\MindSlice\mindslice\workspace.py", line 95, in index
+    self._index = Index(self.cache_dir / INDEX_FILE)
+                  ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\Wenzhe Zhang\Documents\workspace\MindSlice\mindslice\index.py", line 128, in __init__
+    self.conn = self._connect()
+                ^^^^^^^^^^^^^^^
+  File "C:\Users\Wenzhe Zhang\Documents\workspace\MindSlice\mindslice\index.py", line 143, in _connect
+    self._delete_db()
+  File "C:\Users\Wenzhe Zhang\Documents\workspace\MindSlice\mindslice\index.py", line 170, in _delete_db
+    os.unlink(str(self.db_path) + suffix)
+PermissionError: [WinError 32] The process cannot access the file because it is being used by another process:
+'C:\\Users\\WENZHE~1\\AppData\\Local\\Temp\\mindslice-test-aixtt437\\ws\\.cache\\index.sqlite'
+
+======================================================================
+ERROR: test_hand_edited_mounts_toml (tests.test_workspace.FreshnessTests.test_hand_edited_mounts_toml)
+----------------------------------------------------------------------
+Traceback (most recent call last):
+  File "C:\Users\Wenzhe Zhang\Documents\workspace\MindSlice\mindslice\config.py", line 94, in load_mounts
+    data = tomllib.loads(path.read_text(encoding="utf-8"))
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "tomllib\_parser.py", line 102, in loads
+  File "tomllib\_parser.py", line 326, in key_value_rule
+  File "tomllib\_parser.py", line 369, in parse_key_value_pair
+  File "tomllib\_parser.py", line 598, in parse_value
+  File "tomllib\_parser.py", line 409, in parse_one_line_basic_str
+  File "tomllib\_parser.py", line 575, in parse_basic_str
+  File "tomllib\_parser.py", line 490, in parse_basic_str_escape
+  File "tomllib\_parser.py", line 504, in parse_hex_char
+tomllib.TOMLDecodeError: Invalid hex value (at line 12, column 13)
+
+The above exception was the direct cause of the following exception:
+
+Traceback (most recent call last):
+  File "C:\Users\Wenzhe Zhang\Documents\workspace\MindSlice\tests\test_workspace.py", line 173, in
+test_hand_edited_mounts_toml
+    self.assertEqual(self.addresses(self.ws.search("penguin")), ["@kb/a"])
+                                    ^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\Wenzhe Zhang\Documents\workspace\MindSlice\mindslice\workspace.py", line 181, in search
+    return query.search(self, query_text, source, tags, k, offset, max_neighbors, follow_supersedes)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\Wenzhe Zhang\Documents\workspace\MindSlice\mindslice\query.py", line 277, in search
+    with ws._reading() as table:
+         ^^^^^^^^^^^^^
+  File "contextlib.py", line 137, in __enter__
+  File "C:\Users\Wenzhe Zhang\Documents\workspace\MindSlice\mindslice\workspace.py", line 152, in _reading
+    table = self._reload_table()
+            ^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\Wenzhe Zhang\Documents\workspace\MindSlice\mindslice\workspace.py", line 122, in _reload_table
+    self._table = load_mounts(self.root)
+                  ^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\Wenzhe Zhang\Documents\workspace\MindSlice\mindslice\config.py", line 96, in load_mounts
+    raise MountError(f"{path}: invalid TOML: {exc}") from exc
+mindslice.errors.MountError: C:\Users\WENZHE~1\AppData\Local\Temp\mindslice-test-vmh9o_re\ws\mounts.toml: invalid
+TOML: Invalid hex value (at line 12, column 13)
+
+======================================================================
+ERROR: test_directory_symlink_loop_is_scanned_once
+(tests.test_workspace.RobustnessTests.test_directory_symlink_loop_is_scanned_once)
+----------------------------------------------------------------------
+Traceback (most recent call last):
+  File "C:\Users\Wenzhe Zhang\Documents\workspace\MindSlice\tests\test_workspace.py", line 432, in
+test_directory_symlink_loop_is_scanned_once
+    os.symlink(self.root / "overlay/loop", self.root / "overlay/loop/again")
+OSError: [WinError 1314] A required privilege is not held by the client:
+'C:\\Users\\WENZHE~1\\AppData\\Local\\Temp\\mindslice-test-d7x3wud7\\ws\\overlay\\loop' ->
+'C:\\Users\\WENZHE~1\\AppData\\Local\\Temp\\mindslice-test-d7x3wud7\\ws\\overlay\\loop\\again'
+
+======================================================================
+FAIL: test_replay_is_deterministic (tests.functional.test_journeys.ManySlicesJourney.test_replay_is_deterministic)
+----------------------------------------------------------------------
+Traceback (most recent call last):
+  File "C:\Users\Wenzhe Zhang\Documents\workspace\MindSlice\tests\functional\test_journeys.py", line 44, in
+test_replay_is_deterministic
+    self.fail(f"transcripts diverge at line {diverge}:\n  run a: {a[diverge:diverge + 3]}\n  run b: {b[diverge:diverge
++ 3]}")
+AssertionError: transcripts diverge at line 2347:
+  run a: ['   "target": "C:\\\\Users\\\\Wenzhe
+Zhang\\\\AppData\\\\Local\\\\Temp\\\\mindslice-journey-_fjjpm7m\\\\a\\\\ws\\\\slices\\\\incidents.slice",', '
+"errors": [],', '   "warnings": [],']
+  run b: ['   "target": "C:\\\\Users\\\\Wenzhe
+Zhang\\\\AppData\\\\Local\\\\Temp\\\\mindslice-journey-_fjjpm7m\\\\b\\\\ws\\\\slices\\\\incidents.slice",', '
+"errors": [],', '   "warnings": [],']
+
+======================================================================
+FAIL: test_rounds_and_rendering_match_write (tests.test_external_eval.CardTests.test_rounds_and_rendering_match_write)
+----------------------------------------------------------------------
+Traceback (most recent call last):
+  File "C:\Users\Wenzhe Zhang\Documents\workspace\MindSlice\tests\test_external_eval.py", line 107, in
+test_rounds_and_rendering_match_write
+    self.assertEqual((bulk.table().overlay.root / f"{c.path}.md").read_bytes(),
+AssertionError: b'+++\r\ntitle = "Assistant and User"\r\naliase[222 chars]\r\n' != b'+++\ntitle = "Assistant and
+User"\naliases = [192 chars]e.\n'
+
+======================================================================
+FAIL: test_data_integrity_and_frozen_digests
+(tests.test_retrieval_eval.EvalDataTests.test_data_integrity_and_frozen_digests)
+----------------------------------------------------------------------
+Traceback (most recent call last):
+  File "C:\Users\Wenzhe Zhang\Documents\workspace\MindSlice\tests\test_retrieval_eval.py", line 24, in
+test_data_integrity_and_frozen_digests
+    self.assertEqual(check(), [])
+AssertionError: Lists differ: ['data changed since freeze: corpus (6a423[249 chars]9f)'] != []
+
+First list contains 4 additional elements.
+First extra element 0:
+'data changed since freeze: corpus (6a4238a74e9d -> 462fcc2d419b)'
+
++ []
+- ['data changed since freeze: corpus (6a4238a74e9d -> 462fcc2d419b)',
+-  'data changed since freeze: corpus-tiny-en (91c77aaad4fb -> d10b33f8c4f0)',
+-  'data changed since freeze: corpus-tiny-zh (7eb65839c3b0 -> c7084a295826)',
+-  'data changed since freeze: corpus-aliased (89f7ba4e1455 -> 8dbc32eafd9f)']
+
+----------------------------------------------------------------------
+Ran 184 tests in 45.389s
+
+FAILED (failures=3, errors=3, skipped=2)

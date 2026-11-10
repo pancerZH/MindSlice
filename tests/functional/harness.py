@@ -59,7 +59,12 @@ class Transcript:
 
 def normalize(value: Any, root: Path) -> Any:
     """Drop wall-clock fields and replace temp paths so two runs compare equal."""
-    replacements = [(str(root), "<ws>"), (str(root.parent), "<tmp>")]
+    # Windows temp paths can use an 8.3 user name while validate() resolves it
+    # to the long form. Both spellings refer to the same journey workspace.
+    replacements = [(str(path), marker) for path, marker in (
+        (root, "<ws>"), (root.resolve(), "<ws>"),
+        (root.parent, "<tmp>"), (root.parent.resolve(), "<tmp>"),
+    )]
     if isinstance(value, dict):
         return {k: normalize(v, root) for k, v in value.items() if k not in VOLATILE_KEYS}
     if isinstance(value, (list, tuple)):

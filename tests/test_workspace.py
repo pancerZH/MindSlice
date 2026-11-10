@@ -4,11 +4,16 @@ from __future__ import annotations
 
 import hashlib
 import json
+import os
+import subprocess
 import sys
 import tarfile
+import time
 import tomllib
 import unittest
 import zipfile
+from contextlib import contextmanager
+from pathlib import Path
 
 from mindslice import (
     AlreadyExistsError,
@@ -168,7 +173,7 @@ class FreshnessTests(WorkspaceTestCase):
     def test_hand_edited_mounts_toml(self):
         root = self.make_slice("kb", {"a": card_text("A", "Penguin facts.")}, alias="@kb")
         text = (self.root / "mounts.toml").read_text()
-        text += f'\n[[mounts]]\npath = "{root}"\nalias = "@kb"\nprecedence = 5\nrole = "baseline"\n'
+        text += f'\n[[mounts]]\npath = {json.dumps(str(root))}\nalias = "@kb"\nprecedence = 5\nrole = "baseline"\n'
         (self.root / "mounts.toml").write_text(text)
         self.assertEqual(self.addresses(self.ws.search("penguin")), ["@kb/a"])
 
@@ -429,7 +434,12 @@ class RobustnessTests(WorkspaceTestCase):
         import os
 
         self.ws.write("loop/card", summary="Card about capybaras.")
-        os.symlink(self.root / "overlay/loop", self.root / "overlay/loop/again")
+        try:
+            os.symlink(self.root / "overlay/loop", self.root / "overlay/loop/again", target_is_directory=True)
+        except OSError as exc:
+            if sys.platform == "win32" and exc.winerror == 1314:
+                self.skipTest("directory symlinks require Windows Developer Mode or symlink privilege")
+            raise
         res = self.ws.search("capybaras")
         self.assertEqual(res["total_matches"], 1)
 
@@ -453,15 +463,241 @@ class RobustnessTests(WorkspaceTestCase):
         self.assertEqual(ws.read("user-preferences/tooling")["body"].count("\n- "), 2)
 
 
-# TODO(windows): run the whole suite on a Windows machine; nothing has been exercised there yet.
-# Known risk areas to check:
-#   - mindslice/locking.py msvcrt adapter: exclusive-only, so concurrent readers serialize
-#     (test_shared_locks_coexist_and_reenter is skipped there by design).
-#   - os.replace()/unlink() of files another process holds open (atomic writes, apply(), pack()).
-#   - fsutil.fsync_dir() is a no-op on Windows: confirm apply() journal durability is acceptable.
-#   - CRLF line endings from Windows editors (card parsing normalizes; check sha256/if_match flows).
-#   - Drive-letter / backslash paths in mounts.toml (config.portable_path, Workspace.mount).
-#   - ConcurrencyTests in test_interfaces.py (subprocess workers + msvcrt locking).
+# Windows test plan and recorded native run: results/windows/README.md.
+# WindowsCompatibilityTests covers CRLF hashes and actual process-exit recovery;
+# WindowsTests covers native paths, msvcrt contention and open-file sharing errors.
+# ConcurrencyTests in test_interfaces.py exercises simultaneous readers/writers.
+# Process recovery does not establish power-loss durability: fsync_dir is best
+# effort on Windows, where directory flushes may be unavailable.
+class WindowsCompatibilityTests(WorkspaceTestCase):
+    def test_crlf_hash_and_if_match_use_raw_bytes(self):
+        file = self.put_overlay("crlf", "")
+        raw = card_text("CRLF", "Editor content.", ["one"]).replace("\n", "\r\n").encode("utf-8")
+        file.write_bytes(raw)
+        card = self.ws.read("crlf")
+        self.assertEqual(card["body"], "- one\n")
+        self.assertEqual(card["sha256"], hashlib.sha256(raw).hexdigest())
+        with self.assertRaises(PreconditionFailedError):
+            self.ws.write("crlf", op="append", content="- two",
+                          if_match=hashlib.sha256(raw.replace(b"\r\n", b"\n")).hexdigest())
+        self.assertEqual(file.read_bytes(), raw)
+        result = self.ws.write("crlf", op="append", content="- two", if_match=card["sha256"])
+        self.assertEqual(result["sha256"], hashlib.sha256(file.read_bytes()).hexdigest())
+        self.assertNotIn(b"\r", file.read_bytes())
+        self.assertEqual(self.ws.read("crlf")["body"], "- one\n- two\n")
+
+    def test_crlf_staging_preconditions_and_editor_conversion_conflict(self):
+        self.ws.write("crlf", summary="Original.")
+        file = self.overlay_file("crlf")
+        file.write_bytes(file.read_bytes().replace(b"\n", b"\r\n"))
+        base = self.ws.read("crlf")["sha256"]
+        self.ws.write("crlf", op="replace", summary="Staged.", stage=True, if_match=base)
+        staged = self.ws.staging.file("crlf")
+        staged.write_bytes(staged.read_bytes().replace(b"\n", b"\r\n"))
+        staged_sha = hashlib.sha256(staged.read_bytes()).hexdigest()
+        self.ws.write("crlf", op="append", content="- staged edit", stage=True, if_match=staged_sha)
+        [item] = self.ws.diff()["items"]
+        self.assertEqual(item["base_sha256"], base)
+        self.assertEqual(item["staged_sha256"], hashlib.sha256(staged.read_bytes()).hexdigest())
+        self.assertEqual(self.ws.apply()["modified"], ["@overlay/crlf"])
+        self.assertEqual(self.ws.read("crlf")["body"], "- staged edit\n")
+        self.ws.write("crlf", op="replace", summary="Another draft.", stage=True)
+        file.write_bytes(file.read_bytes().replace(b"\n", b"\r\n"))
+        saved = file.read_bytes()
+        with self.assertRaises(ApplyConflictError):
+            self.ws.apply()
+        self.assertEqual(file.read_bytes(), saved)
+        self.assertTrue(self.ws.diff()["items"][0]["conflict"])
+
+    def test_apply_recovers_after_process_exits_mid_batch(self):
+        self.ws.write("b-modified", summary="Original.")
+        self.ws.write("c-deleted", summary="Delete me.")
+        self.ws.write("a-created", summary="Recovered capybara.", stage=True)
+        self.ws.write("b-modified", op="replace", summary="Recovered wombat.", stage=True)
+        self.ws.write("c-deleted", op="delete", stage=True)
+        self.ws.close()
+        worker = """
+import os, sys
+from mindslice import Workspace, staging
+move = staging.durable_move
+def crash_after_move(src, dst):
+    move(src, dst)
+    os._exit(77)
+staging.durable_move = crash_after_move
+with Workspace(sys.argv[1]) as ws:
+    ws.apply()
+"""
+        proc = subprocess.run([sys.executable, "-c", worker, str(self.root)],
+                              cwd=Path(__file__).resolve().parents[1], capture_output=True, timeout=30)
+        self.assertEqual(proc.returncode, 77, proc.stderr)
+        self.assertTrue(self.ws.staging.journal_path.exists())
+        self.assertTrue(self.overlay_file("a-created").exists())
+        self.assertTrue(self.ws.staging.file("b-modified").exists())
+        self.ws = Workspace(self.root)
+        self.assertEqual(self.ws.search("recovered")["total_matches"], 2)
+        self.assertTrue(self.ws.last_recovery["recovered"])
+        self.assertEqual(self.ws.read("b-modified")["summary"], "Recovered wombat.")
+        with self.assertRaises(NotFoundError):
+            self.ws.read("c-deleted")
+        self.assertFalse(self.ws.staging.journal_path.exists())
+        self.assertEqual(self.ws.diff()["items"], [])
+        self.ws.close()
+        self.ws = Workspace(self.root)
+        self.assertEqual(self.ws.search("recovered")["total_matches"], 2)
+        self.assertIsNone(self.ws.last_recovery)
+
+
+@unittest.skipUnless(sys.platform == "win32", "requires native Windows paths, locks and file sharing")
+class WindowsTests(WorkspaceTestCase):
+    @contextmanager
+    def held_by_process(self, path, mode="file"):
+        """Wait for an actual child-owned handle/lock, with bounded startup/cleanup."""
+        ready = self.tmp / "holder-ready"
+        ready.unlink(missing_ok=True)
+        worker = """
+import sys
+from pathlib import Path
+from mindslice.locking import WorkspaceLock
+path, mode, ready = sys.argv[1:]
+lock = WorkspaceLock(Path(path), timeout=2)
+try:
+    with open(path, 'rb') if mode == 'file' else lock.hold(mode):
+        Path(ready).write_bytes(b'ready')
+        sys.stdin.buffer.read()
+finally:
+    lock.close()
+"""
+        proc = subprocess.Popen([sys.executable, "-c", worker, str(path), mode, str(ready)],
+                                cwd=Path(__file__).resolve().parents[1], stdin=subprocess.PIPE,
+                                stdout=subprocess.PIPE, stderr=subprocess.PIPE)
+        try:
+            deadline = time.monotonic() + 10
+            while not ready.exists():
+                if proc.poll() is not None:
+                    self.fail(f"holder exited before acquiring handle: {proc.communicate()!r}")
+                if time.monotonic() >= deadline:
+                    self.fail("holder did not acquire handle within 10 seconds")
+                time.sleep(0.01)
+            yield proc
+        finally:
+            try:
+                _, err = proc.communicate(timeout=10)
+            except subprocess.TimeoutExpired:
+                proc.kill()
+                proc.communicate(timeout=10)
+                raise
+            ready.unlink(missing_ok=True)
+        self.assertEqual(proc.returncode, 0, err)
+
+    def test_readers_serialize_and_nested_upgrade_keeps_lock(self):
+        self.ws.search("warm up")
+        self.ws.lock.timeout = 0.1
+        for mode in ("shared", "exclusive"):
+            with self.subTest(mode=mode):
+                with self.held_by_process(self.ws.lock.path, mode):
+                    with self.assertRaises(LockTimeoutError):
+                        self.ws.search("anything")
+                    with self.assertRaises(LockTimeoutError):
+                        self.ws.write("blocked", summary="Must not be written.")
+                self.assertEqual(self.ws.search("anything")["total_matches"], 0)
+                self.assertFalse(self.overlay_file("blocked").exists())
+        other = WorkspaceLock(self.ws.lock.path, timeout=0.1)
+        self.addCleanup(other.close)
+        with self.ws.lock.shared():
+            with self.ws.lock.shared():
+                with self.ws.lock.exclusive():
+                    self.assertEqual(self.ws.lock.mode, "exclusive")
+                    with self.assertRaises(LockTimeoutError):
+                        with other.shared():
+                            pass
+                self.assertEqual(self.ws.lock.mode, "shared")
+                with self.assertRaises(LockTimeoutError):
+                    with other.exclusive():
+                        pass
+        with other.exclusive():
+            pass
+
+    def test_mount_paths_with_drive_letters_backslashes_spaces_and_unicode(self):
+        inside = self.make_slice("team notes \u4e2d\u6587", {"a": card_text("A", "Inside capybara.")})
+        outside = self.tmp / "external notes \u4e2d\u6587.slice"
+        outside.mkdir()
+        (outside / "b.md").write_text(card_text("B", "Outside wombat."), encoding="utf-8")
+        self.assertTrue(outside.drive)
+        self.assertIn("\\", str(outside))
+        self.ws.mount(str(inside), alias="@inside")
+        self.ws.mount(str(outside), alias="@outside")
+        mounts_file = self.root / "mounts.toml"
+        data = tomllib.loads(mounts_file.read_text(encoding="utf-8"))
+        paths = {m["alias"]: m["path"] for m in data["mounts"]}
+        self.assertEqual(paths["@inside"], "./slices/team notes \u4e2d\u6587.slice")
+        self.assertEqual(paths["@outside"], str(outside))
+        self.ws.close()
+        self.ws = Workspace(self.root)
+        self.assertEqual(self.addresses(self.ws.search("capybara")), ["@inside/a"])
+        self.assertEqual(self.addresses(self.ws.search("wombat")), ["@outside/b"])
+        # A hand-edited TOML literal string accepts native backslashes unchanged.
+        text = mounts_file.read_text(encoding="utf-8")
+        text += f"\n[[mounts]]\npath = '{inside}'\nalias = '@literal'\nprecedence = 5\n"
+        mounts_file.write_text(text, encoding="utf-8")
+        self.assertEqual(self.ws.read("@literal/a")["summary"], "Inside capybara.")
+
+    def test_open_overlay_blocks_replace_and_delete_without_data_loss(self):
+        self.ws.write("held", summary="Original.")
+        file = self.overlay_file("held")
+        original = file.read_bytes()
+        with self.held_by_process(file):
+            for op in ("replace", "delete"):
+                with self.subTest(op=op), self.assertRaises(PermissionError):
+                    self.ws.write("held", op=op, summary="Replacement.")
+                self.assertEqual(file.read_bytes(), original)
+                self.assertEqual(list(file.parent.glob(".held.md.*.tmp")), [])
+        self.ws.write("held", op="replace", summary="Replacement.")
+        self.assertEqual(self.ws.read("held")["summary"], "Replacement.")
+        self.ws.write("held", op="delete")
+        self.assertFalse(file.exists())
+
+    def test_open_overlay_keeps_apply_journal_until_recovery(self):
+        for op in ("replace", "delete"):
+            with self.subTest(op=op):
+                self.ws.write(op, summary="Original.")
+                self.ws.write(op, op=op, summary="Recovered.", stage=True)
+                file = self.overlay_file(op)
+                original = file.read_bytes()
+                with self.held_by_process(file):
+                    with self.assertRaises(PermissionError):
+                        self.ws.apply()
+                    self.assertEqual(file.read_bytes(), original)
+                    self.assertTrue(self.ws.staging.journal_path.exists())
+                    self.assertTrue(self.ws.staging.manifest_path.exists())
+                    if op == "replace":
+                        self.assertTrue(self.ws.staging.file(op).exists())
+                self.ws.close()
+                self.ws = Workspace(self.root)
+                self.ws.search("recovered")
+                self.assertTrue(self.ws.last_recovery["recovered"])
+                self.assertFalse(self.ws.staging.journal_path.exists())
+                self.assertEqual(self.ws.diff()["items"], [])
+                if op == "replace":
+                    self.assertEqual(self.ws.read(op)["summary"], "Recovered.")
+                else:
+                    self.assertFalse(file.exists())
+
+    def test_pack_with_open_source_and_existing_open_output(self):
+        self.ws.write("held", summary="Exportable capybara.")
+        with self.held_by_process(self.overlay_file("held")):
+            for name in ("held.slice", "held.zip", "held.tar.gz"):
+                with self.subTest(name=name):
+                    output = self.tmp / name
+                    self.assertTrue(self.ws.pack(output)["validation"]["ok"])
+                    held = output / "held.md" if output.is_dir() else output
+                    original = held.read_bytes()
+                    with self.held_by_process(held):
+                        with self.assertRaises(AlreadyExistsError):
+                            self.ws.pack(output)
+                        self.assertEqual(held.read_bytes(), original)
+                    self.assertEqual(list(output.parent.glob(f".{name}.*")), [])
+
+
 class LockTests(WorkspaceTestCase):
     def test_exclusive_lock_blocks_other_holders(self):
         other = WorkspaceLock(self.root / ".cache/workspace.lock", timeout=0.2)

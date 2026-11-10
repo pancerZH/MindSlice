@@ -175,7 +175,7 @@ def add_files(ws: Workspace, cards: Iterable[Card]) -> None:
         target = overlay / f"{card.path}.md"
         target.parent.mkdir(parents=True, exist_ok=True)
         tmp = target.with_name(target.name + ".tmp")
-        tmp.write_text(card.render(), encoding="utf-8")
+        tmp.write_text(card.render(), encoding="utf-8", newline="\n")
         os.replace(tmp, target)
     ws.manifest(limit=1)  # any public call syncs the index with the files just written
 
