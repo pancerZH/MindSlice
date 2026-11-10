@@ -268,9 +268,11 @@ from") or as a search alias. Every dependent in Qwen's audited passes that still
    them in the same session and to name cards by durable slot. Measuring it needs a fresh tier and a new freeze
    (`INSTRUCTIONS` changed).
 3. **A card-level status rule (v4), read on a fresh tier** (for example MEME `filler32k`), not on this one.
-4. **Reader QA against flat**, drafted in PLAN.md section 11 (not frozen): the local Qwen reads the saved
-   workspaces, on the 378 Cascade, Absence and Deletion questions after the change plus their 378 before-change
-   twins, graded without an LLM; Argon takes over if Qwen fails a pre-registered gate. A dense raw-history RAG arm
+4. **Reader QA against flat**, drafted in PLAN.md section 11 (not frozen): Argon reads the saved workspaces after
+   the weekly quota resets, on the 378 Cascade, Absence and Deletion questions after the change plus their 378
+   before-change twins, graded without an LLM. A dry-run on the five smoke episodes (never scored) checked the
+   harness and gave directions only: lineage pages beat flat on the targets and tie on the controls, and the three
+   readers barely differ ([results/reader_dry_smoke.md](results/reader_dry_smoke.md)). A dense raw-history RAG arm
    needs an embedding model the local server doesn't offer.
 
 ## Telemetry
