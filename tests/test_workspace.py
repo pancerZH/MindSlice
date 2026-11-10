@@ -463,7 +463,6 @@ class RobustnessTests(WorkspaceTestCase):
         self.assertEqual(ws.read("user-preferences/tooling")["body"].count("\n- "), 2)
 
 
-# Windows test plan and recorded native run: results/windows/README.md.
 # WindowsCompatibilityTests covers CRLF hashes and actual process-exit recovery;
 # WindowsTests covers native paths, msvcrt contention and open-file sharing errors.
 # ConcurrencyTests in test_interfaces.py exercises simultaneous readers/writers.

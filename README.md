@@ -285,9 +285,7 @@ The design leaves a few details open. These are the choices v1 makes:
 - **Orphan files in `staging/`** (no manifest entry, e.g. human drafts) count as creates that
   require the overlay path to still be absent.
 - **Root `overview.md`** is readable and linkable, but is excluded from search results and card counts.
-- **Windows.** Native test coverage and results are recorded in
-  [`tests/results/windows/README.md`](tests/results/windows/README.md). The `msvcrt`
-  adapter has no shared mode, so readers serialize. Open-file sharing errors leave
-  interrupted apply batches journaled for recovery after the handle is closed.
-  Directory flushes are best effort; process-exit recovery tests do not establish
-  power-loss durability.
+- **Windows.** The `msvcrt` adapter has no shared mode, so readers serialize.
+  Open-file sharing errors leave interrupted apply batches journaled for recovery
+  after the handle is closed. Directory flushes are best effort; process-exit
+  recovery tests do not establish power-loss durability.
