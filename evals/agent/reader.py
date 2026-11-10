@@ -306,16 +306,22 @@ class GeminiReader:
 
     AGENT = "mindslice-reader"
 
-    def __init__(self, model: str, effort: str = "medium", weekly_floor: float = 0.055, timeout_s: int = 600) -> None:
+    def __init__(self, model: str, effort: str = "medium", weekly_floor: float = 0.055, timeout_s: int = 600,
+                 gate=None) -> None:
         self.name, self.model, self.effort, self.weekly_floor, self.timeout_s = model, model, effort, weekly_floor, timeout_s
+        self.gate = gate  # an agy.QuotaGate: wait for a reset instead of stopping at the floor (full runs)
 
     def answer(self, system: str, user: str) -> dict[str, Any]:
         from . import agy
 
-        before = agy.read_usage()
-        weekly = (before or {}).get("weekly", {}).get("remaining")
-        if weekly is None or weekly < self.weekly_floor:
-            raise QuotaFloor(f"weekly Gemini quota {weekly} is below the floor {self.weekly_floor}")
+        if self.gate is not None:
+            self.gate.wait()
+            weekly = None
+        else:
+            before = agy.read_usage()
+            weekly = (before or {}).get("weekly", {}).get("remaining")
+            if weekly is None or weekly < self.weekly_floor:
+                raise QuotaFloor(f"weekly Gemini quota {weekly} is below the floor {self.weekly_floor}")
         with tempfile.TemporaryDirectory(prefix="ms-reader-agy-") as tmp:
             cwd = Path(tmp) / "cwd"
             (cwd / ".agents" / "agents").mkdir(parents=True)
@@ -334,7 +340,7 @@ class GeminiReader:
             events = [json.loads(l) for l in proc.stdout.splitlines() if l.strip().startswith("{")]
             res = agy.result_of(events)
             denied = sum(1 for l in gate_log.read_text().splitlines() if '"deny"' in l) if gate_log.exists() else 0
-        after = agy.read_usage()
+        after = agy.read_usage() if self.gate is None else None
         usage = res.get("usage") or {}
         return {"content": res.get("response") if isinstance(res.get("response"), str) else None, "latency_s": latency,
                 "status": res.get("status"), "exit_code": proc.returncode, "tools_denied": denied,
@@ -357,7 +363,47 @@ def make_reader(name: str, weekly_floor: float = 0.055):
 
 
 # ---------------------------------------------------------------------------
-# A run
+# Asking
+# ---------------------------------------------------------------------------
+
+
+def ask(reader, q: dict[str, Any], ws, retry: bool = True) -> dict[str, Any]:
+    """One question on one workspace state: the page, the reader's answer (retried once if it is invalid or cut
+    off, PLAN.md 11.1), the grade. Raises ``QuotaFloor`` from a Gemini reader that hit its floor."""
+    res = ws.search(q["query"], k=K)
+    page_addresses = [r["address"] for r in res["results"]]
+    page = render_page(ws, res["results"])
+    msg = user_message(page, q["query"])
+    ans = reader.answer(SYSTEM, msg)
+    parsed = parse_answer(ans.get("content"))
+    attempts = 1
+    if retry and reader.name != "none" and (parsed is None or ans.get("finish_reason") == "length"):
+        ans = reader.answer(SYSTEM, msg)
+        parsed = parse_answer(ans.get("content"))
+        attempts = 2
+    return {"reader": reader.name, "prompt_version": PROMPT_VERSION, "id": q["id"], "point": q["point"], "set": q["set"],
+            "task": q["task"], "hop": q.get("hop"), "query": q["query"], "values": q.get("values"), "page": page_addresses,
+            "page_matches_record": page_addresses == [p["address"] for p in q.get("page", [])], "page_chars": len(page),
+            "answered": reader.name == "none" or ans.get("content") is not None, "raw": ans.get("content"),
+            "parsed": parsed, "valid": parsed is not None, "attempts": attempts,
+            "correct": grade(q, parsed) if reader.name != "none" else None,
+            **{k: v for k, v in ans.items() if k != "content"}}
+
+
+def ask_haystack(reader, hdir: Path, qs: list[dict[str, Any]], data: str | None = None, retry: bool = True):
+    """Yield one record per question of ``qs`` (all from the haystack ``hdir``), in session order."""
+    by_point = defaultdict(list)
+    for q in qs:
+        by_point[str(q["point"])].append(q)
+    if not by_point:
+        return
+    for point, ws in replay_states(hdir, data):
+        for q in by_point.get(str(point), []):
+            yield ask(reader, q, ws, retry)
+
+
+# ---------------------------------------------------------------------------
+# A dry run
 # ---------------------------------------------------------------------------
 
 
@@ -380,36 +426,19 @@ def run(source: Path, cells: list[str], episodes: list[str], reader, out: Path, 
                     todo = todo[: max(0, limit - n)]
                 if not todo:
                     continue
-                by_point = defaultdict(list)
-                for q in todo:
-                    by_point[str(q["point"])].append(q)
-                for point, ws in replay_states(hdir, data):
-                    for q in by_point.get(str(point), []):
-                        res = ws.search(q["query"], k=K)
-                        page_addresses = [r["address"] for r in res["results"]]
-                        page = render_page(ws, res["results"])
-                        msg = user_message(page, q["query"])
-                        try:
-                            ans = reader.answer(SYSTEM, msg)
-                        except QuotaFloor as exc:
-                            log(f"stopped: {exc}")
-                            return results
-                        parsed = parse_answer(ans.get("content"))
-                        rec = {"reader": reader.name, "prompt_version": PROMPT_VERSION, "cell": cell, "episode": ep,
-                               "id": q["id"], "point": q["point"], "set": q["set"], "task": q["task"], "hop": q.get("hop"),
-                               "query": q["query"], "values": q.get("values"), "page": page_addresses,
-                               "page_matches_record": page_addresses == [p["address"] for p in q.get("page", [])],
-                               "page_chars": len(page), "answered": reader.name == "none" or ans.get("content") is not None,
-                               "raw": ans.get("content"), "parsed": parsed, "valid": parsed is not None,
-                               "correct": grade(q, parsed) if reader.name != "none" else None,
-                               **{k: v for k, v in ans.items() if k != "content"}}
+                try:
+                    for rec in ask_haystack(reader, hdir, todo, data, retry=False):
+                        rec = {"cell": cell, "episode": ep, **rec}
                         fh.write(json.dumps(rec, ensure_ascii=False) + "\n")
                         fh.flush()
                         results.append(rec)
                         n += 1
-                        log(f"{reader.name} {cell} {q['id']}@{q['point']} {q['set']}: "
+                        log(f"{reader.name} {cell} {rec['id']}@{rec['point']} {rec['set']}: "
                             f"{'page ok' if rec['page_matches_record'] else 'PAGE MISMATCH'}"
-                            + ("" if reader.name == "none" else f", {parsed}, correct={rec['correct']}, {rec.get('latency_s')} s"))
+                            + ("" if reader.name == "none" else f", {rec['parsed']}, correct={rec['correct']}, {rec.get('latency_s')} s"))
+                except QuotaFloor as exc:
+                    log(f"stopped: {exc}")
+                    return results
     return results
 
 

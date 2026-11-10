@@ -1,0 +1,451 @@
+{
+ "frozen_at": "2026-11-10T02:19:24Z",
+ "plan": "PLAN.md section 11",
+ "harness_digest": "2ea8e4917891b5be8aebca50d6a078012d4aa020956ff4f0e71263cf3970eaad",
+ "engine_digest": "f588d566b3d4279587e38039d5f45a81d157d349f50bffcbc5f3b42de38845c2",
+ "prompt_version": "draft-2",
+ "system_prompt_sha256": "808d590d13c639c90cc64f5013026c4ee270fabfc8b4ea65d572ae6af2ca1a26",
+ "line_reader": "gemini-4-argon-medium",
+ "comparison_reader": "qwen",
+ "reader_arms": {
+  "gemini-4-argon-medium": [
+   "flat",
+   "oracle",
+   "argon-default",
+   "argon-policy",
+   "argon-overlay",
+   "flash-policy",
+   "qwen-policy",
+   "qwen-overlay"
+  ],
+  "qwen": [
+   "flat",
+   "oracle"
+  ]
+ },
+ "variance": {
+  "gemini-4-argon-medium": [
+   "flat",
+   "oracle"
+  ]
+ },
+ "arms": {
+  "flat": "gate1/flat",
+  "oracle": "gate1/oracle",
+  "argon-default": "tier1/agent-default@gemini-4-argon-medium",
+  "argon-policy": "tier1/agent-policy@gemini-4-argon-medium",
+  "argon-overlay": "tier1/agent-overlay@gemini-4-argon-medium",
+  "flash-policy": "tier1/agent-policy@gemini-3.8-flash-medium",
+  "qwen-policy": "tier1-qwen/agent-policy@qwen3.8-flash-next-iq3_s",
+  "qwen-overlay": "tier1-qwen/agent-overlay@qwen3.8-flash-next-iq3_s"
+ },
+ "episodes": [
+  "meme-nofiller__pl_006",
+  "meme-nofiller__pl_007",
+  "meme-nofiller__pl_008",
+  "meme-nofiller__pl_009",
+  "meme-nofiller__pl_010",
+  "meme-nofiller__pl_011",
+  "meme-nofiller__pl_012",
+  "meme-nofiller__pl_013",
+  "meme-nofiller__pl_014",
+  "meme-nofiller__pl_015",
+  "meme-nofiller__pl_016",
+  "meme-nofiller__pl_017",
+  "meme-nofiller__pl_018",
+  "meme-nofiller__pl_019",
+  "meme-nofiller__pl_020",
+  "meme-nofiller__pl_021",
+  "meme-nofiller__pl_022",
+  "meme-nofiller__pl_023",
+  "meme-nofiller__pl_024",
+  "meme-nofiller__pl_025",
+  "meme-nofiller__pl_026",
+  "meme-nofiller__pl_027",
+  "meme-nofiller__pl_028",
+  "meme-nofiller__pl_029",
+  "meme-nofiller__pl_030",
+  "meme-nofiller__pl_031",
+  "meme-nofiller__pl_032",
+  "meme-nofiller__pl_033",
+  "meme-nofiller__pl_034",
+  "meme-nofiller__pl_035",
+  "meme-nofiller__pl_036",
+  "meme-nofiller__pl_037",
+  "meme-nofiller__pl_038",
+  "meme-nofiller__pl_039",
+  "meme-nofiller__pl_040",
+  "meme-nofiller__pl_041",
+  "meme-nofiller__pl_042",
+  "meme-nofiller__pl_043",
+  "meme-nofiller__pl_044",
+  "meme-nofiller__pl_045",
+  "meme-nofiller__pl_046",
+  "meme-nofiller__pl_047",
+  "meme-nofiller__pl_048",
+  "meme-nofiller__pl_049",
+  "meme-nofiller__pl_050",
+  "meme-nofiller__sw_001",
+  "meme-nofiller__sw_002",
+  "meme-nofiller__sw_003",
+  "meme-nofiller__sw_004",
+  "meme-nofiller__sw_005",
+  "meme-nofiller__sw_006",
+  "meme-nofiller__sw_007",
+  "meme-nofiller__sw_008",
+  "meme-nofiller__sw_009",
+  "meme-nofiller__sw_010",
+  "meme-nofiller__sw_011",
+  "meme-nofiller__sw_012",
+  "meme-nofiller__sw_013",
+  "meme-nofiller__sw_014",
+  "meme-nofiller__sw_015",
+  "meme-nofiller__sw_016",
+  "meme-nofiller__sw_017",
+  "meme-nofiller__sw_018",
+  "meme-nofiller__sw_019",
+  "meme-nofiller__sw_020",
+  "meme-nofiller__sw_021",
+  "meme-nofiller__sw_022",
+  "meme-nofiller__sw_023",
+  "meme-nofiller__sw_024",
+  "meme-nofiller__sw_025",
+  "meme-nofiller__sw_026",
+  "meme-nofiller__sw_027",
+  "meme-nofiller__sw_028",
+  "meme-nofiller__sw_029",
+  "meme-nofiller__sw_030",
+  "meme-nofiller__sw_031",
+  "meme-nofiller__sw_032",
+  "meme-nofiller__sw_033",
+  "meme-nofiller__sw_034",
+  "meme-nofiller__sw_035",
+  "meme-nofiller__sw_036",
+  "meme-nofiller__sw_037",
+  "meme-nofiller__sw_038",
+  "meme-nofiller__sw_039",
+  "meme-nofiller__sw_040",
+  "meme-nofiller__sw_041",
+  "meme-nofiller__sw_042",
+  "meme-nofiller__sw_043",
+  "meme-nofiller__sw_044",
+  "meme-nofiller__sw_045",
+  "meme-nofiller__sw_046",
+  "meme-nofiller__sw_047",
+  "meme-nofiller__sw_048",
+  "meme-nofiller__sw_049",
+  "meme-nofiller__sw_050"
+ ],
+ "questions": {
+  "flat": {
+   "target": 378,
+   "control": 378
+  },
+  "oracle": {
+   "target": 378,
+   "control": 378
+  },
+  "argon-default": {
+   "target": 378,
+   "control": 378
+  },
+  "argon-policy": {
+   "target": 378,
+   "control": 378
+  },
+  "argon-overlay": {
+   "target": 378,
+   "control": 378
+  },
+  "flash-policy": {
+   "target": 378,
+   "control": 378
+  },
+  "qwen-policy": {
+   "target": 378,
+   "control": 378
+  },
+  "qwen-overlay": {
+   "target": 378,
+   "control": 378
+  }
+ },
+ "questions_sha256": "3f273addc002b3449125e4c86ffd7f3fc4091a8ca830df4d638276e80121fcd3",
+ "inputs_sha256": "cbc31b37b3e5097d31a327416a748b86f4a35be13c86da7eaecb2203c05524da",
+ "repeat_units": [
+  [
+   "flat",
+   "meme-nofiller__pl_006|pl_006/before2|3"
+  ],
+  [
+   "flat",
+   "meme-nofiller__pl_007|pl_007/before1|3"
+  ],
+  [
+   "flat",
+   "meme-nofiller__pl_008|pl_008/before0|3"
+  ],
+  [
+   "flat",
+   "meme-nofiller__pl_008|pl_008/before4|3"
+  ],
+  [
+   "flat",
+   "meme-nofiller__pl_012|pl_012/before2|3"
+  ],
+  [
+   "flat",
+   "meme-nofiller__pl_019|pl_019/before2|3"
+  ],
+  [
+   "flat",
+   "meme-nofiller__pl_026|pl_026/before0|3"
+  ],
+  [
+   "flat",
+   "meme-nofiller__pl_028|pl_028/before0|3"
+  ],
+  [
+   "flat",
+   "meme-nofiller__pl_030|pl_030/before3|3"
+  ],
+  [
+   "flat",
+   "meme-nofiller__pl_037|pl_037/before1|3"
+  ],
+  [
+   "flat",
+   "meme-nofiller__pl_043|pl_043/before1|3"
+  ],
+  [
+   "flat",
+   "meme-nofiller__pl_044|pl_044/before2|3"
+  ],
+  [
+   "flat",
+   "meme-nofiller__sw_002|sw_002/before4|3"
+  ],
+  [
+   "flat",
+   "meme-nofiller__sw_010|sw_010/before0|3"
+  ],
+  [
+   "flat",
+   "meme-nofiller__sw_013|sw_013/before1|3"
+  ],
+  [
+   "flat",
+   "meme-nofiller__sw_017|sw_017/before1|3"
+  ],
+  [
+   "flat",
+   "meme-nofiller__sw_018|sw_018/before0|3"
+  ],
+  [
+   "flat",
+   "meme-nofiller__sw_019|sw_019/before3|3"
+  ],
+  [
+   "flat",
+   "meme-nofiller__sw_027|sw_027/before3|3"
+  ],
+  [
+   "flat",
+   "meme-nofiller__sw_029|sw_029/before0|3"
+  ],
+  [
+   "flat",
+   "meme-nofiller__sw_036|sw_036/before3|3"
+  ],
+  [
+   "flat",
+   "meme-nofiller__sw_039|sw_039/before4|3"
+  ],
+  [
+   "flat",
+   "meme-nofiller__sw_043|sw_043/before3|3"
+  ],
+  [
+   "flat",
+   "meme-nofiller__sw_049|sw_049/before3|3"
+  ],
+  [
+   "oracle",
+   "meme-nofiller__pl_015|pl_015/before2|3"
+  ],
+  [
+   "oracle",
+   "meme-nofiller__pl_037|pl_037/before0|3"
+  ],
+  [
+   "oracle",
+   "meme-nofiller__pl_043|pl_043/before1|3"
+  ],
+  [
+   "oracle",
+   "meme-nofiller__pl_044|pl_044/before2|3"
+  ],
+  [
+   "oracle",
+   "meme-nofiller__pl_047|pl_047/before1|3"
+  ],
+  [
+   "oracle",
+   "meme-nofiller__sw_010|sw_010/before4|3"
+  ],
+  [
+   "oracle",
+   "meme-nofiller__sw_011|sw_011/before4|3"
+  ],
+  [
+   "oracle",
+   "meme-nofiller__sw_021|sw_021/before0|3"
+  ],
+  [
+   "oracle",
+   "meme-nofiller__sw_029|sw_029/before1|3"
+  ],
+  [
+   "oracle",
+   "meme-nofiller__sw_034|sw_034/before4|3"
+  ],
+  [
+   "oracle",
+   "meme-nofiller__sw_037|sw_037/before0|3"
+  ],
+  [
+   "oracle",
+   "meme-nofiller__sw_039|sw_039/before3|3"
+  ],
+  [
+   "oracle",
+   "meme-nofiller__sw_039|sw_039/before4|3"
+  ],
+  [
+   "oracle",
+   "meme-nofiller__sw_045|sw_045/before0|3"
+  ],
+  [
+   "oracle",
+   "meme-nofiller__sw_046|sw_046/before0|3"
+  ],
+  [
+   "oracle",
+   "meme-nofiller__sw_049|sw_049/before0|3"
+  ]
+ ],
+ "lines": [
+  {
+   "id": "R1",
+   "claim": "lineage over raw chunks (the mechanism)",
+   "a": "oracle",
+   "b": "flat",
+   "set": "target",
+   "line": 0.2
+  },
+  {
+   "id": "R2 argon-default",
+   "claim": "agent-written memory over raw chunks",
+   "a": "argon-default",
+   "b": "flat",
+   "set": "target",
+   "line": 0.1
+  },
+  {
+   "id": "R2 argon-policy",
+   "claim": "agent-written memory over raw chunks",
+   "a": "argon-policy",
+   "b": "flat",
+   "set": "target",
+   "line": 0.1
+  },
+  {
+   "id": "R2 argon-overlay",
+   "claim": "agent-written memory over raw chunks",
+   "a": "argon-overlay",
+   "b": "flat",
+   "set": "target",
+   "line": 0.1
+  },
+  {
+   "id": "R3 oracle",
+   "claim": "no harm before the change",
+   "a": "oracle",
+   "b": "flat",
+   "set": "control",
+   "line": -0.05
+  },
+  {
+   "id": "R3 argon-default",
+   "claim": "no harm before the change",
+   "a": "argon-default",
+   "b": "flat",
+   "set": "control",
+   "line": -0.05
+  },
+  {
+   "id": "R3 argon-policy",
+   "claim": "no harm before the change",
+   "a": "argon-policy",
+   "b": "flat",
+   "set": "control",
+   "line": -0.05
+  },
+  {
+   "id": "R3 argon-overlay",
+   "claim": "no harm before the change",
+   "a": "argon-overlay",
+   "b": "flat",
+   "set": "control",
+   "line": -0.05
+  },
+  {
+   "id": "R3 flash-policy",
+   "claim": "no harm before the change",
+   "a": "flash-policy",
+   "b": "flat",
+   "set": "control",
+   "line": -0.05
+  },
+  {
+   "id": "R3 qwen-policy",
+   "claim": "no harm before the change",
+   "a": "qwen-policy",
+   "b": "flat",
+   "set": "control",
+   "line": -0.05
+  },
+  {
+   "id": "R3 qwen-overlay",
+   "claim": "no harm before the change",
+   "a": "qwen-overlay",
+   "b": "flat",
+   "set": "control",
+   "line": -0.05
+  }
+ ],
+ "gate": {
+  "max_invalid": 0.05,
+  "min_control_accuracy": 0.8,
+  "repeats": 40,
+  "min_repeat_agreement": 36
+ },
+ "bootstrap": {
+  "replicates": 2000,
+  "seed": 20261106
+ },
+ "readers": {
+  "gemini-4-argon-medium": {
+   "via": "agy",
+   "effort": "medium",
+   "agent": "mindslice-reader"
+  },
+  "qwen": {
+   "model": "qwen3.8-flash-next-iq3_s",
+   "temperature": 0,
+   "seed": 20261106,
+   "cache_prompt": false,
+   "max_tokens": 4096
+  }
+ }
+}

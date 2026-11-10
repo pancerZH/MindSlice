@@ -281,6 +281,7 @@ haystacks are kept, an unfinished one starts over.
 | Engine and guidance change, after every run was scored (user's request) | `mindslice/`: a `write()` that supersedes or deletes a card returns `affected_backlinks` / `affected_extensions` (the cards that still `[[link]]` to it or extend it, read from the index under the same `LOCK_EX`; nothing else is edited); the server's `INSTRUCTIONS` and `write` description ask the agent to name cards by durable slot (`team/lead`, not `team/lead-sarah-chen`) and to update or rebase the listed cards in the same session. Also: plain Markdown and legacy `---` YAML frontmatter are indexed without conversion (a new parser version re-indexes caches), any existing file name is addressable while new ids stay as strict as before, a mount alias falls back to the directory name, and `mount()` retires the `@overlay` copies of a packed slice. Replay-safe: every logged `write` of tier 1, the variance repeats, Qwen tier 1 and the confirmatory run (631 haystacks, 17,947 calls, 17,814 accepted) replayed through the engine before and after gives the same per-call outcome (error, `changed`, `sha256`) and byte-identical final `overlay/` trees, and the 4,044 end-point search pages on the saved workspaces are identical, so re-scoring and audit replays reproduce every run. `INSTRUCTIONS` changed, so the prompt digests in section 2 and the freeze files no longer match: they stay those of the runs, and any new run needs a new freeze. Exploratory, not a line: the reading cost per question on the saved workspaces (REPORT.md, "Against flat history and raw-history RAG") | REPORT.md "What next" 1-2 (link-only failures, prose premises) |
 | Reader QA drafted, 2026-11-09 (section 11, not frozen) | Timing probe on the smoke episode `pl_001` only (never scored): 6 after-change questions of `flat` and `oracle` sent to the local Qwen with a draft prompt, plus determinism repeats; answers not graded. Found: 5-38 s per call, mostly reasoning; temperature 0 not deterministic on this server. No scored episode has been sent to a reader | the user's decision: Qwen-only reader for now, Argon if Qwen behaves badly |
 | Reader QA dry-run, 2026-11-09 (section 11.6; smoke episodes only, never scored) | Harness `reader.py` built and tested; every rebuilt page equals the recorded one (256/256). Argon and Flash read all 8 cells (256 calls each), Qwen `flat` and `oracle` (64); then page version draft-2 (lineage targets quoted) on `flat` and `oracle` for all three. 1.25% of the weekly quota (the user allowed 5%). Directions only: `oracle` minus `flat` +0.06 to +0.25 on targets, 0.000 on controls; the readers agree on 248/256. The user had decided to wait for the weekly reset and read with Argon; Qwen measured at 9.2 s a call (17 h for a full run, not 58 h) | the dry-run |
+| Reader QA pre-registered and frozen, 2026-11-09 (section 11) | The user's decisions: Argon is the line reader (after the weekly reset), Qwen a comparison reader on `flat` and `oracle`, Flash dropped, page version draft-2, lines R1-R3 as proposed. `reader_qa.py` (freeze, stages, gate, scoring) and `results/freeze_reader.json` committed before the first scored call. Qwen's run starts first; Argon's after the reset | the dry-run (11.6) |
 
 ## 9. Confirmatory run: MemoryAgentBench 32k with matcher v2 (pre-registered 2026-11-08, before its first call)
 
@@ -352,14 +353,15 @@ does. One run per cell, no variance repeats. Projected from the smoke tier: abou
 8.5 h for `agent-overlay`.
 
 
-## 11. Reader QA on the saved workspaces (DRAFT 2026-11-09: not frozen, not run on any scored episode)
+## 11. Reader QA on the saved workspaces (pre-registered 2026-11-09, before any scored episode reached a reader)
 
-**Status: draft for review, waiting for the Gemini weekly quota.** The lines are proposals for the user to set.
-Nothing below is frozen until a `freeze_reader.json` is committed, and no target or control question of a scored
-episode is sent to any reader before that. On 2026-11-09 the first estimate of a Qwen-only run (58 h, from a
-6-call probe) was too long, so the user decided to wait for the Gemini weekly quota to reset (about 2026-11-13)
-and read with Argon. A dry-run on the smoke episodes (11.6) then measured all three readers on the real harness;
-it informs the final reader choice (11.2), which the freeze fixes.
+**Status: pre-registered and frozen** in `results/freeze_reader.json` (`python -m evals.agent.reader_qa freeze
+--check`; every stage refuses to start if it no longer matches): the harness and its digest, the reader prompt and
+page version, the arms and their inputs' digests, the question lists, the repeat sample, the lines, the gate and the
+reader settings. The user's decisions, 2026-11-09: Argon is the reader the lines are judged on, run after the
+weekly Gemini quota resets (about 2026-11-13); the local Qwen reads `flat` and `oracle` now, as a comparison reader
+with no line; Flash is dropped; page version draft-2; the lines R1-R3 at the values below. The smoke dry-run (11.6)
+was seen before these were set. Nothing frozen may change between the Qwen run and the Argon run.
 
 End-to-end answer accuracy becomes the primary metric for future tiers. It tests whether lineage on the retrieved
 page turns into correct answers where raw history fails: MEME's Cascade, Absence and Deletion questions after the
@@ -374,31 +376,32 @@ keeps beating it).
 | Memories (8 arms) | The saved final workspaces of tier 1, so no new writer session: `flat` and `oracle` (`gate1-v3`), Argon `agent-default`, `agent-policy`, `agent-overlay`, Flash `agent-policy`, Qwen `agent-policy`, `agent-overlay` |
 | Target questions (378 per arm) | MEME after the change, asked at the end point: Cascade 158 (hop 1: 95, hop 2: 63), Absence 125 (95, 30), Deletion 95 |
 | Control questions (378 per arm) | The same questions before the change, asked at their own points, on each workspace rebuilt by replaying the logged writes to that point (the replay is exact: PLAN.md ledger, the engine change of 2026-11-09) |
-| Page | The harness runs `search(question, k=10)` and gives the reader each hit's full card in rank order (title, summary, body with its `Date:` line), plus the lineage fields `search()` returns, as plain text (`status`, `superseded_by`, `matched_via_superseded`, `baseline_superseded_by`, `missing_baselines`). The same prompt for every arm; `flat` simply has no lineage fields |
+| Page | The harness runs `search(question, k=10)` and gives the reader each hit's full card in rank order (title, summary, body with its `Date:` line), plus the lineage fields `search()` returns, as plain text (`status`, `superseded_by`, `matched_via_superseded`, `baseline_superseded_by`, `missing_baselines`). Page version draft-2: a card a lineage note names that isn't on the page is quoted under the note (its date and summary). The same prompt for every arm; `flat` simply has no lineage fields |
 | Answer | JSON `{"status": "current" \| "uncertain" \| "removed" \| "unknown", "value": "..."}`, schema-constrained where the server supports it. One retry after invalid JSON or a cut-off; still invalid counts as wrong and is reported |
-| Grading (no LLM) | Cascade: `status` current and `value` matches the gold current value. Absence: `status` uncertain (MEME's gold: "Uncertain — previously ..."; `unknown` is reported apart). Deletion: `status` removed or unknown and `value` doesn't name the deleted value (MEME's gold: "No — explicitly removed"; `removed` alone also reported). Controls: `status` current and the value matches. A value matches when the normalized gold (NFKC, casefolded, punctuation and whitespace collapsed; also without a trailing parenthetical, as in `dermatologist (monthly)`) and the normalized answer contain one another, at 3 characters or more. Every `current` answer the rule rejects is listed and checked by hand before any line is read |
-| Lines (proposed) | R1, the mechanism: `oracle` minus `flat` on the targets, paired, ≥ +0.20. R2, in practice: each Argon cell minus `flat` on the targets ≥ +0.10. R3, no harm: `oracle` and each agent cell minus `flat` on the controls ≥ −0.05. Verdicts as in section 5 |
-| Reported, no line | Per category (Cascade hop 1 and 2, Absence hop 1 and 2, Deletion); the Qwen and Flash cells; agent cells against `oracle`; per question, QA against v3's page judgment (`stale-first`, `stale@10`) |
-| Variance | Qwen at temperature 0 is not deterministic on this server (11.4). The `flat` and `oracle` target sets run a second time; the spread is reported, and the lines are read on the first run |
+| Grading (no LLM) | Cascade: `status` current and `value` matches the gold current value. Absence: `status` uncertain (MEME's gold: "Uncertain — previously ..."; `unknown` is reported apart). Deletion: `status` removed or unknown and `value` doesn't name the deleted value (MEME's gold: "No — explicitly removed"; `removed` alone also reported). Controls: `status` current and the value matches. A value matches when the normalized gold (NFKC, casefolded, punctuation and whitespace collapsed; also without a trailing parenthetical, as in `dermatologist (monthly)`) and the normalized answer contain one another, at 3 characters or more. Every `current` answer the rule rejects is listed by `score` in `results/audit/reader-qa/<reader>.json` and judged by hand; no line or comparison is printed while one is pending |
+| Lines (set by the user, read on Argon) | R1, the mechanism: `oracle` minus `flat` on the targets, paired, ≥ +0.20. R2, in practice: each Argon cell minus `flat` on the targets ≥ +0.10. R3, no harm: `oracle` and each agent cell minus `flat` on the controls ≥ −0.05. Verdicts as in section 5 |
+| Reported, no line | Per category (Cascade hop 1 and 2, Absence hop 1 and 2, Deletion); the Qwen and Flash memory cells; Qwen as reader: `oracle` minus `flat` on targets and controls, and the reader dependence, per question read by both: (Argon `oracle` − Argon `flat`) − (Qwen `oracle` − Qwen `flat`) |
+| Variance | Neither reader is deterministic (11.4). Argon reads the `flat` and `oracle` target sets a second time; the spread is reported, and the lines are read on the first run. The 40 repeated controls of stage 1 measure each reader's stability |
 | Frozen at the freeze | The reader prompt verbatim, the page renderer, the grader, the question lists and their digests, the server build and model file digest, the arms' workspace digests |
 
 What it can't show: a dense raw-history RAG baseline (the local server has no embeddings endpoint), or a strong
 reader (unless 11.2 moves the run to Argon). The claim it can support is over `flat`: lexical, timestamped raw
 chunks.
 
-### 11.2 Reader choice and the stage-1 gate
+### 11.2 Readers and the stage-1 gate
 
-**Argon is the primary reader**, run after the weekly quota resets; it is the reader the lines are read on.
-Flash and Qwen are kept only as comparison readers, and only if the dry-run (11.6) shows them reading the
-controls about as well as Argon. Their role is to show whether the lineage effect depends on the reader, so
-they add no line. The choice is recorded in the ledger with the dry-run's numbers before the freeze.
+**Argon reads everything and the lines are read on it alone:** all 8 arms' targets, the 6 agent arms' controls,
+`flat`'s and `oracle`'s controls in stage 1, and the `flat` and `oracle` targets a second time (6,844 calls). **Qwen
+reads `flat` and `oracle` only** (their targets and controls, 1,552 calls), to show whether the lineage effect
+depends on the reader; it adds no line. Flash is not run.
 
-The reader run keeps two stages. **Stage 1** sends only the control questions of `flat` and `oracle` (756
-calls), plus 40 of them asked twice; a reader fails it with more than 5% invalid or cut-off answers, accuracy
-below 0.80 on `oracle`'s or `flat`'s controls, or `status` agreeing on fewer than 36 of the 40 repeats. **Stage
-2** runs only if the primary reader passes. If Argon fails, the run stops for review: no automatic switch, and
-no target result read. (The earlier Qwen-to-Argon fallback is moot now that Argon is the primary reader; if Qwen
-is kept as a comparison reader and fails stage 1, it is dropped and reported.)
+Each reader has two stages (`python -m evals.agent.reader_qa stage1|stage2 --reader ...`). **Stage 1** sends only
+the controls of `flat` and `oracle` (756 calls) and 40 of them a second time (the repeat sample is frozen). A
+reader fails it with more than 5% invalid or cut-off answers after the retry, accuracy below 0.80 on `flat`'s or
+`oracle`'s controls, or `status` agreeing on fewer than 36 of the 40 repeats. **Stage 2** refuses to start unless
+that reader passed. If Argon fails, the run stops for review: no target result is read, and nothing switches
+automatically. If Qwen fails, it is dropped and reported. A failed call (a network error, a CLI failure) is retried
+after 10, 60 and 300 s and isn't an answer; a quota failure waits for the reset (the agent runs' quota gate).
 
 ### 11.3 Workspace-state judge (only if hand audits must be replaced)
 
@@ -428,8 +431,8 @@ shorter reasoning (median 297 generated tokens).
 | Item | Calls | Time | Gemini quota |
 | --- | --- | --- | --- |
 | Freeze (prompt and page version, grader, question lists, digests) | – | about 1 h of agent work; the harness exists (`evals/agent/reader.py`, `tests/test_reader_eval.py`) | – |
-| Argon, the full run: 8 arms × 756 questions, plus `flat` and `oracle` targets a second time | 6,804 | about 15 h one at a time; about 2 h at 8 sessions in parallel | about 14% of a week (at most about 27%); about half of one five-hour bucket |
-| Qwen as a comparison reader on `flat` and `oracle` (targets and controls) | 1,512 | about 4 h locally | – |
+| Argon, the full run: 8 arms × 756 questions, `flat` and `oracle` targets a second time, 40 repeats | 6,844 | about 15 h one at a time; about 2 h at 8 sessions in parallel | about 14% of a week (at most about 27%); about half of one five-hour bucket |
+| Qwen as a comparison reader on `flat` and `oracle` (targets, controls, 40 repeats) | 1,552 | about 4 h locally | – |
 | Qwen on everything, if it were the reader | 6,804 | about 17 h locally | – |
 | Grading, hand check of rejected values, report | – | minutes of compute, about 2 h of writing | – |
 
@@ -462,7 +465,7 @@ Tables: [results/reader_dry_smoke.md](results/reader_dry_smoke.md); raw answers 
 - **`flat` fails by reading, not retrieval.** The gold value was on 15 of 16 of its target pages; readers took
   the stale value despite the dates.
 
-**Proposed for the freeze (the user decides):** Argon as the only reader the lines are read on; page version
-draft-2; Qwen as a free comparison reader on `flat` and `oracle` only; Flash dropped (it reads like Argon). The
-lines R1-R3 stay the user's to set; the dry-run's direction is recorded here, before any scored episode is read.
-The prompt is not tuned further on these five episodes.
+**Decided (the user, 2026-11-09), after seeing this dry-run and before any scored episode was read:** Argon as
+the only reader the lines are read on; page version draft-2; Qwen as a comparison reader on `flat` and `oracle`
+only; Flash dropped (it reads like Argon); the lines R1-R3 at the proposed values. The prompt was not tuned
+further on these five episodes.
