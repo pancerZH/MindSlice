@@ -54,7 +54,7 @@ These are retrieval and structure measurements with no language model anywhere, 
   lexically.
 - **Token cost.** Nothing here calls a model. What a working agent pays to read memory (about 3k tokens per
   question, independent of the memory's size) and why the agent evaluation's token totals price a benchmark
-  replay rather than use are in [the agent report's boundaries](../agent/REPORT.md#boundaries-against-rag-over-raw-history).
+  replay rather than use are in [the agent report's boundaries](../agent/REPORT.md#against-flat-history-and-raw-history-rag).
 - **Authored cards.** Titles, summaries and aliases here are templates. Authored cards would change Mode A
   (aliases did on the retrieval evaluation).
 - **Comparisons with published systems.** They chunk, weight and key differently, often with LLM-written

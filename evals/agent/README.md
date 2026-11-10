@@ -2,7 +2,8 @@
 
 Where a real LLM agent lands between MindSlice's flat cards (Mode A) and the annotations' lineage (Mode B)
 when it writes memory itself through the four MCP tools. Specification:
-[`../agent_test.md`](../agent_test.md). Frozen setup: [PLAN.md](PLAN.md). Findings: [REPORT.md](REPORT.md).
+[`../agent_test.md`](../agent_test.md). Frozen setup: [PLAN.md](PLAN.md). Findings: [REPORT.md](REPORT.md). How the protocol got there (matcher
+post-mortems, cost and quota re-freezes): [decision_ledger.md](decision_ledger.md).
 Generated tables: [`results/`](results/).
 
 ## Run it
