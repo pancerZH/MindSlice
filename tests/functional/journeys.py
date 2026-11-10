@@ -129,9 +129,10 @@ def _a_finale(run: JourneyRun) -> None:
     expect_eq(baked["cards"], ["user-preferences/code-style", "user-preferences/tooling"], "baked cards")
     expect_eq(baked["dependencies"], [], "self-contained slice")
     expect(baked["validation"]["ok"], f"baked slice validates: {baked['validation']}")
-    run.human("mount prefs", lambda: ws.mount(ws.root / "slices" / "prefs.slice", alias="@prefs", precedence=60, role="curated"))
-    for card in baked["cards"]:
-        run.human(f"retire overlay {card}", lambda card=card: ws.write(card, op="delete"))
+    mounted = run.human("mount prefs", lambda: ws.mount(ws.root / "slices" / "prefs.slice", alias="@prefs", precedence=60,
+                                                        role="curated"))
+    expect_eq(mounted.get("retired_overlay_cards"), [f"@overlay/{c}" for c in baked["cards"]],
+              "mounting the baked slice retires its overlay copies")
     expect_eq(addresses(ws.search("uv")), ["@prefs/user-preferences/tooling"], "recall now served by the baked slice")
     links = ws.read("@prefs/user-preferences/code-style")["links"]
     expect_eq(links, [{"ref": "user-preferences/tooling", "address": "@prefs/user-preferences/tooling"}],
@@ -271,10 +272,10 @@ def _b_finale(run: JourneyRun) -> None:
     expect_eq(baked["cards"], ["api/admin-tokens", "api/jwt-ttl"], "baked API cards")
     expect_eq(baked["dependencies"], ["@project"], "external lineage kept qualified")
     expect(baked["validation"]["ok"], f"baked slice validates: {baked['validation']}")
-    run.human("mount api-v2", lambda: ws.mount(ws.root / "slices" / "api-v2.slice", alias="@api-v2", precedence=60,
-                                               role="curated"))
-    for card in baked["cards"]:
-        run.human(f"retire overlay {card}", lambda card=card: ws.write(card, op="delete"))
+    mounted = run.human("mount api-v2", lambda: ws.mount(ws.root / "slices" / "api-v2.slice", alias="@api-v2",
+                                                         precedence=60, role="curated"))
+    expect_eq(mounted.get("retired_overlay_cards"), [f"@overlay/{c}" for c in baked["cards"]],
+              "mounting the baked slice retires its overlay copies")
     res = ws.search("token expiration")
     expect_eq(result_for(res, "@api-v2/api/jwt-ttl").get("matched_via_superseded"), ["@project/api/auth-flow"],
               "supersession survives baking")
@@ -420,11 +421,13 @@ def _c_finale(run: JourneyRun) -> None:
                       "incidents.slice/slice.toml"], "archive layout")
     report = run.human("validate extracted slice", lambda: ws.validate(ws.root / "slices" / "incidents.slice"))
     expect(report["ok"], f"extracted slice validates: {report['errors']}")
-    run.human("mount incidents", lambda: ws.mount(ws.root / "slices" / "incidents.slice", alias="@incidents",
-                                                  precedence=50, role="curated"))
+    mounted = run.human("mount incidents", lambda: ws.mount(ws.root / "slices" / "incidents.slice", alias="@incidents",
+                                                            precedence=50, role="curated"))
+    expect_eq(mounted.get("retired_overlay_cards"), ["@overlay/incidents/2026-11-06"],
+              "the overlay copy is retired when the exported slice is mounted")
     card = ws.read("incidents/2026-11-06")
-    expect_eq((card["address"], card["shadows"]), ("@overlay/incidents/2026-11-06", ["@incidents/incidents/2026-11-06"]),
-              "overlay copy shadows the imported slice")
+    expect_eq((card["address"], card.get("shadows")), ("@incidents/incidents/2026-11-06", None),
+              "the imported slice is no longer shadowed by the overlay copy")
     run.human("remount svc-07", lambda: ws.mount(ws.root / "slices" / "svc-07.slice", alias="@svc-07", precedence=75,
                                                  role="baseline"))
     expect(all(l["address"] for l in ws.read("incidents/2026-11-06")["links"]), "links resolve again after remount")

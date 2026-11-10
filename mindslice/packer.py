@@ -15,19 +15,18 @@ from __future__ import annotations
 import gzip
 import io
 import os
-import re
 import shutil
 import tarfile
 import tempfile
 import zipfile
 from pathlib import Path
-from typing import TYPE_CHECKING, Any, Sequence
+from typing import TYPE_CHECKING, Any, Callable, Sequence
 
-from .addressing import format_address, normalize_alias, resolve_ref, rewrite_wikilinks
-from .card import ParsedCard, parse_card, truncate
+from .addressing import MountCatalog, alias_from_name, format_address, normalize_alias, resolve_ref, rewrite_wikilinks
+from .card import ParsedCard, normalize_newlines, parse_card, truncate
 from .config import DESCRIPTION_CHARS, OVERVIEW_PATH, SLICE_FILE, SliceManifest, dump_slice_manifest
 from .errors import AlreadyExistsError, InvalidAddressError, NotFoundError, UnresolvedExportDependencyError
-from .fsutil import fsync_dir, iter_markdown
+from .fsutil import atomic_write_text, fsync_dir, iter_markdown, prune_empty_dirs, unlink_if_exists
 from .lexical import fold
 from .validation import validate_slice_dir
 from .writer import read_card_file, reassemble
@@ -56,11 +55,40 @@ def _slice_dir_name(output: Path, fmt: str) -> str:
     return name if name.endswith(".slice") else name + ".slice"
 
 
-def _safe_alias(name: str) -> str:
-    cleaned = re.sub(r"[^A-Za-z0-9_.-]+", "-", name).strip("-.") or "slice"
-    if not cleaned[0].isalnum():
-        cleaned = "s" + cleaned
-    return normalize_alias(cleaned)
+_safe_alias = alias_from_name
+
+
+def rewrite_refs(text: str, parsed: ParsedCard, mapper: Callable[[str], str]) -> str:
+    """``text`` with every ``extends`` / ``supersedes`` / ``[[wikilink]]`` reference passed through ``mapper``.
+
+    Parts no reference touches are kept byte for byte (``reassemble``).
+    """
+    new_ext = [mapper(r) for r in parsed.extends]
+    new_sup = [mapper(r) for r in parsed.supersedes]
+    fields = None
+    if new_ext != parsed.extends or new_sup != parsed.supersedes:
+        fields = dict(parsed.frontmatter)
+        fields["extends"], fields["supersedes"] = new_ext, new_sup
+    link_map = {t: mapper(t) for t in parsed.wikilink_targets()}
+    link_map = {k: v for k, v in link_map.items() if k != v}
+    new_after = rewrite_wikilinks(parsed.after, link_map) if link_map else None
+    return reassemble(parsed, text, fields, new_after)
+
+
+def export_text(text: str, parsed: ParsedCard, overlay_alias: str, cats: dict[str, MountCatalog]) -> str:
+    """The file ``pack()`` writes for one overlay card (source-first reference rewriting)."""
+
+    def rewrite(raw: str) -> str:
+        res = resolve_ref(raw, overlay_alias, cats)
+        if res.mount == overlay_alias:
+            if raw.strip().startswith("@") and res.path:
+                return res.path  # @overlay/x -> slice-relative x
+            return raw  # slice-relative refs keep resolving inside the exported slice
+        if res.mount and res.resolved and res.path:
+            return format_address(res.mount, res.path)  # canonical qualified external ref
+        return raw
+
+    return rewrite_refs(text, parsed, rewrite)
 
 
 def pack(
@@ -144,29 +172,10 @@ def pack(
             missing=missing,
         )
 
-    def rewrite(raw: str) -> str:
-        res = resolve_ref(raw, overlay.alias, cats)
-        if res.mount == overlay.alias:
-            if raw.strip().startswith("@") and res.path:
-                return res.path  # @overlay/x -> slice-relative x
-            return raw  # slice-relative refs keep resolving inside the exported slice
-        if res.mount and res.resolved and res.path:
-            return format_address(res.mount, res.path)  # canonical qualified external ref
-        return raw
-
     files: dict[str, str] = {}
     for path in sorted(included):
         text, parsed = cards[path]
-        new_ext = [rewrite(r) for r in parsed.extends]
-        new_sup = [rewrite(r) for r in parsed.supersedes]
-        fields = None
-        if new_ext != parsed.extends or new_sup != parsed.supersedes:
-            fields = dict(parsed.frontmatter)
-            fields["extends"], fields["supersedes"] = new_ext, new_sup
-        link_map = {t: rewrite(t) for t in parsed.wikilink_targets()}
-        link_map = {k: v for k, v in link_map.items() if k != v}
-        new_after = rewrite_wikilinks(parsed.after, link_map) if link_map else None
-        files[f"{path}.md"] = reassemble(parsed, text, fields, new_after)
+        files[f"{path}.md"] = export_text(text, parsed, overlay.alias, cats)
 
     slice_name = name or dir_name.removesuffix(".slice")
     try:
@@ -231,6 +240,119 @@ def pack(
             "warnings": len(validation["warnings"]),
         },
     }
+
+
+# ---------------------------------------------------------------------------
+# After the packed slice is mounted: retire the overlay copies
+# ---------------------------------------------------------------------------
+
+
+def retire_packed_copies(ws: "Workspace", table, alias: str) -> dict[str, Any]:
+    """Remove the ``@overlay`` cards that the newly mounted slice ``alias`` holds unchanged.
+
+    ``pack()`` copies overlay cards; once its slice is mounted, the copies left in ``@overlay`` (higher
+    precedence) would shadow it and turn every ``supersedes`` they carry into competing replacements.
+    An overlay card is retired when ``pack()``'s transform of it is exactly the slice's card at the
+    same path: nothing is lost, the slice holds it. It is kept (and reported) when it differs (edited
+    since, or not a packed copy), when it has a staged change, or when a staged card references it.
+    References to a retired card from overlay cards that stay are rewritten to its new address
+    (``[[db/pool]]`` -> ``[[@db/db/pool]]``), so links and lineage keep their targets; references from
+    read-only mounts can't be rewritten and are reported. Runs under the caller's ``LOCK_EX``; the
+    caller syncs the index afterwards.
+    """
+    overlay = table.overlay
+    mount = table.get(alias)
+    idx = ws.index
+    cats = idx.catalogs()
+    staged = set(ws.staging.entries())
+    slice_paths = {r["path"] for r in idx.all_cards(alias)}
+    overlay_paths = {r["path"] for r in idx.all_cards(overlay.alias)}
+    retired: list[str] = []
+    kept: list[dict[str, str]] = []
+    for path in sorted(slice_paths & overlay_paths):
+        o_text, _ = read_card_file(overlay.root / f"{path}.md")
+        s_text, _ = read_card_file(mount.root / f"{path}.md")
+        if o_text is None or s_text is None:
+            continue
+        address = format_address(overlay.alias, path)
+        if path in staged:
+            kept.append({"address": address, "reason": "staged change pending"})
+            continue
+        packed = normalize_newlines(export_text(o_text, parse_card(o_text), overlay.alias, cats))
+        if normalize_newlines(s_text) not in (packed, normalize_newlines(o_text)):
+            kept.append({"address": address, "reason": f"differs from {format_address(alias, path)}"})
+            continue
+        retired.append(path)
+
+    def referrers(path: str) -> list[tuple[str, str, str]]:
+        out = []
+        for kind in ("extends", "supersedes", "wikilink"):
+            out += [(kind, r["src_mount"], r["src_path"]) for r in idx.inbound(kind, overlay.alias, path)]
+        return out
+
+    blocked = True
+    while blocked:  # a staged card that references a copy keeps it (rewriting the overlay file would conflict)
+        blocked = False
+        for path in list(retired):
+            stager = next((f"{m}/{p}" for _, m, p in referrers(path)
+                           if m == overlay.alias and p in staged and p not in retired), None)
+            if stager:
+                retired.remove(path)
+                kept.append({"address": format_address(overlay.alias, path), "reason": f"referenced by staged {stager}"})
+                blocked = True
+    retired_set = set(retired)
+
+    def mapper(raw: str) -> str:
+        res = resolve_ref(raw, overlay.alias, cats)
+        if res.resolved and res.mount == overlay.alias and res.path in retired_set:
+            return format_address(alias, res.path)
+        return raw
+
+    rebased: list[dict[str, str]] = []
+    broken: list[dict[str, str]] = []
+    to_rewrite: set[str] = set()
+    for path in retired:
+        target = format_address(overlay.alias, path)
+        for kind, src_mount, src_path in referrers(path):
+            if src_mount == overlay.alias:
+                if src_path not in retired_set:
+                    to_rewrite.add(src_path)
+                continue
+            for link in idx.outbound(src_mount, src_path, kind):
+                if link["resolved"] and format_address(link["dst_mount"], link["dst_path"]) == target:
+                    item = {"address": format_address(src_mount, src_path), "kind": kind, "ref": link["raw"]}
+                    if item not in broken:
+                        broken.append(item)
+    for src_path in sorted(to_rewrite):
+        text, _ = read_card_file(overlay.root / f"{src_path}.md")
+        if text is None:
+            continue
+        parsed = parse_card(text)
+        address = format_address(overlay.alias, src_path)
+        refs = [(k, r) for k in ("extends", "supersedes") for r in parsed.list_field(k)]
+        refs += [("wikilink", r) for r in parsed.wikilink_targets()]
+        changes = [{"address": address, "kind": k, "ref": r, "to": mapper(r)} for k, r in refs if mapper(r) != r]
+        if parsed.errors:
+            broken += [{"address": address, "kind": c["kind"], "ref": c["ref"]} for c in changes]
+            continue
+        new_text = rewrite_refs(text, parsed, mapper)
+        if new_text != normalize_newlines(text):
+            atomic_write_text(overlay.root / f"{src_path}.md", new_text)
+            rebased += changes
+    for path in retired:
+        file = overlay.root / f"{path}.md"
+        unlink_if_exists(file)
+        prune_empty_dirs(overlay.root, file.parent)
+    out: dict[str, Any] = {}
+    if retired:
+        out["retired_overlay_cards"] = [format_address(overlay.alias, p) for p in retired]
+    if kept:
+        out["shadowing_overlay_cards"] = sorted(kept, key=lambda k: k["address"])
+    if rebased:
+        out["rebased_references"] = rebased
+    if broken:
+        out["broken_references"] = sorted(broken, key=lambda b: (b["address"], b["kind"], b["ref"]))
+    return out
 
 
 def _entries(root_name: str, files: dict[str, str]) -> list[tuple[str, bytes | None]]:

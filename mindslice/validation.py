@@ -118,13 +118,19 @@ def lint(
         for warn in parsed.warnings:
             report.add("warning", "frontmatter_schema", warn, address, fname)
         if not is_overview:
-            if not parsed.has_frontmatter:
-                report.add("warning", "missing_frontmatter", "card has no +++ TOML frontmatter", address, fname)
+            summary = parsed.index_parts()[0]
+            if parsed.frontmatter_format == "yaml":
+                report.add("warning", "yaml_frontmatter", "legacy --- YAML frontmatter, read as a flat subset "
+                           "(title, aliases, tags, extends, supersedes); +++ TOML is the card format", address, fname)
+            elif not parsed.has_frontmatter:
+                report.add("warning", "missing_frontmatter", "plain Markdown (no +++ TOML frontmatter): titled by its "
+                           "first heading or file name, summarized by its first paragraph", address, fname)
             elif not parsed.title.strip():
                 report.add("warning", "missing_title", "frontmatter has no title", address, fname)
-            if not parsed.summary:
-                report.add("warning", "missing_summary", "no summary paragraph directly below the frontmatter", address, fname)
-            elif len(" ".join(parsed.summary.split())) > SUMMARY_PREVIEW_CHARS:
+            if not summary:
+                report.add("warning", "missing_summary", "no summary paragraph directly below the frontmatter"
+                           if parsed.is_card_format else "no prose paragraph to summarize the note", address, fname)
+            elif parsed.is_card_format and len(" ".join(summary.split())) > SUMMARY_PREVIEW_CHARS:
                 report.add("warning", "long_summary", f"summary exceeds {SUMMARY_PREVIEW_CHARS} chars", address, fname)
         if lines > MAX_CARD_LINES:
             report.add("warning", "card_too_long", f"card has {lines} lines (> {MAX_CARD_LINES}); consider splitting", address, fname)

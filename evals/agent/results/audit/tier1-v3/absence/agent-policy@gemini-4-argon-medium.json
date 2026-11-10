@@ -1,0 +1,99 @@
+{
+ "cell": "agent-policy@gemini-4-argon-medium",
+ "population": 5,
+ "cases": [
+  {
+   "id": "pl_041/after3",
+   "point": "end",
+   "query": "What's my exercise routine?",
+   "stale": [
+    "yoga 2x/week"
+   ],
+   "evidence": {
+    "@overlay/health/exercise-routine-yoga": [
+     "Exercise Routine: Yoga 2x/week",
+     "yoga 2x/week",
+     "yoga twice a week",
+     "User's exercise routine is yoga 2x/week (remains yoga 2x/week after health condition changed from seasonal allergies to lactose intolerance).",
+     "- As of 2023/03/04, the user's exercise routine is yoga 2x/week.",
+     "- Their yoga 2x/week exercise routine was originally determined by their seasonal allergies, and the user specified on 2023/03/04 that if their health condition changes, their exercise routine will still be yoga 2x/week."
+    ],
+    "@overlay/health/workout-facility-zorathel-peak-gym": [
+     "User works out at Zorathel Peak Gym for yoga 2x/week; if their exercise routine changes, they will work out at Velthari Studio.",
+     "- Going to Zorathel Peak Gym is for their yoga 2x/week routine ([[health/exercise-routine-yoga]]); if their exercise routine changes, they would need a different facility."
+    ]
+   },
+   "verdict": "correct",
+   "note": "the card asserts the dependent still holds after its premise changed ('remains yoga 2x/week')"
+  },
+  {
+   "id": "sw_040/after3",
+   "point": "end",
+   "query": "What authentication method do we use?",
+   "stale": [
+    "session cookie + csrf"
+   ],
+   "evidence": {
+    "@overlay/team/authentication-method-mtls-client-cert": [
+     "Session Cookie + CSRF",
+     "- On 2023-03-03 (Session 4), the user stated: \"Our authentication method is Session Cookie + CSRF — this is determined by our auth provider (we use Phalanx Gate); if we switch providers, this would change.\" and \"If we switch auth providers, our authentication method will be mTLS Client Cert.\""
+    ],
+    "@overlay/team/auth-middleware-oathkeeper-mtls-proxy": [
+     "- On 2023-03-03 (Session 4), the user stated: \"The auth middleware is phalanx-hmac-validator v2.0 — this is determined by the fact that we use Session Cookie + CSRF; if that changes, this would change.\" and \"If we change the auth method, the middleware config will be oathkeeper-mtls-proxy v4.1.\""
+    ]
+   },
+   "verdict": "matching error",
+   "note": "the card marks the dependent as changed, former, subject to change or no longer valid (title or summary: v3 judges lines, and a body line quotes the earlier statement); or another entity's words"
+  },
+  {
+   "id": "sw_039/after3",
+   "point": "end",
+   "query": "What's our log drain endpoint?",
+   "stale": [
+    "logs.korinth.dev/aurora"
+   ],
+   "evidence": {
+    "@overlay/team/deployment-target-korinth-hosting": [
+     "- [[team/log-drain]] (`logs.korinth.dev/aurora`) and [[team/docker-image]] (`orinthal-registry/aurora:deploy`, along with [[team/dockerfile]] at `infra/orinthal/Dockerfile`) were also determined by deploying on Thandrel Infra."
+    ]
+   },
+   "verdict": "matching error",
+   "note": "the card marks the dependent as changed, former, subject to change or no longer valid (title or summary: v3 judges lines, and a body line quotes the earlier statement); or another entity's words"
+  },
+  {
+   "id": "sw_038/after3",
+   "point": "end",
+   "query": "What's our build tool?",
+   "stale": [
+    "karnex bundler"
+   ],
+   "evidence": {
+    "@overlay/project/framework-dravex": [
+     "- Build tool and command: Karnex Bundler ([[project/build-tool]]) and `karnex build --prod` ([[project/build-command]]) were also determined by using the Synthari framework and would change upon switching frameworks."
+    ]
+   },
+   "verdict": "matching error",
+   "note": "the card marks the dependent as changed, former, subject to change or no longer valid (title or summary: v3 judges lines, and a body line quotes the earlier statement); or another entity's words"
+  },
+  {
+   "id": "pl_044/after3",
+   "point": "end",
+   "query": "What's my exercise routine?",
+   "stale": [
+    "walking daily"
+   ],
+   "evidence": {
+    "@overlay/user/exercise-routine-yoga": [
+     "walking daily",
+     "- In Session 4 (2023-03-04), the user stated that their exercise routine was walking daily (determined by high blood pressure), and that if their health condition changed, their exercise routine would be yoga 2x/week."
+    ],
+    "@overlay/user/workout-facility-thandrel-ymca": [
+     "- In Session 4 (2023-03-04), the user stated they went to Velthari Studio specifically for their walking daily routine, and if their exercise routine changed, they would work out at Thandrel YMCA."
+    ]
+   },
+   "verdict": "matching error",
+   "note": "the card marks the dependent as changed, former, subject to change or no longer valid (title or summary: v3 judges lines, and a body line quotes the earlier statement); or another entity's words"
+  }
+ ],
+ "rule": "Audit of matcher v3 (after its freeze) on Abs-hop1 pages it still flags and no audit had judged: 10 per cell (all when fewer), seed 20261106; verdict rule as in the v2 Absence audit"
+}

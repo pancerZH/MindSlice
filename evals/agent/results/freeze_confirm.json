@@ -1,0 +1,76 @@
+{
+ "run": "confirm-mab32k",
+ "cell": [
+  "agent-policy",
+  "gemini-4-argon-medium"
+ ],
+ "haystack": "mab-sh/factconsolidation_sh_32k",
+ "sessions": 231,
+ "batch_facts": 10,
+ "cap": 40,
+ "matcher": "v2",
+ "matcher_v2_digest": "228d623eeeb7898b8ab128add51a092a475652591838e328af8b8091c62ff885",
+ "matcher_v2_files": [
+  "evals/agent/matcher2.py",
+  "evals/agent/rescore.py",
+  "evals/agent/plan.py",
+  "evals/agent/judge.py",
+  "evals/agent/score.py",
+  "evals/agent/sessions.py",
+  "evals/external/datasets.py"
+ ],
+ "runner_digest": "e1567df5a8969bd21c7dfa292aed0b6f813b2f68f648b1d345e29725939a0b61",
+ "engine_digest": "fcc7ed17449a5aa770ad5d133278be55fa67b415ec2c49eaefd60c0a8edfd5a5",
+ "prompts": {
+  "INSTRUCTIONS": "6d15c0ab673648d90bc1ce741e94a29e4cae79b641e05904c12d33e40fe3a542",
+  "TASK": "6139ec46c73c2612c2d79b585fa12cce8e7a552bff4267ab2e90707d522a7244",
+  "POLICY": "57b4e310927d408330b23fb0701ff31e4c2296a4c9cdf964a8c32c0f9f509957",
+  "OVERLAY": "cbde5dacde870f7d0d8f1d0b3a2337aeb46c0ce14198336e0c6baf791b5a014f",
+  "system:agent-default": "4f2d6962e4725639d9da5224124ba2b11beb3c0435af2ac30058d784d13c320b",
+  "system:agent-policy": "a62dedfb304bc951928cec366a69c3805965efa6034eba59bf5c09e4e9e47177",
+  "system:agent-overlay": "5eb8cc0563acd799fcec912a9317863785bec5d15ce232b4988fd08ec9af6300"
+ },
+ "agy_version": "1.5.3",
+ "agy_flags": [
+  "--output-format",
+  "stream-json",
+  "--dangerously-skip-permissions",
+  "--disable-slash-commands"
+ ],
+ "quota_gate": {
+  "min_5h": 0.12,
+  "min_weekly": 0.05,
+  "group": "Gemini Models"
+ },
+ "flat_reference": "gate1-v2/flat (offline, the same haystack, re-scored with v2)",
+ "lines": [
+  {
+   "id": "G1",
+   "stat": "stale-first, flat minus agent (paired; MemoryAgentBench conflicts)",
+   "line": 0.3
+  },
+  {
+   "id": "G2",
+   "stat": "retired (MemoryAgentBench conflicts)",
+   "line": 0.7
+  },
+  {
+   "id": "G3",
+   "stat": "current@10, agent minus flat (paired; every judged question)",
+   "line": -0.05
+  },
+  {
+   "id": "G4",
+   "stat": "lost (every judged current value; upper bound for confirmed)",
+   "line": 0.05
+  }
+ ],
+ "audit": {
+  "seed": 20261106,
+  "retired_failures": 50,
+  "lost_cases": 50,
+  "unreliable_above": 0.2,
+  "evidence": "the workspace at the judgment point, replayed from the logged writes"
+ },
+ "not_used": "the 28 batches of this cell run before tier 1 dropped this haystack (tier1-dropped/, unread)"
+}

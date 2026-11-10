@@ -34,6 +34,8 @@ supersedes = []
 Constraints:
 
 - One focused sub-topic per card; 5-15 bullets; at most ~50 lines. Split larger topics.
+- Name each card by the durable topic or slot it covers (`team/lead.md`, `subscriptions/streaming.md`), never
+  by a value that can change (`team/lead-sarah-chen.md`): paths are link targets and outlive the values.
 - Bullets keep the concrete values, names, dates, conditions and the sources' own wording: search is
   lexical and matches only words the card contains.
 - `aliases`: 3-8 search synonyms of 1-4 words each (other phrasings, the words someone would ask with,

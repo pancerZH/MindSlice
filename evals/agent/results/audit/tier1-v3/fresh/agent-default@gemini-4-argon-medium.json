@@ -1,0 +1,152 @@
+{
+ "cell": "agent-default@gemini-4-argon-medium",
+ "rule": "Fresh labels for matcher v3 (cases where v3 and v2 disagree and no audit had judged them; every case v3 newly flags, and 20 of the pages it clears, seed 20261106), judged before any change made after seeing them. Verdict rules as in the tier-1 and v2 audits",
+ "cases": {
+  "lost": [],
+  "absence_clean": [
+   {
+    "id": "pl_047/after3",
+    "point": "end",
+    "head": "Q: Where is my office? [Abs-hop1] stale=['tesswick bay'] current=[]",
+    "evidence": {
+     "@overlay/work/employer-dranthex-logistics": [
+      "- Office location changes from Tesswick Bay to Quivira Springs at Dranthex Logistics ([[work/office-location]]).",
+      "- Commute mode changes from biking to work, as biking depended on the office being in Tesswick Bay ([[work/commute-mode]])."
+     ]
+    },
+    "direction": "v3 cleared",
+    "verdict": "correct",
+    "note": "every flagged line marks the value as changed, affected, invalidated, determined by a changed premise, or past"
+   },
+   {
+    "id": "sw_009/after4",
+    "point": "end",
+    "head": "Q: Where's the Dockerfile? [Abs-hop2] stale=['deploy/dockerfile.velturis'] current=[]",
+    "evidence": {
+     "@overlay/team/deployment-orinthal-serve": [
+      "- Moving deployment away from `Narvex Cloud` to `Orinthal Serve` also invalidates the `Narvex Cloud`-dependent Docker image (`velturis-cr/aurora:main`, see [[team/docker-image]]) and Dockerfile (`deploy/Dockerfile.velturis`, see [[team/dockerfile]])."
+     ]
+    },
+    "direction": "v3 cleared",
+    "verdict": "correct",
+    "note": "every flagged line marks the value as changed, affected, invalidated, determined by a changed premise, or past"
+   },
+   {
+    "id": "sw_019/after3",
+    "point": "end",
+    "head": "Q: What's our monitoring URL? [Abs-hop1] stale=['observe.velturis.io/aurora'] current=[]",
+    "evidence": {
+     "@overlay/team/monitoring-dashboard": [
+      "Team Monitoring Dashboard: observe.velturis.io/aurora (Subject to Change on Zephyra Platform)",
+      "observe.velturis.io/aurora"
+     ]
+    },
+    "direction": "v3 cleared",
+    "verdict": "correct",
+    "note": "every flagged line marks the value as changed, affected, invalidated, determined by a changed premise, or past"
+   },
+   {
+    "id": "sw_039/after3",
+    "point": "end",
+    "head": "Q: What's our log drain endpoint? [Abs-hop1] stale=['logs.korinth.dev/aurora'] current=[]",
+    "evidence": {
+     "@overlay/project/logs-drain": [
+      "logs.korinth.dev/aurora",
+      "Logs drain was logs.korinth.dev/aurora under Thandrel Infra, which changed/invalidated when deployment moved to Korinth Hosting on 2023-03-05.",
+      "- On 2023-03-04, the user's team logs drained to `logs.korinth.dev/aurora`, which was explicitly determined by deploying on `Thandrel Infra` ([[project/deployment-infrastructure]]), with the rule that if infrastructure changed, the log drain would change."
+     ],
+     "@overlay/project/deployment-infrastructure": [
+      "  - Logs drain: `logs.korinth.dev/aurora` was determined by deploying on `Thandrel Infra` and changes now that infrastructure moved to `Korinth Hosting` ([[project/logs-drain]])."
+     ]
+    },
+    "direction": "v3 cleared",
+    "verdict": "correct",
+    "note": "every flagged line marks the value as changed, affected, invalidated, determined by a changed premise, or past"
+   },
+   {
+    "id": "pl_039/after1",
+    "point": "end",
+    "head": "Q: What am I currently learning? [Cas-hop1] stale=['spanish'] current=['japanese']",
+    "evidence": {
+     "@overlay/education/online-bootcamp": [
+      "- Because the user changed schools/programs from Quessara University to the online coding bootcamp, any habits or plans that depended on attending Quessara University (such as [[education/language-learning|learning Spanish]] or [[work/commute|biking to work]]) are affected."
+     ]
+    },
+    "direction": "v3 cleared",
+    "verdict": "correct",
+    "note": "every flagged line marks the value as changed, affected, invalidated, determined by a changed premise, or past"
+   },
+   {
+    "id": "sw_050/after3",
+    "point": "end",
+    "head": "Q: What's our log drain endpoint? [Abs-hop1] stale=['logs.narvex.io/aurora/drain'] current=[]",
+    "evidence": {
+     "@overlay/project/log-drain": [
+      "Log Drain Endpoint: logs.narvex.io/aurora/drain (Affected by Move to Zephyra Platform)",
+      "logs.narvex.io/aurora/drain",
+      "The log drain endpoint logs.narvex.io/aurora/drain was determined by Thandrel Infra and is affected by the move to Zephyra Platform.",
+      "- Application logs drained to `logs.narvex.io/aurora/drain` (recorded 2023-03-04), which was determined by the deployment infrastructure being Thandrel Infra (see [[project/deployment-infra]])."
+     ]
+    },
+    "direction": "v3 cleared",
+    "verdict": "correct",
+    "note": "every flagged line marks the value as changed, affected, invalidated, determined by a changed premise, or past"
+   },
+   {
+    "id": "pl_040/after3",
+    "point": "end",
+    "head": "Q: What medication am I taking? [Abs-hop1] stale=['velnorath'] current=[]",
+    "evidence": {
+     "@overlay/user/medication": [
+      "Velnorath",
+      "- As of 2023-03-03 (Session 4), the user took a medication called Velnorath, which was determined by their high blood pressure; the user noted that if their health condition changed, their medication would likely change too."
+     ]
+    },
+    "direction": "v3 cleared",
+    "verdict": "correct",
+    "note": "every flagged line marks the value as changed, affected, invalidated, determined by a changed premise, or past"
+   },
+   {
+    "id": "sw_016/after4",
+    "point": "end",
+    "head": "Q: What's the test command? [Abs-hop2] stale=['pyronis check --snapshot'] current=[]",
+    "evidence": {
+     "@overlay/project/test-command": [
+      "pyronis check --snapshot",
+      "- Because Pyronis Check was determined by using the Synthari application framework ([[project/framework]]), and the team migrated from Synthari to Moxira on 2023-03-06, neither Pyronis Check nor `pyronis check --snapshot` remains active; a replacement test command for Moxira has not yet been specified."
+     ]
+    },
+    "direction": "v3 cleared",
+    "verdict": "correct",
+    "note": "every flagged line marks the value as changed, affected, invalidated, determined by a changed premise, or past"
+   },
+   {
+    "id": "sw_035/after3",
+    "point": "end",
+    "head": "Q: What migration tool do we use? [Abs-hop1] stale=['zyndra alter'] current=[]",
+    "evidence": {
+     "@overlay/project/database-migrations": [
+      "Zyndra Alter",
+      "- As of 2023-03-04, the team used Zyndra Alter for database migrations, which depended on the team's database being Pyravar Data ([[project/database]])."
+     ]
+    },
+    "direction": "v3 cleared",
+    "verdict": "correct",
+    "note": "every flagged line marks the value as changed, affected, invalidated, determined by a changed premise, or past"
+   },
+   {
+    "id": "sw_020/after4",
+    "point": "end",
+    "head": "Q: What's the deploy command? [Abs-hop2] stale=['thandrel ship --channel stable'] current=[]",
+    "evidence": {
+     "@overlay/project/deployment-target-orinthal": [
+      "  - CI config and deploy command: `thandrel-flow.toml` and `thandrel ship --channel stable` were determined by deploying on Velturis Edge and are invalidated/subject to change now that deployment moved to Orinthal Serve (see [[project/ci-config]], [[project/deploy-command]])."
+     ]
+    },
+    "direction": "v3 cleared",
+    "verdict": "correct",
+    "note": "every flagged line marks the value as changed, affected, invalidated, determined by a changed premise, or past"
+   }
+  ]
+ }
+}

@@ -29,6 +29,7 @@ from .errors import (
     ReadOnlyMountError,
 )
 from .fsutil import atomic_write_text, prune_empty_dirs, unlink_if_exists
+from .impact import inbound_impact, supersede_targets
 from .lineage import cycle_through
 
 if TYPE_CHECKING:  # pragma: no cover
@@ -37,8 +38,12 @@ if TYPE_CHECKING:  # pragma: no cover
 OPS = ("create", "replace", "append", "delete")
 
 
-def overlay_card_path(ws: "Workspace", card_id: str) -> str:
-    """Normalize a write target to an overlay-relative path (``@overlay/`` prefix allowed)."""
+def overlay_card_path(ws: "Workspace", card_id: str, strict: bool = True) -> str:
+    """Normalize a write target to an overlay-relative path (``@overlay/`` prefix allowed).
+
+    ``strict`` (for a new card) also requires a link-safe id; ``replace`` / ``append`` / ``delete``
+    accept any existing file name, such as a note a human dropped into ``overlay/``.
+    """
     if not isinstance(card_id, str) or not card_id.strip():
         raise InvalidAddressError("write() needs a non-empty card id")
     card_id = card_id.strip()
@@ -51,7 +56,7 @@ def overlay_card_path(ws: "Workspace", card_id: str) -> str:
                 alias=alias,
             )
         card_id = rest
-    return normalize_path(card_id)
+    return normalize_path(card_id, strict=strict)
 
 
 def read_card_file(file) -> tuple[str | None, str | None]:
@@ -173,6 +178,8 @@ def reassemble(parsed: ParsedCard, original: str, fields: dict[str, Any] | None,
     new_after = (parsed.after if after is None else after).lstrip("\n")
     if fields is None and parsed.raw_frontmatter is None:
         text = new_after
+    elif fields is None and parsed.frontmatter_format == "yaml":
+        text = f"---\n{parsed.raw_frontmatter}---\n" + ("\n" + new_after if new_after else "")  # kept verbatim
     else:
         fm = parsed.raw_frontmatter if fields is None else dump_frontmatter(fields)
         text = f"+++\n{fm}+++\n" + ("\n" + new_after if new_after else "")
@@ -238,6 +245,36 @@ def unresolved_lineage(parsed: ParsedCard, overlay_alias: str, cats: dict[str, M
 # ---------------------------------------------------------------------------
 
 
+def write_impact(ws: "Workspace", table, path: str, parsed: ParsedCard | None, *, stage: bool,
+                 deleting: bool, dangling: bool = False) -> dict[str, Any]:
+    """``affected_backlinks`` / ``affected_extensions`` for the cards this write retires.
+
+    Retired cards are the card itself for a delete, else the cards it ``supersedes`` (all of them, on
+    the state the write leaves, so a retry reports the same). Empty for a write that supersedes
+    nothing. Computed under the caller's ``LOCK_EX``.
+    """
+    if not deleting and (parsed is None or not parsed.supersedes):
+        return {}
+    overlay = table.overlay
+    address = format_address(overlay.alias, path)
+    overrides: dict[str, ParsedCard | None] = {}
+    cats: dict[str, MountCatalog] | None = None
+    if stage and not dangling:
+        overrides = ws.staging.prospective_overrides(overlay.root)
+        _, cats = prospective_successors(ws.index, overlay.alias, overrides)
+    if deleting:
+        targets = [address]
+    elif cats is not None:
+        targets = supersede_targets(parsed, overlay.alias, cats)
+    else:  # a live write: the index is synced, so its resolved edges are the card's
+        targets = list(dict.fromkeys(format_address(l["dst_mount"], l["dst_path"])
+                                     for l in ws.index.outbound(overlay.alias, path, "supersedes") if l["resolved"]))
+    if not targets:
+        return {}
+    return inbound_impact(ws.index, overlay.alias, overlay.precedence, targets, overrides=overrides,
+                          cats=cats, exclude=[address], dangling=dangling)
+
+
 def write(
     ws: "Workspace",
     id: str,
@@ -254,7 +291,7 @@ def write(
 ) -> dict[str, Any]:
     if op not in OPS:
         raise ValueError(f"unknown op {op!r} (expected one of {', '.join(OPS)})")
-    path = overlay_card_path(ws, id)
+    path = overlay_card_path(ws, id, strict=op == "create")
     tags_l = _as_list("tags", tags)
     aliases_l = _as_list("aliases", aliases)
     extends_l = _as_list("extends", extends)
@@ -291,6 +328,7 @@ def write(
             )
             if new_text == normalize_newlines(current):
                 result["sha256"] = current_sha
+                result.update(write_impact(ws, table, path, parse_card(current), stage=stage, deleting=False))
                 return result  # idempotent retry
             raise AlreadyExistsError(f"{address} already exists with different content", address=address, sha256=current_sha)
         if op in ("replace", "append") and current is None:
@@ -298,6 +336,7 @@ def write(
         if op == "delete" and current is None:
             result["sha256"] = None
             result["warnings"].append(f"{address} does not exist; nothing to delete")
+            result.update(write_impact(ws, table, path, None, stage=stage, deleting=True, dangling=not stage))
             if stage:
                 staging.stage_delete(path, overlay.root)  # clears stale entries, if any
             return result
@@ -322,8 +361,11 @@ def write(
 
         if new_text is not None and current is not None and new_text == normalize_newlines(current):
             result["sha256"] = current_sha
+            result.update(write_impact(ws, table, path, parsed_new, stage=stage, deleting=False))
             return result
 
+        # A delete's impact is read before the card goes (its inbound references still resolve).
+        impact = write_impact(ws, table, path, None, stage=stage, deleting=True) if new_text is None else None
         if stage:
             if new_text is None:
                 staging.stage_delete(path, overlay.root)
@@ -339,7 +381,11 @@ def write(
             ws._sync(table)
         result["changed"] = True
         result["sha256"] = sha256_bytes(new_text.encode("utf-8")) if new_text is not None else None
+        if impact is None:
+            impact = write_impact(ws, table, path, parsed_new, stage=stage, deleting=False)
+        result.update(impact)
         return result
 
 
-__all__ = ["write", "build_text", "reassemble", "check_cycles", "prospective_successors", "OPS", "LIST_FIELDS"]
+__all__ = ["write", "write_impact", "build_text", "reassemble", "check_cycles", "prospective_successors", "OPS",
+           "LIST_FIELDS"]

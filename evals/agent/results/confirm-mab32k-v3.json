@@ -1,0 +1,490 @@
+{
+ "arms": {
+  "agent-policy@gemini-4-argon-medium": {
+   "pooled": {
+    "stale-first": {
+     "mean": 0.0,
+     "low": 0.0,
+     "high": 0.0,
+     "n": 44
+    },
+    "stale@10": {
+     "mean": 0.0227,
+     "low": 0.0,
+     "high": 0.0682,
+     "n": 44
+    },
+    "current@10": {
+     "mean": 0.9697,
+     "low": 0.9242,
+     "high": 1.0,
+     "n": 66
+    },
+    "retired": {
+     "mean": 0.9091,
+     "low": 0.8182,
+     "high": 0.9773,
+     "n": 44
+    },
+    "lost": {
+     "mean": 0.0,
+     "low": 0.0,
+     "high": 0.0,
+     "n": 63
+    },
+    "forgotten": {
+     "mean": NaN,
+     "low": NaN,
+     "high": NaN,
+     "n": 0
+    },
+    "history-named@10": {
+     "mean": NaN,
+     "low": NaN,
+     "high": NaN,
+     "n": 0
+    }
+   },
+   "groups": {
+    "mab-sh/conflict": {
+     "current@10": {
+      "mean": 0.9545,
+      "low": 0.8864,
+      "high": 1.0,
+      "n": 44
+     },
+     "stale-first": {
+      "mean": 0.0,
+      "low": 0.0,
+      "high": 0.0,
+      "n": 44
+     },
+     "stale@10": {
+      "mean": 0.0227,
+      "low": 0.0,
+      "high": 0.0682,
+      "n": 44
+     }
+    },
+    "mab-sh/other": {
+     "current@10": {
+      "mean": 1.0,
+      "low": 1.0,
+      "high": 1.0,
+      "n": 22
+     }
+    },
+    "mab/conflict": {
+     "retired": {
+      "mean": 0.9091,
+      "low": 0.8182,
+      "high": 0.9773,
+      "n": 44
+     }
+    },
+    "mab/fact": {
+     "lost": {
+      "mean": 0.0,
+      "low": 0.0,
+      "high": 0.0,
+      "n": 63
+     }
+    }
+   },
+   "telemetry": {
+    "haystacks": 1,
+    "failed_haystacks": [],
+    "sessions": 231,
+    "tool_calls": 4252,
+    "calls_per_session_mean": 18.41,
+    "calls_per_session_median": 18,
+    "calls_per_session_max": 31,
+    "tools": {
+     "manifest": 188,
+     "write": 2309,
+     "search": 1166,
+     "read": 589
+    },
+    "ops": {
+     "create": 2309
+    },
+    "writes_with_supersedes": 837,
+    "writes_with_extends": 4,
+    "tool_errors": 4,
+    "cap_hits": 0,
+    "non_mcp_tool_calls": 0,
+    "non_mcp_denied": 0,
+    "trace_mismatches": 0,
+    "client_rejected_calls": 0,
+    "no_done": 0,
+    "retries": 2,
+    "wall_s_total": 23756.5,
+    "wall_s_median": 91.53,
+    "wall_s_max": 322.6,
+    "overlay_cards_per_haystack": 2309.0,
+    "input_tokens": 5278884,
+    "output_tokens": 594662,
+    "thinking_tokens": 42962,
+    "cached_tokens": 10122629
+   },
+   "lines": [
+    {
+     "id": "G1",
+     "claim": "The agent's lineage cuts stale-first substantially",
+     "stat": "stale-first, flat minus arm (paired)",
+     "line": 0.3,
+     "point": 0.7955,
+     "low": 0.6591,
+     "high": 0.9091,
+     "n": 44,
+     "verdict": "confirmed"
+    },
+    {
+     "id": "G2",
+     "claim": "The agent retires most stale facts",
+     "stat": "retired",
+     "line": 0.7,
+     "point": 0.9091,
+     "low": 0.8182,
+     "high": 0.9773,
+     "n": 44,
+     "verdict": "confirmed"
+    },
+    {
+     "id": "G3",
+     "claim": "Its memory keeps the current fact findable",
+     "stat": "current@10, arm minus flat (paired)",
+     "line": -0.05,
+     "point": 0.0,
+     "low": 0.0,
+     "high": 0.0,
+     "n": 66,
+     "verdict": "confirmed"
+    },
+    {
+     "id": "G4",
+     "claim": "It rarely hides a true fact",
+     "stat": "lost, all current values (lower is better)",
+     "line": 0.05,
+     "point": 0.0,
+     "low": 0.0,
+     "high": 0.0,
+     "n": 63,
+     "verdict": "confirmed"
+    },
+    {
+     "id": "G5",
+     "claim": "It forgets on request",
+     "stat": "forgotten",
+     "line": 0.9,
+     "point": NaN,
+     "low": NaN,
+     "high": NaN,
+     "n": 0,
+     "verdict": "no data"
+    }
+   ]
+  },
+  "flat": {
+   "pooled": {
+    "stale-first": {
+     "mean": 0.7955,
+     "low": 0.6591,
+     "high": 0.9091,
+     "n": 44
+    },
+    "stale@10": {
+     "mean": 0.9545,
+     "low": 0.8864,
+     "high": 1.0,
+     "n": 44
+    },
+    "current@10": {
+     "mean": 0.9697,
+     "low": 0.9242,
+     "high": 1.0,
+     "n": 66
+    },
+    "retired": {
+     "mean": 0.0,
+     "low": 0.0,
+     "high": 0.0,
+     "n": 44
+    },
+    "lost": {
+     "mean": 0.0,
+     "low": 0.0,
+     "high": 0.0,
+     "n": 63
+    },
+    "forgotten": {
+     "mean": NaN,
+     "low": NaN,
+     "high": NaN,
+     "n": 0
+    },
+    "history-named@10": {
+     "mean": NaN,
+     "low": NaN,
+     "high": NaN,
+     "n": 0
+    }
+   },
+   "groups": {
+    "mab-sh/conflict": {
+     "current@10": {
+      "mean": 0.9545,
+      "low": 0.8864,
+      "high": 1.0,
+      "n": 44
+     },
+     "stale-first": {
+      "mean": 0.7955,
+      "low": 0.6591,
+      "high": 0.9091,
+      "n": 44
+     },
+     "stale@10": {
+      "mean": 0.9545,
+      "low": 0.8864,
+      "high": 1.0,
+      "n": 44
+     }
+    },
+    "mab-sh/other": {
+     "current@10": {
+      "mean": 1.0,
+      "low": 1.0,
+      "high": 1.0,
+      "n": 22
+     }
+    },
+    "mab/conflict": {
+     "retired": {
+      "mean": 0.0,
+      "low": 0.0,
+      "high": 0.0,
+      "n": 44
+     }
+    },
+    "mab/fact": {
+     "lost": {
+      "mean": 0.0,
+      "low": 0.0,
+      "high": 0.0,
+      "n": 63
+     }
+    }
+   },
+   "telemetry": {
+    "haystacks": 1,
+    "failed_haystacks": [],
+    "sessions": 231,
+    "tool_calls": 0,
+    "calls_per_session_mean": 0.0,
+    "calls_per_session_median": 0,
+    "calls_per_session_max": 0,
+    "tools": {},
+    "ops": {},
+    "writes_with_supersedes": 0,
+    "writes_with_extends": 0,
+    "tool_errors": 0,
+    "cap_hits": 0,
+    "non_mcp_tool_calls": 0,
+    "non_mcp_denied": 0,
+    "trace_mismatches": 0,
+    "client_rejected_calls": 0,
+    "no_done": 0,
+    "retries": 0,
+    "wall_s_total": 19.9,
+    "wall_s_median": 0.086,
+    "wall_s_max": 0.177,
+    "overlay_cards_per_haystack": 2310.0,
+    "input_tokens": 0,
+    "output_tokens": 0,
+    "thinking_tokens": 0,
+    "cached_tokens": 0
+   }
+  },
+  "oracle": {
+   "pooled": {
+    "stale-first": {
+     "mean": 0.0,
+     "low": 0.0,
+     "high": 0.0,
+     "n": 44
+    },
+    "stale@10": {
+     "mean": 0.0455,
+     "low": 0.0,
+     "high": 0.1136,
+     "n": 44
+    },
+    "current@10": {
+     "mean": 0.9697,
+     "low": 0.9242,
+     "high": 1.0,
+     "n": 66
+    },
+    "retired": {
+     "mean": 0.9545,
+     "low": 0.8864,
+     "high": 1.0,
+     "n": 44
+    },
+    "lost": {
+     "mean": 0.0,
+     "low": 0.0,
+     "high": 0.0,
+     "n": 63
+    },
+    "forgotten": {
+     "mean": NaN,
+     "low": NaN,
+     "high": NaN,
+     "n": 0
+    },
+    "history-named@10": {
+     "mean": NaN,
+     "low": NaN,
+     "high": NaN,
+     "n": 0
+    }
+   },
+   "groups": {
+    "mab-sh/conflict": {
+     "current@10": {
+      "mean": 0.9545,
+      "low": 0.8864,
+      "high": 1.0,
+      "n": 44
+     },
+     "stale-first": {
+      "mean": 0.0,
+      "low": 0.0,
+      "high": 0.0,
+      "n": 44
+     },
+     "stale@10": {
+      "mean": 0.0455,
+      "low": 0.0,
+      "high": 0.1136,
+      "n": 44
+     }
+    },
+    "mab-sh/other": {
+     "current@10": {
+      "mean": 1.0,
+      "low": 1.0,
+      "high": 1.0,
+      "n": 22
+     }
+    },
+    "mab/conflict": {
+     "retired": {
+      "mean": 0.9545,
+      "low": 0.8864,
+      "high": 1.0,
+      "n": 44
+     }
+    },
+    "mab/fact": {
+     "lost": {
+      "mean": 0.0,
+      "low": 0.0,
+      "high": 0.0,
+      "n": 63
+     }
+    }
+   },
+   "telemetry": {
+    "haystacks": 1,
+    "failed_haystacks": [],
+    "sessions": 231,
+    "tool_calls": 0,
+    "calls_per_session_mean": 0.0,
+    "calls_per_session_median": 0,
+    "calls_per_session_max": 0,
+    "tools": {},
+    "ops": {},
+    "writes_with_supersedes": 0,
+    "writes_with_extends": 0,
+    "tool_errors": 0,
+    "cap_hits": 0,
+    "non_mcp_tool_calls": 0,
+    "non_mcp_denied": 0,
+    "trace_mismatches": 0,
+    "client_rejected_calls": 0,
+    "no_done": 0,
+    "retries": 0,
+    "wall_s_total": 25.2,
+    "wall_s_median": 0.096,
+    "wall_s_max": 0.462,
+    "overlay_cards_per_haystack": 2310.0,
+    "input_tokens": 0,
+    "output_tokens": 0,
+    "thinking_tokens": 0,
+    "cached_tokens": 0
+   }
+  }
+ },
+ "comparisons": {},
+ "audit": {
+  "agent-policy@gemini-4-argon-medium": {
+   "tally": {
+    "retired": {
+     "judged": 4,
+     "errors": 3,
+     "matching_errors": 3,
+     "share": 0.75
+    },
+    "lost": {
+     "judged": 0,
+     "errors": 0,
+     "matching_errors": 0,
+     "share": null
+    },
+    "passes": {
+     "judged": 15,
+     "errors": 0,
+     "matching_errors": 0,
+     "share": 0.0
+    },
+    "flips": {
+     "judged": 0,
+     "errors": 0,
+     "matching_errors": 0,
+     "share": null
+    },
+    "reliable": false
+   },
+   "corrected": {
+    "retired": {
+     "n": 44,
+     "flagged": 4,
+     "audited": 4,
+     "matching_errors": 3,
+     "other_population": 40,
+     "other_audited": 15,
+     "other_errors": 0,
+     "raw": 0.9091,
+     "corrected": 0.9773,
+     "exact": true
+    },
+    "lost": {
+     "n": 63,
+     "flagged": 0,
+     "audited": 0,
+     "matching_errors": 0,
+     "other_population": 0,
+     "other_audited": 0,
+     "other_errors": 0,
+     "raw": 0.0,
+     "corrected": 0.0,
+     "exact": true
+    }
+   },
+   "two_way": true
+  }
+ }
+}

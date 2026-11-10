@@ -1,0 +1,189 @@
+{
+ "cell": "agent-default@gemini-4-argon-medium",
+ "population": 20,
+ "cases": [
+  {
+   "id": "pl_014/after3",
+   "point": "end",
+   "query": "What medication am I taking?",
+   "stale": [
+    "velnorath"
+   ],
+   "evidence": {
+    "@overlay/health/medication-velnorath": [
+     "Velnorath",
+     "- On 2023/03/05, the user noted that if their health condition changed, their medication (Velnorath) would likely change too."
+    ]
+   },
+   "verdict": "matching error",
+   "note": "the card marks the dependent as changed, former, subject to change or no longer valid (title or summary: v3 judges lines, and a body line quotes the earlier statement); or another entity's words"
+  },
+  {
+   "id": "pl_020/after2",
+   "point": "end",
+   "query": "What regular appointments do I have?",
+   "stale": [
+    "dentist (every 6 months)"
+   ],
+   "evidence": {
+    "@overlay/user/appointment-dentist": [
+     "The user had a regular dentist appointment (every 6 months) tied to living in Pyresta Meadow; since moving to Luminara Flats on March 6, 2023, this appointment changes."
+    ]
+   },
+   "verdict": "matching error",
+   "note": "the card marks the dependent as changed, former, subject to change or no longer valid (title or summary: v3 judges lines, and a body line quotes the earlier statement); or another entity's words"
+  },
+  {
+   "id": "pl_041/after3",
+   "point": "end",
+   "query": "What's my exercise routine?",
+   "stale": [
+    "yoga 2x/week"
+   ],
+   "evidence": {
+    "@overlay/user/exercise-routine-yoga": [
+     "User Exercise Routine: Yoga 2x/Week",
+     "yoga 2x/week",
+     "yoga twice a week",
+     "The user's exercise routine is yoga 2x/week; even after their health condition changed from seasonal allergies to lactose intolerance (2023-03-05), their exercise routine remains yoga 2x/week.",
+     "- The user's current exercise routine is yoga 2x/week (twice a week), as of 2023-03-04 and continuing as of 2023-03-05.",
+     "- This exercise routine (yoga 2x/week) was originally determined by the user's seasonal allergies, and the user specified that even if their health condition changes, their exercise routine will still be yoga 2x/week.",
+     "- Because their exercise routine continues to be yoga 2x/week (and did not change), the user continues to work out at [[user/workout-facility-zorathel-peak-gym|Zorathel Peak Gym]] (they would only switch to Velthari Studio if their exercise routine changed)."
+    ],
+    "@overlay/user/workout-facility-zorathel-peak-gym": [
+     "The user goes to Zorathel Peak Gym for their yoga 2x/week workouts; if their exercise routine changes, they will work out at Velthari Studio.",
+     "- Going to Zorathel Peak Gym is specifically for the user's [[user/exercise-routine-yoga|yoga 2x/week exercise routine]]."
+    ],
+    "@overlay/user/health-lactose-intolerance": [
+     "- Even though the user's health condition changed, their exercise routine remains [[user/exercise-routine-yoga|yoga 2x/week]] at [[user/workout-facility-zorathel-peak-gym|Zorathel Peak Gym]]."
+    ]
+   },
+   "verdict": "correct",
+   "note": "the card asserts the dependent still holds after its premise changed ('remains yoga 2x/week')"
+  },
+  {
+   "id": "sw_004/after2",
+   "point": "end",
+   "query": "Who receives the weekly report?",
+   "stale": [
+    "taehyun kim"
+   ],
+   "evidence": {
+    "@overlay/project/weekly-report-recipient": [
+     "Weekly Report Recipient: Taehyun Kim (Assigned by Former Team Lead Sarah Chen; Changes under Minjun Lee)",
+     "Taehyun Kim weekly report",
+     "The weekly report recipient was Taehyun Kim (assigned by former team lead Sarah Chen), which changes now that Minjun Lee is the new team lead (as of 2023-03-06).",
+     "- On 2023-03-05, the weekly report recipient was set to Taehyun Kim, assigned by then-team lead Sarah Chen, with the rule that this assignment changes if the team lead changes."
+    ]
+   },
+   "verdict": "matching error",
+   "note": "the card marks the dependent as changed, former, subject to change or no longer valid (title or summary: v3 judges lines, and a body line quotes the earlier statement); or another entity's words"
+  },
+  {
+   "id": "pl_013/after3",
+   "point": "end",
+   "query": "What project am I working on?",
+   "stale": [
+    "infrastructure upgrade"
+   ],
+   "evidence": {
+    "@overlay/user/work-project-status": [
+     "User Work Project Status: Left Quenlix Group Infrastructure Upgrade for Thalwren Inc.",
+     "infrastructure upgrade"
+    ]
+   },
+   "verdict": "matching error",
+   "note": "the card marks the dependent as changed, former, subject to change or no longer valid (title or summary: v3 judges lines, and a body line quotes the earlier statement); or another entity's words"
+  },
+  {
+   "id": "sw_021/after2",
+   "point": "end",
+   "query": "Who receives the weekly report?",
+   "stale": [
+    "taehyun kim"
+   ],
+   "evidence": {
+    "@overlay/aurora/weekly-report-recipient": [
+     "Weekly Report Recipient: Taehyun Kim (Changes After Team Lead Change to Seokjin Kang)",
+     "Taehyun Kim",
+     "Weekly report recipient was Taehyun Kim under Alex Kim, which changes now that Seokjin Kang is the new team lead.",
+     "- As of 2023-03-04, the weekly report recipient was Taehyun Kim, assigned by then-current team lead Alex Kim ([[aurora/team-lead]]), with the condition that if the team lead changes from Alex Kim, this weekly report recipient assignment changes."
+    ]
+   },
+   "verdict": "matching error",
+   "note": "the card marks the dependent as changed, former, subject to change or no longer valid (title or summary: v3 judges lines, and a body line quotes the earlier statement); or another entity's words"
+  },
+  {
+   "id": "sw_031/after3",
+   "point": "end",
+   "query": "What token format do we use?",
+   "stale": [
+    "zenthos-session-v1"
+   ],
+   "evidence": {
+    "@overlay/project/auth-middleware-zenthos": [
+     "Authentication Middleware (zenthos-session-middleware v1.8)",
+     "zenthos-session-middleware v1.8",
+     "The team's auth middleware is zenthos-session-middleware v1.8 (replacing oathkeeper-mtls-proxy v4.1 after the auth method changed to Session Cookie + CSRF under Verithos Auth).",
+     "- As of 2023-03-05 (Session 5, 04:07), the team's authentication middleware configuration is **zenthos-session-middleware v1.8** (replacing **oathkeeper-mtls-proxy v4.1**)."
+    ]
+   },
+   "verdict": "matching error",
+   "note": "the card marks the dependent as changed, former, subject to change or no longer valid (title or summary: v3 judges lines, and a body line quotes the earlier statement); or another entity's words"
+  },
+  {
+   "id": "pl_044/after3",
+   "point": "end",
+   "query": "What's my exercise routine?",
+   "stale": [
+    "walking daily"
+   ],
+   "evidence": {
+    "@overlay/user/workout-facility": [
+     "- The user currently works out at Thandrel YMCA (as of 2023-03-05), following the shift in their [[user/exercise-routine]] from walking daily to yoga 2x/week (triggered when their [[user/health-condition]] changed from high blood pressure to a herniated disc)."
+    ]
+   },
+   "verdict": "matching error",
+   "note": "the card marks the dependent as changed, former, subject to change or no longer valid (title or summary: v3 judges lines, and a body line quotes the earlier statement); or another entity's words"
+  },
+  {
+   "id": "pl_048/after3",
+   "point": "end",
+   "query": "What's my sleep schedule?",
+   "stale": [
+    "midnight-8am"
+   ],
+   "evidence": {
+    "@overlay/health/sleep-schedule": [
+     "Sleep Schedule: Midnight to 8am (Likely Changing Due to Health Change)",
+     "midnight-8am",
+     "midnight to 8am"
+    ]
+   },
+   "verdict": "matching error",
+   "note": "the card marks the dependent as changed, former, subject to change or no longer valid (title or summary: v3 judges lines, and a body line quotes the earlier statement); or another entity's words"
+  },
+  {
+   "id": "sw_044/after3",
+   "point": "end",
+   "query": "What's our build tool?",
+   "stale": [
+    "zelthra pack"
+   ],
+   "evidence": {
+    "@overlay/project/build-tool": [
+     "Zelthra Pack",
+     "Zelthra Pack was the build tool under the Dravex framework; since migrating to Korvel on 2023-03-05, Zelthra Pack is superseded/changing (new build tool for Korvel not yet specified).",
+     "- Under the Dravex framework (confirmed on 2023-03-04), the project's build tool was Zelthra Pack."
+    ],
+    "@overlay/project/build-command": [
+     "`zelthra pack --minify` was the build command for Zelthra Pack under Dravex; since migrating to Korvel on 2023-03-05, both the build tool and build command change (new command not yet specified).",
+     "- Under the Dravex framework and Zelthra Pack build tool (confirmed on 2023-03-04), the project's build command was `zelthra pack --minify`."
+    ]
+   },
+   "verdict": "matching error",
+   "note": "the card marks the dependent as changed, former, subject to change or no longer valid (title or summary: v3 judges lines, and a body line quotes the earlier statement); or another entity's words"
+  }
+ ],
+ "rule": "Audit of matcher v3 (after its freeze) on Abs-hop1 pages it still flags and no audit had judged: 10 per cell (all when fewer), seed 20261106; verdict rule as in the v2 Absence audit"
+}

@@ -1,0 +1,1721 @@
+{
+ "cell": "agent-overlay@qwen3.8-flash-next-iq3_s",
+ "population": {
+  "retired": 171,
+  "lost": 3,
+  "passes": 110,
+  "flips": 0
+ },
+ "cases": {
+  "retired": [
+   {
+    "id": "meme-nofiller/sw_048/update/2#3",
+    "dir": "meme-nofiller__sw_048",
+    "session": 2,
+    "stale": [
+     "quorix hub",
+     "dranith stack"
+    ],
+    "current": [
+     "veltrion pkg"
+    ],
+    "evidence": {
+     "@overlay/project/branching-strategy-trunk-based-with-feature-flags": [
+      "- Related: [[project/changelog-github-releases]], [[project/package-manager-dranith-stack]]."
+     ],
+     "@overlay/project/default-branch-is-main": [
+      "- Related tooling thread: the build scripts in CI must reference the team's package manager — [[project/package-manager-dranith-stack]]."
+     ]
+    },
+    "verdict": "correct",
+    "note": "a statement line, link, or unsuperseded @history round presents the old value as current"
+   },
+   {
+    "id": "meme-nofiller/pl_011/update/4#1",
+    "dir": "meme-nofiller__pl_011",
+    "session": 4,
+    "stale": [
+     "tendinitis"
+    ],
+    "current": [
+     "seasonal allergies"
+    ],
+    "evidence": {
+     "@overlay/profile/activity-running-club": [
+      "- The user also has tendinitis ([[profile/health-tendinitis]]); they did not link it to running in this session, so treat injury-aware advice as a plausible need, not a stated one."
+     ],
+     "@overlay/profile/diet-low-sugar": [
+      "- Related: [[profile/health-tendinitis]] (health management context)."
+     ],
+     "@overlay/profile/hobby-gardening": [
+      "- Related health context: [[profile/health-tendinitis]] (repetitive strain from digging/repotting may matter when suggesting garden activities)."
+     ]
+    },
+    "verdict": "correct",
+    "note": "a statement line, link, or unsuperseded @history round presents the old value as current"
+   },
+   {
+    "id": "meme-nofiller/pl_017/update/2#5",
+    "dir": "meme-nofiller__pl_017",
+    "session": 2,
+    "stale": [
+     "zyvanta sedan",
+     "therwyn compact"
+    ],
+    "current": [
+     "vorantel suv"
+    ],
+    "evidence": {
+     "@overlay/profile/hobby-running-club": [
+      "- They drive their Therwyn Compact to running club sessions ([[profile/vehicle-therwyn-compact]])."
+     ]
+    },
+    "verdict": "correct",
+    "note": "a statement line, link, or unsuperseded @history round presents the old value as current"
+   },
+   {
+    "id": "meme-nofiller/pl_022/update/2#3",
+    "dir": "meme-nofiller__pl_022",
+    "session": 2,
+    "stale": [
+     "james",
+     "alex"
+    ],
+    "current": [
+     "taylor"
+    ],
+    "evidence": {
+     "@overlay/profile/woodworking-hobby": [
+      "- Partner James ([[profile/partner-james]]) is described as \"quite supportive\" of the user's woodworking."
+     ]
+    },
+    "verdict": "correct",
+    "note": "a statement line, link, or unsuperseded @history round presents the old value as current"
+   },
+   {
+    "id": "meme-nofiller/pl_032/update/2#5",
+    "dir": "meme-nofiller__pl_032",
+    "session": 2,
+    "stale": [
+     "thyranote",
+     "zorvista premium"
+    ],
+    "current": [
+     "meal kit (kelvimeal)"
+    ],
+    "evidence": {
+     "@overlay/media/whispers-of-zarinthea": [
+      "- The user did not say which service it airs on; the Zorvista Premium subscription ([[tools/zorvista-premium-streaming]]) was mentioned in the turn just before, but no link was confirmed."
+     ],
+     "@overlay/profile/reading-hobby": [
+      "- Related tooling: [[tools/thyranote-reading-notes]]."
+     ],
+     "@overlay/tools/thyranote-reading-notes": [
+      "User subscribes to Thyranote for reading log and notes",
+      "Thyranote subscription",
+      "The user is a paying subscriber to Thyranote and uses it to keep track of their reading and their notes; it has been working well for them."
+     ]
+    },
+    "verdict": "correct",
+    "note": "a statement line, link, or unsuperseded @history round presents the old value as current"
+   },
+   {
+    "id": "meme-nofiller/pl_006/update/2#5",
+    "dir": "meme-nofiller__pl_006",
+    "session": 2,
+    "stale": [
+     "whispers of zarinthea (tv)",
+     "thyrelion (anime)"
+    ],
+    "current": [
+     "a history documentary series"
+    ],
+    "evidence": {
+     "@history/s000/r001": [
+      "I recently started watching a show called Whispers of Zarinthea. Have you seen it, or do you have any recommendations for other shows?",
+      "- User: I recently started watching a show called Whispers of Zarinthea. Have you seen it, or do you have any recommendations for other shows?",
+      "- Assistant: \"Whispers of Zarinthea\" sounds intriguing! While I haven't seen it, it seems to have captured a lot of viewers' attention. If you're enjoying fantasy or adventure themes, you might also like shows like \"The Witcher\" or \"Shadow and Bone,\" which feature rich world-building and engaging characters. If you're open to different genres, \"Stranger Things\" offers a blend of mystery and nostalgia, while \"The Mandalorian\" is great for sci-fi fans. What aspects of \"Whispers of Zarinthea\" do you enjoy most? That might help narrow down some recommendations!"
+     ],
+     "@history/s001/r003": [
+      "I currently watch Thyrelion (anime). Have you seen it or do you have any recommendations for similar shows?",
+      "- User: I currently watch Thyrelion (anime). Have you seen it or do you have any recommendations for similar shows?",
+      "- Assistant: \"Thyrelion\" sounds intriguing, though I don't have specific information about it. If you enjoy anime with action and adventure, you might like shows like \"Attack on Titan,\" which has intense battles and deep storylines, or \"My Hero Academia,\" which blends superhero elements with character development. If you're into fantasy, \"Fullmetal Alchemist: Brotherhood\" offers a rich narrative with strong themes and well-developed characters. What aspects of \"Thyrelion\" do you enjoy the most? That might help narrow down more recommendations for you!"
+     ]
+    },
+    "verdict": "correct",
+    "note": "a statement line, link, or unsuperseded @history round presents the old value as current"
+   },
+   {
+    "id": "meme-nofiller/sw_041/update/1#3",
+    "dir": "meme-nofiller__sw_041",
+    "session": 1,
+    "stale": [
+     "2025 march 28"
+    ],
+    "current": [
+     "2025 april 25"
+    ],
+    "evidence": {
+     "@history/s000/r001": [
+      "The sprint deadline is March 28, 2025. It’s crucial for keeping our work aligned and ensuring we’re hitting our goals. How do you manage sprint planning and ensure everyone is on track for deadlines?",
+      "- User: The sprint deadline is March 28, 2025. It’s crucial for keeping our work aligned and ensuring we’re hitting our goals. How do you manage sprint planning and ensure everyone is on track for deadlines?"
+     ]
+    },
+    "verdict": "correct",
+    "note": "a statement line, link, or unsuperseded @history round presents the old value as current"
+   },
+   {
+    "id": "meme-nofiller/pl_043/update/2#5",
+    "dir": "meme-nofiller__pl_043",
+    "session": 2,
+    "stale": [
+     "xelvoria",
+     "thyranote"
+    ],
+    "current": [
+     "zorvista premium"
+    ],
+    "evidence": {
+     "@overlay/profile/current-media-quorath-codex": [
+      "- Related: their content subscription [[profile/subscription-xelvoria]]."
+     ],
+     "@overlay/profile/hobby-knitting": [
+      "- Related: their content subscription [[profile/subscription-xelvoria]] and living situation [[profile/living-with-roommate]]."
+     ],
+     "@overlay/profile/hobby-rock-climbing": [
+      "- Related in the same session: [[profile/subscription-thyranote]] (tracks their climbing goals), [[profile/chiropractor-biweekly]] (kept up for the demands of climbing), [[profile/social-pickup-basketball-saturdays]] (seen as complementing an individual sport)."
+     ]
+    },
+    "verdict": "correct",
+    "note": "a statement line, link, or unsuperseded @history round presents the old value as current"
+   },
+   {
+    "id": "meme-nofiller/sw_004/update/4#1",
+    "dir": "meme-nofiller__sw_004",
+    "session": 4,
+    "stale": [
+     "sarah chen"
+    ],
+    "current": [
+     "minjun lee"
+    ],
+    "evidence": {
+     "@history/s003/r000": [
+      "The weekly report recipient is Taehyun Kim — Sarah Chen assigned it; if the team lead changes, this assignment would change. Any tips or things to watch out for?",
+      "- User: The weekly report recipient is Taehyun Kim — Sarah Chen assigned it; if the team lead changes, this assignment would change. Any tips or things to watch out for?"
+     ],
+     "@history/s003/r001": [
+      "Code reviews go to David Lee — Sarah Chen assigned it; if the team lead changes, this assignment would change. Any tips or things to watch out for?",
+      "- User: Code reviews go to David Lee — Sarah Chen assigned it; if the team lead changes, this assignment would change. Any tips or things to watch out for?"
+     ]
+    },
+    "verdict": "correct",
+    "note": "a statement line, link, or unsuperseded @history round presents the old value as current"
+   },
+   {
+    "id": "meme-nofiller/pl_037/update/2#5",
+    "dir": "meme-nofiller__pl_037",
+    "session": 2,
+    "stale": [
+     "a daily news podcast",
+     "thyrelion (anime)"
+    ],
+    "current": [
+     "a history documentary series"
+    ],
+    "evidence": {
+     "@history/s000/r002": [
+      "My current media is a daily news podcast. I like staying updated on current events while doing other things. Do you listen to any specific podcast?",
+      "- User: My current media is a daily news podcast. I like staying updated on current events while doing other things. Do you listen to any specific podcast?",
+      "- Assistant: Listening to a daily news podcast is a great way to stay informed while multitasking! There are many popular options out there, like \"The Daily\" from The New York Times or \"Up First\" from NPR, which provide concise summaries of the day’s top stories. If you’re interested in specific topics, there are also podcasts that focus on politics, technology, or even international news. Do you have a particular focus you enjoy, or are you open to exploring different themes?"
+     ],
+     "@history/s001/r002": [
+      "I'm currently watching Thyrelion, an anime. Have you seen it or heard anything about it?",
+      "- User: I'm currently watching Thyrelion, an anime. Have you seen it or heard anything about it?",
+      "- Assistant: I haven’t seen Thyrelion specifically, but it sounds like an interesting anime! Anime often explores unique themes and storytelling styles, so I’d love to hear more about what you think of it. What aspects of the show stand out to you? Are there particular characters or plot points that you find engaging?"
+     ],
+     "@history/s001/r003": [
+      "I find the character development in Thyrelion really compelling. The way they evolve over time adds depth to the story. It's also interesting how the themes reflect real-life struggles. Do you think the character arcs are well-written?",
+      "- User: I find the character development in Thyrelion really compelling. The way they evolve over time adds depth to the story. It's also interesting how the themes reflect real-life struggles. Do you think the character arcs are well-written?",
+      "- Assistant: It sounds like Thyrelion does a great job with character development, which can really enhance the overall storytelling experience. Well-written character arcs often make the audience more invested in their journeys, especially when they reflect real-life struggles. If the characters face challenges that resonate with viewers, it can create a strong emotional connection. How do you feel the characters’ evolutions have impacted the story so far? Are there any particular moments that stood out to you?"
+     ]
+    },
+    "verdict": "correct",
+    "note": "a statement line, link, or unsuperseded @history round presents the old value as current"
+   },
+   {
+    "id": "meme-nofiller/pl_006/update/4#1",
+    "dir": "meme-nofiller__pl_006",
+    "session": 4,
+    "stale": [
+     "pre-diabetes"
+    ],
+    "current": [
+     "anxiety disorder"
+    ],
+    "evidence": {
+     "@history/s000/r003": [
+      "My dietary restriction is low-sugar. I've been focusing on that to help manage my pre-diabetes. Do you have any suggestions for low-sugar meal options or snacks that are satisfying?",
+      "- User: My dietary restriction is low-sugar. I've been focusing on that to help manage my pre-diabetes. Do you have any suggestions for low-sugar meal options or snacks that are satisfying?"
+     ],
+     "@history/s003/r000": [
+      "My regular appointment is dermatologist (monthly) — this is determined by my pre-diabetes; if my health condition changes, this would likely change too. Do you have any thoughts on that?",
+      "- User: My regular appointment is dermatologist (monthly) — this is determined by my pre-diabetes; if my health condition changes, this would likely change too. Do you have any thoughts on that?",
+      "- Assistant: It's good that you're keeping up with regular check-ups, especially with pre-diabetes. Have you noticed any changes in your health or skin that you want to discuss with your dermatologist?"
+     ],
+     "@history/s003/r001": [
+      "My exercise routine is yoga 2x/week — this is determined by my pre-diabetes; if my health condition changes, this would likely change too. Do you have any thoughts on that?",
+      "- User: My exercise routine is yoga 2x/week — this is determined by my pre-diabetes; if my health condition changes, this would likely change too. Do you have any thoughts on that?"
+     ]
+    },
+    "verdict": "correct",
+    "note": "a statement line, link, or unsuperseded @history round presents the old value as current"
+   },
+   {
+    "id": "meme-nofiller/pl_008/update/2#5",
+    "dir": "meme-nofiller__pl_008",
+    "session": 2,
+    "stale": [
+     "xelvoria",
+     "meal kit (kelvimeal)"
+    ],
+    "current": [
+     "dranthazon"
+    ],
+    "evidence": {
+     "@overlay/hobbies/cooking": [
+      "- Related: they also bake desserts (see [[hobbies/baking-desserts]]) and subscribe to a food-content platform (see [[subscriptions/xelvoria]])."
+     ],
+     "@overlay/subscriptions/kelvimeal-meal-kit": [
+      "User subscribed to Kelvimeal meal kit service",
+      "As of 2023-03-02 the user is subscribed to a meal kit service called Kelvimeal, which they find \"pretty convenient for meal prep\"; they had recently updated their meal plan.",
+      "The user is subscribed to a meal kit service called Kelvimeal: \"It's been pretty convenient for meal prep.\""
+     ],
+     "@overlay/subscriptions/xelvoria": [
+      "User subscribes to Xelvoria (cooking tutorials and food shows)",
+      "Xelvoria subscription",
+      "As of 2023-03-01 the user is subscribed to Xelvoria, a content platform whose content includes many cooking tutorials and food-related shows they use for their cooking hobby."
+     ]
+    },
+    "verdict": "correct",
+    "note": "a statement line, link, or unsuperseded @history round presents the old value as current"
+   },
+   {
+    "id": "meme-nofiller/pl_019/update/4#1",
+    "dir": "meme-nofiller__pl_019",
+    "session": 4,
+    "stale": [
+     "single"
+    ],
+    "current": [
+     "in a relationship"
+    ],
+    "evidence": {
+     "@overlay/user/media/news-topic-interests": [
+      "- Suggest content that presents multiple viewpoints on the same story rather than a single framing."
+     ],
+     "@history/s003/r000": [
+      "My home is a single-family house — this depends on the fact that I'm single; if that changes, this would change. Do you have any thoughts on that?",
+      "- User: My home is a single-family house — this depends on the fact that I'm single; if that changes, this would change. Do you have any thoughts on that?"
+     ],
+     "@history/s003/r001": [
+      "My financial goal is maxing out retirement fund — this is determined by the fact that I'm single; if that changes, my priorities would shift. Do you have any thoughts on that?",
+      "- User: My financial goal is maxing out retirement fund — this is determined by the fact that I'm single; if that changes, my priorities would shift. Do you have any thoughts on that?"
+     ]
+    },
+    "verdict": "correct",
+    "note": "a statement line, link, or unsuperseded @history round presents the old value as current"
+   },
+   {
+    "id": "meme-nofiller/pl_030/update/4#1",
+    "dir": "meme-nofiller__pl_030",
+    "session": 4,
+    "stale": [
+     "elyndra health"
+    ],
+    "current": [
+     "dranthex logistics"
+    ],
+    "evidence": {
+     "@overlay/profile/values/life-philosophy-love-what-you-do": [
+      "- The quote centers on passion for one's work; it connects to their data-scientist role at [[profile/work/company-elyndra-health|Elyndra Health]] and their stated value of not settling for work they don't love."
+     ]
+    },
+    "verdict": "correct",
+    "note": "a statement line, link, or unsuperseded @history round presents the old value as current"
+   },
+   {
+    "id": "meme-nofiller/pl_036/update/4#1",
+    "dir": "meme-nofiller__pl_036",
+    "session": 4,
+    "stale": [
+     "thornvale crossing"
+    ],
+    "current": [
+     "orinthal park"
+    ],
+    "evidence": {
+     "@overlay/user-wine-tasting-club": [
+      "- The user asked about wine tasting venues near where they live ([[user-lives-in-thornvale-crossing]]): wineries, wine bars, tasting menus."
+     ],
+     "@history/s002/r003": [
+      "I live in Thornvale Crossing. It's a nice area with a good sense of community. Have you ever visited places that offer wine tasting nearby?",
+      "- User: I live in Thornvale Crossing. It's a nice area with a good sense of community. Have you ever visited places that offer wine tasting nearby?",
+      "- Assistant: Thornvale Crossing sounds like a lovely place! While I can't visit locations, many communities have local wineries or wine bars that offer tastings, often featuring both regional and international selections. These places can provide a great opportunity to learn more about the wines in a relaxed setting, and sometimes they even host events or classes. You might also find that local restaurants feature wine pairings or tasting menus, which can be a fun way to explore different flavors. Have you checked out any wine tasting spots in your area yet?"
+     ],
+     "@history/s003/r000": [
+      "I go to Zorathel Peak Gym for workouts — this depends on where I live in Thornvale Crossing; if I move, this would change. Do you have any thoughts on that?",
+      "- User: I go to Zorathel Peak Gym for workouts — this depends on where I live in Thornvale Crossing; if I move, this would change. Do you have any thoughts on that?"
+     ]
+    },
+    "verdict": "correct",
+    "note": "a statement line, link, or unsuperseded @history round presents the old value as current"
+   },
+   {
+    "id": "meme-nofiller/pl_022/update/4#1",
+    "dir": "meme-nofiller__pl_022",
+    "session": 4,
+    "stale": [
+     "quivira springs community college"
+    ],
+    "current": [
+     "online bootcamp (coding)"
+    ],
+    "evidence": {
+     "@overlay/profile/financial-goal-if-school-changes-wedding": [
+      "- If-then rule: enrollment change at Quivira Springs Community College ⇒ savings goal switches from \"kids' education fund\" ([[profile/financial-goal-kids-education-fund]]) to wedding savings.",
+      "- This is hypothetical so far — as of 2023-03-04 the user was still studying at Quivira Springs Community College and had not announced a school change."
+     ],
+     "@overlay/profile/financial-goal-kids-education-fund": [
+      "As of 2023-03-04 the user's financial goal is \"saving for kids' education fund\", which they say is determined by their studying at Quivira Springs Community College; if that changes, their priorities would shift.",
+      "- Stated 2023-03-04: \"My financial goal is saving for kids' education fund — this is determined by the fact that I'm studying at Quivira Springs Community College; if that changes, my priorities would shift.\"",
+      "- The goal is explicitly contingent on enrollment at Quivira Springs Community College ([[profile/student-quivira-springs-community-college]]), so treat it as conditional, not permanent."
+     ],
+     "@overlay/profile/potluck-dinner-group": [
+      "- They call it \"a nice way to unwind after a busy week at school and enjoy different types of food\" ([[profile/student-quivira-springs-community-college]])."
+     ]
+    },
+    "verdict": "correct",
+    "note": "a statement line, link, or unsuperseded @history round presents the old value as current"
+   },
+   {
+    "id": "meme-nofiller/pl_026/update/4#1",
+    "dir": "meme-nofiller__pl_026",
+    "session": 4,
+    "stale": [
+     "zaravel heights"
+    ],
+    "current": [
+     "velturis glen"
+    ],
+    "evidence": {
+     "@overlay/user-profile/commute-15-minutes": [
+      "- The user lives in Zaravel Heights ([[user-profile/residence-zaravel-heights]]); whether the 15-minute commute starts there was not stated."
+     ],
+     "@overlay/user-profile/conversation-style": [
+      "- The user also states dependencies between their own facts, e.g. \"I take the bike to work — this depends on the fact that I live in Zaravel Heights; if that changes, this would change too\" (2023-03-06); treat those dependent facts (commute mode, gym) as void if the base fact changes, and ask rather than assume."
+     ],
+     "@history/s003/r001": [
+      "I go to Thandrel YMCA for workouts — this depends on where I live in Zaravel Heights; if I move, this would change. Do you have any thoughts on that?",
+      "- User: I go to Thandrel YMCA for workouts — this depends on where I live in Zaravel Heights; if I move, this would change. Do you have any thoughts on that?"
+     ]
+    },
+    "verdict": "correct",
+    "note": "a statement line, link, or unsuperseded @history round presents the old value as current"
+   },
+   {
+    "id": "meme-nofiller/pl_041/update/4#1",
+    "dir": "meme-nofiller__pl_041",
+    "session": 4,
+    "stale": [
+     "seasonal allergies"
+    ],
+    "current": [
+     "lactose intolerance"
+    ],
+    "evidence": {
+     "@history/s003/r000": [
+      "I take a medication called Korathril — this is determined by my seasonal allergies; if my health condition changes, this would likely change too. Do you have any thoughts on that?",
+      "- User: I take a medication called Korathril — this is determined by my seasonal allergies; if my health condition changes, this would likely change too. Do you have any thoughts on that?"
+     ],
+     "@history/s003/r001": [
+      "My exercise routine is yoga 2x/week — this is determined by my seasonal allergies; if my health condition changes, this would likely change too. Do you have any thoughts on that?",
+      "- User: My exercise routine is yoga 2x/week — this is determined by my seasonal allergies; if my health condition changes, this would likely change too. Do you have any thoughts on that?"
+     ]
+    },
+    "verdict": "correct",
+    "note": "a statement line, link, or unsuperseded @history round presents the old value as current"
+   },
+   {
+    "id": "meme-nofiller/sw_035/update/4#1",
+    "dir": "meme-nofiller__sw_035",
+    "session": 4,
+    "stale": [
+     "pyravar data"
+    ],
+    "current": [
+     "zyndra base"
+    ],
+    "evidence": {
+     "@overlay/aurora/package-manager-zelthra-lib": [
+      "- Related: [[aurora/ci-config-orinthal-build]] (dependency caching in CI), [[aurora/database-pyravar-data]]."
+     ]
+    },
+    "verdict": "correct",
+    "note": "a statement line, link, or unsuperseded @history round presents the old value as current"
+   },
+   {
+    "id": "meme-nofiller/sw_048/update/4#1",
+    "dir": "meme-nofiller__sw_048",
+    "session": 4,
+    "stale": [
+     "zenthos id"
+    ],
+    "current": [
+     "kryptal auth"
+    ],
+    "evidence": {
+     "@history/s003/r000": [
+      "The login endpoint is /cerberix/saml/sso-init — this is determined by our auth provider (we use Zenthos ID); if we switch providers, this would change. Any tips or things to watch out for?",
+      "- User: The login endpoint is /cerberix/saml/sso-init — this is determined by our auth provider (we use Zenthos ID); if we switch providers, this would change. Any tips or things to watch out for?"
+     ],
+     "@history/s003/r001": [
+      "Our authentication method is SAML 2.0 SSO — this is determined by our auth provider (we use Zenthos ID); if we switch providers, this would change. Any tips or things to watch out for?",
+      "- User: Our authentication method is SAML 2.0 SSO — this is determined by our auth provider (we use Zenthos ID); if we switch providers, this would change. Any tips or things to watch out for?"
+     ]
+    },
+    "verdict": "correct",
+    "note": "a statement line, link, or unsuperseded @history round presents the old value as current"
+   },
+   {
+    "id": "meme-nofiller/pl_044/update/2#5",
+    "dir": "meme-nofiller__pl_044",
+    "session": 2,
+    "stale": [
+     "xelvoria",
+     "zorvista premium"
+    ],
+    "current": [
+     "meal kit (kelvimeal)"
+    ],
+    "evidence": {
+     "@overlay/subscriptions/xelvoria": [
+      "User is subscribed to Xelvoria and finds its content engaging",
+      "Xelvoria",
+      "The user is subscribed to Xelvoria and finds its content \"really engaging\"; the content type/series they prefer is not yet known."
+     ],
+     "@overlay/subscriptions/zorvista-premium": [
+      "User is subscribed to Zorvista Premium (2023-03-02)",
+      "Zorvista Premium",
+      "As of 2023-03-02 the user is \"currently subscribed to Zorvista Premium\" and says \"It has some interesting features and content\"; what the service is remains unknown."
+     ],
+     "@history/s000/r001": [
+      "I’m also subscribed to Xelvoria. Have you heard of it? I find the content really engaging.",
+      "- User: I’m also subscribed to Xelvoria. Have you heard of it? I find the content really engaging.",
+      "- Assistant: Xelvoria sounds intriguing! While I might not have specific details about it, it's great to hear you find the content engaging. Many subscription-based platforms offer a range of topics, so it must have something that resonates with you. What type of content do you enjoy the most there? Are there any particular series or themes that stand out to you?"
+     ]
+    },
+    "verdict": "correct",
+    "note": "a statement line, link, or unsuperseded @history round presents the old value as current"
+   },
+   {
+    "id": "meme-nofiller/pl_006/update/1#7",
+    "dir": "meme-nofiller__pl_006",
+    "session": 1,
+    "stale": [
+     "whispers of zarinthea (tv)"
+    ],
+    "current": [
+     "thyrelion (anime)"
+    ],
+    "evidence": {
+     "@overlay/entertainment/tv-whispers-of-zarinthea": [
+      "User started watching the show \"Whispers of Zarinthea\" (early 2023)",
+      "Whispers of Zarinthea",
+      "As of 2023-03-01 the user had recently started watching a show called \"Whispers of Zarinthea\" and asked for other show recommendations."
+     ],
+     "@history/s000/r001": [
+      "I recently started watching a show called Whispers of Zarinthea. Have you seen it, or do you have any recommendations for other shows?",
+      "- User: I recently started watching a show called Whispers of Zarinthea. Have you seen it, or do you have any recommendations for other shows?",
+      "- Assistant: \"Whispers of Zarinthea\" sounds intriguing! While I haven't seen it, it seems to have captured a lot of viewers' attention. If you're enjoying fantasy or adventure themes, you might also like shows like \"The Witcher\" or \"Shadow and Bone,\" which feature rich world-building and engaging characters. If you're open to different genres, \"Stranger Things\" offers a blend of mystery and nostalgia, while \"The Mandalorian\" is great for sci-fi fans. What aspects of \"Whispers of Zarinthea\" do you enjoy most? That might help narrow down some recommendations!"
+     ]
+    },
+    "verdict": "correct",
+    "note": "a statement line, link, or unsuperseded @history round presents the old value as current"
+   },
+   {
+    "id": "meme-nofiller/pl_032/update/4#1",
+    "dir": "meme-nofiller__pl_032",
+    "session": 4,
+    "stale": [
+     "in a relationship"
+    ],
+    "current": [
+     "married"
+    ],
+    "evidence": {
+     "@overlay/profile/conversation-style": [
+      "- New on 2023-03-04: the user sometimes states a fact with its dependency spelled out — \"this depends on the fact that I'm in a relationship; if that changes, this would change\" — so derived facts should be re-checked whenever their relationship status ([[profile/relationship-status]]) changes."
+     ],
+     "@history/s003/r000": [
+      "I live with roommate — this depends on the fact that I'm in a relationship; if that changes, this would change. Do you have any thoughts on that?",
+      "- User: I live with roommate — this depends on the fact that I'm in a relationship; if that changes, this would change. Do you have any thoughts on that?"
+     ],
+     "@history/s003/r001": [
+      "We have baby shower coming up — this depends on the fact that I'm in a relationship; if that changes, this would change. Do you have any thoughts on that?",
+      "- User: We have baby shower coming up — this depends on the fact that I'm in a relationship; if that changes, this would change. Do you have any thoughts on that?"
+     ]
+    },
+    "verdict": "correct",
+    "note": "a statement line, link, or unsuperseded @history round presents the old value as current"
+   },
+   {
+    "id": "meme-nofiller/sw_023/update/2#3",
+    "dir": "meme-nofiller__sw_023",
+    "session": 2,
+    "stale": [
+     "pyronis bundle",
+     "zelthra lib"
+    ],
+    "current": [
+     "synthari modules"
+    ],
+    "evidence": {
+     "@overlay/project/database-thalnex-store": [
+      "- Related team setup: [[project/package-manager-zelthra-lib]], [[project/default-branch-develop]]"
+     ],
+     "@overlay/project/default-branch-develop": [
+      "- Related team setup: [[project/package-manager-pyronis-bundle]], [[project/on-call-rotation]]"
+     ]
+    },
+    "verdict": "correct",
+    "note": "a statement line, link, or unsuperseded @history round presents the old value as current"
+   },
+   {
+    "id": "meme-nofiller/sw_045/update/4#1",
+    "dir": "meme-nofiller__sw_045",
+    "session": 4,
+    "stale": [
+     "sarah chen"
+    ],
+    "current": [
+     "yuna park"
+    ],
+    "evidence": {
+     "@overlay/project/approval-authority": [
+      "- Related team context: [[project/team-lead]] (Sarah Chen guides development), [[project/team-design-system]]."
+     ],
+     "@overlay/project/code-review-policy": [
+      "- Related team context: [[project/code-review-reviewer]] (Seoyun Choi is the assigned reviewer), [[project/approval-authority]] (CTO Soojung Lim signs off on significant changes), [[project/team-lead]] (Sarah Chen), [[project/default-branch]] (trunk), [[project/secret-manager-pyronos-crypt]], [[project/auth-panic-error-log]] (a panic in `src/handlers/auth.rs`)."
+     ],
+     "@overlay/project/standup-format": [
+      "- Related team context: [[project/weekly-report-recipient]] (Soyeon Park), [[project/team-lead]] (Sarah Chen)."
+     ]
+    },
+    "verdict": "correct",
+    "note": "a statement line, link, or unsuperseded @history round presents the old value as current"
+   },
+   {
+    "id": "meme-nofiller/pl_016/update/1#5",
+    "dir": "meme-nofiller__pl_016",
+    "session": 1,
+    "stale": [
+     "therwyn compact"
+    ],
+    "current": [
+     "dranthis pickup"
+    ],
+    "evidence": {
+     "@history/s000/r004": [
+      "I find the compact size makes it easy to zip around traffic and park in smaller spots. Plus, fuel efficiency is often better with smaller cars, which is a bonus for city driving. Do you find that your Therwyn Compact has good fuel…",
+      "- User: I find the compact size makes it easy to zip around traffic and park in smaller spots. Plus, fuel efficiency is often better with smaller cars, which is a bonus for city driving. Do you find that your Therwyn Compact has good fuel efficiency as well? How does it perform in terms of comfort and features?",
+      "- Assistant: It sounds like your Therwyn Compact is a great fit for city driving! Fuel efficiency is definitely a significant advantage of smaller cars, especially when you're navigating through traffic and making frequent stops. In terms of comfort and features, many compact cars offer surprisingly spacious interiors and modern amenities, which can enhance the driving experience."
+     ]
+    },
+    "verdict": "correct",
+    "note": "a statement line, link, or unsuperseded @history round presents the old value as current"
+   },
+   {
+    "id": "meme-nofiller/sw_023/update/1#3",
+    "dir": "meme-nofiller__sw_023",
+    "session": 1,
+    "stale": [
+     "pyronis bundle"
+    ],
+    "current": [
+     "zelthra lib"
+    ],
+    "evidence": {
+     "@overlay/project/default-branch-develop": [
+      "- Related team setup: [[project/package-manager-pyronis-bundle]], [[project/on-call-rotation]]"
+     ]
+    },
+    "verdict": "correct",
+    "note": "a statement line, link, or unsuperseded @history round presents the old value as current"
+   },
+   {
+    "id": "meme-nofiller/sw_018/update/4#1",
+    "dir": "meme-nofiller__sw_018",
+    "session": 4,
+    "stale": [
+     "zyndra base"
+    ],
+    "current": [
+     "vorathis db"
+    ],
+    "evidence": {
+     "@overlay/team/migrations-keldaris-move": [
+      "- The migrations run against Zyndra Base ([[team/database-zyndra-base]]), the team's database."
+     ],
+     "@overlay/team/user-fact-annotation-style": [
+      "- When stating project facts the user annotates their provenance and fragility, e.g. \"this depends on our database (our database is Zyndra Base); if we change databases, this would change\" and \"this is determined by the fact that we use Keldaris Link; if that changes, this would change\" (2023-03-03)."
+     ]
+    },
+    "verdict": "correct",
+    "note": "a statement line, link, or unsuperseded @history round presents the old value as current"
+   },
+   {
+    "id": "meme-nofiller/sw_025/update/2#3",
+    "dir": "meme-nofiller__sw_025",
+    "session": 2,
+    "stale": [
+     "2025 march 28",
+     "2025 june 6"
+    ],
+    "current": [
+     "2025 june 20"
+    ],
+    "evidence": {
+     "@history/s001/r001": [
+      "The sprint deadline is now 2025 June 6. It's pretty far off, but I guess that gives us ample time to plan our features. How do you usually track progress towards sprint deadlines? Any tools or practices that work well for you?",
+      "- User: The sprint deadline is now 2025 June 6. It's pretty far off, but I guess that gives us ample time to plan our features. How do you usually track progress towards sprint deadlines? Any tools or practices that work well for you?"
+     ]
+    },
+    "verdict": "correct",
+    "note": "a statement line, link, or unsuperseded @history round presents the old value as current"
+   },
+   {
+    "id": "meme-nofiller/pl_032/update/1#5",
+    "dir": "meme-nofiller__pl_032",
+    "session": 1,
+    "stale": [
+     "thyranote"
+    ],
+    "current": [
+     "zorvista premium"
+    ],
+    "evidence": {
+     "@overlay/profile/reading-hobby": [
+      "- Related tooling: [[tools/thyranote-reading-notes]]."
+     ],
+     "@overlay/tools/thyranote-reading-notes": [
+      "User subscribes to Thyranote for reading log and notes",
+      "Thyranote subscription",
+      "The user is a paying subscriber to Thyranote and uses it to keep track of their reading and their notes; it has been working well for them."
+     ],
+     "@history/s000/r001": [
+      "I’ve been subscribed to Thyranote. It’s been helpful for keeping track of my reading and notes. Have you ever used a similar service, or do you have a different method for managing your reading?",
+      "- User: I’ve been subscribed to Thyranote. It’s been helpful for keeping track of my reading and notes. Have you ever used a similar service, or do you have a different method for managing your reading?",
+      "- Assistant: Thyranote sounds like a useful tool for organizing your reading and notes! Many readers find that keeping track of their progress and jotting down thoughts really enhances their experience. While I don't use services myself, I know that some readers enjoy using apps like Goodreads for tracking books and discovering new ones based on their interests. Others prefer a simple journal or even spreadsheets to record their thoughts. How has Thyranote been working for you so far?"
+     ]
+    },
+    "verdict": "correct",
+    "note": "a statement line, link, or unsuperseded @history round presents the old value as current"
+   },
+   {
+    "id": "meme-nofiller/pl_029/update/2#5",
+    "dir": "meme-nofiller__pl_029",
+    "session": 2,
+    "stale": [
+     "whispers of zarinthea (tv)",
+     "thyrelion (anime)"
+    ],
+    "current": [
+     "xelvari dawn (book)"
+    ],
+    "evidence": {
+     "@overlay/user/streaming-subscription-dranthazon": [
+      "- Assistant suggested Netflix, Hulu, Disney+ and Crunchyroll (Crunchyroll because they watch anime, [[user/current-media-thyrelion-anime]]); none confirmed as adopted."
+     ],
+     "@history/s001/r003": [
+      "Currently, I'm watching an anime called Thyrelion. Have you seen it? What do you think about it?",
+      "- User: Currently, I'm watching an anime called Thyrelion. Have you seen it? What do you think about it?",
+      "- Assistant: I haven't seen \"Thyrelion,\" but it sounds intriguing! Anime often explores unique themes and character development, so I'd love to hear what you think about it. What aspects of the show do you enjoy the most? Is it the storyline, the animation style, or perhaps the characters? Sharing your thoughts can help others decide if they want to check it out too!"
+     ],
+     "@history/s001/r004": [
+      "I’m really enjoying the character development in \"Thyrelion.\" The way the storyline unfolds and how the characters evolve keeps me engaged. The animation style is also pretty impressive—it's visually captivating and enhances the overall…",
+      "- User: I’m really enjoying the character development in \"Thyrelion.\" The way the storyline unfolds and how the characters evolve keeps me engaged. The animation style is also pretty impressive—it's visually captivating and enhances the overall experience. Are there any particular characters that stand out to you?",
+      "- Assistant: It sounds like \"Thyrelion\" has a lot to offer in terms of character depth and visual appeal! Strong character development can really bring a story to life. While I don't have specific characters to mention, it would be interesting to know which ones resonate with you the most. Are there any particular character arcs that you find especially compelling or relatable? Exploring these characters' journeys can often lead to deeper insights about the themes of the show."
+     ]
+    },
+    "verdict": "correct",
+    "note": "a statement line, link, or unsuperseded @history round presents the old value as current"
+   },
+   {
+    "id": "meme-nofiller/pl_015/update/4#1",
+    "dir": "meme-nofiller__pl_015",
+    "session": 4,
+    "stale": [
+     "single"
+    ],
+    "current": [
+     "married"
+    ],
+    "evidence": {
+     "@history/s003/r000": [
+      "I live with parents — this depends on the fact that I'm single; if that changes, this would change. Do you have any thoughts on that?",
+      "- User: I live with parents — this depends on the fact that I'm single; if that changes, this would change. Do you have any thoughts on that?",
+      "- Assistant: Living with parents can be a great way to save money, especially when you're single. If you start dating seriously, it might be worth considering your own space. Do you think that could be a big adjustment?"
+     ],
+     "@history/s003/r001": [
+      "We have sibling's wedding coming up — this depends on the fact that I'm single; if that changes, this would change. Do you have any thoughts on that?",
+      "- User: We have sibling's wedding coming up — this depends on the fact that I'm single; if that changes, this would change. Do you have any thoughts on that?",
+      "- Assistant: Weddings can be a bit different when you're single versus when you're in a relationship. It could be fun to bring someone along if that happens! Are you looking forward to the wedding?"
+     ]
+    },
+    "verdict": "correct",
+    "note": "a statement line, link, or unsuperseded @history round presents the old value as current"
+   },
+   {
+    "id": "meme-nofiller/pl_048/update/2#5",
+    "dir": "meme-nofiller__pl_048",
+    "session": 2,
+    "stale": [
+     "jessica",
+     "alex"
+    ],
+    "current": [
+     "chris"
+    ],
+    "evidence": {
+     "@history/s000/r003": [
+      "- Assistant: Absolutely! Collaborating with a partner can definitely influence the final outcome of a project. Each person's style, ideas, and techniques can bring a unique touch, often resulting in a piece that reflects a blend of both creators. This collaboration can lead to innovative solutions and designs you might not have considered on your own. Plus, sharing the workload can make the process more enjoyable and less daunting. How do you and Jessica usually decide on the design for your projects?"
+     ]
+    },
+    "verdict": "correct",
+    "note": "a statement line, link, or unsuperseded @history round presents the old value as current"
+   },
+   {
+    "id": "meme-nofiller/sw_007/update/4#1",
+    "dir": "meme-nofiller__sw_007",
+    "session": 4,
+    "stale": [
+     "vorathis db"
+    ],
+    "current": [
+     "keldaris db"
+    ],
+    "evidence": {
+     "@overlay/profile/user-role-and-interests": [
+      "- Topics raised on 2023-03-02 (session 3): the incident runbook's layout at runbooks.aurora.internal/playbooks, secure secret storage best practices, configuring Vorathis DB for performance, and branch naming/merging conventions around the main default branch."
+     ]
+    },
+    "verdict": "matching error",
+    "note": "a dated log of topics the user raised in session 3 ('Topics raised on 2023-03-02 ...: configuring Vorathis DB')"
+   },
+   {
+    "id": "meme-nofiller/sw_010/update/4#1",
+    "dir": "meme-nofiller__sw_010",
+    "session": 4,
+    "stale": [
+     "orinthal serve"
+    ],
+    "current": [
+     "zephyra platform"
+    ],
+    "evidence": {
+     "@overlay/aurora/secrets-orinthal-sealed": [
+      "- Related stack pieces: [[aurora/project-overview]], [[aurora/deploy-target-orinthal-serve]], [[aurora/staging-environment]], [[aurora/logs-drain-endpoint]] (where logs, including audit trails, drain to)."
+     ],
+     "@overlay/aurora/test-coverage-targets": [
+      "- This quality bar pairs with the deploy checklist (automated tests, rollback plan, post-deploy monitoring) in [[aurora/deploy-target-orinthal-serve]] and the staging mirror-production goal in [[aurora/staging-environment]]."
+     ],
+     "@history/s003/r000": [
+      "Our Docker image is zephyra-hub/aurora:prod — this is determined by our infrastructure (we deploy on Orinthal Serve); if that changes, this would change. Any tips or things to watch out for?",
+      "- User: Our Docker image is zephyra-hub/aurora:prod — this is determined by our infrastructure (we deploy on Orinthal Serve); if that changes, this would change. Any tips or things to watch out for?"
+     ]
+    },
+    "verdict": "correct",
+    "note": "a statement line, link, or unsuperseded @history round presents the old value as current"
+   },
+   {
+    "id": "meme-nofiller/sw_034/update/4#1",
+    "dir": "meme-nofiller__sw_034",
+    "session": 4,
+    "stale": [
+     "veltrion"
+    ],
+    "current": [
+     "synthari"
+    ],
+    "evidence": {
+     "@overlay/project/design-system-veltrion-ui-kit": [
+      "- The UI kit is used alongside the Veltrion framework, so pre-built kit components are the default building blocks for project UI work."
+     ],
+     "@history/s003/r000": [
+      "Our build tool is Pyronis Build — this is determined by which framework we use (we use Veltrion); if we switch frameworks, this would change. Any tips or things to watch out for?",
+      "- User: Our build tool is Pyronis Build — this is determined by which framework we use (we use Veltrion); if we switch frameworks, this would change. Any tips or things to watch out for?"
+     ],
+     "@history/s003/r001": [
+      "We use Tarvex Verify for testing — this is determined by which framework we use (we use Veltrion); if we switch frameworks, this would change. Any tips or things to watch out for?",
+      "- User: We use Tarvex Verify for testing — this is determined by which framework we use (we use Veltrion); if we switch frameworks, this would change. Any tips or things to watch out for?"
+     ]
+    },
+    "verdict": "correct",
+    "note": "a statement line, link, or unsuperseded @history round presents the old value as current"
+   },
+   {
+    "id": "meme-nofiller/pl_025/update/2#5",
+    "dir": "meme-nofiller__pl_025",
+    "session": 2,
+    "stale": [
+     "xelvoria",
+     "meal kit (kelvimeal)"
+    ],
+    "current": [
+     "pyrethon plus"
+    ],
+    "evidence": {
+     "@overlay/profile/meal-kit-kelvimeal": [
+      "User subscribes to Kelvimeal meal kits; cooks a mix of vegetarian and meat meals",
+      "As of 2023-03-01 the user had recently updated their meal plan and subscribed to a meal kit service called Kelvimeal, mostly trying a mix of vegetarian and meat-based options.",
+      "Summary: Kelvimeal is the user's meal kit service (subscribed \"recently\" as of 2023-03-01), following an updated meal plan."
+     ],
+     "@overlay/profile/woodworking-subscription-xelvoria": [
+      "User subscribes to Xelvoria for woodworking techniques and project ideas",
+      "Xelvoria subscription",
+      "Xelvoria"
+     ],
+     "@history/s000/r002": [
+      "I'm subscribed to Xelvoria. It's been a great resource for me, especially for learning about new woodworking techniques and projects. Have you heard of it?",
+      "- User: I'm subscribed to Xelvoria. It's been a great resource for me, especially for learning about new woodworking techniques and projects. Have you heard of it?",
+      "- Assistant: Xelvoria sounds like a fantastic resource for woodworking enthusiasts! Online platforms like that can provide a wealth of information, from tutorials to inspiration for new projects. They often offer community interaction, which can be a great way to share experiences and get feedback on your work. If you find specific techniques or projects particularly helpful, it might be worth exploring those areas deeper or even trying to replicate them. Are there any specific techniques or projects you’ve learned from Xelvoria that you’re excited to try?"
+     ]
+    },
+    "verdict": "correct",
+    "note": "a statement line, link, or unsuperseded @history round presents the old value as current"
+   },
+   {
+    "id": "meme-nofiller/sw_029/update/1#3",
+    "dir": "meme-nofiller__sw_029",
+    "session": 1,
+    "stale": [
+     "kerberos trove"
+    ],
+    "current": [
+     "sigilix manager"
+    ],
+    "evidence": {
+     "@overlay/aurora/log-pipeline": [
+      "- Related: [[aurora/oncall-paired-rotation]], [[aurora/secrets-kerberos-trove]]."
+     ]
+    },
+    "verdict": "correct",
+    "note": "a statement line, link, or unsuperseded @history round presents the old value as current"
+   },
+   {
+    "id": "meme-nofiller/sw_049/update/1#3",
+    "dir": "meme-nofiller__sw_049",
+    "session": 1,
+    "stale": [
+     "selvex secrets"
+    ],
+    "current": [
+     "verisigil lock"
+    ],
+    "evidence": {
+     "@overlay/aurora/login-endpoint-kryptal": [
+      "- Related secrets tooling: [[aurora/secret-manager-selvex]]."
+     ]
+    },
+    "verdict": "correct",
+    "note": "a statement line, link, or unsuperseded @history round presents the old value as current"
+   },
+   {
+    "id": "meme-nofiller/pl_037/update/4#1",
+    "dir": "meme-nofiller__pl_037",
+    "session": 4,
+    "stale": [
+     "separated"
+    ],
+    "current": [
+     "divorced"
+    ],
+    "evidence": {
+     "@overlay/user-profile/life-philosophy-verbatim": [
+      "- Fits their existing framing of focusing on personal growth during the separation transition ([[user-profile/relationship-status-separated]]), but they did not link it to a specific decision."
+     ],
+     "@overlay/user-profile/no-plans-if-relationship-status-changes": [
+      "- This is premised on [[user-profile/relationship-status-separated]]; the user's status on that date was still separated."
+     ],
+     "@history/s003/r000": [
+      "We have child's school event coming up — this depends on the fact that I'm separated; if that changes, this would change. Do you have any thoughts on that?",
+      "- User: We have child's school event coming up — this depends on the fact that I'm separated; if that changes, this would change. Do you have any thoughts on that?"
+     ]
+    },
+    "verdict": "correct",
+    "note": "a statement line, link, or unsuperseded @history round presents the old value as current"
+   },
+   {
+    "id": "meme-nofiller/pl_027/update/1#5",
+    "dir": "meme-nofiller__pl_027",
+    "session": 1,
+    "stale": [
+     "xelvoria"
+    ],
+    "current": [
+     "thyranote"
+    ],
+    "evidence": {
+     "@overlay/media/whispers-of-zarinthea-current-watch": [
+      "- They watch it while subscribed to [[media/xelvoria-subscription]]."
+     ],
+     "@overlay/media/xelvoria-subscription": [
+      "User subscribes to Xelvoria media service",
+      "Xelvoria subscription",
+      "subscribed to Xelvoria"
+     ],
+     "@history/s000/r002": [
+      "I'm subscribed to Xelvoria. I've found it to have some really interesting content. Have you ever heard of it? What do you think about subscription services for media?",
+      "- User: I'm subscribed to Xelvoria. I've found it to have some really interesting content. Have you ever heard of it? What do you think about subscription services for media?",
+      "- Assistant: Xelvoria sounds intriguing! Subscription services for media have definitely changed the way we consume content. They often provide a diverse range of material, allowing subscribers to explore various genres and topics they might not have encountered otherwise. These platforms can also foster a sense of community among users who share similar interests."
+     ]
+    },
+    "verdict": "correct",
+    "note": "a statement line, link, or unsuperseded @history round presents the old value as current"
+   },
+   {
+    "id": "meme-nofiller/sw_001/update/4#1",
+    "dir": "meme-nofiller__sw_001",
+    "session": 4,
+    "stale": [
+     "synthari"
+    ],
+    "current": [
+     "veltrion"
+    ],
+    "evidence": {
+     "@overlay/aurora/test-command-tarvex-verify": [
+      "- The testing tool itself is determined by the framework (currently Synthari), so a framework switch would change both the tool and this command ([[aurora/framework-synthari]])."
+     ],
+     "@history/s003/r000": [
+      "We use Tarvex Verify for testing — this is determined by which framework we use (we use Synthari); if we switch frameworks, this would change. Any tips or things to watch out for?",
+      "- User: We use Tarvex Verify for testing — this is determined by which framework we use (we use Synthari); if we switch frameworks, this would change. Any tips or things to watch out for?"
+     ],
+     "@history/s003/r001": [
+      "Our project follows a single-app with /src and /lib — this is determined by which framework we use (we use Synthari); if we switch frameworks, this would change. Any tips or things to watch out for?",
+      "- User: Our project follows a single-app with /src and /lib — this is determined by which framework we use (we use Synthari); if we switch frameworks, this would change. Any tips or things to watch out for?"
+     ]
+    },
+    "verdict": "correct",
+    "note": "a statement line, link, or unsuperseded @history round presents the old value as current"
+   },
+   {
+    "id": "meme-nofiller/sw_011/update/1#3",
+    "dir": "meme-nofiller__sw_011",
+    "session": 1,
+    "stale": [
+     "karnex pack"
+    ],
+    "current": [
+     "dranith stack"
+    ],
+    "evidence": {
+     "@overlay/design-system/quenthar-design-v1": [
+      "- Their tooling context: framework [[project/quenthar-framework]], package manager [[stack/karnex-pack-package-manager]]."
+     ],
+     "@overlay/project/quenthar-framework": [
+      "- Related stack facts: [[stack/karnex-pack-package-manager]] and [[workflow/default-branch-release]]."
+     ],
+     "@overlay/workflow/default-branch-release": [
+      "- Context: this applies to the project using [[project/quenthar-framework]] and [[stack/karnex-pack-package-manager]]."
+     ]
+    },
+    "verdict": "correct",
+    "note": "a statement line, link, or unsuperseded @history round presents the old value as current"
+   },
+   {
+    "id": "meme-nofiller/pl_030/update/1#5",
+    "dir": "meme-nofiller__pl_030",
+    "session": 1,
+    "stale": [
+     "the quorath codex (book)"
+    ],
+    "current": [
+     "thyrelion (anime)"
+    ],
+    "evidence": {
+     "@overlay/profile/interests/reading-quorath-codex": [
+      "User reading fantasy novel \"The Quorath Codex\" (as of 2023-03-01)",
+      "The Quorath Codex",
+      "As of 2023-03-01 the user is reading \"The Quorath Codex\", a fantasy novel, and praises how much it draws them into its world."
+     ],
+     "@overlay/profile/interests/video-games-hobby": [
+      "- Related: the user's other gaming habit is a recurring game night with neighbors [[profile/social/neighbor-game-night]]; their reading habit is the fantasy novel [[profile/interests/reading-quorath-codex]]."
+     ],
+     "@history/s000/r001": [
+      "I’m currently reading The Quorath Codex. It’s a fantasy novel that really draws you into its world. Have you read it or heard anything about it?",
+      "- User: I’m currently reading The Quorath Codex. It’s a fantasy novel that really draws you into its world. Have you read it or heard anything about it?",
+      "- Assistant: \"The Quorath Codex\" sounds intriguing! While I don't have specific information on that title, fantasy novels often excel at world-building and character development, which can really immerse you in the story. If you enjoy detailed settings and complex plots, it might be a great fit for you. Are there particular elements of the book you find especially captivating, like the characters or the lore?"
+     ]
+    },
+    "verdict": "correct",
+    "note": "a statement line, link, or unsuperseded @history round presents the old value as current"
+   },
+   {
+    "id": "meme-nofiller/pl_031/update/2#5",
+    "dir": "meme-nofiller__pl_031",
+    "session": 2,
+    "stale": [
+     "a true crime podcast",
+     "the quorath codex (book)"
+    ],
+    "current": [
+     "xelvari dawn (book)"
+    ],
+    "evidence": {
+     "@overlay/user/podcast-true-crime": [
+      "User listens to a true crime podcast",
+      "true crime podcast",
+      "As of 2023-03-01 the user currently listens to a true crime podcast and is drawn to real-life mysteries and cases (podcast name not given)."
+     ],
+     "@history/s000/r001": [
+      "I currently listen to a true crime podcast. It's fascinating how they delve into real-life mysteries and cases. Do you enjoy podcasts? If so, what's your favorite genre?",
+      "- User: I currently listen to a true crime podcast. It's fascinating how they delve into real-life mysteries and cases. Do you enjoy podcasts? If so, what's your favorite genre?",
+      "- Assistant: True crime podcasts are incredibly captivating! They really dive into the complexities of real-life events and often keep you on the edge of your seat. While I don't listen to podcasts myself, many people find genres like history, science, and storytelling to be equally engaging. Each genre offers unique insights and narratives. If you’re enjoying true crime, you might also like some investigative journalism podcasts that explore broader societal issues. Have you stumbled upon any particular episodes or cases that really intrigued you?"
+     ]
+    },
+    "verdict": "correct",
+    "note": "a statement line, link, or unsuperseded @history round presents the old value as current"
+   },
+   {
+    "id": "meme-nofiller/pl_020/update/4#1",
+    "dir": "meme-nofiller__pl_020",
+    "session": 4,
+    "stale": [
+     "pyresta meadow"
+    ],
+    "current": [
+     "luminara flats"
+    ],
+    "evidence": {
+     "@overlay/profile/vehicle-xylorim-scooter": [
+      "- Still relevant: they bike to work — see [[profile/bike-commute]]; they live in [[profile/residence-pyresta-meadow]]."
+     ]
+    },
+    "verdict": "correct",
+    "note": "a statement line, link, or unsuperseded @history round presents the old value as current"
+   },
+   {
+    "id": "meme-nofiller/sw_026/update/4#1",
+    "dir": "meme-nofiller__sw_026",
+    "session": 4,
+    "stale": [
+     "moxira"
+    ],
+    "current": [
+     "quenthar"
+    ],
+    "evidence": {
+     "@overlay/aurora/secret-manager-verisigil-lock": [
+      "- Related project context: [[aurora/framework]] (Moxira), [[aurora/docs-site]]."
+     ]
+    },
+    "verdict": "correct",
+    "note": "a statement line, link, or unsuperseded @history round presents the old value as current"
+   },
+   {
+    "id": "meme-nofiller/pl_049/update/4#1",
+    "dir": "meme-nofiller__pl_049",
+    "session": 4,
+    "stale": [
+     "elyndra health"
+    ],
+    "current": [
+     "nexturi ai"
+    ],
+    "evidence": {
+     "@overlay/profile/life-philosophy-love-what-you-do": [
+      "- Use it as a lens for career advice: the user values finding/passion-driven work and not settling, alongside their data scientist role at Elyndra Health ([[profile/job-title-data-scientist]])."
+     ]
+    },
+    "verdict": "correct",
+    "note": "a statement line, link, or unsuperseded @history round presents the old value as current"
+   },
+   {
+    "id": "meme-nofiller/pl_009/update/2#7",
+    "dir": "meme-nofiller__pl_009",
+    "session": 2,
+    "stale": [
+     "zyvanta sedan",
+     "quorvel ev"
+    ],
+    "current": [
+     "vorantel suv"
+    ],
+    "evidence": {
+     "@history/s001/r002": [
+      "I drive a Quorvel EV now. The switch to an electric vehicle has been quite a change, especially with the efficiency and reduced environmental impact. How has your experience been with electric vehicles?",
+      "- User: I drive a Quorvel EV now. The switch to an electric vehicle has been quite a change, especially with the efficiency and reduced environmental impact. How has your experience been with electric vehicles?",
+      "  Charging infrastructure has been improving, making it easier to find charging stations, and many EVs offer features like regenerative braking, which can enhance driving experience and efficiency. Have you found any particular aspects of your Quorvel EV that you enjoy the most?"
+     ]
+    },
+    "verdict": "correct",
+    "note": "a statement line, link, or unsuperseded @history round presents the old value as current"
+   },
+   {
+    "id": "meme-nofiller/pl_019/update/2#5",
+    "dir": "meme-nofiller__pl_019",
+    "session": 2,
+    "stale": [
+     "the quorath codex (book)",
+     "a daily news podcast"
+    ],
+    "current": [
+     "thyrelion (anime)"
+    ],
+    "evidence": {
+     "@overlay/user/interaction-style": [
+      "- The user also named two obscure titles in that session (the book \"The Quorath Codex\" and the meal kit service \"Kelvimeal\"); the assistant had no knowledge of either, so do not invent details about unfamiliar titles the user mentions - ask or stay generic."
+     ],
+     "@overlay/user/media/daily-news-podcast": [
+      "User listens to a daily news podcast to keep up with current events",
+      "daily news podcast",
+      "As of 2023-03-02 the user listens to a daily news podcast to keep up with current events; the show's name was never stated."
+     ],
+     "@overlay/user/media/news-topic-interests": [
+      "- Premise: this refines their news habit in [[user/media/daily-news-podcast]]."
+     ]
+    },
+    "verdict": "correct",
+    "note": "a statement line, link, or unsuperseded @history round presents the old value as current"
+   }
+  ],
+  "lost": [
+   {
+    "id": "meme-nofiller/pl_038/0#11",
+    "dir": "meme-nofiller__pl_038",
+    "point": "end",
+    "value": "electric car",
+    "entity": "planned_purchase",
+    "near": {
+     "@overlay/vehicles/planned-electric-car-purchase (inactive)": [
+      "User planned an electric car purchase (2023-03-01)",
+      "electric car",
+      "EV purchase"
+     ],
+     "@history/s000/r005 (inactive)": [
+      "I'm planning a big purchase — an electric car. I think it will be a great investment for both my daily commute and my photography outings. Do you think switching to an electric vehicle impacts the way someone approaches their creative…",
+      "- User: I'm planning a big purchase — an electric car. I think it will be a great investment for both my daily commute and my photography outings. Do you think switching to an electric vehicle impacts the way someone approaches their creative hobbies?",
+      "- Assistant: Switching to an electric vehicle can definitely influence how you approach your creative hobbies. An electric car can provide you with the freedom to explore more locations without worrying about fuel costs, making it easier to venture out for photography outings. Many electric vehicles also come with advanced technology that can enhance your driving experience, such as navigation systems that help you find scenic routes. Additionally, the environmental benefits of driving an electric car might inspire you to focus on capturing more nature and landscapes, aligning your lifestyle with your photography subjects. Are there specific features or benefits you’re looking forward to with the electric car?"
+     ],
+     "@overlay/hobbies/photography": [
+      "Photography is the user's hobby, and it shapes several other choices they mention (their car, where their office is, planning purchases)."
+     ],
+     "@overlay/vehicles/quorvel-ev (inactive)": [
+      "electric car",
+      "my car",
+      "current car"
+     ],
+     "@history/s001/r002 (inactive)": [
+      "I drive a Quorvel EV. It's been a smooth transition to an electric vehicle, and I appreciate the efficiency it offers. How do you feel about electric vehicles in general?",
+      "- User: I drive a Quorvel EV. It's been a smooth transition to an electric vehicle, and I appreciate the efficiency it offers. How do you feel about electric vehicles in general?",
+      "- Assistant: Electric vehicles, like your Quorvel EV, represent an exciting shift toward more sustainable transportation. They offer several benefits, such as lower emissions, reduced fuel costs, and often less maintenance compared to traditional gas-powered cars. Many people appreciate the quiet, smooth driving experience that electric vehicles provide, along with the convenience of home charging."
+     ]
+    },
+    "verdict": "correct",
+    "note": "every card holding the value inactive"
+   },
+   {
+    "id": "meme-nofiller/pl_025/0#11",
+    "dir": "meme-nofiller__pl_025",
+    "point": "end",
+    "value": "jessica",
+    "entity": "partner",
+    "near": {
+     "@history/s000/r005 (inactive)": [
+      "My partner's name is Jessica. We often enjoy spending time together, whether it's working on projects or just relaxing. How do you usually spend time with your partner?",
+      "- User: My partner's name is Jessica. We often enjoy spending time together, whether it's working on projects or just relaxing. How do you usually spend time with your partner?",
+      "- Assistant: It sounds wonderful that you and Jessica enjoy spending quality time together! Engaging in projects can be a great way to bond and create something meaningful. Many couples find that sharing hobbies or interests deepens their connection, whether it’s cooking, crafting, or even exploring new activities together."
+     ],
+     "@overlay/profile/relationship-status-withdrawn": [
+      "partner details removed",
+      "On 2023-03-05 the user said \"My relationship status is in a relationship. Please remove that from your memory.\" — do not record or bring up their relationship status or a partner unless they raise it again.",
+      "- Withdrawn and no longer usable: the 2023-03-01 statements that they were \"currently in a relationship\" that \"adds a nice balance to my life outside of work and hobbies\", and the partner details recorded that day (a partner's name and the activities they shared)."
+     ],
+     "@history/s001/r000": [
+      "- Assistant: That's great to hear that you enjoy playing soccer! To improve your skills, focus on a mix of technical and tactical drills. Practicing dribbling with cones can enhance your ball control, while passing and receiving drills with a partner will help sharpen your accuracy. You might also want to incorporate shooting drills to improve your finishing skills."
+     ],
+     "@history/s001/r001": [
+      "- Assistant: Improving your passing skills can really enhance your overall game. One effective drill is the \"two-touch passing\" drill, where you and a partner stand about 10-15 yards apart and pass the ball back and forth, limiting each touch to just two. This encourages quick decision-making and precision."
+     ],
+     "@history/s001/r006 (inactive)": [
+      "- Assistant: It's wonderful to hear that your relationship adds balance to your life! Maintaining a healthy relationship often involves open communication, where both partners feel comfortable expressing their thoughts and feelings. Trust and respect are also essential; they create a strong foundation for any partnership."
+     ]
+    },
+    "verdict": "correct",
+    "note": "the partner's details removed with the relationship status"
+   },
+   {
+    "id": "meme-nofiller/pl_038/0#11",
+    "dir": "meme-nofiller__pl_038",
+    "point": 3,
+    "value": "electric car",
+    "entity": "planned_purchase",
+    "near": {
+     "@overlay/vehicles/planned-electric-car-purchase (inactive)": [
+      "User planned an electric car purchase (2023-03-01)",
+      "electric car",
+      "EV purchase"
+     ],
+     "@history/s000/r005 (inactive)": [
+      "I'm planning a big purchase — an electric car. I think it will be a great investment for both my daily commute and my photography outings. Do you think switching to an electric vehicle impacts the way someone approaches their creative…",
+      "- User: I'm planning a big purchase — an electric car. I think it will be a great investment for both my daily commute and my photography outings. Do you think switching to an electric vehicle impacts the way someone approaches their creative hobbies?",
+      "- Assistant: Switching to an electric vehicle can definitely influence how you approach your creative hobbies. An electric car can provide you with the freedom to explore more locations without worrying about fuel costs, making it easier to venture out for photography outings. Many electric vehicles also come with advanced technology that can enhance your driving experience, such as navigation systems that help you find scenic routes. Additionally, the environmental benefits of driving an electric car might inspire you to focus on capturing more nature and landscapes, aligning your lifestyle with your photography subjects. Are there specific features or benefits you’re looking forward to with the electric car?"
+     ],
+     "@overlay/hobbies/photography": [
+      "Photography is the user's hobby, and it shapes several other choices they mention (their car, where their office is, planning purchases)."
+     ],
+     "@overlay/vehicles/quorvel-ev (inactive)": [
+      "electric car",
+      "my car",
+      "current car"
+     ],
+     "@history/s001/r002 (inactive)": [
+      "I drive a Quorvel EV. It's been a smooth transition to an electric vehicle, and I appreciate the efficiency it offers. How do you feel about electric vehicles in general?",
+      "- User: I drive a Quorvel EV. It's been a smooth transition to an electric vehicle, and I appreciate the efficiency it offers. How do you feel about electric vehicles in general?",
+      "- Assistant: Electric vehicles, like your Quorvel EV, represent an exciting shift toward more sustainable transportation. They offer several benefits, such as lower emissions, reduced fuel costs, and often less maintenance compared to traditional gas-powered cars. Many people appreciate the quiet, smooth driving experience that electric vehicles provide, along with the convenience of home charging."
+     ]
+    },
+    "verdict": "correct",
+    "note": "every card holding the value inactive"
+   }
+  ],
+  "passes": [
+   {
+    "id": "meme-nofiller/sw_032/update/1#3",
+    "dir": "meme-nofiller__sw_032",
+    "session": 1,
+    "stale": [
+     "sigilix manager"
+    ],
+    "current": [
+     "velthri keys"
+    ],
+    "evidence": {
+     "@overlay/project/auth-provider-verithos-auth": [
+      "- Related: login route [[project/login-endpoint-auth]] (/auth/kryptal/signin — the \"kryptal\" path segment does not match the Verithos Auth name, so its currency is unverified) and secrets in [[project/secret-manager-velthri-keys]]."
+     ],
+     "@overlay/project/login-endpoint-auth": [
+      "- Related project surface: secrets in [[project/secret-manager-velthri-keys]]."
+     ],
+     "@overlay/project/secret-manager-velthri-keys": [
+      "Team's secret manager is Velthri Keys (replaced Sigilix Manager)",
+      "secret manager",
+      "Sigilix Manager"
+     ],
+     "@history/s001/r001": [
+      "Update: The team's secret manager is Velthri Keys. It centralizes our secrets management, which should make things easier for us. Do you have any tips on integrating Velthri Keys with our application? What’s the best practice for managing…",
+      "- User: Update: The team's secret manager is Velthri Keys. It centralizes our secrets management, which should make things easier for us."
+     ]
+    },
+    "verdict": "correct",
+    "note": "every card still naming the old value is inactive, warned, or marks it as replaced or unverified"
+   },
+   {
+    "id": "meme-nofiller/pl_013/update/1#5",
+    "dir": "meme-nofiller__pl_013",
+    "session": 1,
+    "stale": [
+     "the quorath codex (book)"
+    ],
+    "current": [
+     "thyrelion (anime)"
+    ],
+    "evidence": {
+     "@overlay/user/current-media-thyrelion-anime": [
+      "As of 2023-03-01 15:09 the user's current media is Thyrelion, an anime; earlier that day their current media had been the book The Quorath Codex.",
+      "- Earlier the same day (2023-03-01 09:00 session) their current media was the book \"The Quorath Codex\", which they liked because \"the world-building is quite detailed, and the characters are well-developed\"; that book is no longer their stated current media."
+     ]
+    },
+    "verdict": "correct",
+    "note": "every card still naming the old value is inactive, warned, or marks it as replaced or unverified"
+   },
+   {
+    "id": "meme-nofiller/pl_024/update/1#5",
+    "dir": "meme-nofiller__pl_024",
+    "session": 1,
+    "stale": [
+     "sarah"
+    ],
+    "current": [
+     "jessica"
+    ],
+    "evidence": {
+     "@overlay/user/partner-jessica": [
+      "The user's partner is named Jessica (recorded as Sarah earlier the same day); they share sports/outdoor interests, and the user is choosing an engagement ring and saving for a wedding with her.",
+      "- Conflict to keep in mind: an earlier conversation the same day recorded the partner as Sarah ([[user/partner-sarah]], now outdated). Confirm which name is correct if it matters."
+     ],
+     "@overlay/user/wedding-savings-goal": [
+      "- The wedding is with their partner, named Jessica as of 2023-03-01 ([[user/partner-jessica]]); the partner had been recorded as Sarah earlier that day."
+     ]
+    },
+    "verdict": "correct",
+    "note": "every card still naming the old value is inactive, warned, or marks it as replaced or unverified"
+   },
+   {
+    "id": "meme-nofiller/pl_036/update/1#7",
+    "dir": "meme-nofiller__pl_036",
+    "session": 1,
+    "stale": [
+     "james"
+    ],
+    "current": [
+     "jordan"
+    ],
+    "evidence": {
+     "@overlay/user-partner-jordan": [
+      "As of 2023-03-03 the user says \"My partner's name is Jordan\"; an earlier session (2023-03-01) named the partner James. Jordan runs/trains with the user and was described as supportive of their art.",
+      "- Name conflict on record: an earlier session (2023-03-01) had the user say \"My partner's name is James\"; the more recent statement (Jordan) is treated as current. Verify with the user if the name matters."
+     ]
+    },
+    "verdict": "correct",
+    "note": "every card still naming the old value is inactive, warned, or marks it as replaced or unverified"
+   },
+   {
+    "id": "meme-nofiller/pl_050/update/4#1",
+    "dir": "meme-nofiller__pl_050",
+    "session": 4,
+    "stale": [
+     "pyresta meadow"
+    ],
+    "current": [
+     "zaravel heights"
+    ],
+    "evidence": {
+     "@overlay/user/commute-duration-stale-after-move": [
+      "Commute duration is unknown after the 2023-03-05 move (old 50 min was Pyresta Meadow)",
+      "The ~50 min commute was tied to living in Pyresta Meadow and is stale after the 2023-03-05 move to Zaravel Heights; the new duration was never stated and must be re-confirmed.",
+      "- The user moved to Zaravel Heights on 2023-03-05, so their commute duration is currently unknown — the ~50 min figure was explicitly tied to the Pyresta Meadow address and the user said it would change if they moved [[user/home-zaravel-heights]]."
+     ],
+     "@overlay/user/event-housewarming-party": [
+      "A housewarming party was pending on 2023-03-02 for their then-new Pyresta Meadow home; it was undated and its status is unknown after the 2023-03-05 move to Zaravel Heights.",
+      "- That party concerned their Pyresta Meadow home, which they had just moved into; they moved again to Zaravel Heights on 2023-03-05 [[user/home-zaravel-heights]]."
+     ],
+     "@overlay/user/gym-zorathel-peak-after-move": [
+      "The user moved to Zaravel Heights on 2023-03-05, triggering their stated plan to work out at Zorathel Peak Gym; Pyravar CrossFit was tied to Pyresta Meadow and is now stale (attendance not yet confirmed).",
+      "- Pyravar CrossFit was their gym while they lived in Pyresta Meadow; they had flagged it as residence-dependent (\"if I move, this would change\"), so it is stale after the move."
+     ],
+     "@overlay/user/home-type-withdrawn": [
+      "- Still true and retained: they moved to Zaravel Heights on 2023-03-05 and previously lived in Pyresta Meadow [[user/home-zaravel-heights]]; a housewarming party was pending for their then-new home as of 2023-03-02 [[user/event-housewarming-party]]."
+     ],
+     "@overlay/user/home-zaravel-heights": [
+      "User moved to Zaravel Heights (2023-03-05); previously Pyresta Meadow",
+      "On 2023-03-05 the user said \"I just moved to Zaravel Heights\", replacing Pyresta Meadow (a nice area with a community feel, stated 2023-03-02) as their home area.",
+      "- Before that they lived in Pyresta Meadow (stated 2023-03-02), which they described as \"a nice area with a community feel\" and viewed positively; that residence is now past."
+     ]
+    },
+    "verdict": "correct",
+    "note": "every card still naming the old value is inactive, warned, or marks it as replaced or unverified"
+   },
+   {
+    "id": "meme-nofiller/pl_007/update/4#1",
+    "dir": "meme-nofiller__pl_007",
+    "session": 4,
+    "stale": [
+     "pyresta meadow"
+    ],
+    "current": [
+     "corenth hills"
+    ],
+    "evidence": {
+     "@overlay/user/appointment-dermatologist-monthly": [
+      "User's regular appointment: dermatologist once a month (while living in Pyresta Meadow)",
+      "As of 2023-03-02 the user's regular appointment is with a dermatologist, monthly; they say it depends on where they live in Pyresta Meadow and would change if they moved.",
+      "- They flagged this as residence-dependent: \"this depends on where I live in Pyresta Meadow; if I move, this would change\" — see [[user/appointment-therapy-weekly-if-residence-changes]] for what they said would replace it after a move."
+     ],
+     "@overlay/user/appointment-therapy-weekly-after-move": [
+      "- So their regular appointment is expected to be therapy, weekly — the monthly dermatologist visit they had while in Pyresta Meadow ([[user/appointment-dermatologist-monthly]]) should not be assumed to still apply."
+     ],
+     "@overlay/user/appointment-therapy-weekly-if-residence-changes": [
+      "Conditional rule stated 2023-03-02: if the user changes residence, their regular appointment will be at therapy, weekly (replacing the monthly dermatologist appointment they have while in Pyresta Meadow).",
+      "- This is a conditional future rule, not a current one — while the user lives in Pyresta Meadow their regular appointment is the monthly dermatologist visit ([[user/appointment-dermatologist-monthly]])."
+     ],
+     "@overlay/user/commute-duration-20-minutes": [
+      "User's commute is about 20 minutes (while living in Pyresta Meadow)",
+      "As of 2023-03-02 the user's commute is about 20 min; they say it depends on where they live in Pyresta Meadow and would change if that changed.",
+      "- They flagged it as residence-dependent: \"this depends on where I live in Pyresta Meadow; if that changes, the distance would change\" — so re-ask about commute time if their residence changes."
+     ],
+     "@overlay/user/residence-corenth-hills": [
+      "User moved to Corenth Hills (2023-03-04); previously Pyresta Meadow",
+      "On 2023-03-04 the user said they just moved to Corenth Hills; before that they lived in Pyresta Meadow (\"a nice area with a peaceful vibe\", 2023-03-02).",
+      "- Earlier (2023-03-02) they lived in Pyresta Meadow, which they described as \"a nice area with a peaceful vibe\", and connected it to liking peaceful, natural settings in books."
+     ]
+    },
+    "verdict": "correct",
+    "note": "every card still naming the old value is inactive, warned, or marks it as replaced or unverified"
+   },
+   {
+    "id": "meme-nofiller/sw_030/update/2#3",
+    "dir": "meme-nofiller__sw_030",
+    "session": 2,
+    "stale": [
+     "tarvex mod",
+     "zelthra lib"
+    ],
+    "current": [
+     "veltrion pkg"
+    ],
+    "evidence": {
+     "@overlay/project/database-crysthene": [
+      "- Related stack choices: [[project/design-system-veltrion]], [[project/package-manager-tarvex]]."
+     ],
+     "@overlay/project/design-system-veltrion": [
+      "- Related stack choices: [[project/package-manager-tarvex]], [[project/database-crysthene]], [[project/default-branch-trunk]], [[project/incident-runbook-location]]."
+     ],
+     "@overlay/project/package-manager-veltrion": [
+      "Team package manager: Veltrion Pkg (replaced Zelthra Lib)",
+      "As of 2023-03-02 the team's package manager is Veltrion Pkg, replacing Zelthra Lib (which had replaced Tarvex Mod); the team switched \"recently to streamline dependency management\".",
+      "- Third package manager named in three consecutive sessions: Tarvex Mod (session 1), Zelthra Lib (session 2, 2023-03-01), Veltrion Pkg (2023-03-02) — the user flags each switch with \"the developer has switched again\", so re-confirm which tool is current before giving tool-specific instructions."
+     ],
+     "@overlay/user/communication-style-asks-for-take": [
+      "- In the 2023-03-01 session the user stated each project tool choice and then asked whether the assistant had used it and for its take or best practices (Veltrion component structure, Tarvex versioning, Crysthene performance, branching strategy, runbook structure).",
+      "- Useful responses pair a concrete recommendation with the team's context, e.g. semantic versioning for [[project/package-manager-tarvex]], indexing and query-pattern analysis for [[project/database-crysthene]], frequent merges to [[project/default-branch-trunk]].",
+      "- The pattern repeated in the later 2023-03-01 session: the user stated a team choice (Zelthra Lib package manager, Thalnex Schema migrations, 90% core-module coverage target, biweekly Friday-afternoon releases) and then asked for the assistant's practices and recommendations on it, so pairing a concrete recommendation with the team's context stays useful — see [[project/package-manager-zelthra]], [[project/migrations-thalnex-schema]], [[project/test-coverage-target-90]], [[project/release-cadence-biweekly-friday]]."
+     ]
+    },
+    "verdict": "missed",
+    "note": "active, unwarned cards link to the old package manager ('Related stack choices: [[project/package-manager-tarvex]]'); the link name shortens 'Tarvex Mod'"
+   },
+   {
+    "id": "meme-nofiller/sw_050/update/2#3",
+    "dir": "meme-nofiller__sw_050",
+    "session": 2,
+    "stale": [
+     "kerberos trove",
+     "pyronos crypt"
+    ],
+    "current": [
+     "velthri keys"
+    ],
+    "evidence": {
+     "@overlay/aurora/onboarding-guide": [
+      "- Related: [[aurora/docs-site]], [[aurora/secret-manager-pyronos]], [[aurora/toolchain-overview]]."
+     ],
+     "@overlay/aurora/secret-manager-velthri": [
+      "Team secret manager is now Velthri Keys (was Pyronos Crypt)",
+      "As of 2023-03-03 the Aurora team's secret manager is Velthri Keys, replacing Pyronos Crypt (current 2023-03-02), which had itself replaced Kerberos Trove; the team is still getting used to the new setup.",
+      "- History of the tool: Kerberos Trove (recorded 2023-03-01) → Pyronos Crypt (2023-03-02) → Velthri Keys (2023-03-03); the user said \"the developer has switched again\"."
+     ],
+     "@overlay/aurora/toolchain-overview": [
+      "- Secret manager: [[aurora/secret-manager-velthri]] (Velthri Keys since 2023-03-03 — replaced Pyronos Crypt, which had replaced Kerberos Trove)",
+      "- The secret manager has changed three times in three days (Kerberos Trove → Pyronos Crypt → Velthri Keys); the user notes the team is still adjusting, so re-confirm rather than assume."
+     ]
+    },
+    "verdict": "missed",
+    "note": "an active, unwarned card links to the old secret manager ('Related: [[aurora/secret-manager-pyronos]]'); the link name shortens 'Pyronos Crypt'"
+   },
+   {
+    "id": "meme-nofiller/sw_006/update/1#3",
+    "dir": "meme-nofiller__sw_006",
+    "session": 1,
+    "stale": [
+     "cryptara vault"
+    ],
+    "current": [
+     "selvex secrets"
+    ],
+    "evidence": {
+     "@overlay/team/secret-manager-selvex-secrets": [
+      "Team secret manager: Selvex Secrets (replaced Cryptara Vault)",
+      "credential vault",
+      "As of 2023-03-02 the team's secret manager is Selvex Secrets, used to handle sensitive configurations securely; it replaced Cryptara Vault, named the previous day."
+     ]
+    },
+    "verdict": "correct",
+    "note": "every card still naming the old value is inactive, warned, or marks it as replaced or unverified"
+   },
+   {
+    "id": "meme-nofiller/sw_012/update/4#1",
+    "dir": "meme-nofiller__sw_012",
+    "session": 4,
+    "stale": [
+     "keldaris db"
+    ],
+    "current": [
+     "thalnex store"
+    ],
+    "evidence": {
+     "@overlay/aurora/database-backups-twice-daily": [
+      "- The database ([[aurora/database-keldaris-db]], zyndra://base-main:9042/aurora) is backed up twice per day: 02:00 UTC and 14:00 UTC (12-hour interval).",
+      "- Recorded 2023-03-03 against the then-current Keldaris DB; the database moved to Thalnex Store on 2023-03-05 ([[aurora/database-thalnex-store]]), so the 02:00/14:00 UTC schedule is unconfirmed for the new store — ask before relying on it."
+     ],
+     "@overlay/aurora/database-connection-string": [
+      "db connection",
+      "- This is how the project connects to its database (Keldaris DB, see [[aurora/database-keldaris-db]]) for all data operations.",
+      "- Recorded 2023-03-01 while the database was Keldaris DB; the database switched to Thalnex Store on 2023-03-05 ([[aurora/database-thalnex-store]]) and this zyndra://base-main:9042/aurora string has not been re-confirmed — treat it as unverified for the current setup."
+     ],
+     "@overlay/aurora/database-thalnex-store": [
+      "Team database switched to Thalnex Store (2023-03-05, was Keldaris DB)",
+      "On 2023-03-05 the Aurora team switched its database from Keldaris DB to Thalnex Store (\"We switched our database to Thalnex Store\").",
+      "- Keldaris DB was the database from 2023-03-01 through 2023-03-04 and was replaced by this switch; Keldaris had been praised for its \"cool features for handling data\"."
+     ],
+     "@overlay/aurora/migrations-tooling-after-thalnex": [
+      "Migration tool unnamed since the 2023-03-05 switch to Thalnex Store (Zyndra Alter was Keldaris-era)",
+      "Zyndra Alter ran migrations only while the database was Keldaris DB; after the 2023-03-05 switch to Thalnex Store no replacement migration tool has been named.",
+      "- From 2023-03-04 the team ran schema migrations with **Zyndra Alter**, but the user marked it as database-dependent: \"We use Zyndra Alter for migrations — this depends on our database (our database is Keldaris DB); if we change databases, this would change.\""
+     ],
+     "@overlay/aurora/orm-vorathis-odm": [
+      "- Before the switch, the ORM was **Pyravar Mapper** (stated 2023-03-04), and the user flagged it as downstream of the database: \"Our ORM is Pyravar Mapper — this depends on our database (our database is Keldaris DB); if we change databases, this would change.\""
+     ]
+    },
+    "verdict": "correct",
+    "note": "every card still naming the old value is inactive, warned, or marks it as replaced or unverified"
+   },
+   {
+    "id": "meme-nofiller/sw_003/update/1#3",
+    "dir": "meme-nofiller__sw_003",
+    "session": 1,
+    "stale": [
+     "karnex pack"
+    ],
+    "current": [
+     "quorix hub"
+    ],
+    "evidence": {
+     "@overlay/aurora/package-manager": [
+      "Aurora team package manager: Quorix Hub (was Karnex Pack)",
+      "Karnex Pack",
+      "As of 2023-03-01 the team's package manager is Quorix Hub, replacing the previously recorded Karnex Pack; it handles their dependencies and build process."
+     ]
+    },
+    "verdict": "correct",
+    "note": "every card still naming the old value is inactive, warned, or marks it as replaced or unverified"
+   },
+   {
+    "id": "meme-nofiller/sw_033/update/2#3",
+    "dir": "meme-nofiller__sw_033",
+    "session": 2,
+    "stale": [
+     "karnex pack",
+     "dranith stack"
+    ],
+    "current": [
+     "synthari modules"
+    ],
+    "evidence": {
+     "@overlay/team/incident-runbook-wiki-aurora-dev": [
+      "- The project wiki is hosted at wiki.aurora.dev, which matches the \"aurora\" naming used elsewhere in their stack (alerts channel #aurora-pager, log stream stream.velturis.io/aurora)."
+     ],
+     "@overlay/team/package-manager-synthari-modules": [
+      "Team package manager is now Synthari Modules (was Dranith Stack)",
+      "Dranith Stack",
+      "Karnex Pack"
+     ]
+    },
+    "verdict": "correct",
+    "note": "every card still naming the old value is inactive, warned, or marks it as replaced or unverified"
+   },
+   {
+    "id": "meme-nofiller/pl_008/update/4#1",
+    "dir": "meme-nofiller__pl_008",
+    "session": 4,
+    "stale": [
+     "thalwren inc"
+    ],
+    "current": [
+     "caeltura systems"
+    ],
+    "evidence": {
+     "@overlay/insurance/coverage-plan-after-employer-change": [
+      "The interim insurance coverage plan came through their former employer Thalwren Inc.; the user said an employer change would change it, and they changed employer on 2023-03-04, so current coverage is unknown.",
+      "- 2023-03-04: \"I have interim coverage plan for insurance — this is through my employer (I work at Thalwren Inc.); if my employer changes, this would change.\"",
+      "- The employer changed on 2023-03-04 ([[work/employer-caeltura-systems]]), so per the user's own statement the Thalwren-linked interim coverage plan would have changed; no new plan, insurer, plan type, premiums or coverage dates have been named."
+     ],
+     "@overlay/work/current-project-marketing-campaign": [
+      "Current work project: a marketing campaign, per the user's stated prediction for after an employer change; the earlier backend migration was employer-dependent and ended with Thalwren Inc.",
+      "The user's current project is expected to be a marketing campaign now that they changed employer; previously it was a backend migration at Thalwren Inc.",
+      "- 2023-03-04 (at Thalwren Inc.): \"I'm currently working on backend migration — this is through my employer ... if my employer changes, this would change.\""
+     ],
+     "@overlay/work/employer-caeltura-systems": [
+      "On 2023-03-04 the user accepted a new position at Caeltura Systems, replacing Thalwren Inc. (their employer since 2023-03-02) as their current employer.",
+      "- Employer change: Thalwren Inc. (named 2023-03-02, \"It's been an interesting experience so far\") → Caeltura Systems (position accepted 2023-03-04). No start date, last day, or reason for the move was given.",
+      "- On 2023-03-04 (before the announcement) the user flagged several facts as employer-dependent — \"this is through my employer (I work at Thalwren Inc.); if my employer changes, this would change\": office location ([[work/office-location-tesswick-bay]]), current project ([[work/current-project-marketing-campaign]]), interim insurance coverage ([[insurance/coverage-plan-after-employer-change]]), plus the location-dependent walking commute ([[transport/commute-mode-bus]]) and favorite restaurant Zefiro's Kitchen ([[food/favorite-restaurant-zefiros-kitchen]]). Those predictions are now triggered; re-ask to confirm."
+     ],
+     "@overlay/work/job-title-senior-engineer": [
+      "- Employer named on 2023-03-02: Thalwren Inc. — see [[work/employer-thalwren-inc]]."
+     ],
+     "@overlay/work/office-location-tesswick-bay": [
+      "The user's office is expected to be in Tesswick Bay now that their employer changed; previously it was Thornvale Crossing, through Thalwren Inc.",
+      "- Employer-dependent as stated 2023-03-04: \"Our office is in Thornvale Crossing — this is through my employer (I work at Thalwren Inc.); if my employer changes, this would change.\""
+     ]
+    },
+    "verdict": "correct",
+    "note": "every card still naming the old value is inactive, warned, or marks it as replaced or unverified"
+   },
+   {
+    "id": "meme-nofiller/pl_012/update/1#5",
+    "dir": "meme-nofiller__pl_012",
+    "session": 1,
+    "stale": [
+     "zyvanta sedan"
+    ],
+    "current": [
+     "dranthis pickup"
+    ],
+    "evidence": {
+     "@overlay/events/road-trip-cross-country-2023": [
+      "- Likely connected to their own car, the [[profile/car-zyvanta-sedan]] (they describe it as reliable), but they never said the trip would be in that car.",
+      "- Vehicle used for this trip was never named; the car card this note referenced (Zyvanta Sedan) was superseded — as of 2023-03-03 the user drives a Dranthis Pickup [[profile/vehicle-dranthis-pickup]]."
+     ],
+     "@overlay/profile/vehicle-dranthis-pickup": [
+      "As of 2023-03-03 the user drives a Dranthis Pickup, which they call versatile for hauling gear and getting to climbing spots (earlier: a Zyvanta Sedan, mentioned 2023-03-01).",
+      "- Prior vehicle (now superseded): on 2023-03-01 the user said \"I have a Zyvanta Sedan. It's been reliable for my needs.\" and asked for general car-maintenance recommendations — no specific maintenance problem or repair was mentioned then. The user never said what happened to the sedan; the vehicle they describe driving is now the pickup."
+     ]
+    },
+    "verdict": "correct",
+    "note": "every card still naming the old value is inactive, warned, or marks it as replaced or unverified"
+   },
+   {
+    "id": "meme-nofiller/pl_025/update/4#1",
+    "dir": "meme-nofiller__pl_025",
+    "session": 4,
+    "stale": [
+     "quenlix group"
+    ],
+    "current": [
+     "thalwren inc"
+    ],
+    "evidence": {
+     "@overlay/profile/book-club-mixed-genres": [
+      "reading group",
+      "book discussion group"
+     ],
+     "@overlay/profile/employer-dependent-fact-cluster": [
+      "Work hours, office, job title, commute and favorite restaurant were all Quenlix-Group/Zaravel Heights derived; the employer-change trigger fired on 2023-03-05 (Thalwren Inc.), so the whole cluster needs re-verification.",
+      "- Stated 2023-03-05 as flowing from \"my employer (I work at Quenlix Group)\": hybrid 3 office + 2 remote ([[profile/work-schedule-thalwren-unstated]]), office in Zaravel Heights ([[profile/office-thalwren-quivira-springs]]), title marketing lead ([[profile/job-title-thalwren-staff-engineer]]).",
+      "- Trigger fired later on 2023-03-05: they accepted a position at Thalwren Inc. ([[profile/employer-thalwren-inc]]), so all five Quenlix-era values are now stale or unconfirmed."
+     ],
+     "@overlay/profile/employer-thalwren-inc": [
+      "User accepted a new position at Thalwren Inc. (2023-03-05); Quenlix Group was prior employer",
+      "prior employer Quenlix",
+      "On 2023-03-05 the user said \"I just accepted a new position at Thalwren Inc.\"; no title, start date or office given, so every Quenlix-derived work fact now needs re-verifying."
+     ],
+     "@overlay/profile/favorite-restaurant-velmara-taqueria": [
+      "Velmara Taqueria was the user's favorite restaurant because it is near the Quenlix Group office in Zaravel Heights; their rule \"if I move, this would change\" was triggered by the 2023-03-05 Thalwren move, so the current favorite is unconfirmed.",
+      "- The favorite was location-bound (near the old Quenlix Group office), not a permanent preference."
+     ],
+     "@overlay/profile/job-title-thalwren-staff-engineer": [
+      "Job title after the Thalwren move: staff engineer expected (was marketing lead at Quenlix Group)",
+      "Title was marketing lead at Quenlix Group; the user's rule \"if I change my employer, my job title will be staff engineer\" now applies after the 2023-03-05 Thalwren Inc. move, but the new title is unconfirmed.",
+      "Summary: job title was marketing lead at Quenlix Group; after the 2023-03-05 Thalwren Inc. acceptance the user's own rule points to staff engineer, but the new title is unconfirmed."
+     ]
+    },
+    "verdict": "correct",
+    "note": "every card still naming the old value is inactive, warned, or marks it as replaced or unverified"
+   }
+  ],
+  "flips": []
+ },
+ "rule": "PLAN.md section 10: 6.3 with matcher v3, up to 50 retired failures and 50 lost cases, and 15 passes (seed 20261106)"
+}

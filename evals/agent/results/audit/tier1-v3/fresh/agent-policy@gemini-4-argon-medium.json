@@ -1,0 +1,106 @@
+{
+ "cell": "agent-policy@gemini-4-argon-medium",
+ "rule": "Fresh labels for matcher v3 (cases where v3 and v2 disagree and no audit had judged them; every case v3 newly flags, and 20 of the pages it clears, seed 20261106), judged before any change made after seeing them. Verdict rules as in the tier-1 and v2 audits",
+ "cases": {
+  "lost": [],
+  "absence_clean": [
+   {
+    "id": "pl_047/after3",
+    "point": "end",
+    "head": "Q: Where is my office? [Abs-hop1] stale=['tesswick bay'] current=[]",
+    "evidence": {
+     "@overlay/work/commute-duration-1-5-hours": [
+      "- As of 2023-03-05 (Session 5, 05:00), the user accepted a new position at Dranthex Logistics ([[work/employer-dranthex-logistics]]), moving their office location from Tesswick Bay to Quivira Springs ([[work/office-location-quivira-springs]])."
+     ]
+    },
+    "direction": "v3 cleared",
+    "verdict": "correct",
+    "note": "every flagged line marks the value as changed, affected, invalidated, determined by a changed premise, or past"
+   },
+   {
+    "id": "pl_028/after4",
+    "point": "end",
+    "head": "Q: What's my favorite restaurant? [Abs-hop2] stale=['velmara taqueria'] current=[]",
+    "evidence": {
+     "@overlay/user/work/employer-quenlix-group": [
+      "- Per [[user/preferences/favorite-restaurant]], moving office location away from Luminara Flats affects their favorite restaurant (Velmara Taqueria)."
+     ]
+    },
+    "direction": "v3 cleared",
+    "verdict": "correct",
+    "note": "every flagged line marks the value as changed, affected, invalidated, determined by a changed premise, or past"
+   },
+   {
+    "id": "pl_050/after2",
+    "point": "end",
+    "head": "Q: How long is my commute? [Abs-hop1] stale=['50 min'] current=[]",
+    "evidence": {
+     "@overlay/routine/commute-duration-after-move": [
+      "50 min commute",
+      "50 minutes commute",
+      "- On 2023-03-04, while living in Pyresta Meadow, the user stated that their commute was about 50 min (50 minutes), and noted that this depended on where they lived in Pyresta Meadow (if their residence location changed, the commute distance and time would change)."
+     ]
+    },
+    "direction": "v3 cleared",
+    "verdict": "correct",
+    "note": "every flagged line marks the value as changed, affected, invalidated, determined by a changed premise, or past"
+   },
+   {
+    "id": "sw_036/after4",
+    "point": "end",
+    "head": "Q: Where's the Dockerfile? [Abs-hop2] stale=['infra/narvex/dockerfile'] current=[]",
+    "evidence": {
+     "@overlay/team/deployment-target-korinth-hosting": [
+      "- Downstream impact of moving deployment from Narvex Cloud to Korinth Hosting on dependent settings: per the team's conditional rules, the Docker image [[team/docker-image]] changes from `narvex-registry/aurora:latest` to `korinth-repo/aurora:stable`, the CI config [[team/ci-config]] changes from `thandrel-flow.toml` to `orinthal-build.yml`, and consequently the deploy command [[team/deploy-command]] changes from `thandrel ship --channel stable` to `orinthal publish --tier sandbox`; the staging environment [[team/staging-environment]] (`dev.orinthal.dev/aurora`) and Dockerfile [[team/dockerfile]] (`infra/narvex/Dockerfile`) that depended on Narvex Cloud are also affected."
+     ]
+    },
+    "direction": "v3 cleared",
+    "verdict": "correct",
+    "note": "every flagged line marks the value as changed, affected, invalidated, determined by a changed premise, or past"
+   },
+   {
+    "id": "sw_050/after4",
+    "point": "end",
+    "head": "Q: Where's the Dockerfile? [Abs-hop2] stale=['infra/korinth/dockerfile'] current=[]",
+    "evidence": {
+     "@overlay/project/deployment-infra-zephyra-platform": [
+      "- Other configurations that were determined by `Thandrel Infra` and would change when infrastructure changes: log drain (`logs.narvex.io/aurora/drain`, [[project/log-drain]]), Docker image (`korinth-repo/aurora:stable`, [[project/docker-image]]), and its dependent Dockerfile path (`infra/korinth/Dockerfile`, [[project/dockerfile]])."
+     ]
+    },
+    "direction": "v3 cleared",
+    "verdict": "correct",
+    "note": "every flagged line marks the value as changed, affected, invalidated, determined by a changed premise, or past"
+   },
+   {
+    "id": "sw_020/after3",
+    "point": "end",
+    "head": "Q: What Docker image do we use? [Abs-hop1] stale=['zephyra-hub/aurora:prod'] current=[]",
+    "evidence": {
+     "@overlay/project/docker-image-orinthal": [
+      "zephyra-hub/aurora:prod",
+      "- Changing the Docker image from `zephyra-hub/aurora:prod` to `korinth-repo/aurora:stable` also updates the Dockerfile path to `deploy/Dockerfile.korinth` ([[project/dockerfile-orinthal]])."
+     ],
+     "@overlay/project/deploy-target-orinthal-serve": [
+      "  - Docker image changes from `zephyra-hub/aurora:prod` to `korinth-repo/aurora:stable` ([[project/docker-image-orinthal]], superseding [[project/docker-image]])."
+     ]
+    },
+    "direction": "v3 cleared",
+    "verdict": "correct",
+    "note": "every flagged line marks the value as changed, affected, invalidated, determined by a changed premise, or past"
+   },
+   {
+    "id": "sw_047/after3",
+    "point": "end",
+    "head": "Q: What token format do we use? [Abs-hop1] stale=['zenthos-session-v1'] current=[]",
+    "evidence": {
+     "@overlay/project/authentication-zenthos-id": [
+      "- Per [[project/token-format]], the `Zenthos-Session-v1` token format was determined by Verithos Auth and is affected by switching auth providers."
+     ]
+    },
+    "direction": "v3 cleared",
+    "verdict": "correct",
+    "note": "every flagged line marks the value as changed, affected, invalidated, determined by a changed premise, or past"
+   }
+  ]
+ }
+}

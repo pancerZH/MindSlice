@@ -1,0 +1,179 @@
+{
+ "cell": "agent-overlay@gemini-4-argon-medium",
+ "population": 15,
+ "cases": [
+  {
+   "id": "sw_004/after2",
+   "point": "end",
+   "query": "Who receives the weekly report?",
+   "stale": [
+    "taehyun kim"
+   ],
+   "evidence": {
+    "@overlay/project/weekly-report-recipient": [
+     "Taehyun Kim weekly report",
+     "- The weekly report recipient was Taehyun Kim, assigned by former team lead Sarah Chen on 2023/03/05 with the condition that if the team lead changes, this assignment would change."
+    ]
+   },
+   "verdict": "matching error",
+   "note": "the card marks the dependent as changed, former, subject to change or no longer valid (title or summary: v3 judges lines, and a body line quotes the earlier statement); or another entity's words"
+  },
+  {
+   "id": "pl_011/after3",
+   "point": "end",
+   "query": "What medication am I taking?",
+   "stale": [
+    "korathril"
+   ],
+   "evidence": {
+    "@overlay/user/medication": [
+     "Korathril",
+     "- On 2023/03/05, the user stated they took a medication called Korathril, noting: \"I take a medication called Korathril — this is determined by my tendinitis; if my health condition changes, this would likely change too.\""
+    ]
+   },
+   "verdict": "matching error",
+   "note": "the card marks the dependent as changed, former, subject to change or no longer valid (title or summary: v3 judges lines, and a body line quotes the earlier statement); or another entity's words"
+  },
+  {
+   "id": "pl_013/after3",
+   "point": "end",
+   "query": "What project am I working on?",
+   "stale": [
+    "infrastructure upgrade"
+   ],
+   "evidence": {
+    "@overlay/work/current-project-infrastructure-upgrade": [
+     "infrastructure upgrade",
+     "- On 2023/03/03 (Fri), the user stated they were working on an infrastructure upgrade through their employer Quenlix Group, and noted that if their employer changed, this project would change."
+    ]
+   },
+   "verdict": "matching error",
+   "note": "the card marks the dependent as changed, former, subject to change or no longer valid (title or summary: v3 judges lines, and a body line quotes the earlier statement); or another entity's words"
+  },
+  {
+   "id": "pl_021/after3",
+   "point": "end",
+   "query": "What insurance do I have?",
+   "stale": [
+    "marketplace health plan"
+   ],
+   "evidence": {
+    "@overlay/user/health-insurance": [
+     "marketplace health plan",
+     "- On 2023/03/04, the user stated: \"I have a marketplace health plan for insurance — that's through my employer; if that changes, this would too.\""
+    ]
+   },
+   "verdict": "matching error",
+   "note": "the card marks the dependent as changed, former, subject to change or no longer valid (title or summary: v3 judges lines, and a body line quotes the earlier statement); or another entity's words"
+  },
+  {
+   "id": "pl_025/after3",
+   "point": "end",
+   "query": "What's my work schedule?",
+   "stale": [
+    "hybrid (3 office + 2 remote)"
+   ],
+   "evidence": {
+    "@overlay/user/work-hours": [
+     "- Earlier on 2023/03/05, the user stated: \"My work hours are hybrid (3 office + 2 remote) — this is through my employer (I work at Quenlix Group); if my employer changes, this would change.\" ([[@history/s003/r000]])."
+    ]
+   },
+   "verdict": "matching error",
+   "note": "the card marks the dependent as changed, former, subject to change or no longer valid (title or summary: v3 judges lines, and a body line quotes the earlier statement); or another entity's words"
+  },
+  {
+   "id": "sw_033/after2",
+   "point": "end",
+   "query": "Who reviews our code?",
+   "stale": [
+    "seoyun choi"
+   ],
+   "evidence": {
+    "@overlay/team/code-review-assignee-status": [
+     "Seoyun Choi",
+     "- On 2023/03/03, code reviews were assigned to Seoyun Choi by then-team lead Seokjin Kang, with the condition that if the team lead changes, this assignment would change."
+    ]
+   },
+   "verdict": "matching error",
+   "note": "the card marks the dependent as changed, former, subject to change or no longer valid (title or summary: v3 judges lines, and a body line quotes the earlier statement); or another entity's words"
+  },
+  {
+   "id": "pl_036/after2",
+   "point": "end",
+   "query": "Where do I work out?",
+   "stale": [
+    "zorathel peak gym"
+   ],
+   "evidence": {
+    "@overlay/user/gym": [
+     "Zorathel Peak Gym",
+     "- On 2023/03/05, the user stated: \"I go to Zorathel Peak Gym for workouts — this depends on where I live in Thornvale Crossing; if I move, this would change.\" ([[@history/s003/r000]])"
+    ]
+   },
+   "verdict": "matching error",
+   "note": "the card marks the dependent as changed, former, subject to change or no longer valid (title or summary: v3 judges lines, and a body line quotes the earlier statement); or another entity's words"
+  },
+  {
+   "id": "pl_041/after3",
+   "point": "end",
+   "query": "What's my exercise routine?",
+   "stale": [
+    "yoga 2x/week"
+   ],
+   "evidence": {
+    "@overlay/fitness/exercise-yoga": [
+     "User Exercise Routine: Yoga 2x/Week",
+     "yoga 2x/week",
+     "- As of 2023/03/04 and continuing as of 2023/03/05, the user's exercise routine is yoga 2x/week (twice a week).",
+     "- This exercise routine (yoga 2x/week) was originally determined by the user's seasonal allergies, with the explicit rule: \"If my health condition changes, my exercise routine will be yoga 2x/week.\""
+    ],
+    "@overlay/fitness/gym-zorathel-peak": [
+     "The user works out at Zorathel Peak Gym for their yoga 2x/week routine; if their exercise routine changes, they will work out at Velthari Studio.",
+     "- Going to Zorathel Peak Gym is specifically for the user's current exercise routine of yoga 2x/week ([[fitness/exercise-yoga]])."
+    ],
+    "@overlay/health/condition-lactose-intolerance": [
+     "- Per the user's rule, even though their health condition changed, their exercise routine remains yoga 2x/week ([[fitness/exercise-yoga]]) at Zorathel Peak Gym ([[fitness/gym-zorathel-peak]])."
+    ]
+   },
+   "verdict": "correct",
+   "note": "the card asserts the dependent still holds after its premise changed ('remains yoga 2x/week')"
+  },
+  {
+   "id": "sw_011/after3",
+   "point": "end",
+   "query": "What's our build tool?",
+   "stale": [
+    "karnex bundler"
+   ],
+   "evidence": {
+    "@overlay/team/build-tool": [
+     "Build Tool: Karnex Bundler (Quenthar; changes with Veltrion migration)",
+     "Karnex Bundler"
+    ],
+    "@overlay/team/build-command": [
+     "Build Command: karnex build --analyze (Karnex Bundler; changes with Veltrion migration)",
+     "The build command under Karnex Bundler was `karnex build --analyze`, which depends on Karnex Bundler and changes after the 2023/03/06 migration to Veltrion (new build command not yet specified)."
+    ]
+   },
+   "verdict": "matching error",
+   "note": "the card marks the dependent as changed, former, subject to change or no longer valid (title or summary: v3 judges lines, and a body line quotes the earlier statement); or another entity's words"
+  },
+  {
+   "id": "pl_049/after3",
+   "point": "end",
+   "query": "What project am I working on?",
+   "stale": [
+    "mobile app development"
+   ],
+   "evidence": {
+    "@overlay/work/current-project": [
+     "mobile app development",
+     "- Condition triggered: \"I'm currently working on mobile app development — this is through my employer (I work at Elyndra Health); if my employer changes, this would change.\""
+    ]
+   },
+   "verdict": "matching error",
+   "note": "the card marks the dependent as changed, former, subject to change or no longer valid (title or summary: v3 judges lines, and a body line quotes the earlier statement); or another entity's words"
+  }
+ ],
+ "rule": "Audit of matcher v3 (after its freeze) on Abs-hop1 pages it still flags and no audit had judged: 10 per cell (all when fewer), seed 20261106; verdict rule as in the v2 Absence audit"
+}

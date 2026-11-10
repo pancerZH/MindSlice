@@ -1,0 +1,608 @@
+{
+ "cell": "agent-policy@gemini-4-argon-medium",
+ "population": {
+  "retired": 4,
+  "lost": 0,
+  "passes": 40,
+  "flips": 0
+ },
+ "cases": {
+  "retired": [
+   {
+    "id": "mab-sh/factconsolidation_sh_32k/update/factconsolidation_sh_32k_no41",
+    "dir": "mab-sh__factconsolidation_sh_32k",
+    "session": 108,
+    "stale": [
+     "tim cook"
+    ],
+    "current": [
+     "vijay mallya"
+    ],
+    "evidence": {
+     "@overlay/facts/tim-cook-citizenship": [
+      "Tim Cook citizenship: United States of America",
+      "Tim Cook citizenship",
+      "citizenship of Tim Cook"
+     ]
+    },
+    "verdict": "matching error",
+    "note": "another fact about the old value's entity (Tim Cook's citizenship); the anchors {apple, inc} only met by the link address [[facts/apple-inc-ceo]]"
+   },
+   {
+    "id": "mab-sh/factconsolidation_sh_32k/update/factconsolidation_sh_32k_no86",
+    "dir": "mab-sh__factconsolidation_sh_32k",
+    "session": 176,
+    "stale": [
+     "general motors"
+    ],
+    "current": [
+     "aston martin lagonda"
+    ],
+    "evidence": {
+     "@overlay/facts/general-motors-ceo": [
+      "General Motors CEO: Mary Barra",
+      "General Motors chief executive officer",
+      "General Motors CEO"
+     ]
+    },
+    "verdict": "correct",
+    "note": "the General Motors card still lists Buick Regal under 'Related General Motors products: [[facts/buick-regal-producer]]' (a link that presents the old producer as current, as in tier 1)"
+   },
+   {
+    "id": "mab-sh/factconsolidation_sh_32k/update/factconsolidation_sh_32k_no57",
+    "dir": "mab-sh__factconsolidation_sh_32k",
+    "session": 163,
+    "stale": [
+     "donald trump"
+    ],
+    "current": [
+     "connachta"
+    ],
+    "evidence": {
+     "@overlay/facts/united-states-of-america-head-of-government": [
+      "United States of America head of government: Donald Trump",
+      "US head of government Donald Trump",
+      "The name of the current head of the United States of America government is Donald Trump."
+     ]
+    },
+    "verdict": "matching error",
+    "note": "a different fact (United States head of government, not head of state); the anchor 'state' met by 'United States'"
+   },
+   {
+    "id": "mab-sh/factconsolidation_sh_32k/update/factconsolidation_sh_32k_no5",
+    "dir": "mab-sh__factconsolidation_sh_32k",
+    "session": 81,
+    "stale": [
+     "london"
+    ],
+    "current": [
+     "rupnagar"
+    ],
+    "evidence": {
+     "@overlay/facts/england-capital": [
+      "England capital: London",
+      "London capital of England",
+      "The capital of England is London."
+     ],
+     "@overlay/facts/united-kingdom-of-great-britain-and-ireland-capital": [
+      "United Kingdom of Great Britain and Ireland capital: London",
+      "United Kingdom of Great Britain and Ireland London",
+      "The capital of United Kingdom of Great Britain and Ireland is London."
+     ]
+    },
+    "verdict": "matching error",
+    "note": "different subjects (England's capital; the United Kingdom of Great Britain and Ireland's), the only anchor being 'capital'"
+   }
+  ],
+  "lost": [],
+  "passes": [
+   {
+    "id": "mab-sh/factconsolidation_sh_32k/update/factconsolidation_sh_32k_no17",
+    "dir": "mab-sh__factconsolidation_sh_32k",
+    "session": 189,
+    "stale": [
+     "emma darwin"
+    ],
+    "current": [
+     "amala paul"
+    ],
+    "evidence": {
+     "@overlay/facts/charles-darwin-spouse-amala-paul": [
+      "Charles Darwin spouse: Amala Paul",
+      "Charles Darwin spouse",
+      "Charles Darwin wife"
+     ],
+     "@overlay/facts/emma-watson-language": [
+      "Emma Watson language: English",
+      "Emma Watson language",
+      "Emma Watson speaks"
+     ],
+     "@overlay/facts/hermione-granger-performer-kylie-minogue": [
+      "- Hermione Granger was performed by Kylie Minogue. (Updated from Emma Watson; see [[facts/kylie-minogue-language-german]].)"
+     ]
+    },
+    "verdict": "correct",
+    "note": "the only active cards naming the old value with its subject anchors are the new cards, which mark it as superseded (or none)"
+   },
+   {
+    "id": "mab-sh/factconsolidation_sh_32k/update/factconsolidation_sh_32k_no19",
+    "dir": "mab-sh__factconsolidation_sh_32k",
+    "session": 211,
+    "stale": [
+     "catholic church"
+    ],
+    "current": [
+     "church of greece"
+    ],
+    "evidence": {
+     "@overlay/facts/adalbert-of-prague-religion-atheism": [
+      "- Supersedes earlier statement that Adalbert of Prague was affiliated with the religion of Catholic Church (Session 30, Fact 300)."
+     ],
+     "@overlay/facts/adrian-iv-religion-methodism": [
+      "- Religious affiliation of Adrian IV: Methodism (superseding previous record of Catholic Church)."
+     ],
+     "@overlay/facts/alexis-de-tocqueville-religion-the-church-of-jesus-christ-of-latter-day-saints": [
+      "Alexis de Tocqueville religion: The Church of Jesus Christ of Latter-day Saints",
+      "Alexis de Tocqueville is affiliated with the religion of The Church of Jesus Christ of Latter-day Saints.",
+      "- Alexis de Tocqueville is affiliated with the religion of The Church of Jesus Christ of Latter-day Saints. (Session 166, Fact 1652)"
+     ],
+     "@overlay/facts/andrzej-duda-religion": [
+      "Andrzej Duda religion: Catholic Church",
+      "Andrzej Duda Catholic Church",
+      "Andrzej Duda is affiliated with the religion of Catholic Church."
+     ],
+     "@overlay/facts/angelo-sodano-religion-methodism": [
+      "- Supersedes earlier statement that Angelo Sodano was affiliated with the religion of Catholic Church (Fact 495, Session 50)."
+     ]
+    },
+    "verdict": "correct",
+    "note": "the only active cards naming the old value with its subject anchors are the new cards, which mark it as superseded (or none)"
+   },
+   {
+    "id": "mab-sh/factconsolidation_sh_32k/update/factconsolidation_sh_32k_no27",
+    "dir": "mab-sh__factconsolidation_sh_32k",
+    "session": 199,
+    "stale": [
+     "association football"
+    ],
+    "current": [
+     "sumo"
+    ],
+    "evidence": {
+     "@overlay/facts/2004-nba-draft-sport-association-football": [
+      "2004 NBA Draft sport: association football",
+      "2004 NBA Draft association football",
+      "2004 NBA Draft is associated with the sport of association football."
+     ],
+     "@overlay/facts/2009-six-nations-championship-sport-association-football": [
+      "2009 Six Nations Championship sport: association football",
+      "2009 Six Nations Championship association football",
+      "2009 Six Nations Championship is associated with the sport of association football."
+     ],
+     "@overlay/facts/2009-wnba-season-sport-association-football": [
+      "2009 WNBA season sport: association football",
+      "2009 WNBA season association football",
+      "2009 WNBA season is associated with the sport of association football."
+     ],
+     "@overlay/facts/2016-17-serbian-superliga-sport": [
+      "2016–17 Serbian SuperLiga sport: association football",
+      "2016–17 Serbian SuperLiga is associated with the sport of association football.",
+      "- 2016–17 Serbian SuperLiga is associated with the sport of association football."
+     ],
+     "@overlay/facts/aaron-rodgers-sport-cricket": [
+      "- Aaron Rodgers is associated with the sport of cricket ([[facts/cricket-country-of-origin]]). (Fact 305, Session 31; supersedes earlier statement of American football from Fact 199, Session 20)"
+     ]
+    },
+    "verdict": "correct",
+    "note": "the only active cards naming the old value with its subject anchors are the new cards, which mark it as superseded (or none)"
+   },
+   {
+    "id": "mab-sh/factconsolidation_sh_32k/update/factconsolidation_sh_32k_no49",
+    "dir": "mab-sh__factconsolidation_sh_32k",
+    "session": 138,
+    "stale": [
+     "rugby union"
+    ],
+    "current": [
+     "association football"
+    ],
+    "evidence": {
+     "@overlay/facts/2009-six-nations-championship-sport-association-football": [
+      "- Supersedes earlier statement that 2009 Six Nations Championship is associated with the sport of rugby union."
+     ],
+     "@overlay/facts/asm-clermont-auvergne-sport": [
+      "ASM Clermont Auvergne sport: rugby union",
+      "ASM Clermont Auvergne rugby union",
+      "ASM Clermont Auvergne is associated with the sport of rugby union."
+     ],
+     "@overlay/facts/basketball-country-of-origin-soviet-union": [
+      "basketball country of origin: Soviet Union",
+      "basketball Soviet Union",
+      "basketball was created in the country of Soviet Union."
+     ],
+     "@overlay/facts/brook-lopez-position-shooting-guard": [
+      "- Brook Lopez plays the position of shooting guard. ([[facts/shooting-guard-sport-rugby]])"
+     ],
+     "@overlay/facts/busch-memorial-stadium-sport-rugby": [
+      "Busch Memorial Stadium sport: rugby",
+      "Busch Memorial Stadium rugby",
+      "Busch Memorial Stadium is associated with the sport of rugby."
+     ]
+    },
+    "verdict": "correct",
+    "note": "the only active cards naming the old value with its subject anchors are the new cards, which mark it as superseded (or none)"
+   },
+   {
+    "id": "mab-sh/factconsolidation_sh_32k/update/factconsolidation_sh_32k_no0",
+    "dir": "mab-sh__factconsolidation_sh_32k",
+    "session": 172,
+    "stale": [
+     "baseball"
+    ],
+    "current": [
+     "basketball"
+    ],
+    "evidence": {
+     "@overlay/facts/1949-world-series-sport": [
+      "1949 World Series sport: baseball",
+      "1949 World Series baseball",
+      "1949 World Series is associated with the sport of baseball."
+     ],
+     "@overlay/facts/a-j-pierzynski-sport": [
+      "A. J. Pierzynski sport: baseball",
+      "A. J. Pierzynski baseball",
+      "A. J. Pierzynski is associated with the sport of baseball."
+     ],
+     "@overlay/facts/alta-if-sport-baseball": [
+      "Alta IF sport: baseball",
+      "Alta IF baseball",
+      "Alta IF is associated with the sport of baseball."
+     ],
+     "@overlay/facts/baseball-country-of-origin-japan": [
+      "baseball country of origin: Japan",
+      "baseball country of origin",
+      "baseball created in"
+     ],
+     "@overlay/facts/big-league-world-series-sport-association-football": [
+      "- Big League World Series is associated with the sport of association football. (Session 81, Fact 810; supersedes baseball from Session 27, Fact 265)"
+     ]
+    },
+    "verdict": "correct",
+    "note": "the only active cards naming the old value with its subject anchors are the new cards, which mark it as superseded (or none)"
+   },
+   {
+    "id": "mab-sh/factconsolidation_sh_32k/update/factconsolidation_sh_32k_no60",
+    "dir": "mab-sh__factconsolidation_sh_32k",
+    "session": 161,
+    "stale": [
+     "roger ebert"
+    ],
+    "current": [
+     "john evelyn"
+    ],
+    "evidence": {
+     "@overlay/facts/news-from-nowhere-author-roger-williams": [
+      "News from Nowhere author: Roger Williams",
+      "Roger Williams News from Nowhere",
+      "The author of News from Nowhere is Roger Williams."
+     ],
+     "@overlay/facts/roger-ebert-citizenship": [
+      "Roger Ebert citizenship: United States of America",
+      "Roger Ebert citizenship",
+      "Roger Ebert nationality"
+     ],
+     "@overlay/facts/roger-williams-place-of-death": [
+      "Roger Williams place of death: Providence",
+      "Roger Williams death place",
+      "Roger Williams died in Providence"
+     ],
+     "@overlay/facts/the-great-movies-author-john-evelyn": [
+      "- The author of The Great Movies is John Evelyn (superseding the previous record of Roger Ebert)."
+     ]
+    },
+    "verdict": "correct",
+    "note": "the only active cards naming the old value with its subject anchors are the new cards, which mark it as superseded (or none)"
+   },
+   {
+    "id": "mab-sh/factconsolidation_sh_32k/update/factconsolidation_sh_32k_no69",
+    "dir": "mab-sh__factconsolidation_sh_32k",
+    "session": 217,
+    "stale": [
+     "pierre beaumarchais"
+    ],
+    "current": [
+     "thomas kyd"
+    ],
+    "evidence": {
+     "@overlay/facts/pierre-beaumarchais-birth-city": [
+      "Pierre Beaumarchais birth city: Paris",
+      "Pierre Beaumarchais birth city",
+      "Pierre Beaumarchais birthplace"
+     ],
+     "@overlay/facts/pierre-duhem-religion": [
+      "Pierre Duhem religion: Catholic Church",
+      "Pierre Duhem religion",
+      "Pierre Duhem religious affiliation"
+     ],
+     "@overlay/facts/the-marriage-of-figaro-author-thomas-kyd": [
+      "- This replaces the earlier statement that the author of The Marriage of Figaro is Pierre Beaumarchais."
+     ]
+    },
+    "verdict": "correct",
+    "note": "the only active cards naming the old value with its subject anchors are the new cards, which mark it as superseded (or none)"
+   },
+   {
+    "id": "mab-sh/factconsolidation_sh_32k/update/factconsolidation_sh_32k_no51",
+    "dir": "mab-sh__factconsolidation_sh_32k",
+    "session": 208,
+    "stale": [
+     "michael d. higgins"
+    ],
+    "current": [
+     "roch marc christian kaboré"
+    ],
+    "evidence": {
+     "@overlay/facts/agents-of-shield-original-broadcaster": [
+      "Agents of S.H.I.E.L.D. original broadcaster: American Broadcasting Company",
+      "Agents of S.H.I.E.L.D. original broadcaster",
+      "Agents of S.H.I.E.L.D. origianl broadcaster"
+     ],
+     "@overlay/facts/central-coast-mariners-fc-head-coach-michael-o-neill": [
+      "Central Coast Mariners FC head coach: Michael O'Neill",
+      "Michael O'Neill Central Coast Mariners FC",
+      "The head coach of Central Coast Mariners FC is Michael O'Neill."
+     ],
+     "@overlay/facts/clare-boothe-luce-work-location": [
+      "Clare Boothe Luce work location: Washington, D.C.",
+      "Clare Boothe Luce Washington, D.C.",
+      "Clare Boothe Luce worked in the city of Washington, D.C.."
+     ],
+     "@overlay/facts/houston-rockets-head-coach-carlo-ancelotti": [
+      "- The head coach of Houston Rockets is Carlo Ancelotti. (Fact 654, Session 66; supersedes Mike D'Antoni)"
+     ],
+     "@overlay/facts/howard-university-headquarters-mexico-city": [
+      "- The headquarters of Howard University is located in the city of Mexico City. (Fact 865, Session 87; supersedes Washington, D.C. from Fact 852, Session 86)"
+     ]
+    },
+    "verdict": "correct",
+    "note": "the only active cards naming the old value with its subject anchors are the new cards, which mark it as superseded (or none)"
+   },
+   {
+    "id": "mab-sh/factconsolidation_sh_32k/update/factconsolidation_sh_32k_no89",
+    "dir": "mab-sh__factconsolidation_sh_32k",
+    "session": 205,
+    "stale": [
+     "goalkeeper"
+    ],
+    "current": [
+     "midfielder"
+    ],
+    "evidence": {
+     "@overlay/facts/artur-boruc-position-midfielder": [
+      "- Artur Boruc plays the position of midfielder. (Fact 2053, Session 206; supersedes earlier statement of goalkeeper in Fact 1174, Session 118)"
+     ],
+     "@overlay/facts/brad-friedel-position-defender": [
+      "- Fact 1859 of 2310 (Session 186); supersedes earlier statement that Brad Friedel plays the position of goalkeeper."
+     ],
+     "@overlay/facts/david-seaman-position-midfielder": [
+      "- David Seaman plays the position of midfielder (stated in Session 188, Fact 1879, superseding goalkeeper)."
+     ],
+     "@overlay/facts/goalkeeper-sport-gaelic-football": [
+      "goalkeeper sport: Gaelic football",
+      "goalkeeper sport",
+      "goalkeeper Gaelic football"
+     ],
+     "@overlay/facts/heurelho-gomes-position-second-baseman": [
+      "- Heurelho Gomes plays the position of second baseman. (Fact 1555, Session 156; supersedes Fact 413, Session 42 which stated goalkeeper)"
+     ]
+    },
+    "verdict": "correct",
+    "note": "the only active cards naming the old value with its subject anchors are the new cards, which mark it as superseded (or none)"
+   },
+   {
+    "id": "mab-sh/factconsolidation_sh_32k/update/factconsolidation_sh_32k_no88",
+    "dir": "mab-sh__factconsolidation_sh_32k",
+    "session": 32,
+    "stale": [
+     "mikael agricola"
+    ],
+    "current": [
+     "stirling silliphanta"
+    ],
+    "evidence": {
+     "@overlay/facts/finnish-creator-stirling-silliphanta": [
+      "- Finnish was created by Stirling Silliphanta (Fact 330, Session 33, superseding Mikael Agricola from Fact 164, Session 17)."
+     ]
+    },
+    "verdict": "correct",
+    "note": "the only active cards naming the old value with its subject anchors are the new cards, which mark it as superseded (or none)"
+   },
+   {
+    "id": "mab-sh/factconsolidation_sh_32k/update/factconsolidation_sh_32k_no83",
+    "dir": "mab-sh__factconsolidation_sh_32k",
+    "session": 201,
+    "stale": [
+     "france"
+    ],
+    "current": [
+     "great britain"
+    ],
+    "evidence": {
+     "@overlay/facts/asif-ali-zardari-spouse-charles-vi-of-france": [
+      "Asif Ali Zardari spouse: Charles VI of France",
+      "Charles VI of France spouse",
+      "Asif Ali Zardari Charles VI of France marriage"
+     ],
+     "@overlay/facts/bernard-arnault-citizenship": [
+      "Bernard Arnault citizenship: France",
+      "Bernard Arnault is a citizen of France.",
+      "- Bernard Arnault is a citizen of France. ([[facts/france-capital]])"
+     ],
+     "@overlay/facts/cedric-klapisch-citizenship-malaysia": [
+      "- Cédric Klapisch is a citizen of Malaysia. (Fact 747, Session 75; supersedes earlier statement from Session 56 that he is a citizen of France)"
+     ],
+     "@overlay/facts/charles-messier-citizenship-iran": [
+      "- Charles Messier is a citizen of Iran. (Fact 866, Session 87; supersedes France from Fact 563, Session 57)"
+     ],
+     "@overlay/facts/charles-the-bold-citizenship": [
+      "Charles the Bold citizenship: France",
+      "Charles the Bold France",
+      "Charles the Bold is a citizen of France."
+     ]
+    },
+    "verdict": "correct",
+    "note": "the only active cards naming the old value with its subject anchors are the new cards, which mark it as superseded (or none)"
+   },
+   {
+    "id": "mab-sh/factconsolidation_sh_32k/update/factconsolidation_sh_32k_no77",
+    "dir": "mab-sh__factconsolidation_sh_32k",
+    "session": 74,
+    "stale": [
+     "france"
+    ],
+    "current": [
+     "malaysia"
+    ],
+    "evidence": {
+     "@overlay/facts/cedric-klapisch-citizenship-malaysia": [
+      "- Cédric Klapisch is a citizen of Malaysia. (Fact 747, Session 75; supersedes earlier statement from Session 56 that he is a citizen of France)"
+     ],
+     "@overlay/facts/charles-de-gaulle-citizenship": [
+      "Charles de Gaulle citizenship: France",
+      "Charles de Gaulle citizen of France",
+      "Charles de Gaulle is a citizen of France."
+     ],
+     "@overlay/facts/charles-messier-citizenship": [
+      "Charles Messier citizenship: France",
+      "Charles Messier citizen of France",
+      "Charles Messier is a citizen of France."
+     ],
+     "@overlay/facts/charles-vi-of-france-place-of-death": [
+      "Charles VI of France place of death: Paris",
+      "Charles VI of France place of death",
+      "Charles VI of France died in Paris"
+     ],
+     "@overlay/facts/coco-chanel-place-of-death": [
+      "- Related: [[facts/france-capital]]"
+     ]
+    },
+    "verdict": "correct",
+    "note": "the only active cards naming the old value with its subject anchors are the new cards, which mark it as superseded (or none)"
+   },
+   {
+    "id": "mab-sh/factconsolidation_sh_32k/update/factconsolidation_sh_32k_no99",
+    "dir": "mab-sh__factconsolidation_sh_32k",
+    "session": 187,
+    "stale": [
+     "goalkeeper"
+    ],
+    "current": [
+     "midfielder"
+    ],
+    "evidence": {
+     "@overlay/facts/artur-boruc-position": [
+      "Artur Boruc position: goalkeeper",
+      "Artur Boruc goalkeeper",
+      "Artur Boruc plays the position of goalkeeper."
+     ],
+     "@overlay/facts/brad-friedel-position-defender": [
+      "- Fact 1859 of 2310 (Session 186); supersedes earlier statement that Brad Friedel plays the position of goalkeeper."
+     ],
+     "@overlay/facts/david-seaman-position-midfielder": [
+      "- David Seaman plays the position of midfielder (stated in Session 188, Fact 1879, superseding goalkeeper)."
+     ],
+     "@overlay/facts/goalkeeper-sport": [
+      "goalkeeper sport: association football",
+      "goalkeeper sport",
+      "goalkeeper associated sport"
+     ],
+     "@overlay/facts/heurelho-gomes-position-second-baseman": [
+      "- Heurelho Gomes plays the position of second baseman. (Fact 1555, Session 156; supersedes Fact 413, Session 42 which stated goalkeeper)"
+     ]
+    },
+    "verdict": "correct",
+    "note": "the only active cards naming the old value with its subject anchors are the new cards, which mark it as superseded (or none)"
+   },
+   {
+    "id": "mab-sh/factconsolidation_sh_32k/update/factconsolidation_sh_32k_no20",
+    "dir": "mab-sh__factconsolidation_sh_32k",
+    "session": 179,
+    "stale": [
+     "point guard"
+    ],
+    "current": [
+     "shooting guard"
+    ],
+    "evidence": {
+     "@overlay/facts/basketball-country-of-origin-soviet-union": [
+      "- Related basketball facts: [[facts/sam-cassell-sport]], [[facts/jonas-kazlauskas-sport]], [[facts/small-forward-sport]], [[facts/kk-crvena-zvezda-sport]], [[facts/2004-nba-draft-sport]], [[facts/2009-wnba-season-sport]], [[facts/philippine-basketball-association-draft-sport]], [[facts/point-guard-sport]]"
+     ],
+     "@overlay/facts/brook-lopez-position-shooting-guard": [
+      "Brook Lopez position: shooting guard",
+      "Brook Lopez shooting guard",
+      "Brook Lopez plays the position of shooting guard."
+     ],
+     "@overlay/facts/carlos-boozer-position-shooting-guard": [
+      "Carlos Boozer position: shooting guard",
+      "Carlos Boozer shooting guard",
+      "Carlos Boozer plays the position of shooting guard."
+     ],
+     "@overlay/facts/chicago-founder": [
+      "Chicago founder: Jean Baptiste Point du Sable",
+      "Chicago Jean Baptiste Point du Sable",
+      "Chicago was founded by Jean Baptiste Point du Sable."
+     ],
+     "@overlay/facts/cris-carter-position-point-guard": [
+      "Cris Carter position: point guard",
+      "Cris Carter point guard",
+      "Cris Carter plays the position of point guard."
+     ]
+    },
+    "verdict": "correct",
+    "note": "the only active cards naming the old value with its subject anchors are the new cards, which mark it as superseded (or none)"
+   },
+   {
+    "id": "mab-sh/factconsolidation_sh_32k/update/factconsolidation_sh_32k_no92",
+    "dir": "mab-sh__factconsolidation_sh_32k",
+    "session": 185,
+    "stale": [
+     "ford motor company"
+    ],
+    "current": [
+     "blue origin"
+    ],
+    "evidence": {
+     "@overlay/facts/666-park-avenue-original-broadcaster": [
+      "666 Park Avenue original broadcaster: American Broadcasting Company",
+      "The origianl broadcaster of 666 Park Avenue is American Broadcasting Company.",
+      "- The origianl broadcaster of 666 Park Avenue is American Broadcasting Company. (Fact 982, Session 99)"
+     ],
+     "@overlay/facts/agents-of-shield-original-broadcaster": [
+      "Agents of S.H.I.E.L.D. original broadcaster: American Broadcasting Company",
+      "The origianl broadcaster of Agents of S.H.I.E.L.D. is American Broadcasting Company.",
+      "- The origianl broadcaster of Agents of S.H.I.E.L.D. is American Broadcasting Company. (Fact 1275, Session 128)"
+     ],
+     "@overlay/facts/amd-accelerated-processing-unit-producer": [
+      "company that produced AMD Accelerated Processing Unit",
+      "The company that produced AMD Accelerated Processing Unit is Advanced Micro Devices.",
+      "- The company that produced AMD Accelerated Processing Unit is Advanced Micro Devices."
+     ],
+     "@overlay/facts/american-broadcasting-company-director-ernst-heinkel": [
+      "American Broadcasting Company director: Ernst Heinkel",
+      "American Broadcasting Company director",
+      "director of American Broadcasting Company"
+     ],
+     "@overlay/facts/american-broadcasting-company-headquarters": [
+      "American Broadcasting Company headquarters: New York City",
+      "American Broadcasting Company headquarters",
+      "American Broadcasting Company New York City"
+     ]
+    },
+    "verdict": "correct",
+    "note": "the only active cards naming the old value with its subject anchors are the new cards, which mark it as superseded (or none)"
+   }
+  ],
+  "flips": []
+ },
+ "rule": "PLAN.md section 9a: every flagged case, plus 15 passes (not pre-registered); a case flagged by both matchers is judged once"
+}

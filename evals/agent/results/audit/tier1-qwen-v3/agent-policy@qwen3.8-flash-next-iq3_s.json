@@ -1,0 +1,1904 @@
+{
+ "cell": "agent-policy@qwen3.8-flash-next-iq3_s",
+ "population": {
+  "retired": 122,
+  "lost": 13,
+  "passes": 159,
+  "flips": 0
+ },
+ "cases": {
+  "retired": [
+   {
+    "id": "meme-nofiller/pl_050/update/2#5",
+    "dir": "meme-nofiller__pl_050",
+    "session": 2,
+    "stale": [
+     "thyranote",
+     "meal kit (kelvimeal)"
+    ],
+    "current": [
+     "dranthazon"
+    ],
+    "evidence": {
+     "@overlay/tools/kelvimeal-meal-kit": [
+      "Kelvimeal meal kit subscription",
+      "User is subscribed to a meal kit delivery service called Kelvimeal, and values meal kits for introducing new ingredients and cooking techniques they wouldn't try otherwise.",
+      "- User is subscribed to a meal kit delivery service called Kelvimeal (stated 2023-03-02)."
+     ],
+     "@overlay/tools/thyranote-note-taking": [
+      "Thyranote subscription used for note-taking and organization",
+      "Thyranote",
+      "User is subscribed to Thyranote, a note-taking/organization platform, and uses it mainly to organize thoughts and track important information; they like its user-friendly interface."
+     ]
+    },
+    "verdict": "correct",
+    "note": "a statement line or link presents the old value as current"
+   },
+   {
+    "id": "meme-nofiller/pl_009/update/4#1",
+    "dir": "meme-nofiller__pl_009",
+    "session": 4,
+    "stale": [
+     "tendinitis"
+    ],
+    "current": [
+     "chronic migraine"
+    ],
+    "evidence": {
+     "@overlay/health/multivitamin": [
+      "The user takes a multivitamin consistently to cover nutrient needs; unrelated, they also report a health condition, tendinitis (see health/tendinitis)."
+     ],
+     "@overlay/hobbies/running-club": [
+      "- Staying active is complicated by their health condition [[health/tendinitis]]."
+     ]
+    },
+    "verdict": "correct",
+    "note": "a statement line or link presents the old value as current"
+   },
+   {
+    "id": "meme-nofiller/pl_012/update/4#1",
+    "dir": "meme-nofiller__pl_012",
+    "session": 4,
+    "stale": [
+     "dating"
+    ],
+    "current": [
+     "married"
+    ],
+    "evidence": {
+     "@overlay/volunteer/community-service-group": [
+      "- They are dating ([[people/partner-mike]], [[people/relationship-status-dating]]) and wondered whether a supportive partner enhances involvement in volunteer work; whether their partner takes part in volunteering is unconfirmed."
+     ]
+    },
+    "verdict": "correct",
+    "note": "a statement line or link presents the old value as current"
+   },
+   {
+    "id": "meme-nofiller/pl_016/update/2#5",
+    "dir": "meme-nofiller__pl_016",
+    "session": 2,
+    "stale": [
+     "therwyn compact",
+     "dranthis pickup"
+    ],
+    "current": [
+     "vorantel suv"
+    ],
+    "evidence": {
+     "@overlay/hobbies/golf": [
+      "- Golf gear and trips are one reason their pickup is useful for transporting equipment ([[transport/dranthis-pickup]])."
+     ]
+    },
+    "verdict": "correct",
+    "note": "a statement line or link presents the old value as current"
+   },
+   {
+    "id": "meme-nofiller/pl_024/update/2#5",
+    "dir": "meme-nofiller__pl_024",
+    "session": 2,
+    "stale": [
+     "sarah",
+     "jessica"
+    ],
+    "current": [
+     "taylor"
+    ],
+    "evidence": {
+     "@overlay/user/hobbies/basketball-pickup-games": [
+      "- Sports are a shared interest with their partner [[user/partner-jessica]]."
+     ]
+    },
+    "verdict": "correct",
+    "note": "a statement line or link presents the old value as current"
+   },
+   {
+    "id": "meme-nofiller/pl_006/update/1#7",
+    "dir": "meme-nofiller__pl_006",
+    "session": 1,
+    "stale": [
+     "whispers of zarinthea (tv)"
+    ],
+    "current": [
+     "thyrelion (anime)"
+    ],
+    "evidence": {
+     "@overlay/user/tv-show-whispers-of-zarinthea": [
+      "User started watching the show \"Whispers of Zarinthea\"",
+      "Whispers of Zarinthea",
+      "As of March 2023 the user recently started watching a show called \"Whispers of Zarinthea\" and asked for other show recommendations."
+     ]
+    },
+    "verdict": "correct",
+    "note": "a statement line or link presents the old value as current"
+   },
+   {
+    "id": "meme-nofiller/pl_047/update/1#5",
+    "dir": "meme-nofiller__pl_047",
+    "session": 1,
+    "stale": [
+     "therwyn compact"
+    ],
+    "current": [
+     "vorantel suv"
+    ],
+    "evidence": {
+     "@overlay/user/car-vorentel-suv": [
+      "As of 2023-03-01 the user drives a Vorentel SUV, calling it \"pretty convenient for my daily activities\"; their earlier car was a Therwyn Compact."
+     ]
+    },
+    "verdict": "matching error",
+    "note": "the old car marked past ('their earlier car was a Therwyn Compact'; 'earlier' isn't a v3 marker) on a card naming the current one misspelt ('Vorentel SUV')"
+   },
+   {
+    "id": "meme-nofiller/sw_036/update/2#3",
+    "dir": "meme-nofiller__sw_036",
+    "session": 2,
+    "stale": [
+     "selvex secrets",
+     "kerberos trove"
+    ],
+    "current": [
+     "orinthal sealed"
+    ],
+    "evidence": {
+     "@overlay/project/deploy-target-narvex-cloud": [
+      "- Related stack: secrets live in [[project/secret-manager-selvex]]; logs drain to [[project/log-drain-velturis-aurora]]."
+     ]
+    },
+    "verdict": "correct",
+    "note": "a statement line or link presents the old value as current"
+   },
+   {
+    "id": "meme-nofiller/pl_029/update/1#7",
+    "dir": "meme-nofiller__pl_029",
+    "session": 1,
+    "stale": [
+     "whispers of zarinthea (tv)"
+    ],
+    "current": [
+     "thyrelion (anime)"
+    ],
+    "evidence": {
+     "@overlay/user-current-media-whispers-of-zarinthea": [
+      "User's current media in March 2023: \"Whispers of Zarinthea\" (TV)",
+      "Whispers of Zarinthea TV",
+      "As of 2023-03-01 the user's current media is the TV show \"Whispers of Zarinthea\"; they asked for similar recommendations."
+     ]
+    },
+    "verdict": "correct",
+    "note": "a statement line or link presents the old value as current"
+   },
+   {
+    "id": "meme-nofiller/pl_032/update/4#1",
+    "dir": "meme-nofiller__pl_032",
+    "session": 4,
+    "stale": [
+     "in a relationship"
+    ],
+    "current": [
+     "married"
+    ],
+    "evidence": {
+     "@overlay/user-conversation-style": [
+      "- On 2023-03-04 the user explicitly annotated facts as conditional: \"this depends on the fact that I'm in a relationship; if that changes, this would change\" — record such statements with an explicit dependency on [[user-relationship-status]] rather than as unconditional facts."
+     ]
+    },
+    "verdict": "matching error",
+    "note": "a conversation-style card quoting the user's phrasing as an example ('this depends on the fact that I'm in a relationship'), not as a fact"
+   },
+   {
+    "id": "meme-nofiller/pl_026/update/2#5",
+    "dir": "meme-nofiller__pl_026",
+    "session": 2,
+    "stale": [
+     "thyranote",
+     "meal kit (kelvimeal)"
+    ],
+    "current": [
+     "pyrethon plus"
+    ],
+    "evidence": {
+     "@overlay/hobbies/pickleball": [
+      "- They sometimes need post-game meals, which is when their meal kit subscription comes in handy (see [[tools/kelvimeal-meal-kit]])."
+     ],
+     "@overlay/personal/favorite-restaurant": [
+      "- Their own words: \"They have an amazing menu with a variety of healthy options\" — the healthy menu is why they like it, consistent with their [[tools/kelvimeal-meal-kit]] meal-kit subscription."
+     ],
+     "@overlay/tools/kelvimeal-meal-kit": [
+      "Subscribed to Kelvimeal meal kit service",
+      "User is subscribed to a meal kit service called Kelvimeal for meal prep (e.g. after pickleball games); they rate the meals as pretty good and like the variety offered.",
+      "User is subscribed to a meal kit service called **Kelvimeal**, mentioned in the context of meal prep after pickleball games ([[hobbies/pickleball]])."
+     ]
+    },
+    "verdict": "correct",
+    "note": "a statement line or link presents the old value as current"
+   },
+   {
+    "id": "meme-nofiller/sw_003/update/1#3",
+    "dir": "meme-nofiller__sw_003",
+    "session": 1,
+    "stale": [
+     "karnex pack"
+    ],
+    "current": [
+     "quorix hub"
+    ],
+    "evidence": {
+     "@overlay/project/aurora-package-manager": [
+      "Team package manager is Karnex Pack",
+      "Karnex Pack",
+      "The team's package manager is Karnex Pack, used to manage dependencies and streamline their build process."
+     ]
+    },
+    "verdict": "correct",
+    "note": "a statement line or link presents the old value as current"
+   },
+   {
+    "id": "meme-nofiller/pl_006/update/2#5",
+    "dir": "meme-nofiller__pl_006",
+    "session": 2,
+    "stale": [
+     "whispers of zarinthea (tv)",
+     "thyrelion (anime)"
+    ],
+    "current": [
+     "a history documentary series"
+    ],
+    "evidence": {
+     "@overlay/user/tv-show-whispers-of-zarinthea": [
+      "User started watching the show \"Whispers of Zarinthea\"",
+      "Whispers of Zarinthea",
+      "As of March 2023 the user recently started watching a show called \"Whispers of Zarinthea\" and asked for other show recommendations."
+     ]
+    },
+    "verdict": "correct",
+    "note": "a statement line or link presents the old value as current"
+   },
+   {
+    "id": "meme-nofiller/sw_050/update/4#1",
+    "dir": "meme-nofiller__sw_050",
+    "session": 4,
+    "stale": [
+     "thandrel infra"
+    ],
+    "current": [
+     "zephyra platform"
+    ],
+    "evidence": {
+     "@overlay/aurora/docker-image": [
+      "- Part of the Aurora toolchain described on 2023-03-01: [[aurora/project-docs-site]], [[aurora/secret-manager-kerberos-trove]], [[aurora/deploy-infra-thandrel]], [[aurora/package-manager-dranith-stack]].",
+      "- On 2023-03-04 the user said this image value is determined by their infrastructure (they deploy on [[aurora/deploy-infra-thandrel]]): \"if that changes, this would change\"."
+     ],
+     "@overlay/aurora/monitoring-dashboard-zephyra": [
+      "- Pairs with the team's deployment platform [[aurora/deploy-infra-thandrel]]."
+     ],
+     "@overlay/aurora/package-manager-dranith-stack": [
+      "- Related stack cards: [[aurora/project-docs-site]], [[aurora/secret-manager-kerberos-trove]], [[aurora/deploy-infra-thandrel]], [[aurora/docker-image]]."
+     ]
+    },
+    "verdict": "correct",
+    "note": "a statement line or link presents the old value as current"
+   },
+   {
+    "id": "meme-nofiller/pl_007/update/2#3",
+    "dir": "meme-nofiller__pl_007",
+    "session": 2,
+    "stale": [
+     "thyrelion (anime)",
+     "a history documentary series"
+    ],
+    "current": [
+     "xelvari dawn (book)"
+    ],
+    "evidence": {
+     "@overlay/user/anime-interest": [
+      "User watches anime; in March 2023 was watching Thyrelion",
+      "Thyrelion",
+      "The user watches anime; as of 2023-03-01 they were watching \"Thyrelion\", which they called an interesting anime with a unique storyline."
+     ],
+     "@overlay/user/media-preference-history-documentaries": [
+      "User's current media is a history documentary series",
+      "As of 2023-03-01 the user's current media is a history documentary series, which they find \"really engaging and informative\"; they welcome documentary recommendations.",
+      "- The user's \"current media is a history documentary series\" (stated 2023-03-01); they find history documentaries \"really engaging and informative\"."
+     ]
+    },
+    "verdict": "correct",
+    "note": "a statement line or link presents the old value as current"
+   },
+   {
+    "id": "meme-nofiller/pl_014/update/1#7",
+    "dir": "meme-nofiller__pl_014",
+    "session": 1,
+    "stale": [
+     "daily journal subscription"
+    ],
+    "current": [
+     "dranthazon"
+    ],
+    "evidence": {
+     "@overlay/habits/daily-journal-subscription": [
+      "User keeps a journal via a Daily Journal subscription",
+      "The user is subscribed to a Daily Journal subscription and says it really helps them keep track of their thoughts and daily activities.",
+      "The user states: \"I've been subscribed to a Daily Journal subscription. It really helps me keep track of my thoughts and daily activities.\""
+     ]
+    },
+    "verdict": "correct",
+    "note": "a statement line or link presents the old value as current"
+   },
+   {
+    "id": "meme-nofiller/pl_022/update/2#3",
+    "dir": "meme-nofiller__pl_022",
+    "session": 2,
+    "stale": [
+     "james",
+     "alex"
+    ],
+    "current": [
+     "taylor"
+    ],
+    "evidence": {
+     "@overlay/user/hobbies/tennis": [
+      "- They are open to practice drills and to working on the serve with a practice partner ([[user/people/tennis-partner-alex]])."
+     ]
+    },
+    "verdict": "correct",
+    "note": "a statement line or link presents the old value as current"
+   },
+   {
+    "id": "meme-nofiller/pl_026/update/1#5",
+    "dir": "meme-nofiller__pl_026",
+    "session": 1,
+    "stale": [
+     "thyranote"
+    ],
+    "current": [
+     "meal kit (kelvimeal)"
+    ],
+    "evidence": {
+     "@overlay/tools/thyranote-subscription": [
+      "Subscribed to Thyranote for tracking guitar practice",
+      "Thyranote",
+      "User is subscribed to Thyranote and finds it helpful for tracking practice sessions and learning new songs."
+     ]
+    },
+    "verdict": "correct",
+    "note": "a statement line or link presents the old value as current"
+   },
+   {
+    "id": "meme-nofiller/sw_047/update/4#1",
+    "dir": "meme-nofiller__sw_047",
+    "session": 4,
+    "stale": [
+     "verithos auth"
+    ],
+    "current": [
+     "zenthos id"
+    ],
+    "evidence": {
+     "@overlay/project/config-dependency-statements-and-hypotheticals": [
+      "- The user (2023-03-04) reports project config values together with what determines them, e.g. \"this is determined by our auth provider (Verithos Auth); if we switch providers, this would change\" — record those dependencies, not just the value."
+     ]
+    },
+    "verdict": "matching error",
+    "note": "a card about how the user states config values, quoting an earlier example"
+   },
+   {
+    "id": "meme-nofiller/pl_019/update/1#7",
+    "dir": "meme-nofiller__pl_019",
+    "session": 1,
+    "stale": [
+     "the quorath codex (book)"
+    ],
+    "current": [
+     "a daily news podcast"
+    ],
+    "evidence": {
+     "@overlay/user/current-media-quorath-codex": [
+      "User's current media (2023-03-01): the book The Quorath Codex",
+      "Quorath Codex",
+      "As of 2023-03-01 the user's current media is a book titled \"The Quorath Codex\" (fantasy/sci-fi sounding); this value is expected to change over time."
+     ]
+    },
+    "verdict": "correct",
+    "note": "a statement line or link presents the old value as current"
+   },
+   {
+    "id": "meme-nofiller/pl_028/update/2#5",
+    "dir": "meme-nofiller__pl_028",
+    "session": 2,
+    "stale": [
+     "zorvista premium",
+     "dranthazon"
+    ],
+    "current": [
+     "pyrethon plus"
+    ],
+    "evidence": {
+     "@overlay/hobbies/basketball": [
+      "User plays basketball recreationally and is focused on improving shooting accuracy; they practice shooting \"a couple of times a week\" and use Dranthazon training content.",
+      "- Learning resource: Dranthazon subscription content on shooting techniques [[subscriptions/dranthazon]]."
+     ],
+     "@overlay/subscriptions/dranthazon": [
+      "User is subscribed to Dranthazon for basketball training content",
+      "Dranthazon",
+      "User is a Dranthazon subscriber (as of 2023-03-03) and says it offers a lot of content that helps with basketball training, including shooting techniques."
+     ],
+     "@overlay/subscriptions/zorvista-premium": [
+      "User subscribes to Zorvista Premium and values its paid features",
+      "User is a paying subscriber to Zorvista Premium and says it \"has some great features that enhance my experience.\"",
+      "- User is subscribed to Zorvista Premium (a streaming/subscription service)."
+     ]
+    },
+    "verdict": "correct",
+    "note": "a statement line or link presents the old value as current"
+   },
+   {
+    "id": "meme-nofiller/pl_045/update/1#5",
+    "dir": "meme-nofiller__pl_045",
+    "session": 1,
+    "stale": [
+     "xelvoria"
+    ],
+    "current": [
+     "zorvista premium"
+    ],
+    "evidence": {
+     "@overlay/media/currently-watching-veldrakon-spiral": [
+      "- Their streaming access may relate to [[@overlay/subscriptions/xelvoria]]."
+     ],
+     "@overlay/subscriptions/xelvoria": [
+      "User is subscribed to Xelvoria",
+      "Xelvoria subscription",
+      "Xelvoria subscriber"
+     ]
+    },
+    "verdict": "correct",
+    "note": "a statement line or link presents the old value as current"
+   },
+   {
+    "id": "meme-nofiller/sw_028/update/2#3",
+    "dir": "meme-nofiller__sw_028",
+    "session": 2,
+    "stale": [
+     "tarvex mod",
+     "quorix hub"
+    ],
+    "current": [
+     "veltrion pkg"
+    ],
+    "evidence": {
+     "@overlay/project/design-system": [
+      "- No recorded convention yet on component adoption rules, design reviews in the PR flow, or how the kit is versioned/distributed (e.g. via [[project/package-manager-quorix-hub]])."
+     ]
+    },
+    "verdict": "correct",
+    "note": "a statement line or link presents the old value as current"
+   },
+   {
+    "id": "meme-nofiller/pl_029/update/4#1",
+    "dir": "meme-nofiller__pl_029",
+    "session": 4,
+    "stale": [
+     "quivira springs community college"
+    ],
+    "current": [
+     "ms in cs at quessara university"
+    ],
+    "evidence": {
+     "@overlay/user-conversation-style": [
+      "- In the 2023-03-03 session the user volunteered several facts in the same structured form — \"My X is … — this depends on the fact that I'm studying at Quivira Springs Community College; if that changes, my Y would change. Do you have any thoughts on that?\" — pairing each fact with an explicit dependency and asking for the assistant's thoughts (work hours, financial goal, a hypothetical school change)."
+     ]
+    },
+    "verdict": "matching error",
+    "note": "a conversation-style card quoting the user's earlier structured statements"
+   },
+   {
+    "id": "meme-nofiller/sw_007/update/1#3",
+    "dir": "meme-nofiller__sw_007",
+    "session": 1,
+    "stale": [
+     "cryptara vault"
+    ],
+    "current": [
+     "verisigil lock"
+    ],
+    "evidence": {
+     "@overlay/team-ops/oncall-rotation": [
+      "- Related team ops context: [[team-ops/secrets-manager-cryptara-vault]], [[team-ops/database-backup-schedule]], [[team-ops/log-stream-velturis-aurora]], [[team-ops/release-cadence-biweekly-friday]]."
+     ]
+    },
+    "verdict": "correct",
+    "note": "a statement line or link presents the old value as current"
+   },
+   {
+    "id": "meme-nofiller/sw_045/update/4#1",
+    "dir": "meme-nofiller__sw_045",
+    "session": 4,
+    "stale": [
+     "sarah chen"
+    ],
+    "current": [
+     "yuna park"
+    ],
+    "evidence": {
+     "@overlay/team/approval-authority-cto-soojung-lim": [
+      "- Separate from day-to-day guidance, which comes from team lead [[team/lead-sarah-chen]]."
+     ],
+     "@overlay/team/weekly-report-recipient-soyeon-park": [
+      "- Other team roles: lead [[team/lead-sarah-chen]], approval authority [[team/approval-authority-cto-soojung-lim]]."
+     ]
+    },
+    "verdict": "correct",
+    "note": "a statement line or link presents the old value as current"
+   },
+   {
+    "id": "meme-nofiller/sw_046/update/2#3",
+    "dir": "meme-nofiller__sw_046",
+    "session": 2,
+    "stale": [
+     "verisigil lock",
+     "pyronos crypt"
+    ],
+    "current": [
+     "orinthal sealed"
+    ],
+    "evidence": {
+     "@overlay/project/framework-quenthar": [
+      "- Distinct from Pyronis Bundle (package manager) and Pyronos Crypt (secret manager)."
+     ],
+     "@overlay/project/package-manager-pyronis-bundle": [
+      "- Distinct from Pyronos Crypt, the team's secret manager — the similar-sounding names refer to two different tools."
+     ]
+    },
+    "verdict": "correct",
+    "note": "a statement line or link presents the old value as current"
+   },
+   {
+    "id": "meme-nofiller/sw_011/update/1#3",
+    "dir": "meme-nofiller__sw_011",
+    "session": 1,
+    "stale": [
+     "karnex pack"
+    ],
+    "current": [
+     "dranith stack"
+    ],
+    "evidence": {
+     "@overlay/project/quenthar/default-branch-release": [
+      "- Related: [[project/quenthar/framework]], [[project/quenthar/package-manager-karnex-pack]]."
+     ],
+     "@overlay/project/quenthar/design-system": [
+      "- Related team tools: [[project/quenthar/framework]], [[project/quenthar/package-manager-karnex-pack]]."
+     ]
+    },
+    "verdict": "correct",
+    "note": "a statement line or link presents the old value as current"
+   },
+   {
+    "id": "meme-nofiller/sw_007/update/2#3",
+    "dir": "meme-nofiller__sw_007",
+    "session": 2,
+    "stale": [
+     "cryptara vault",
+     "verisigil lock"
+    ],
+    "current": [
+     "sigilix manager"
+    ],
+    "evidence": {
+     "@overlay/team-ops/oncall-rotation": [
+      "- Related team ops context: [[team-ops/secrets-manager-cryptara-vault]], [[team-ops/database-backup-schedule]], [[team-ops/log-stream-velturis-aurora]], [[team-ops/release-cadence-biweekly-friday]]."
+     ]
+    },
+    "verdict": "correct",
+    "note": "a statement line or link presents the old value as current"
+   },
+   {
+    "id": "meme-nofiller/pl_039/update/1#5",
+    "dir": "meme-nofiller__pl_039",
+    "session": 1,
+    "stale": [
+     "whispers of zarinthea (tv)"
+    ],
+    "current": [
+     "a true crime podcast"
+    ],
+    "evidence": {
+     "@overlay/media/currently-watching-whispers-of-zarinthea": [
+      "Current media: Whispers of Zarinthea (TV series)",
+      "whispers of zarinthea",
+      "As of 2023-03-01 the user's current media is the TV series \"Whispers of Zarinthea\", which they find captivating for its storyline."
+     ]
+    },
+    "verdict": "correct",
+    "note": "a statement line or link presents the old value as current"
+   },
+   {
+    "id": "meme-nofiller/sw_014/update/4#1",
+    "dir": "meme-nofiller__sw_014",
+    "session": 4,
+    "stale": [
+     "alex kim"
+    ],
+    "current": [
+     "yuna park"
+    ],
+    "evidence": {
+     "@overlay/team/weekly-report-recipient-taehyun-kim": [
+      "- Other team roles: team lead [[team/team-lead-alex-kim]], code reviewer [[team/code-reviewer-sujin-yoo]]."
+     ],
+     "@overlay/team/weekly-team-meeting-monday-11am": [
+      "- Related: the team's weekly report goes to Taehyun Kim ([[team/weekly-report-recipient-taehyun-kim]]); team lead is Alex Kim ([[team/team-lead-alex-kim]])."
+     ]
+    },
+    "verdict": "correct",
+    "note": "a statement line or link presents the old value as current"
+   },
+   {
+    "id": "meme-nofiller/pl_012/update/1#5",
+    "dir": "meme-nofiller__pl_012",
+    "session": 1,
+    "stale": [
+     "zyvanta sedan"
+    ],
+    "current": [
+     "dranthis pickup"
+    ],
+    "evidence": {
+     "@overlay/hobbies/gardening": [
+      "- Related: [[transport/vehicle-zyvanta-sedan]], [[hobbies/pickup-basketball-saturdays]]."
+     ],
+     "@overlay/transport/vehicle-zyvanta-sedan": [
+      "User's car: Zyvanta Sedan (reliable, no reported issues)",
+      "Zyvanta sedan",
+      "The user owns a Zyvanta Sedan that has been reliable for their needs; relevant to car-care and road-trip advice."
+     ],
+     "@overlay/travel/cross-country-road-trip-2023": [
+      "- Likely vehicle: [[transport/vehicle-zyvanta-sedan]]."
+     ]
+    },
+    "verdict": "correct",
+    "note": "a statement line or link presents the old value as current"
+   },
+   {
+    "id": "meme-nofiller/pl_044/update/4#1",
+    "dir": "meme-nofiller__pl_044",
+    "session": 4,
+    "stale": [
+     "high blood pressure"
+    ],
+    "current": [
+     "herniated disc"
+    ],
+    "evidence": {
+     "@overlay/profile/contingent-exercise-yoga-if-health-changes": [
+      "- Their current routine is walking daily, which they tie to their high blood pressure [[profile/exercise-routine-walking-daily]] [[health/high-blood-pressure]]; the yoga plan is the stated replacement, not something they currently do."
+     ],
+     "@overlay/profile/contingent-sleep-1am-9am-if-health-changes": [
+      "- Their current sleep pattern is \"varies by shift\", which they attribute to their high blood pressure [[profile/sleep-pattern-varies-by-shift]] [[health/high-blood-pressure]]; the 1am-9am schedule is the stated replacement, not their current schedule."
+     ],
+     "@overlay/profile/running-club": [
+      "- Related activity: they also play basketball [[profile/basketball-pickup-games]]; running is also relevant to their blood-pressure management [[health/high-blood-pressure]]."
+     ]
+    },
+    "verdict": "correct",
+    "note": "a statement line or link presents the old value as current"
+   },
+   {
+    "id": "meme-nofiller/sw_011/update/2#3",
+    "dir": "meme-nofiller__sw_011",
+    "session": 2,
+    "stale": [
+     "karnex pack",
+     "dranith stack"
+    ],
+    "current": [
+     "synthari modules"
+    ],
+    "evidence": {
+     "@overlay/project/quenthar/build-test-coverage-policy": [
+      "- Related: [[project/quenthar/team-stack]], [[project/quenthar/default-branch-release]], [[project/quenthar/package-manager-dranith-stack]]."
+     ],
+     "@overlay/project/quenthar/default-branch-release": [
+      "- Related: [[project/quenthar/framework]], [[project/quenthar/package-manager-karnex-pack]]."
+     ],
+     "@overlay/project/quenthar/design-system": [
+      "- Related team tools: [[project/quenthar/framework]], [[project/quenthar/package-manager-karnex-pack]]."
+     ]
+    },
+    "verdict": "correct",
+    "note": "a statement line or link presents the old value as current"
+   },
+   {
+    "id": "meme-nofiller/pl_037/update/1#5",
+    "dir": "meme-nofiller__pl_037",
+    "session": 1,
+    "stale": [
+     "a daily news podcast"
+    ],
+    "current": [
+     "thyrelion (anime)"
+    ],
+    "evidence": {
+     "@overlay/profile/media-daily-news-podcast": [
+      "User's current media: a daily news podcast, mixed-topic news",
+      "User's current media consumption is a daily news podcast, which they use to stay updated on current events while multitasking; they prefer a mix of news topics for a well-rounded perspective.",
+      "title: \"User's current media: a daily news podcast, mixed-topic news\""
+     ]
+    },
+    "verdict": "correct",
+    "note": "a statement line or link presents the old value as current"
+   },
+   {
+    "id": "meme-nofiller/pl_039/update/4#1",
+    "dir": "meme-nofiller__pl_039",
+    "session": 4,
+    "stale": [
+     "ms in cs at quessara university"
+    ],
+    "current": [
+     "online bootcamp (coding)"
+    ],
+    "evidence": {
+     "@overlay/education/ms-cs-quessara-university": [
+      "User is studying for an MS in CS at Quessara University"
+     ],
+     "@overlay/languages/japanese-if-school-changes": [
+      "- This is a plan contingent on changing schools ([[education/ms-cs-quessara-university]]); they did not say they are studying Japanese now."
+     ],
+     "@overlay/languages/spanish-in-current-program": [
+      "- So the Spanish study is tied to their current school/program ([[education/ms-cs-quessara-university]]), not something they stated as independent of it."
+     ]
+    },
+    "verdict": "correct",
+    "note": "a statement line or link presents the old value as current"
+   },
+   {
+    "id": "meme-nofiller/pl_023/update/4#1",
+    "dir": "meme-nofiller__pl_023",
+    "session": 4,
+    "stale": [
+     "lactose intolerance"
+    ],
+    "current": [
+     "pre-diabetes"
+    ],
+    "evidence": {
+     "@overlay/health/diet-low-sodium": [
+      "- Update 2023-03-02: in a separate exchange the user also stated \"My health condition is lactose intolerance\" (see [[health/lactose-intolerance]]); whether they follow both low-sodium and dairy-free rules at once was never clarified, so keep both restrictions in mind."
+     ],
+     "@overlay/life/user-states-dependencies-and-contingencies": [
+      "- Examples: dentist every 6 months, sleep midnight–8am, and yoga 2x/week were each described as determined by their lactose intolerance ([[health/dentist-appointment-6-months]], [[health/sleep-pattern-midnight-8am]], [[health/exercise-routine-yoga-2x-week]])."
+     ]
+    },
+    "verdict": "correct",
+    "note": "a statement line or link presents the old value as current"
+   },
+   {
+    "id": "meme-nofiller/pl_021/update/4#1",
+    "dir": "meme-nofiller__pl_021",
+    "session": 4,
+    "stale": [
+     "thalwren inc"
+    ],
+    "current": [
+     "dranthex logistics"
+    ],
+    "evidence": {
+     "@overlay/work/employer-thalwren-inc": [
+      "User works at Thalwren Inc., a company known for innovative projects",
+      "Thalwren Inc",
+      "User's employer is Thalwren Inc., which they call \"known for its innovative projects\"; team, location, tenure, and projects are unrecorded, and the job title is now tracked separately (data scientist)."
+     ]
+    },
+    "verdict": "correct",
+    "note": "a statement line or link presents the old value as current"
+   },
+   {
+    "id": "meme-nofiller/sw_010/update/2#3",
+    "dir": "meme-nofiller__sw_010",
+    "session": 2,
+    "stale": [
+     "verisigil lock",
+     "kerberos trove"
+    ],
+    "current": [
+     "orinthal sealed"
+    ],
+    "evidence": {
+     "@overlay/project/aurora-staging": [
+      "- Production target this staging mirrors: [[project/aurora-deployment]] (Orinthal Serve); secrets come from [[project/aurora-secrets-kerberos-trove]]."
+     ]
+    },
+    "verdict": "correct",
+    "note": "a statement line or link presents the old value as current"
+   },
+   {
+    "id": "meme-nofiller/pl_031/update/1#5",
+    "dir": "meme-nofiller__pl_031",
+    "session": 1,
+    "stale": [
+     "a true crime podcast"
+    ],
+    "current": [
+     "the quorath codex (book)"
+    ],
+    "evidence": {
+     "@overlay/user/podcast-true-crime": [
+      "User listens to a true crime podcast",
+      "true crime podcast",
+      "The user currently listens to a true crime podcast and is fascinated by real-life mysteries and cases."
+     ]
+    },
+    "verdict": "correct",
+    "note": "a statement line or link presents the old value as current"
+   },
+   {
+    "id": "meme-nofiller/pl_033/update/2#5",
+    "dir": "meme-nofiller__pl_033",
+    "session": 2,
+    "stale": [
+     "the veldrakon spiral (tv)",
+     "a daily news podcast"
+    ],
+    "current": [
+     "thyrelion (anime)"
+    ],
+    "evidence": {
+     "@overlay/media/daily-news-podcast": [
+      "Listens to a daily news podcast",
+      "daily news podcast",
+      "The user listens to a daily news podcast to stay updated on current events, and finds science and technology stories — especially their impact on daily life — most engaging."
+     ]
+    },
+    "verdict": "correct",
+    "note": "a statement line or link presents the old value as current"
+   },
+   {
+    "id": "meme-nofiller/pl_043/update/1#5",
+    "dir": "meme-nofiller__pl_043",
+    "session": 1,
+    "stale": [
+     "xelvoria"
+    ],
+    "current": [
+     "thyranote"
+    ],
+    "evidence": {
+     "@overlay/subscriptions/xelvoria": [
+      "User is subscribed to Xelvoria (content-discovery platform)",
+      "Xelvoria subscription",
+      "The user is subscribed to Xelvoria, which they describe as \"an interesting platform for discovering new content\"."
+     ]
+    },
+    "verdict": "correct",
+    "note": "a statement line or link presents the old value as current"
+   },
+   {
+    "id": "meme-nofiller/pl_034/update/1#5",
+    "dir": "meme-nofiller__pl_034",
+    "session": 1,
+    "stale": [
+     "xelvoria"
+    ],
+    "current": [
+     "thyranote"
+    ],
+    "evidence": {
+     "@overlay/hobby/woodworking": [
+      "- They learn from online resources and are a paying subscriber to a woodworking resource platform (see [[hobby/woodworking-xelvoria-subscription]])."
+     ],
+     "@overlay/hobby/woodworking-xelvoria-subscription": [
+      "Woodworking Xelvoria Subscription",
+      "Xelvoria",
+      "Xelvoria subscription"
+     ]
+    },
+    "verdict": "correct",
+    "note": "a statement line or link presents the old value as current"
+   },
+   {
+    "id": "meme-nofiller/sw_042/update/4#1",
+    "dir": "meme-nofiller__sw_042",
+    "session": 4,
+    "stale": [
+     "seokjin kang"
+    ],
+    "current": [
+     "yuna park"
+    ],
+    "evidence": {
+     "@overlay/team/escalation-contact-kevin-park": [
+      "- Team lead (different role): [[team/team-lead-seokjin-kang]]."
+     ],
+     "@overlay/user/interaction-style-facts-plus-advice-questions": [
+      "- Project facts recorded separately: [[team/release-process-release-train]], [[team/sprint-deadline-2025-03-28]], [[team/escalation-contact-kevin-park]], [[team/team-lead-seokjin-kang]], [[team/team-meeting-wednesday-10am]]."
+     ]
+    },
+    "verdict": "correct",
+    "note": "a statement line or link presents the old value as current"
+   },
+   {
+    "id": "meme-nofiller/pl_018/update/4#1",
+    "dir": "meme-nofiller__pl_018",
+    "session": 4,
+    "stale": [
+     "mba at vorenthal business school"
+    ],
+    "current": [
+     "part-time jd at belvona harbor law"
+    ],
+    "evidence": {
+     "@overlay/education/mba-vorenthal": [
+      "As of 2023-03-03 the user is studying for an MBA at Vorenthal Business School, calling the coursework challenging but interesting and valuing time with like-minded classmates.",
+      "The user is currently studying for an MBA at Vorenthal Business School (stated 2023-03-03).",
+      "- Program: MBA at Vorenthal Business School; described as current (\"I'm currently studying for an MBA\")."
+     ],
+     "@overlay/education/spanish-in-mba-program": [
+      "The user is \"learning Spanish as part of my program\" (MBA at Vorenthal Business School) and says \"if my school changes, this would change.\""
+     ],
+     "@overlay/transport/walk-to-work-tied-to-school": [
+      "The user says \"I take the walking to work,\" and states this depends on studying the MBA at Vorenthal Business School: \"if that changes, this would change too.\"",
+      "- They flagged this as conditional, not permanent: \"this depends on the fact that I'm studying at MBA at Vorenthal Business School; if that changes, this would change too.\""
+     ]
+    },
+    "verdict": "correct",
+    "note": "a statement line or link presents the old value as current"
+   },
+   {
+    "id": "meme-nofiller/pl_049/update/2#5",
+    "dir": "meme-nofiller__pl_049",
+    "session": 2,
+    "stale": [
+     "xelvoria",
+     "dranthazon"
+    ],
+    "current": [
+     "pyrethon plus"
+    ],
+    "evidence": {
+     "@overlay/user-subscription-xelvoria": [
+      "User is a paying subscriber to Xelvoria (musician resources platform)",
+      "Xelvoria subscriber",
+      "The user is subscribed to Xelvoria, a platform offering resources for musicians (mentioned 2023-03-01)."
+     ]
+    },
+    "verdict": "correct",
+    "note": "a statement line or link presents the old value as current"
+   },
+   {
+    "id": "meme-nofiller/sw_050/update/1#3",
+    "dir": "meme-nofiller__sw_050",
+    "session": 1,
+    "stale": [
+     "kerberos trove"
+    ],
+    "current": [
+     "pyronos crypt"
+    ],
+    "evidence": {
+     "@overlay/aurora/deploy-infra-thandrel": [
+      "- Part of the Aurora toolchain described on 2023-03-01: [[aurora/project-docs-site]], [[aurora/secret-manager-kerberos-trove]], [[aurora/docker-image]], [[aurora/package-manager-dranith-stack]]."
+     ],
+     "@overlay/aurora/docker-image": [
+      "- Part of the Aurora toolchain described on 2023-03-01: [[aurora/project-docs-site]], [[aurora/secret-manager-kerberos-trove]], [[aurora/deploy-infra-thandrel]], [[aurora/package-manager-dranith-stack]]."
+     ],
+     "@overlay/aurora/package-manager-dranith-stack": [
+      "- Related stack cards: [[aurora/project-docs-site]], [[aurora/secret-manager-kerberos-trove]], [[aurora/deploy-infra-thandrel]], [[aurora/docker-image]]."
+     ]
+    },
+    "verdict": "correct",
+    "note": "a statement line or link presents the old value as current"
+   },
+   {
+    "id": "meme-nofiller/pl_044/update/2#5",
+    "dir": "meme-nofiller__pl_044",
+    "session": 2,
+    "stale": [
+     "xelvoria",
+     "zorvista premium"
+    ],
+    "current": [
+     "meal kit (kelvimeal)"
+    ],
+    "evidence": {
+     "@overlay/profile/xelvoria-subscription": [
+      "User is a paying subscriber to Xelvoria",
+      "Xelvoria",
+      "Xelvoria subscription"
+     ],
+     "@overlay/profile/zorvista-premium-subscription": [
+      "User subscribes to Zorvista Premium (relation to Xelvoria unconfirmed)",
+      "Zorvista Premium",
+      "As of 2023-03-02 the user is subscribed to Zorvista Premium, calling its features and content interesting; whether this is the same service as the Xelvoria subscription reported 2023-03-01 is unconfirmed."
+     ]
+    },
+    "verdict": "correct",
+    "note": "a statement line or link presents the old value as current"
+   },
+   {
+    "id": "meme-nofiller/pl_027/update/1#5",
+    "dir": "meme-nofiller__pl_027",
+    "session": 1,
+    "stale": [
+     "xelvoria"
+    ],
+    "current": [
+     "thyranote"
+    ],
+    "evidence": {
+     "@overlay/user/media-xelvoria-subscription": [
+      "User is a subscriber to Xelvoria",
+      "Xelvoria",
+      "The user is subscribed to Xelvoria, a media subscription service whose content they find really interesting."
+     ]
+    },
+    "verdict": "correct",
+    "note": "a statement line or link presents the old value as current"
+   },
+   {
+    "id": "meme-nofiller/pl_019/update/2#5",
+    "dir": "meme-nofiller__pl_019",
+    "session": 2,
+    "stale": [
+     "the quorath codex (book)",
+     "a daily news podcast"
+    ],
+    "current": [
+     "thyrelion (anime)"
+    ],
+    "evidence": {
+     "@overlay/user/news-podcast-habit": [
+      "User listens to a daily news podcast; favors politics and global events",
+      "daily news podcast",
+      "The user listens to a daily news podcast to keep up with current events and is most drawn to politics and significant global events, valuing different perspectives on issues."
+     ]
+    },
+    "verdict": "correct",
+    "note": "a statement line or link presents the old value as current"
+   }
+  ],
+  "lost": [
+   {
+    "id": "meme-nofiller/sw_029/0#7",
+    "dir": "meme-nofiller__sw_029",
+    "point": "end",
+    "value": "paired oncall (primary + secondary)",
+    "entity": "oncall_rotation",
+    "near": {
+     "@overlay/aurora/oncall-paired-rotation": [
+      "Aurora on-call rotation is paired (primary + secondary)",
+      "on-call rotation",
+      "paired on-call"
+     ],
+     "@overlay/aurora/prod-alerts-channel": [
+      "- This channel is the notification path for the paired primary+secondary on-call rotation."
+     ],
+     "@overlay/aurora/project-overview": [
+      "The user works on an internal team project codenamed Aurora: docs wiki, secret manager (Pyronos Crypt), database Pyravar Data (since 2023-03-05), ORM Keldaris Link, changelog, on-call rotation, weekly Wednesday meeting, #aurora-dev channel.",
+      "- Aurora has dedicated internal infrastructure: project docs, a secret manager, and a team on-call rotation.",
+      "- Related Aurora cards: [[aurora/project-docs-wiki]], [[aurora/oncall-paired-rotation]] (secret manager history: [[aurora/secrets-manager-kerberos-trove]] → [[aurora/secrets-manager-sigilix]] → [[aurora/secrets-manager-pyronos-crypt]])."
+     ],
+     "@overlay/aurora/database-zyndra-base (inactive)": [
+      "primary datastore"
+     ],
+     "@overlay/aurora/secrets-manager-kerberos-trove (inactive)": [
+      "- On 2023-03-01 the user asked for best practices for managing secrets in Trove (categorization, access control, rotation, logging of access)."
+     ]
+    },
+    "verdict": "matching error",
+    "note": "stated as 'paired (primary + secondary)' with 'on-call' for 'oncall'"
+   },
+   {
+    "id": "meme-nofiller/pl_010/3#3",
+    "dir": "meme-nofiller__pl_010",
+    "point": 3,
+    "value": "with roommate",
+    "entity": "living_arrangement",
+    "near": {
+     "@overlay/social/relationship-status-single": [
+      "User's relationship status is single (\"a time for personal growth and exploring new opportunities\"), and as of 2023-03-04 several plans and living arrangements are explicitly tied to that status.",
+      "- Update 2023-03-04: the user now ties concrete plans and arrangements to this status — a mountain ski trip and living with a roommate both depend on being single, and a 1-week Zynthera Bay beach trip is what they would plan \"if my relationship status changes\". See [[travel/mountain-ski-trip-while-single]], [[travel/zynthera-bay-beach-trip-if-relationship-changes]], [[living-situation/roommate-contingent-on-single]].",
+      "- Context: they are a college student living in a dorm ([[profile/college-student]], [[living-situation/dormitory]])."
+     ],
+     "@overlay/living-situation/roommate-contingent-on-single": [
+      "Living with a roommate (contingent on being single)",
+      "roommate",
+      "living with someone"
+     ],
+     "@overlay/living-situation/dormitory": [
+      "- The user did not report specific challenges of shared-space living."
+     ],
+     "@overlay/profile/college-student": [
+      "- They attend a campus they live close to (see [[living-situation/dormitory]])."
+     ]
+    },
+    "verdict": "matching error",
+    "note": "'Living with a roommate (contingent on being single)' (phrase 'with a roommate')"
+   },
+   {
+    "id": "meme-nofiller/pl_037/1#13",
+    "dir": "meme-nofiller__pl_037",
+    "point": "end",
+    "value": "company offsite",
+    "entity": "upcoming_event",
+    "near": {
+     "@overlay/profile/child-school-event": [
+      "User has a child with a school event coming up (as of 2023-03-02)",
+      "child's school event",
+      "co-parenting event"
+     ],
+     "@overlay/profile/hobby-wine-tasting-club": [
+      "wine event",
+      "User is part of a wine tasting club; as of 2023-03-02 they were asking for tips on hosting a wine tasting event (theme, glassware, food pairings, note-taking).",
+      "- \"I'm part of a wine tasting club. Do you know any good tips for hosting a wine tasting event?\" (2023-03-02) — they host or help host tasting events for the club."
+     ],
+     "@overlay/profile/media-daily-news-podcast": [
+      "current events",
+      "User's current media consumption is a daily news podcast, which they use to stay updated on current events while multitasking; they prefer a mix of news topics for a well-rounded perspective.",
+      "aliases: [news podcast, podcast listener, current events, daily news, media consumption]"
+     ],
+     "@overlay/profile/media-history-documentary": [
+      "As of 2023-03-02 the user's current media is a history documentary series they call \"quite engaging,\" valued for insights into different cultures and events; no series title named.",
+      "- \"I've switched again — my current media is a history documentary series. They're quite engaging and offer a lot of insights into different cultures and events.\"",
+      "- Appeal: insight into different cultures and historical events; no specific documentary series title has been named by the user."
+     ],
+     "@overlay/profile/privacy-employer-not-stored": [
+      "On 2023-03-03 the user asked to remove their employer from memory; the employer card was deleted and the company name must not be stored or referenced again unless they reverse this.",
+      "The user asked (2023-03-03) that their employer not be kept in memory: \"I work at [company]. Please remove that from your memory.\"",
+      "- The employer card that existed from 2023-03-01 was deleted on 2023-03-03 at their request, and the company name was also stripped from the life-philosophy card; the name itself is deliberately not recorded here."
+     ]
+    },
+    "verdict": "correct",
+    "note": "no card mentions the offsite"
+   },
+   {
+    "id": "meme-nofiller/pl_038/0#11",
+    "dir": "meme-nofiller__pl_038",
+    "point": "end",
+    "value": "electric car",
+    "entity": "planned_purchase",
+    "near": {
+     "@overlay/user-planned-electric-car-purchase (inactive)": [
+      "User planned a big purchase: an electric car (2023-03-01)",
+      "electric car purchase",
+      "EV purchase"
+     ],
+     "@overlay/user-car-quorvel-ev (inactive)": [
+      "electric car",
+      "current car",
+      "my car"
+     ],
+     "@overlay/user-car-therwyn-compact (inactive)": [
+      "current car",
+      "my car"
+     ],
+     "@overlay/user-car-vorantel-suv": [
+      "my car",
+      "current car",
+      "cycling gear car"
+     ],
+     "@overlay/user-cross-country-road-trip-two-weeks": [
+      "Planned two-week cross-country road trip (2023-03-04) — contingent on user dating someone",
+      "- Their current car is a Vorantel SUV, used for commuting and cycling gear ([[user-car-vorantel-suv]]); not stated whether it is the trip vehicle."
+     ]
+    },
+    "verdict": "correct",
+    "note": "every card holding it inactive"
+   },
+   {
+    "id": "meme-nofiller/pl_047/1#1",
+    "dir": "meme-nofiller__pl_047",
+    "point": "end",
+    "value": "basketball",
+    "entity": "sports",
+    "near": {},
+    "verdict": "correct",
+    "note": "no card mentions basketball"
+   },
+   {
+    "id": "meme-nofiller/sw_037/0#1",
+    "dir": "meme-nofiller__sw_037",
+    "point": 3,
+    "value": "every friday 9:30am",
+    "entity": "meeting_day",
+    "near": {
+     "@overlay/aurora/team-sync-meeting (inactive)": [
+      "Aurora team sync meeting: every Friday 9:30am",
+      "weekly team meeting",
+      "Friday standup"
+     ],
+     "@overlay/aurora/standup-format": [
+      "daily standup",
+      "team sync meeting",
+      "Team standup format is Monday/Thursday sync meetings with async work the rest of the week; syncs are kept quick and focus on blockers, replacing the earlier Friday 9:30am sync."
+     ],
+     "@overlay/aurora/deadlock-error-aurora-orders": [
+      "Verbatim log the user asked to keep word for word: DeadlockDetected, transactions 4821 and 4823 deadlocked on aurora_orders; UPDATE ... region 'us-east' vs DELETE ... INTERVAL '30 days'; first seen 2024-08-04T22:33:18Z.",
+      "Query 2 was DELETE FROM orders WHERE created_at < NOW() - INTERVAL '30 days'.",
+      "- Conflicting statements: `UPDATE orders SET status = 'shipped' WHERE region = 'us-east'` vs `DELETE FROM orders WHERE created_at < NOW() - INTERVAL '30 days'`."
+     ],
+     "@overlay/aurora/infra-config-dependency-chain": [
+      "- The user repeated \"Any tips or things to watch out for?\" after every fact, so they want the caveat/tradeoff for each item, not just acknowledgement."
+     ],
+     "@overlay/aurora/project-overview": [
+      "- Team process as of 2023-03-02: Monday/Thursday sync meetings (quick, blocker-focused) with async work the rest of the week; monitoring dashboard at status.orinthal.dev/aurora.",
+      "- The 'secret manager' value has changed every session (Verisigil Lock → Sigilix Manager → Velthri Keys as of 2023-03-02), and it is still unclear whether the user means a person or a tool — re-confirm before relying on the name.",
+      "- The user's questions in this project so far concern team process and operations: standing meeting agendas, documenting the secret-manager role, Docker image tagging strategy, alert-fatigue management, cloud deployment best practices, centralized onboarding docs, alert/metric prioritization, and package versioning conflicts."
+     ]
+    },
+    "verdict": "correct",
+    "note": "the only card holding it superseded"
+   },
+   {
+    "id": "meme-nofiller/pl_047/1#11",
+    "dir": "meme-nofiller__pl_047",
+    "point": 3,
+    "value": "xelvoria",
+    "entity": "subscription_service",
+    "near": {
+     "@overlay/user/subscription-selvaria": [
+      "subscription service",
+      "content subscription",
+      "paid subscription"
+     ],
+     "@overlay/user/favorite-restaurant-vondrehl-pot": [
+      "- User was curious about what makes a restaurant stand out (food vs. service vs. atmosphere), suggesting they value ambiance as much as the menu."
+     ],
+     "@overlay/user/health-insurance-employer-provided": [
+      "- No details recorded about the plan's network, cost, or specific services covered."
+     ]
+    },
+    "verdict": "correct",
+    "note": "the name corrupted: 'Selvaria' for Xelvoria"
+   },
+   {
+    "id": "meme-nofiller/sw_029/0#7",
+    "dir": "meme-nofiller__sw_029",
+    "point": 3,
+    "value": "paired oncall (primary + secondary)",
+    "entity": "oncall_rotation",
+    "near": {
+     "@overlay/aurora/oncall-paired-rotation": [
+      "Aurora on-call rotation is paired (primary + secondary)",
+      "on-call rotation",
+      "paired on-call"
+     ],
+     "@overlay/aurora/prod-alerts-channel": [
+      "- This channel is the notification path for the paired primary+secondary on-call rotation."
+     ],
+     "@overlay/aurora/project-overview": [
+      "The user works on an internal team project codenamed Aurora: docs wiki, secret manager (now Pyronos Crypt), database Zyndra Base with twice-daily backups, ORM Keldaris Link, changelog, on-call rotation, weekly Wednesday meeting.",
+      "- Aurora has dedicated internal infrastructure: project docs, a secret manager, a centralized log drain, and a team on-call rotation.",
+      "- Related Aurora cards: [[aurora/project-docs-wiki]], [[aurora/log-pipeline-thandrel]], [[aurora/oncall-paired-rotation]] (secret manager history: [[aurora/secrets-manager-kerberos-trove]] → [[aurora/secrets-manager-sigilix]] → [[aurora/secrets-manager-pyronos-crypt]])."
+     ],
+     "@overlay/aurora/database-zyndra-base": [
+      "primary datastore"
+     ],
+     "@overlay/aurora/secrets-manager-kerberos-trove (inactive)": [
+      "- On 2023-03-01 the user asked for best practices for managing secrets in Trove (categorization, access control, rotation, logging of access)."
+     ]
+    },
+    "verdict": "matching error",
+    "note": "stated as 'paired (primary + secondary)' with 'on-call' for 'oncall'"
+   },
+   {
+    "id": "meme-nofiller/sw_004/0#9",
+    "dir": "meme-nofiller__sw_004",
+    "point": "end",
+    "value": "continuous deploy on merge",
+    "entity": "release_cadence",
+    "near": {
+     "@overlay/project/branching-strategy-gitflow-release-branches": [
+      "Branching model is GitFlow with release branches",
+      "release branches",
+      "The Aurora team uses GitFlow, with release branches — this replaces the earlier \"continuous deployment on merge, no release train\" model (stated 2023-03-06)."
+     ],
+     "@overlay/project/release-model-continuous-on-merge (inactive)": [
+      "Release Model Continuous On Merge",
+      "continuous deployment",
+      "release on merge"
+     ],
+     "@overlay/project/sprint-deadline-2025-03-28 (inactive)": [
+      "release deadline"
+     ]
+    },
+    "verdict": "matching error",
+    "note": "'Release Model Continuous On Merge' (the known v3 residual)"
+   },
+   {
+    "id": "meme-nofiller/pl_047/1#11",
+    "dir": "meme-nofiller__pl_047",
+    "point": "end",
+    "value": "xelvoria",
+    "entity": "subscription_service",
+    "near": {
+     "@overlay/user/subscription-selvaria": [
+      "subscription service",
+      "content subscription",
+      "paid subscription"
+     ],
+     "@overlay/user/favorite-restaurant-vondrehl-pot": [
+      "- User was curious about what makes a restaurant stand out (food vs. service vs. atmosphere), suggesting they value ambiance as much as the menu."
+     ],
+     "@overlay/user/health-insurance-employer-provided": [
+      "- No details recorded about the plan's network, cost, or specific services covered."
+     ],
+     "@overlay/user/media-true-crime-podcast": [
+      "- Related media habits: the user subscribes to Selvaria ([[user/subscription-selvaria]]) and reads literary fiction and psychological thrillers ([[user/reading-genre-preferences]]), a taste consistent with an interest in crime/true-crime stories."
+     ]
+    },
+    "verdict": "correct",
+    "note": "the name corrupted: 'Selvaria' for Xelvoria"
+   },
+   {
+    "id": "meme-nofiller/pl_047/1#7",
+    "dir": "meme-nofiller__pl_047",
+    "point": 3,
+    "value": "the ondreth pot",
+    "entity": "favorite_restaurant",
+    "near": {
+     "@overlay/user/favorite-restaurant-vondrehl-pot": [
+      "User's favorite restaurant is The Vondrehl Pot",
+      "Vondrehl Pot",
+      "favorite restaurant"
+     ],
+     "@overlay/user/hobby-gardening": [
+      "- User asked for advice on growing tomatoes and peppers specifically, plus general gardening tips and favorite plants."
+     ],
+     "@overlay/user/life-philosophy-verbatim": [
+      "favorite quote"
+     ],
+     "@overlay/user/reading-genre-preferences": [
+      "favorite genres"
+     ]
+    },
+    "verdict": "correct",
+    "note": "the name corrupted: 'The Vondrehl Pot' for The Ondreth Pot"
+   },
+   {
+    "id": "meme-nofiller/pl_047/1#7",
+    "dir": "meme-nofiller__pl_047",
+    "point": "end",
+    "value": "the ondreth pot",
+    "entity": "favorite_restaurant",
+    "near": {
+     "@overlay/user/favorite-restaurant-vondrehl-pot": [
+      "User's favorite restaurant is The Vondrehl Pot",
+      "Vondrehl Pot",
+      "favorite restaurant"
+     ],
+     "@overlay/user/hobby-gardening": [
+      "- User asked for advice on growing tomatoes and peppers specifically, plus general gardening tips and favorite plants."
+     ],
+     "@overlay/user/life-philosophy-verbatim": [
+      "favorite quote"
+     ],
+     "@overlay/user/media-true-crime-podcast": [
+      "- The user did not name the podcast, a favorite episode, or a case discussed in it."
+     ],
+     "@overlay/user/reading-genre-preferences": [
+      "favorite genres"
+     ]
+    },
+    "verdict": "correct",
+    "note": "the name corrupted: 'The Vondrehl Pot' for The Ondreth Pot"
+   },
+   {
+    "id": "meme-nofiller/sw_037/0#1",
+    "dir": "meme-nofiller__sw_037",
+    "point": "end",
+    "value": "every friday 9:30am",
+    "entity": "meeting_day",
+    "near": {
+     "@overlay/aurora/team-sync-meeting (inactive)": [
+      "Aurora team sync meeting: every Friday 9:30am",
+      "weekly team meeting",
+      "Friday standup"
+     ],
+     "@overlay/aurora/standup-format": [
+      "daily standup",
+      "team sync meeting",
+      "Team standup format is Monday/Thursday sync meetings with async work the rest of the week; syncs are kept quick and focus on blockers, replacing the earlier Friday 9:30am sync."
+     ],
+     "@overlay/aurora/deadlock-error-aurora-orders": [
+      "Verbatim log the user asked to keep word for word: DeadlockDetected, transactions 4821 and 4823 deadlocked on aurora_orders; UPDATE ... region 'us-east' vs DELETE ... INTERVAL '30 days'; first seen 2024-08-04T22:33:18Z.",
+      "Query 2 was DELETE FROM orders WHERE created_at < NOW() - INTERVAL '30 days'.",
+      "- Conflicting statements: `UPDATE orders SET status = 'shipped' WHERE region = 'us-east'` vs `DELETE FROM orders WHERE created_at < NOW() - INTERVAL '30 days'`."
+     ],
+     "@overlay/aurora/infra-config-dependency-chain": [
+      "- The user repeats \"Any tips or things to watch out for?\" after every fact, so they want the caveat/tradeoff for each item, not just acknowledgement."
+     ],
+     "@overlay/aurora/project-overview": [
+      "- Team process as of 2023-03-02: Monday/Thursday sync meetings (quick, blocker-focused) with async work the rest of the week; monitoring dashboard at status.orinthal.dev/aurora.",
+      "- The 'secret manager' value has changed every session (Verisigil Lock → Sigilix Manager → Velthri Keys as of 2023-03-02), and it is still unclear whether the user means a person or a tool — re-confirm before relying on the name.",
+      "- The user's questions in this project so far concern team process and operations: standing meeting agendas, documenting the secret-manager role, image tagging strategy, alert-fatigue management, onboarding docs, alert/metric prioritization, package versioning conflicts, cloud deployment best practices, design-system adoption, feature-flag hygiene."
+     ]
+    },
+    "verdict": "correct",
+    "note": "the only card holding it superseded"
+   }
+  ],
+  "passes": [
+   {
+    "id": "meme-nofiller/pl_018/update/1#5",
+    "dir": "meme-nofiller__pl_018",
+    "session": 1,
+    "stale": [
+     "zyvanta sedan"
+    ],
+    "current": [
+     "therwyn compact"
+    ],
+    "evidence": {
+     "@overlay/transport/therwyn-compact": [
+      "As of 2023-03-02 the user drives a Therwyn Compact, which they call \"a pretty efficient vehicle for getting around\"; this replaces the Zyvanta Sedan previously recorded as their car.",
+      "- This replaces the Zyvanta Sedan recorded earlier the same day as their car (\"pretty reliable\" for the daily commute); whether they still own the sedan was not stated."
+     ]
+    },
+    "verdict": "correct",
+    "note": "every card still naming the old value is inactive, warned (act/WARN), or marks it as replaced"
+   },
+   {
+    "id": "meme-nofiller/pl_026/update/4#1",
+    "dir": "meme-nofiller__pl_026",
+    "session": 4,
+    "stale": [
+     "zaravel heights"
+    ],
+    "current": [
+     "velturis glen"
+    ],
+    "evidence": {
+     "@overlay/hobbies/thandrel-ymca-workouts": [
+      "Works out at Thandrel YMCA, conditional on living in Zaravel Heights",
+      "User goes to Thandrel YMCA for workouts; they state this choice depends on living in Zaravel Heights and would change if they move.",
+      "- They explicitly frame it as residence-dependent: \"this depends on where I live in Zaravel Heights; if I move, this would change.\""
+     ],
+     "@overlay/personal/commute-mode-bike": [
+      "Commutes to work by bike, conditional on living in Zaravel Heights",
+      "User bikes to work while living in Zaravel Heights; they state this depends on their residence, and that if they move they will switch to commuting by subway.",
+      "- They explicitly frame this as depending on living in Zaravel Heights: \"this depends on the fact that I live in Zaravel Heights; if that changes, this would change too.\""
+     ],
+     "@overlay/personal/residence-dependent-items": [
+      "Habits the user tied to living in Zaravel Heights (premise ended by 2023-03-08 move)",
+      "User explicitly marks some habits as residence-dependent (bike commute, Thandrel YMCA); if they move off Zaravel Heights, re-confirm those instead of assuming they still hold.",
+      "- User likes to flag which of their facts are contingent rather than stable, naming the premise themselves (2023-03-06, twice): \"this depends on where I live in Zaravel Heights; if I move, this would change.\""
+     ],
+     "@overlay/personal/residence-velturis-glen": [
+      "As of 2023-03-08 the user has moved to Velturis Glen; their previous residence was Zaravel Heights, so commute mode and gym choice now need re-confirmation.",
+      "- Their previous residence was Zaravel Heights (recorded 2023-03-01 as \"a nice area with a good mix of community activities and quiet spots\"); the user has not described Velturis Glen themselves yet.",
+      "- Because the user flagged their commute mode (bike, would switch to subway after a move) and their Thandrel YMCA gym membership as depending on living in Zaravel Heights, the move triggers re-confirmation of both — do not assume they still hold."
+     ]
+    },
+    "verdict": "correct",
+    "note": "every card still naming the old value is inactive, warned (act/WARN), or marks it as replaced"
+   },
+   {
+    "id": "meme-nofiller/pl_041/update/2#5",
+    "dir": "meme-nofiller__pl_041",
+    "session": 2,
+    "stale": [
+     "dranthis pickup",
+     "vorantel suv"
+    ],
+    "current": [
+     "xylorim scooter"
+    ],
+    "evidence": {
+     "@overlay/plans-electric-car-purchase": [
+      "- Open considerations raised: driving range, charging options, and cargo space for photography gear (they currently drive a [[vehicle-dranthis-pickup]]).",
+      "- Update 2023-03-02: their current vehicle is now recorded as a [[vehicle-vorantel-suv]] (Vrantel SUV), not a Dranthis Pickup; the EV plan itself is unchanged (still sustainability + fuel-cost savings, no model chosen)."
+     ],
+     "@overlay/vehicle-xylorim-scooter": [
+      "- Vehicle history recorded earlier: Vorantel SUV (as of 2023-03-02; valued its reliability, spacious interior for passengers/cargo, and safety features), and before that a Dranthis Pickup used to reach remote landscape locations and carry photography gear."
+     ]
+    },
+    "verdict": "correct",
+    "note": "every card still naming the old value is inactive, warned (act/WARN), or marks it as replaced"
+   },
+   {
+    "id": "meme-nofiller/sw_006/update/2#3",
+    "dir": "meme-nofiller__sw_006",
+    "session": 2,
+    "stale": [
+     "cryptara vault",
+     "selvex secrets"
+    ],
+    "current": [
+     "pyronos crypt"
+    ],
+    "evidence": {
+     "@overlay/team/secrets-management-pyronos-crypt": [
+      "Team secret manager switched again: Pyronos Crypt",
+      "secret manager",
+      "secrets management"
+     ]
+    },
+    "verdict": "correct",
+    "note": "every card still naming the old value is inactive, warned (act/WARN), or marks it as replaced"
+   },
+   {
+    "id": "meme-nofiller/pl_007/update/4#1",
+    "dir": "meme-nofiller__pl_007",
+    "session": 4,
+    "stale": [
+     "pyresta meadow"
+    ],
+    "current": [
+     "corenth hills"
+    ],
+    "evidence": {
+     "@overlay/user/appointment-therapy-weekly-if-move": [
+      "- If the user moves: regular appointment = therapy, weekly (versus dermatologist, monthly while living in Pyresta Meadow — see [[user/appointment-dermatologist-monthly]])."
+     ],
+     "@overlay/user/appointment-therapy-weekly": [
+      "- This replaces the former regular appointment (dermatologist, monthly), which applied while they lived in Pyresta Meadow and which they had flagged as changing on a move."
+     ],
+     "@overlay/user/commute-20-minutes": [
+      "User's commute is about 20 minutes (while living in Pyresta Meadow)",
+      "The user's commute is about 20 minutes; they note this depends on living in Pyresta Meadow and would change if that changed.",
+      "- Stated on 2023-03-02: \"My commute is about 20 min — this depends on where I live in Pyresta Meadow; if that changes, the distance would change.\""
+     ],
+     "@overlay/user/residence-corenth-hills": [
+      "On 2023-03-04 the user announced \"I just moved to Corenth Hills\"; Corenth Hills is their current residence, replacing Pyresta Meadow.",
+      "- This replaces their former residence, Pyresta Meadow, which they had described on 2023-03-02 as \"a nice area with a peaceful vibe\"."
+     ]
+    },
+    "verdict": "correct",
+    "note": "every card still naming the old value is inactive, warned (act/WARN), or marks it as replaced"
+   },
+   {
+    "id": "meme-nofiller/sw_049/update/4#1",
+    "dir": "meme-nofiller__sw_049",
+    "session": 4,
+    "stale": [
+     "phalanx gate"
+    ],
+    "current": [
+     "cerberix cloud"
+    ],
+    "evidence": {
+     "@overlay/aurora/auth-method-plan-session-cookie-csrf": [
+      "Stated 2023-03-03 as a contingency: if Aurora switches auth providers, the authentication method becomes Session Cookie + CSRF; current method is still SAML 2.0 SSO via Phalanx Gate.",
+      "- This is a plan for a future provider switch, not the current state: today the method is SAML 2.0 SSO on Phalanx Gate ([[aurora/auth-method-saml2-sso]]), with cerberix-sso-bridge v1.9 middleware ([[aurora/auth-middleware-cerberix-sso-bridge-v19]])."
+     ],
+     "@overlay/aurora/auth-method-session-cookie-csrf": [
+      "- It replaces SAML 2.0 SSO, which was determined by the old provider Phalanx Gate and was the recorded method earlier on 2023-03-03."
+     ],
+     "@overlay/aurora/auth-provider-cerberix-cloud": [
+      "Aurora switched its auth provider to Cerberix Cloud (was Phalanx Gate)",
+      "On 2023-03-03 the Aurora team switched its authentication provider to Cerberix Cloud, replacing Phalanx Gate; auth method, session TTL and auth middleware all depend on this choice.",
+      "- It replaces Phalanx Gate, which the team used from at least 2023-03-01 and which the user had said \"has been working well\"."
+     ],
+     "@overlay/aurora/session-token-format-zenthos": [
+      "- Related but distinct from the Phalanx Gate authentication tool and the /auth/kryptal/signin login endpoint.",
+      "- Phalanx Gate, the auth provider this session token format was recorded under, was replaced by Cerberix Cloud on 2023-03-03 ([[aurora/auth-provider-cerberix-cloud]]); whether sessions still use Zenthos-Session-v1 under Cerberix Cloud is unconfirmed."
+     ],
+     "@overlay/aurora/session-ttl-unconfirmed-after-cerberix": [
+      "The 30-minute session TTL was Phalanx Gate's value and is now unconfirmed after the 2023-03-03 switch to Cerberix Cloud — the user said switching providers would change it.",
+      "- The user stated the 30-minute TTL on 2023-03-03 and said it \"is determined by our auth provider (we use Phalanx Gate); if we switch providers, this would change\" — the switch to Cerberix Cloud happened the same day, so 30 minutes should be treated as the historical Phalanx Gate value, not the current setting."
+     ]
+    },
+    "verdict": "correct",
+    "note": "every card still naming the old value is inactive, warned (act/WARN), or marks it as replaced"
+   },
+   {
+    "id": "meme-nofiller/sw_018/update/1#3",
+    "dir": "meme-nofiller__sw_018",
+    "session": 1,
+    "stale": [
+     "zelthra lib"
+    ],
+    "current": [
+     "quorix hub"
+    ],
+    "evidence": {
+     "@overlay/aurora-team/package-manager-quorix-hub": [
+      "Aurora team's package manager is Quorix Hub (changed from Zelthra Lib)",
+      "As of 2023-03-02 the aurora team's package manager is Quorix Hub, which the user says works well for managing dependencies; an earlier session had recorded it as Zelthra Lib.",
+      "- This replaces the tool recorded one day earlier (2023-03-01) as Zelthra Lib; treat Quorix Hub as current."
+     ]
+    },
+    "verdict": "correct",
+    "note": "every card still naming the old value is inactive, warned (act/WARN), or marks it as replaced"
+   },
+   {
+    "id": "meme-nofiller/sw_025/update/2#3",
+    "dir": "meme-nofiller__sw_025",
+    "session": 2,
+    "stale": [
+     "2025 march 28",
+     "2025 june 6"
+    ],
+    "current": [
+     "2025 june 20"
+    ],
+    "evidence": {
+     "@overlay/team/project-operating-setup": [
+      "Index of the project setup: ship/show/ask branching on main, standup by 10am, 2-week sprint-end releases (deadline 2025-06-20), review = 1 approval + CI green, aurora-team/runbooks, lead Jihoon Ryu, CTO Soyeon Park approves.",
+      "- Schedule: [[team/sprint-deadline-2025-06-20]] is the current sprint deadline (2025 June 20; earlier 2025-03-28 and 2025 June 6 dates are superseded)."
+     ],
+     "@overlay/team/release-cadence-two-week-sprints": [
+      "- Each release lands at the sprint boundary; the current sprint ends on [[team/sprint-deadline-2025-06-20]]."
+     ],
+     "@overlay/team/sprint-deadline-2025-06-20": [
+      "Sprint deadline moved to 2025 June 20 (was 2025 June 6)",
+      "June 20 2025",
+      "The sprint deadline is now 2025 June 20, replacing the earlier 2025 June 6 date the team had been planning against."
+     ],
+     "@overlay/team/standup-round-robin-text-10am": [
+      "- Team lead is [[team/team-lead-jihoon-ryu]]; the sprint these updates track ends on [[team/sprint-deadline-2025-06-20]]."
+     ]
+    },
+    "verdict": "correct",
+    "note": "every card still naming the old value is inactive, warned (act/WARN), or marks it as replaced"
+   },
+   {
+    "id": "meme-nofiller/sw_013/update/1#3",
+    "dir": "meme-nofiller__sw_013",
+    "session": 1,
+    "stale": [
+     "2025 may 23"
+    ],
+    "current": [
+     "2025 june 20"
+    ],
+    "evidence": {
+     "@overlay/project/sprint-deadline-2025-06-20": [
+      "Sprint deadline: 2025-06-20 (moved from 2025-05-23)",
+      "2025 June 20",
+      "The team's sprint deadline is 2025 June 20, stated by the user on 2023-03-01; it replaces the earlier target of 2025 May 23."
+     ]
+    },
+    "verdict": "correct",
+    "note": "every card still naming the old value is inactive, warned (act/WARN), or marks it as replaced"
+   },
+   {
+    "id": "meme-nofiller/pl_008/update/4#1",
+    "dir": "meme-nofiller__pl_008",
+    "session": 4,
+    "stale": [
+     "thalwren inc"
+    ],
+    "current": [
+     "caeltura systems"
+    ],
+    "evidence": {
+     "@overlay/user/employer-caeltura-systems": [
+      "On 2023-03-04 the user said \"I just accepted a new position at Caeltura Systems\", replacing their earlier employer Thalwren Inc; start date, title, office, project and schedule at Caeltura were not stated.",
+      "- \"I just accepted a new position at Caeltura Systems.\" (stated 2023-03-04) — Caeltura Systems is the user's employer as of that date, replacing Thalwren Inc, where they had been a senior engineer and said \"It's been an interesting experience so far.\"",
+      "- Employer-derived facts from Thalwren that the user flagged as changing with the employer still need re-confirmation: office in Thornvale Crossing [[user/office-location-thornvale-crossing]], interim insurance coverage plan [[user/insurance-interim-coverage-employer]], backend migration project [[user/work-project-backend-migration]], night-shift schedule [[user/work-schedule-night-shift]]."
+     ],
+     "@overlay/user/insurance-interim-coverage-employer": [
+      "User's insurance is an interim coverage plan provided through Thalwren Inc",
+      "The user has an interim coverage plan for insurance provided through their employer Thalwren Inc (stated 2023-03-04); if their employer changes, this coverage would change.",
+      "- \"I have interim coverage plan for insurance — this is through my employer (I work at Thalwren Inc.); if my employer changes, this would change.\" (stated 2023-03-04)"
+     ],
+     "@overlay/user/job-title-senior-engineer": [
+      "- The title was stated while they worked at Thalwren Inc; as of 2023-03-04 their employer is Caeltura Systems [[user/employer-caeltura-systems]], and whether the senior engineer title carries over there has not been stated."
+     ],
+     "@overlay/user/office-location-thornvale-crossing": [
+      "User's office is in Thornvale Crossing (tied to employer Thalwren Inc)",
+      "The user's office is in Thornvale Crossing (stated 2023-03-04); it comes through their employer Thalwren Inc, so \"if my employer changes, this would change.\"",
+      "- \"Our office is in Thornvale Crossing — this is through my employer (I work at Thalwren Inc.); if my employer changes, this would change.\" (stated 2023-03-04)"
+     ],
+     "@overlay/user/work-project-backend-migration": [
+      "User is currently working on a backend migration at Thalwren Inc",
+      "As of 2023-03-04 the user is \"currently working on backend migration\" at Thalwren Inc; it comes through the employer, so a change of employer would change the project.",
+      "- \"I'm currently working on backend migration — this is through my employer (I work at Thalwren Inc.); if my employer changes, this would change.\" (stated 2023-03-04)"
+     ]
+    },
+    "verdict": "correct",
+    "note": "every card still naming the old value is inactive, warned (act/WARN), or marks it as replaced"
+   },
+   {
+    "id": "meme-nofiller/pl_011/update/4#1",
+    "dir": "meme-nofiller__pl_011",
+    "session": 4,
+    "stale": [
+     "tendinitis"
+    ],
+    "current": [
+     "seasonal allergies"
+    ],
+    "evidence": {
+     "@overlay/profile/appointment-dermatologist-monthly": [
+      "The user's regular appointment is a monthly dermatologist visit; they state it is determined by their tendinitis and would change if their health condition changes.",
+      "- Stated fact (2023-03-05): \"My regular appointment is dermatologist (monthly) — this is determined by my tendinitis; if my health condition changes, this would likely change too.\"",
+      "- Frequency: monthly; provider type: dermatologist. The user did not name the clinic, doctor, or the skin issue being treated, and did not explain the dermatitis/tendinitis link — ask rather than assume."
+     ],
+     "@overlay/profile/diet-low-sugar": [
+      "- They describe managing health as the reason, which is consistent with (but not stated as treatment for) their tendinitis.",
+      "- Update (2023-03-06): the tendinitis baseline this was linked to has been treated and resolved ([[profile/health-tendinitis-resolved]]); the user has not retracted the low-sugar restriction, so treat it as still standing but re-confirm if it starts to matter."
+     ],
+     "@overlay/profile/exercise-routine-swimming-2x-week": [
+      "Exercise routine: swimming 2x/week, tied to tendinitis",
+      "The user's exercise routine is swimming 2x/week; they state it is determined by their tendinitis and would likely change if their health condition changes.",
+      "The user's exercise routine is swimming twice a week, chosen within the limits of their tendinitis."
+     ],
+     "@overlay/profile/health-change-contingency-plans": [
+      "- These are stated intentions for a future change, not current practice: current values remain tendinitis → Korathril, swimming 2x/week, monthly dermatologist.",
+      "- Status check (2023-03-06): the user reported their tendinitis \"has been treated and resolved\" ([[profile/health-tendinitis-resolved]]), the trigger for these fallbacks, but they did NOT say walking daily, weekly therapy, or Pyravar CrossFit have started — these remain unenacted intentions and their current exercise/appointment/medication values are unconfirmed."
+     ],
+     "@overlay/profile/health-seasonal-allergies": [
+      "- Context: raised in the same message as their tendinitis being treated and resolved ([[profile/health-tendinitis-resolved]]); no medication or appointment changes were stated for the allergies."
+     ]
+    },
+    "verdict": "correct",
+    "note": "every card still naming the old value is inactive, warned (act/WARN), or marks it as replaced"
+   },
+   {
+    "id": "meme-nofiller/pl_037/update/4#1",
+    "dir": "meme-nofiller__pl_037",
+    "session": 4,
+    "stale": [
+     "separated"
+    ],
+    "current": [
+     "divorced"
+    ],
+    "evidence": {
+     "@overlay/profile/child-school-event": [
+      "A child's school event is coming up for the user (mentioned 2023-03-02); the user states this fact depends on their separated status and would change if that changed.",
+      "- User's words: \"We have child's school event coming up — this depends on the fact that I'm separated; if that changes, this would change.\"",
+      "- 2023-03-03: the user's status progressed from separated to divorced ([[profile/relationship-status-divorced]]); they said nothing new about the child or the school event, so the arrangement is unverified rather than changed."
+     ],
+     "@overlay/profile/living-situation-shared-house": [
+      "As of the later 2023-03-02 session the user says their home is a shared house; this replaces the earlier same-day claim that they live alone, and the user flags it as dependent on being separated.",
+      "- User's words: \"My home is a shared house — this depends on the fact that I'm separated; if that changes, this would change.\"",
+      "- 2023-03-03: the status progressed from separated to divorced ([[profile/relationship-status-divorced]]); the user has not re-confirmed or changed the shared-house arrangement, so treat it as still contingent and verify rather than assume."
+     ],
+     "@overlay/profile/relationship-status-change-no-plans": [
+      "- Concretely: no contingency plans of any kind were made for a change in their separated status ([[profile/relationship-status-separated]]); the assistant read this as taking things one step at a time, and the user agreed it \"makes sense\".",
+      "- 2023-03-03: their status did change — separated to divorced ([[profile/relationship-status-divorced]]) — and the user announced it without naming any new arrangements, consistent with their \"we will plan none\" stance."
+     ],
+     "@overlay/profile/relationship-status-divorced": [
+      "As of 2023-03-03 the user's relationship status is divorced (\"I'm divorced now\"); this replaces their earlier separated status, still framed as a challenging time met with personal growth.",
+      "- This replaces the status recorded on 2023-03-02, \"My relationship status is separated. It's been a challenging time, but I'm focusing on personal growth and navigating this transition.\" The divorce is the continuation of that separation, so the personal-growth framing still applies.",
+      "- Facts the user previously flagged as contingent on being separated (shared house, the child's school event) were recorded as \"if that changes, this would change\"; the divorce did not change those arrangements on its own, so re-confirm rather than assume."
+     ],
+     "@overlay/profile/tool-thyranote": [
+      "extends: [\"@overlay/profile/relationship-status-separated\"]",
+      "- Premise: the value the user reports is tied to their separation transition (see [[profile/relationship-status-separated]]), so re-evaluate if that context changes.",
+      "- 2023-03-03: the transition context continued — the user's status progressed from separated to divorced ([[profile/relationship-status-divorced]]); they did not say anything about changing how they use Thyranote."
+     ]
+    },
+    "verdict": "correct",
+    "note": "every card still naming the old value is inactive, warned (act/WARN), or marks it as replaced"
+   },
+   {
+    "id": "meme-nofiller/sw_004/update/4#1",
+    "dir": "meme-nofiller__sw_004",
+    "session": 4,
+    "stale": [
+     "sarah chen"
+    ],
+    "current": [
+     "minjun lee"
+    ],
+    "evidence": {
+     "@overlay/project/code-reviewer-change-seoyun-choi": [
+      "- Trigger: a change of team lead (currently Sarah Chen [[project/team-lead-sarah-chen]]) replaces the reviewer named by that lead."
+     ],
+     "@overlay/project/code-reviewer-david-lee": [
+      "Code reviews go to David Lee (assigned by Sarah Chen)",
+      "Code reviews for the user's work are reviewed by David Lee; Sarah Chen assigned it, and the assignment would change if the team lead changes.",
+      "The user's code reviews go to **David Lee** — \"Code reviews go to David Lee — Sarah Chen assigned it; if the team lead changes, this assignment would change.\" (2023-03-05)"
+     ],
+     "@overlay/project/code-reviewer-seoyun-choi-triggered": [
+      "Because Minjun Lee replaced Sarah Chen as team lead (2023-03-06), the user's recorded contingency applies: the code reviewer becomes Seoyun Choi, replacing David Lee (unconfirmed).",
+      "The team-lead-change condition has now occurred (Minjun Lee replaced Sarah Chen on 2023-03-06), so the user's code reviewer should now be **Seoyun Choi**, replacing David Lee.",
+      "- Trigger met: Minjun Lee is the new team lead [[project/team-lead-minjun-lee]], replacing Sarah Chen."
+     ],
+     "@overlay/project/team-lead-minjun-lee": [
+      "Minjun Lee is the new Aurora team lead (replacing Sarah Chen)",
+      "Minjun Lee is the user's new team lead on the Aurora project, replacing Sarah Chen (stated 2023-03-06); assignments Sarah Chen made are expected to be re-confirmed.",
+      "- Minjun Lee replaces Sarah Chen, the previously named team lead (Sarah Chen, stated 2023-03-04; the user rated her highly for \"keeping everyone aligned and focused on our goals\")."
+     ],
+     "@overlay/project/weekly-report-recipient-taehyun-kim": [
+      "Weekly report recipient is Taehyun Kim (assigned by Sarah Chen)",
+      "The user's weekly report goes to Taehyun Kim; Sarah Chen assigned it, and the user notes the assignment would change if the team lead changes.",
+      "The user's weekly report recipient is **Taehyun Kim** — \"The weekly report recipient is Taehyun Kim — Sarah Chen assigned it; if the team lead changes, this assignment would change.\" (2023-03-05)"
+     ]
+    },
+    "verdict": "correct",
+    "note": "every card still naming the old value is inactive, warned (act/WARN), or marks it as replaced"
+   },
+   {
+    "id": "meme-nofiller/sw_010/update/4#1",
+    "dir": "meme-nofiller__sw_010",
+    "session": 4,
+    "stale": [
+     "orinthal serve"
+    ],
+    "current": [
+     "zephyra platform"
+    ],
+    "evidence": {
+     "@overlay/profile/aurora-user-context": [
+      "- Session on 2023-03-03 (12:30): they stated the monthly first-Monday release cadence ([[project/aurora-release-cadence]]), the secret manager switching again to Orinthal Sealed ([[project/aurora-secrets-orinthal-sealed]]), and coverage targets 70% overall / 95% auth ([[project/aurora-test-coverage]]).",
+      "- The secret manager changed twice within 2023-03-03 (Verisigil Lock -> Kerberos Trove -> Orinthal Sealed): treat named vendor/tool choices on this project as volatile and confirm the current one before advising.",
+      "- They state explicit dependency chains and contingencies: image and CI config are \"determined by our infrastructure (we deploy on Orinthal Serve)\"; Dockerfile follows the image; deploy command follows the CI config. Named contingencies: deploy-target change -> CI becomes thandrel-flow.toml; CI change -> deploy command becomes `thandrel ship --channel beta`."
+     ],
+     "@overlay/project/aurora-ci-config": [
+      "CI is configured in zephyra-pipeline.json, tied to deploying on Orinthal Serve; the user states that if deploy targets change, the CI config would become thandrel-flow.toml.",
+      "- Current CI config: `zephyra-pipeline.json` (JSON format), described by the user as \"determined by our infrastructure (we deploy on Orinthal Serve)\" — see [[project/aurora-deployment]].",
+      "- Advice the user was given: watch build times and test coverage (coverage targets 70% overall / 95% auth — [[project/aurora-test-coverage]]); on a config-file switch, re-check that all environment variables and settings are defined in the new file, and secrets come from the current secret manager [[project/aurora-secrets-orinthal-sealed]]."
+     ],
+     "@overlay/project/aurora-deployment-zephyra": [
+      "Aurora deployment moved to Zephyra Platform on 2023-03-06 (was Orinthal Serve)",
+      "As of 2023-03-06 the team deploys to Zephyra Platform, replacing Orinthal Serve; the zephyra-* image/CI/deploy-command chain derived from the old target now needs re-verification.",
+      "The team **moved its deployment to Zephyra Platform** (stated 2023-03-06), replacing the earlier target Orinthal Serve."
+     ],
+     "@overlay/project/aurora-docker-image": [
+      "Aurora Docker image is zephyra-hub/aurora:prod (tied to Orinthal Serve)",
+      "The project's Docker image is zephyra-hub/aurora:prod; the user says this follows from deploying on Orinthal Serve, so a change of infrastructure would change the image name.",
+      "- Why: the user says the image is \"determined by our infrastructure (we deploy on Orinthal Serve)\" — see [[project/aurora-deployment]]. If the hosting/deployment target changes, this image name would change too."
+     ],
+     "@overlay/project/aurora-secrets-orinthal-sealed": [
+      "Aurora secret manager switched again: now Orinthal Sealed (was Kerberos Trove, before that Verisigil Lock)",
+      "Orinthal Sealed",
+      "As of 2023-03-03 the team's secret manager is Orinthal Sealed, replacing Kerberos Trove (which had earlier replaced Verisigil Lock); integrate it into CI/CD with least privilege and rotation."
+     ]
+    },
+    "verdict": "correct",
+    "note": "every card still naming the old value is inactive, warned (act/WARN), or marks it as replaced"
+   },
+   {
+    "id": "meme-nofiller/pl_041/update/4#1",
+    "dir": "meme-nofiller__pl_041",
+    "session": 4,
+    "stale": [
+     "seasonal allergies"
+    ],
+    "current": [
+     "lactose intolerance"
+    ],
+    "evidence": {
+     "@overlay/fitness-yoga-twice-weekly": [
+      "The user's exercise routine is yoga twice a week; they tie it to their seasonal allergies and say the routine would be yoga 2x/week if their health condition changes.",
+      "- They tie it to their health condition: \"this is determined by my seasonal allergies; if my health condition changes, this would likely change too,\" and restated \"If my health condition changes, my exercise routine will be yoga 2x/week.\""
+     ],
+     "@overlay/health-lactose-intolerance": [
+      "User's health condition now: lactose intolerance (seasonal allergies resolved)",
+      "allergies resolved",
+      "As of 2023-03-05 the user was recently diagnosed with lactose intolerance; their seasonal allergies (formerly their health condition) have been treated and resolved."
+     ],
+     "@overlay/health-medication-dyntheral-contingency": [
+      "- Dyntheral is therefore the named alternative/fallback medication; Korathril remains what they currently take while their health condition (seasonal allergies) stays the same."
+     ],
+     "@overlay/health-medication-korathril": [
+      "User's current medication: Korathril (for seasonal allergies)",
+      "allergy medication",
+      "As of 2023-03-04 the user takes a medication called Korathril; they say it is determined by their seasonal allergies and would likely change if their health condition changes."
+     ]
+    },
+    "verdict": "correct",
+    "note": "every card still naming the old value is inactive, warned (act/WARN), or marks it as replaced"
+   }
+  ],
+  "flips": []
+ },
+ "rule": "PLAN.md section 10: 6.3 with matcher v3, up to 50 retired failures and 50 lost cases, and 15 passes (seed 20261106)"
+}

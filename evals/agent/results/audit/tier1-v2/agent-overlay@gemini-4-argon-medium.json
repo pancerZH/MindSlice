@@ -1,0 +1,1041 @@
+{
+ "cell": "agent-overlay@gemini-4-argon-medium",
+ "population": {
+  "retired": 23,
+  "lost": 7,
+  "passes": 258,
+  "flips": 0
+ },
+ "cases": {
+  "retired": [
+   {
+    "id": "meme-nofiller/pl_046/update/1#5",
+    "dir": "meme-nofiller__pl_046",
+    "session": 1,
+    "stale": [
+     "xelvoria"
+    ],
+    "current": [
+     "meal kit (kelvimeal)"
+    ],
+    "evidence": {
+     "@overlay/subscriptions/xelvoria-content": [
+      "User enjoys art tutorials and tips on Xelvoria",
+      "Xelvoria tutorials",
+      "Xelvoria art tips"
+     ],
+     "@history/s000/r002": [
+      "I'm also subscribed to Xelvoria. Have you heard of it? It offers some interesting content that I enjoy.",
+      "- User: I'm also subscribed to Xelvoria. Have you heard of it? It offers some interesting content that I enjoy.",
+      "- Assistant: Xelvoria sounds intriguing! While I'm not familiar with specific details about it, it seems like a platform that offers engaging content. If it covers pottery or artistic techniques, that could be a great resource to enhance your skills and inspire your creativity. What kind of content do you enjoy most on Xelvoria?"
+     ]
+    },
+    "verdict": "correct",
+    "note": ""
+   },
+   {
+    "id": "meme-nofiller/pl_007/update/1#5",
+    "dir": "meme-nofiller__pl_007",
+    "session": 1,
+    "stale": [
+     "thyrelion (anime)"
+    ],
+    "current": [
+     "a history documentary series"
+    ],
+    "evidence": {
+     "@history/s000/r001": [
+      "I’ve been watching Thyrelion lately. It’s an interesting anime with a unique storyline. Are you into any particular genres of anime?",
+      "- User: I’ve been watching Thyrelion lately. It’s an interesting anime with a unique storyline. Are you into any particular genres of anime?",
+      "- Assistant: Thyrelion sounds intriguing! Anime offers such a wide range of genres, so there’s something for everyone. Some popular genres include shonen, which often focuses on action and adventure, and slice-of-life, which explores everyday experiences in a more relaxed way. I also enjoy fantasy and sci-fi anime because they can create such rich, imaginative worlds. What aspects of Thyrelion do you find most captivating? Are there other series you've enjoyed that are similar?"
+     ]
+    },
+    "verdict": "correct",
+    "note": ""
+   },
+   {
+    "id": "meme-nofiller/pl_007/update/2#3",
+    "dir": "meme-nofiller__pl_007",
+    "session": 2,
+    "stale": [
+     "thyrelion (anime)",
+     "a history documentary series"
+    ],
+    "current": [
+     "xelvari dawn (book)"
+    ],
+    "evidence": {
+     "@history/s000/r001": [
+      "I’ve been watching Thyrelion lately. It’s an interesting anime with a unique storyline. Are you into any particular genres of anime?",
+      "- User: I’ve been watching Thyrelion lately. It’s an interesting anime with a unique storyline. Are you into any particular genres of anime?",
+      "- Assistant: Thyrelion sounds intriguing! Anime offers such a wide range of genres, so there’s something for everyone. Some popular genres include shonen, which often focuses on action and adventure, and slice-of-life, which explores everyday experiences in a more relaxed way. I also enjoy fantasy and sci-fi anime because they can create such rich, imaginative worlds. What aspects of Thyrelion do you find most captivating? Are there other series you've enjoyed that are similar?"
+     ],
+     "@history/s001/r002": [
+      "My current media is a history documentary series. I find them really engaging and informative. Do you have any recommendations for good documentaries?",
+      "- User: My current media is a history documentary series. I find them really engaging and informative. Do you have any recommendations for good documentaries?"
+     ]
+    },
+    "verdict": "correct",
+    "note": ""
+   },
+   {
+    "id": "meme-nofiller/pl_014/update/1#7",
+    "dir": "meme-nofiller__pl_014",
+    "session": 1,
+    "stale": [
+     "daily journal subscription"
+    ],
+    "current": [
+     "dranthazon"
+    ],
+    "evidence": {
+     "@history/s000/r001": [
+      "I've been subscribed to a Daily Journal subscription. It really helps me keep track of my thoughts and daily activities. Do you think journaling can offer any specific benefits?",
+      "- User: I've been subscribed to a Daily Journal subscription. It really helps me keep track of my thoughts and daily activities. Do you think journaling can offer any specific benefits?"
+     ]
+    },
+    "verdict": "correct",
+    "note": "from the tier-1 audit"
+   },
+   {
+    "id": "meme-nofiller/pl_019/update/2#5",
+    "dir": "meme-nofiller__pl_019",
+    "session": 2,
+    "stale": [
+     "the quorath codex (book)",
+     "a daily news podcast"
+    ],
+    "current": [
+     "thyrelion (anime)"
+    ],
+    "evidence": {
+     "@history/s001/r003": [
+      "I currently listen to a daily news podcast to keep up with current events. What about you? Do you have a favorite podcast or news source?",
+      "- User: I currently listen to a daily news podcast to keep up with current events. What about you? Do you have a favorite podcast or news source?",
+      "- Assistant: Listening to a daily news podcast is a great way to stay informed! There are so many excellent options out there. Some popular news podcasts include \"Up First\" by NPR, which provides a quick overview of the day's top stories, and \"The Daily\" from The New York Times, which often dives deeper into one major news topic. If you prefer a mix of news and analysis, \"Pod Save America\" offers insightful commentary on current events. It might be interesting to explore podcasts that align with your specific interests, whether that’s politics, science, or culture. What topics do you find yourself most drawn to in your news listening?"
+     ]
+    },
+    "verdict": "correct",
+    "note": "from the tier-1 audit"
+   },
+   {
+    "id": "meme-nofiller/pl_006/update/1#7",
+    "dir": "meme-nofiller__pl_006",
+    "session": 1,
+    "stale": [
+     "whispers of zarinthea (tv)"
+    ],
+    "current": [
+     "thyrelion (anime)"
+    ],
+    "evidence": {
+     "@history/s000/r001": [
+      "I recently started watching a show called Whispers of Zarinthea. Have you seen it, or do you have any recommendations for other shows?",
+      "- User: I recently started watching a show called Whispers of Zarinthea. Have you seen it, or do you have any recommendations for other shows?",
+      "- Assistant: \"Whispers of Zarinthea\" sounds intriguing! While I haven't seen it, it seems to have captured a lot of viewers' attention. If you're enjoying fantasy or adventure themes, you might also like shows like \"The Witcher\" or \"Shadow and Bone,\" which feature rich world-building and engaging characters. If you're open to different genres, \"Stranger Things\" offers a blend of mystery and nostalgia, while \"The Mandalorian\" is great for sci-fi fans. What aspects of \"Whispers of Zarinthea\" do you enjoy most? That might help narrow down some recommendations!"
+     ]
+    },
+    "verdict": "correct",
+    "note": ""
+   },
+   {
+    "id": "meme-nofiller/pl_030/update/1#5",
+    "dir": "meme-nofiller__pl_030",
+    "session": 1,
+    "stale": [
+     "the quorath codex (book)"
+    ],
+    "current": [
+     "thyrelion (anime)"
+    ],
+    "evidence": {
+     "@history/s000/r001": [
+      "I’m currently reading The Quorath Codex. It’s a fantasy novel that really draws you into its world. Have you read it or heard anything about it?",
+      "- User: I’m currently reading The Quorath Codex. It’s a fantasy novel that really draws you into its world. Have you read it or heard anything about it?",
+      "- Assistant: \"The Quorath Codex\" sounds intriguing! While I don't have specific information on that title, fantasy novels often excel at world-building and character development, which can really immerse you in the story. If you enjoy detailed settings and complex plots, it might be a great fit for you. Are there particular elements of the book you find especially captivating, like the characters or the lore?"
+     ]
+    },
+    "verdict": "correct",
+    "note": ""
+   },
+   {
+    "id": "meme-nofiller/pl_032/update/1#5",
+    "dir": "meme-nofiller__pl_032",
+    "session": 1,
+    "stale": [
+     "thyranote"
+    ],
+    "current": [
+     "zorvista premium"
+    ],
+    "evidence": {
+     "@history/s000/r001": [
+      "I’ve been subscribed to Thyranote. It’s been helpful for keeping track of my reading and notes. Have you ever used a similar service, or do you have a different method for managing your reading?",
+      "- User: I’ve been subscribed to Thyranote. It’s been helpful for keeping track of my reading and notes. Have you ever used a similar service, or do you have a different method for managing your reading?",
+      "- Assistant: Thyranote sounds like a useful tool for organizing your reading and notes! Many readers find that keeping track of their progress and jotting down thoughts really enhances their experience. While I don't use services myself, I know that some readers enjoy using apps like Goodreads for tracking books and discovering new ones based on their interests. Others prefer a simple journal or even spreadsheets to record their thoughts. How has Thyranote been working for you so far?"
+     ]
+    },
+    "verdict": "correct",
+    "note": "from the tier-1 audit"
+   },
+   {
+    "id": "meme-nofiller/pl_044/update/1#5",
+    "dir": "meme-nofiller__pl_044",
+    "session": 1,
+    "stale": [
+     "xelvoria"
+    ],
+    "current": [
+     "zorvista premium"
+    ],
+    "evidence": {
+     "@history/s000/r001": [
+      "I’m also subscribed to Xelvoria. Have you heard of it? I find the content really engaging.",
+      "- User: I’m also subscribed to Xelvoria. Have you heard of it? I find the content really engaging.",
+      "- Assistant: Xelvoria sounds intriguing! While I might not have specific details about it, it's great to hear you find the content engaging. Many subscription-based platforms offer a range of topics, so it must have something that resonates with you. What type of content do you enjoy the most there? Are there any particular series or themes that stand out to you?"
+     ]
+    },
+    "verdict": "correct",
+    "note": "from the tier-1 audit"
+   },
+   {
+    "id": "meme-nofiller/pl_039/update/1#5",
+    "dir": "meme-nofiller__pl_039",
+    "session": 1,
+    "stale": [
+     "whispers of zarinthea (tv)"
+    ],
+    "current": [
+     "a true crime podcast"
+    ],
+    "evidence": {
+     "@history/s000/r002": [
+      "My current media is Whispers of Zarinthea (TV). Have you heard of it? It's been pretty captivating with its storyline. What kind of shows do you usually watch?",
+      "- User: My current media is Whispers of Zarinthea (TV). Have you heard of it? It's been pretty captivating with its storyline. What kind of shows do you usually watch?",
+      "- Assistant: \"Whispers of Zarinthea\" sounds intriguing! It’s always great to find a show that really draws you in with its storyline. While I don't watch shows myself, I can suggest that if you enjoy captivating narratives, you might also like series that blend fantasy with strong character development. Shows like \"The Witcher\" or \"Shadow and Bone\" have similarly engaging plots and rich world-building. What aspects of the storyline in \"Whispers of Zarinthea\" do you find most captivating?"
+     ]
+    },
+    "verdict": "correct",
+    "note": "from the tier-1 audit"
+   },
+   {
+    "id": "meme-nofiller/pl_043/update/1#5",
+    "dir": "meme-nofiller__pl_043",
+    "session": 1,
+    "stale": [
+     "xelvoria"
+    ],
+    "current": [
+     "thyranote"
+    ],
+    "evidence": {
+     "@overlay/subscriptions/xelvoria": [
+      "Subscription to Xelvoria",
+      "Xelvoria subscription",
+      "The user is subscribed to Xelvoria, a platform for discovering new content alongside their knitting hobby."
+     ]
+    },
+    "verdict": "correct",
+    "note": "from the tier-1 audit"
+   },
+   {
+    "id": "meme-nofiller/pl_033/update/1#5",
+    "dir": "meme-nofiller__pl_033",
+    "session": 1,
+    "stale": [
+     "the veldrakon spiral (tv)"
+    ],
+    "current": [
+     "a daily news podcast"
+    ],
+    "evidence": {
+     "@history/s000/r002": [
+      "My current media is The Veldrakon Spiral (TV). It's been an interesting watch. Have you seen it?",
+      "- User: My current media is The Veldrakon Spiral (TV). It's been an interesting watch. Have you seen it?",
+      "- Assistant: \"The Veldrakon Spiral\" sounds intriguing! While I haven't watched it, I’d love to hear what you think about it. What aspects of the show stand out to you? Are there particular characters or plot points that you find especially engaging? It’s always fun to dive into discussions about shows we enjoy!"
+     ],
+     "@history/s000/r003": [
+      "- Assistant: From what I've gathered, \"The Veldrakon Spiral\" blends elements of fantasy and sci-fi, creating a unique world that often explores themes like adventure, identity, and the struggle between good and evil. Shows that mix these genres can offer rich storytelling and imaginative visuals, which can be really captivating."
+     ]
+    },
+    "verdict": "correct",
+    "note": "from the tier-1 audit"
+   },
+   {
+    "id": "meme-nofiller/pl_037/update/1#5",
+    "dir": "meme-nofiller__pl_037",
+    "session": 1,
+    "stale": [
+     "a daily news podcast"
+    ],
+    "current": [
+     "thyrelion (anime)"
+    ],
+    "evidence": {
+     "@history/s000/r002": [
+      "My current media is a daily news podcast. I like staying updated on current events while doing other things. Do you listen to any specific podcast?",
+      "- User: My current media is a daily news podcast. I like staying updated on current events while doing other things. Do you listen to any specific podcast?",
+      "- Assistant: Listening to a daily news podcast is a great way to stay informed while multitasking! There are many popular options out there, like \"The Daily\" from The New York Times or \"Up First\" from NPR, which provide concise summaries of the day’s top stories. If you’re interested in specific topics, there are also podcasts that focus on politics, technology, or even international news. Do you have a particular focus you enjoy, or are you open to exploring different themes?"
+     ]
+    },
+    "verdict": "correct",
+    "note": ""
+   },
+   {
+    "id": "meme-nofiller/pl_050/update/1#7",
+    "dir": "meme-nofiller__pl_050",
+    "session": 1,
+    "stale": [
+     "thyranote"
+    ],
+    "current": [
+     "meal kit (kelvimeal)"
+    ],
+    "evidence": {
+     "@history/s000/r002": [
+      "I'm subscribed to Thyranote. It's a platform that helps with note-taking and organization. Have you heard of it?",
+      "- User: I'm subscribed to Thyranote. It's a platform that helps with note-taking and organization. Have you heard of it?",
+      "- Assistant: Thyranote sounds like an interesting platform for note-taking and organization! While I don’t have specific information about it, many similar tools focus on helping users streamline their notes, organize ideas, and enhance productivity. If you enjoy using it, consider exploring its features fully to maximize its benefits, like tagging, categorizing, or using templates for different types of notes. How are you finding it so far? Are there particular features you like best?"
+     ],
+     "@history/s000/r003": [
+      "I've been using Thyranote primarily for organizing my thoughts and keeping track of important information. Its interface is user-friendly, which makes it easy to navigate. Do you use any specific features or methods to stay organized…",
+      "- User: I've been using Thyranote primarily for organizing my thoughts and keeping track of important information. Its interface is user-friendly, which makes it easy to navigate. Do you use any specific features or methods to stay organized within the app?",
+      "- Assistant: It’s great to hear that you find Thyranote user-friendly! A good interface can make a big difference in staying organized. Many users benefit from creating categories or folders to group similar notes together, which can help streamline access to important information."
+     ]
+    },
+    "verdict": "correct",
+    "note": ""
+   },
+   {
+    "id": "meme-nofiller/pl_008/update/1#3",
+    "dir": "meme-nofiller__pl_008",
+    "session": 1,
+    "stale": [
+     "xelvoria"
+    ],
+    "current": [
+     "meal kit (kelvimeal)"
+    ],
+    "evidence": {
+     "@overlay/user/xelvoria-subscription": [
+      "User's Xelvoria Subscription for Cooking Tutorials",
+      "Xelvoria subscription",
+      "The user is subscribed to Xelvoria for its cooking tutorials and food-related shows, which support their cooking hobby."
+     ]
+    },
+    "verdict": "correct",
+    "note": ""
+   },
+   {
+    "id": "meme-nofiller/pl_034/update/1#5",
+    "dir": "meme-nofiller__pl_034",
+    "session": 1,
+    "stale": [
+     "xelvoria"
+    ],
+    "current": [
+     "thyranote"
+    ],
+    "evidence": {
+     "@overlay/woodworking/xelvoria-subscription": [
+      "Xelvoria Subscription for Woodworking Resources",
+      "Xelvoria subscription",
+      "Xelvoria resources"
+     ]
+    },
+    "verdict": "correct",
+    "note": "from the tier-1 audit"
+   },
+   {
+    "id": "meme-nofiller/pl_026/update/1#5",
+    "dir": "meme-nofiller__pl_026",
+    "session": 1,
+    "stale": [
+     "thyranote"
+    ],
+    "current": [
+     "meal kit (kelvimeal)"
+    ],
+    "evidence": {
+     "@history/s000/r002": [
+      "I'm also subscribed to Thyranote. I find it helpful for tracking my practice sessions and learning new songs. Do you use any apps or platforms for your guitar practice?",
+      "- User: I'm also subscribed to Thyranote. I find it helpful for tracking my practice sessions and learning new songs. Do you use any apps or platforms for your guitar practice?",
+      "- Assistant: Thyranote sounds like a useful tool for tracking your progress! Many guitarists benefit from apps and platforms that help with practice and learning new songs. Some popular options include Ultimate Guitar for its vast song library and chord charts, or Yousician, which offers interactive lessons and feedback. You might also enjoy using YouTube for tutorials, as there are countless channels dedicated to teaching guitar songs and techniques. How has your experience with Thyranote been so far?"
+     ]
+    },
+    "verdict": "correct",
+    "note": ""
+   },
+   {
+    "id": "meme-nofiller/pl_019/update/1#7",
+    "dir": "meme-nofiller__pl_019",
+    "session": 1,
+    "stale": [
+     "the quorath codex (book)"
+    ],
+    "current": [
+     "a daily news podcast"
+    ],
+    "evidence": {
+     "@history/s000/r002": [
+      "My current media is The Quorath Codex. Have you heard of it? What kind of books do you usually enjoy?",
+      "- User: My current media is The Quorath Codex. Have you heard of it? What kind of books do you usually enjoy?",
+      "- Assistant: \"The Quorath Codex\" sounds intriguing! While I might not have specific information about that book, it seems to fall within the realm of fantasy or science fiction, which often features rich world-building and complex characters. Many readers enjoy immersing themselves in these genres for their imaginative storytelling."
+     ]
+    },
+    "verdict": "correct",
+    "note": ""
+   },
+   {
+    "id": "meme-nofiller/sw_024/update/4#1",
+    "dir": "meme-nofiller__sw_024",
+    "session": 4,
+    "stale": [
+     "phalanx gate"
+    ],
+    "current": [
+     "kryptal auth"
+    ],
+    "evidence": {
+     "@overlay/team/login-endpoint": [
+      "- Securing the authentication flow at `/oathkeeper/mtls/handshake` involves handling certificates and validating requests alongside [[team/authentication]] (Phalanx Gate and Phalanx-HMAC-SHA256 token format)."
+     ]
+    },
+    "verdict": "correct",
+    "note": "from the tier-1 audit"
+   },
+   {
+    "id": "meme-nofiller/pl_014/update/2#5",
+    "dir": "meme-nofiller__pl_014",
+    "session": 2,
+    "stale": [
+     "daily journal subscription",
+     "dranthazon"
+    ],
+    "current": [
+     "pyrethon plus"
+    ],
+    "evidence": {
+     "@history/s001/r004": [
+      "I imagine the variety on Dranthazon keeps things fresh. Do you have any favorite shows or genres that you always look forward to watching?",
+      "- User: I imagine the variety on Dranthazon keeps things fresh. Do you have any favorite shows or genres that you always look forward to watching?",
+      "- Assistant: Absolutely, the variety really does keep things interesting! Many viewers often gravitate towards genres like drama, comedy, or thrillers, as each offers something unique. Some also enjoy documentaries or nature shows for a change of pace and to learn something new. What kind of shows or genres do you find yourself drawn to the most on Dranthazon?"
+     ]
+    },
+    "verdict": "correct",
+    "note": "from the tier-1 audit"
+   },
+   {
+    "id": "meme-nofiller/pl_025/update/1#5",
+    "dir": "meme-nofiller__pl_025",
+    "session": 1,
+    "stale": [
+     "xelvoria"
+    ],
+    "current": [
+     "meal kit (kelvimeal)"
+    ],
+    "evidence": {
+     "@history/s000/r002": [
+      "I'm subscribed to Xelvoria. It's been a great resource for me, especially for learning about new woodworking techniques and projects. Have you heard of it?",
+      "- User: I'm subscribed to Xelvoria. It's been a great resource for me, especially for learning about new woodworking techniques and projects. Have you heard of it?",
+      "- Assistant: Xelvoria sounds like a fantastic resource for woodworking enthusiasts! Online platforms like that can provide a wealth of information, from tutorials to inspiration for new projects. They often offer community interaction, which can be a great way to share experiences and get feedback on your work. If you find specific techniques or projects particularly helpful, it might be worth exploring those areas deeper or even trying to replicate them. Are there any specific techniques or projects you’ve learned from Xelvoria that you’re excited to try?"
+     ]
+    },
+    "verdict": "correct",
+    "note": ""
+   },
+   {
+    "id": "meme-nofiller/pl_031/update/1#5",
+    "dir": "meme-nofiller__pl_031",
+    "session": 1,
+    "stale": [
+     "a true crime podcast"
+    ],
+    "current": [
+     "the quorath codex (book)"
+    ],
+    "evidence": {
+     "@history/s000/r001": [
+      "I currently listen to a true crime podcast. It's fascinating how they delve into real-life mysteries and cases. Do you enjoy podcasts? If so, what's your favorite genre?",
+      "- User: I currently listen to a true crime podcast. It's fascinating how they delve into real-life mysteries and cases. Do you enjoy podcasts? If so, what's your favorite genre?",
+      "- Assistant: True crime podcasts are incredibly captivating! They really dive into the complexities of real-life events and often keep you on the edge of your seat. While I don't listen to podcasts myself, many people find genres like history, science, and storytelling to be equally engaging. Each genre offers unique insights and narratives. If you’re enjoying true crime, you might also like some investigative journalism podcasts that explore broader societal issues. Have you stumbled upon any particular episodes or cases that really intrigued you?"
+     ]
+    },
+    "verdict": "correct",
+    "note": ""
+   },
+   {
+    "id": "meme-nofiller/pl_043/update/4#1",
+    "dir": "meme-nofiller__pl_043",
+    "session": 4,
+    "stale": [
+     "in a relationship"
+    ],
+    "current": [
+     "engaged"
+    ],
+    "evidence": {
+     "@overlay/events/half-marathon": [
+      "- Note on other upcoming events: Earlier on 2023/03/03 (Fri) 09:24, the user also mentioned having a baby shower coming up ([[@overlay/events/baby-shower]]), which depended on being in a relationship ([[@overlay/personal/relationship-status]])."
+     ]
+    },
+    "verdict": "matching error",
+    "note": "corrected 2026-11-08 (v3 check): the line reports an earlier statement ('Earlier ... mentioned ... which depended on being in a relationship'), past by the verdict rule; the Absence audit judged the same line a matching error"
+   }
+  ],
+  "lost": [
+   {
+    "id": "meme-nofiller/pl_031/0#1",
+    "dir": "meme-nofiller__pl_031",
+    "point": "end",
+    "value": "cooking",
+    "entity": "hobby",
+    "near": {
+     "@history/s000/r000 (inactive)": [
+      "My hobby is cooking. I enjoy trying new recipes and experimenting with different cuisines. Do you have any favorite cooking tips or recipes?",
+      "- User: My hobby is cooking. I enjoy trying new recipes and experimenting with different cuisines. Do you have any favorite cooking tips or recipes?",
+      "- Assistant: Cooking is such a rewarding hobby! One tip that many find helpful is to always taste your food as you go. This helps you adjust flavors and ensures that your dish turns out just right. When experimenting with different cuisines, try to use fresh herbs and spices, as they can really elevate the flavors in your dishes."
+     ],
+     "@overlay/user/hobby": [
+      "User Hobby: Cycling",
+      "user hobby",
+      "current hobby"
+     ],
+     "@history/s001/r000": [
+      "I play cycling as a hobby. Do you have any tips for improving my cycling skills or routes to explore?",
+      "- User: I play cycling as a hobby. Do you have any tips for improving my cycling skills or routes to explore?"
+     ]
+    },
+    "verdict": "correct",
+    "note": ""
+   },
+   {
+    "id": "meme-nofiller/pl_010/0#5",
+    "dir": "meme-nofiller__pl_010",
+    "point": 3,
+    "value": "brunch with college friends monthly",
+    "entity": "social_gathering",
+    "near": {
+     "@history/s000/r002 (inactive)": [
+      "My regular social meetup is brunch with college friends monthly. It's a nice way to catch up and enjoy some good food together. Do you have any regular meetups with friends, or do you prefer to hang out more casually?",
+      "- User: My regular social meetup is brunch with college friends monthly. It's a nice way to catch up and enjoy some good food together. Do you have any regular meetups with friends, or do you prefer to hang out more casually?",
+      "- Assistant: Brunch with friends sounds like a lovely way to connect and enjoy some good food! Regular meetups can really strengthen friendships and create lasting memories. While I don’t have personal experiences, many people enjoy a mix of planned gatherings and casual hangouts, depending on their schedules. How do you usually decide on the restaurant or activities for your brunches?"
+     ],
+     "@history/s000/r003 (inactive)": [
+      "- Assistant: Trying new places and exploring different cuisines is a fantastic way to keep brunch exciting! Many people enjoy brunch spots that offer a mix of sweet and savory options, like classic eggs benedict or pancakes alongside unique dishes. Some also love places with great coffee or fresh pastries to complement their meals. Do you have any particular cuisines or dishes that you and your friends tend to enjoy more than others?"
+     ],
+     "@history/s000/r004": [
+      "- Assistant: Living in a dormitory definitely comes with its own set of unique experiences and challenges! It’s a great way to meet new people and build a sense of community, which can be really beneficial during your college years. You might enjoy spontaneous social activities or study sessions with fellow students. On the flip side, sharing space means navigating different lifestyles and habits, which can sometimes be a challenge. What aspects of dorm life do you enjoy the most, or have you found any particular challenges?"
+     ],
+     "@overlay/social/regular-meetup-board-game-group": [
+      "Regular Social Meetup: Board Game Group and Game Preferences",
+      "regular social meetup",
+      "The user's regular social meetup is a board game group that meets regularly and favors strategy games as well as lighter, party-style games."
+     ],
+     "@history/s001/r000": [
+      "- Assistant: Pickleball is indeed a fun sport! It combines elements of tennis, badminton, and ping-pong, making it unique and engaging. The court is smaller than a tennis court, which allows for quick exchanges and strategic play. Many players enjoy the social aspect, as it's often played in doubles, fostering teamwork and communication. Have you been playing for long, or are you just getting started?"
+     ]
+    },
+    "verdict": "correct",
+    "note": "from the tier-1 audit"
+   },
+   {
+    "id": "meme-nofiller/pl_047/1#1",
+    "dir": "meme-nofiller__pl_047",
+    "point": "end",
+    "value": "basketball",
+    "entity": "sports",
+    "near": {
+     "@history/s000/r003 (inactive)": [
+      "I regularly meet up for pickup basketball on Saturdays. It's a great way to stay active and socialize. Do you think playing team sports has any benefits beyond just fitness?",
+      "- User: I regularly meet up for pickup basketball on Saturdays. It's a great way to stay active and socialize. Do you think playing team sports has any benefits beyond just fitness?",
+      "- Assistant: Absolutely! Playing team sports like basketball can offer a range of benefits beyond just physical fitness. It promotes teamwork and communication skills, as you need to collaborate with your teammates to succeed. Additionally, it can foster a sense of community and belonging, which is great for socializing and building relationships. Engaging in these activities can also help reduce stress and improve mental well-being, as the endorphins released during play contribute to a positive mood. How long have you been playing basketball with your group?"
+     ],
+     "@overlay/user/fitness-and-team-sports": [
+      "User's Fitness and Team Sports Discussion (Activity Forgotten on Request)",
+      "team sports benefits",
+      "forgotten sport activity"
+     ],
+     "@history/s001/r000 (inactive)": [
+      "I play basketball. Do you think it's a good way to stay in shape? What do you think are the benefits of playing basketball regularly?",
+      "- User: I play basketball. Do you think it's a good way to stay in shape? What do you think are the benefits of playing basketball regularly?",
+      "- Assistant: Basketball is indeed a fantastic way to stay in shape! It offers a great cardiovascular workout, which can help improve your heart health and endurance. The game involves a lot of running, jumping, and quick lateral movements, which can enhance your agility and coordination."
+     ],
+     "@history/s001/r001 (inactive)": [
+      "Do you play basketball often? I find that playing regularly helps me improve my skills and fitness level. Do you have a preferred position you like to play, or do you enjoy playing all over the court?",
+      "- User: Do you play basketball often? I find that playing regularly helps me improve my skills and fitness level. Do you have a preferred position you like to play, or do you enjoy playing all over the court?",
+      "- Assistant: Playing basketball regularly is a great way to see improvement in both skills and fitness! Many players enjoy the versatility of playing different positions, as it helps them develop a well-rounded game. Each position has its unique challenges and strategies, whether you prefer the agility of a guard or the strength of a forward or center."
+     ],
+     "@history/s004/r002 (inactive)": [
+      "I'm part of pickup basketball Saturdays. Please forget that. Do you have any thoughts on that?",
+      "- User: I'm part of pickup basketball Saturdays. Please forget that. Do you have any thoughts on that?"
+     ]
+    },
+    "verdict": "correct",
+    "note": "from the tier-1 audit"
+   },
+   {
+    "id": "meme-nofiller/pl_018/2#1",
+    "dir": "meme-nofiller__pl_018",
+    "point": "end",
+    "value": "running club",
+    "entity": "club_membership",
+    "near": {
+     "@overlay/user/social-meetup": [
+      "The user's regular social meetup is a potluck dinner group (replacing their previous running club).",
+      "- This replaces their earlier social meetup in a running club."
+     ],
+     "@history/s002/r000 (inactive)": [
+      "I'm part of a running club. We meet regularly to train together and participate in local races. Do you have any tips for improving my running speed?",
+      "- User: I'm part of a running club. We meet regularly to train together and participate in local races. Do you have any tips for improving my running speed?",
+      "- Assistant: Improving your running speed can be both exciting and rewarding! One effective way to enhance your speed is by incorporating interval training into your routine. This involves alternating between periods of high-intensity running and lower-intensity recovery. Additionally, including tempo runs can help you build endurance at a faster pace, allowing your body to adapt to running at higher speeds over time."
+     ],
+     "@history/s002/r001 (inactive)": [
+      "What kind of races do you participate in with your running club? Are they mostly local 5Ks, marathons, or something else?",
+      "- User: What kind of races do you participate in with your running club? Are they mostly local 5Ks, marathons, or something else?",
+      "- Assistant: It sounds like you’re really involved with your running club! Many clubs participate in a variety of races, often including local 5Ks, half-marathons, and marathons. Some clubs also enjoy themed races or fun runs, which can be a great way to keep things exciting. Additionally, trail races or obstacle courses might be on the agenda if your club is adventurous. What types of races has your club participated in?"
+     ],
+     "@history/s002/r002 (inactive)": [
+      "- Assistant: Maintaining a pickup truck is essential for keeping it running smoothly and extending its lifespan. Regular oil changes are crucial, as they help keep the engine lubricated and functioning efficiently. It’s also a good idea to check and replace air filters periodically, as clean air filters can improve engine performance and fuel efficiency."
+     ]
+    },
+    "verdict": "correct",
+    "note": ""
+   },
+   {
+    "id": "meme-nofiller/pl_031/0#1",
+    "dir": "meme-nofiller__pl_031",
+    "point": 3,
+    "value": "cooking",
+    "entity": "hobby",
+    "near": {
+     "@history/s000/r000 (inactive)": [
+      "My hobby is cooking. I enjoy trying new recipes and experimenting with different cuisines. Do you have any favorite cooking tips or recipes?",
+      "- User: My hobby is cooking. I enjoy trying new recipes and experimenting with different cuisines. Do you have any favorite cooking tips or recipes?",
+      "- Assistant: Cooking is such a rewarding hobby! One tip that many find helpful is to always taste your food as you go. This helps you adjust flavors and ensures that your dish turns out just right. When experimenting with different cuisines, try to use fresh herbs and spices, as they can really elevate the flavors in your dishes."
+     ],
+     "@overlay/user/hobby": [
+      "User Hobby: Cycling",
+      "user hobby",
+      "current hobby"
+     ],
+     "@history/s001/r000": [
+      "I play cycling as a hobby. Do you have any tips for improving my cycling skills or routes to explore?",
+      "- User: I play cycling as a hobby. Do you have any tips for improving my cycling skills or routes to explore?"
+     ]
+    },
+    "verdict": "correct",
+    "note": ""
+   },
+   {
+    "id": "meme-nofiller/pl_025/0#9",
+    "dir": "meme-nofiller__pl_025",
+    "point": "end",
+    "value": "20 min",
+    "entity": "commute_duration",
+    "near": {
+     "@history/s000/r004 (inactive)": [
+      "My commute is about 20 minutes. It's manageable, but sometimes it feels like it cuts into my day. Do you have any tips for making commutes more enjoyable or productive?",
+      "- User: My commute is about 20 minutes. It's manageable, but sometimes it feels like it cuts into my day. Do you have any tips for making commutes more enjoyable or productive?",
+      "- Assistant: A 20-minute commute can definitely feel like a bit of a time sink, but there are some great ways to make it more enjoyable and productive. Listening to audiobooks or podcasts can be a fantastic way to engage your mind and learn something new while you travel. If you prefer music, creating playlists that energize or relax you can help set the tone for your day."
+     ],
+     "@overlay/user/commute": [
+      "User's Commute: Bus (to Quivira Springs Office)",
+      "commute to work",
+      "bus commute"
+     ],
+     "@overlay/user/employer": [
+      "- Because the user changed employers from Quenlix Group to Thalwren Inc., their job title is now staff engineer ([[user/job-title]]), their office is now in Quivira Springs ([[user/office-location]]), their commute is now by bus ([[user/commute]]), and their previous hybrid work hours ([[user/work-hours]]) and favorite restaurant near the old office ([[user/favorite-restaurant]]) no longer apply as before."
+     ],
+     "@history/s003/r003 (inactive)": [
+      "- Assistant: Walking to work is a great way to get some exercise and fresh air! If you had to commute further, would you prefer public transport or driving?"
+     ],
+     "@history/s003/r008 (inactive)": [
+      "- Assistant: Switching to the bus could be a nice way to relax during your commute. Do you think you'll enjoy the change, or do you prefer walking?"
+     ]
+    },
+    "verdict": "correct",
+    "note": ""
+   },
+   {
+    "id": "meme-nofiller/pl_025/2#1",
+    "dir": "meme-nofiller__pl_025",
+    "point": "end",
+    "value": "book club",
+    "entity": "club_membership",
+    "near": {
+     "@overlay/user/social-meetup": [
+      "club",
+      "former book club",
+      "The user's regular social meetup is a potluck dinner group (replacing their earlier book club)."
+     ],
+     "@history/s002/r000 (inactive)": [
+      "I'm part of a book club. We meet regularly to discuss our latest reads. Do you think book clubs are a good way to discover new authors?",
+      "- User: I'm part of a book club. We meet regularly to discuss our latest reads. Do you think book clubs are a good way to discover new authors?",
+      "- Assistant: Absolutely, book clubs can be a fantastic way to discover new authors! They often introduce members to books they might not pick up on their own, broadening your reading horizons. Discussing different perspectives on a book can also enhance your understanding and appreciation of the author’s work. Plus, hearing recommendations from fellow members can lead you to hidden gems you might not have found otherwise. What kinds of books have you read in your club so far?"
+     ],
+     "@history/s002/r001 (inactive)": [
+      "- Assistant: It sounds like your book club has a great variety! That diversity can really enrich the discussions and keep things fresh. While I don't have personal preferences, many readers gravitate toward genres like literary fiction for its depth and character exploration, or thrillers for their excitement and suspense. Authors like Haruki Murakami or Chimamanda Ngozi Adichie often come up in discussions for their unique storytelling styles. Do you have any particular genres or authors that you've enjoyed so far in your club?"
+     ],
+     "@overlay/user/subscription": [
+      "The user switched subscriptions again on 2023/03/03 and is currently subscribed to Pyrethon Plus (for reading/books), replacing Kelvimeal and Xelvoria.",
+      "- Pyrethon Plus is a reading subscription platform with features that enhance the user's reading experience for books and audiobooks."
+     ],
+     "@history/s002/r002": [
+      "Now I've switched again — I'm subscribed to Pyrethon Plus. The platform has some interesting features that enhance my reading experience. Have you ever tried any specific subscription services for books or audiobooks?",
+      "- User: Now I've switched again — I'm subscribed to Pyrethon Plus. The platform has some interesting features that enhance my reading experience. Have you ever tried any specific subscription services for books or audiobooks?",
+      "- Assistant: It’s great to hear you're enjoying Pyrethon Plus! Subscription services can really enhance the reading experience with their curated selections and additional features. Many readers find platforms like Audible or Scribd helpful for accessing a wide range of audiobooks and e-books. These services often allow for easy exploration of new titles and genres, making it simple to discover something new. What features of Pyrethon Plus do you find most beneficial for your reading?"
+     ]
+    },
+    "verdict": "correct",
+    "note": ""
+   }
+  ],
+  "passes": [
+   {
+    "id": "meme-nofiller/pl_017/update/2#5",
+    "dir": "meme-nofiller__pl_017",
+    "session": 2,
+    "stale": [
+     "zyvanta sedan",
+     "therwyn compact"
+    ],
+    "current": [
+     "vorantel suv"
+    ],
+    "evidence": {
+     "@overlay/user/vehicle": [
+      "The user now drives a Vorantel SUV (replacing their previous Therwyn Compact and Zyvanta Sedan), which is spacious and comfortable for long drives.",
+      "- As of 2023/03/03 (Fri) 18:12, the user switched vehicles again and now drives a Vorantel SUV (replacing their previous Therwyn Compact and Zyvanta Sedan).",
+      "- Previously, as of 2023/03/01 (21:18), the user drove a Therwyn Compact for getting to their running club ([[@history/s001/r000]]) and other activities, which had replaced their earlier Zyvanta Sedan (2023/03/01 09:00)."
+     ]
+    },
+    "verdict": "correct",
+    "note": ""
+   },
+   {
+    "id": "meme-nofiller/pl_025/update/2#5",
+    "dir": "meme-nofiller__pl_025",
+    "session": 2,
+    "stale": [
+     "xelvoria",
+     "meal kit (kelvimeal)"
+    ],
+    "current": [
+     "pyrethon plus"
+    ],
+    "evidence": {
+     "@overlay/user/subscription": [
+      "The user switched subscriptions again on 2023/03/03 and is currently subscribed to Pyrethon Plus (for reading/books), replacing Kelvimeal and Xelvoria.",
+      "- This replaces the user's previous subscriptions: Xelvoria (a woodworking resource, 2023/03/01 09:00) and Kelvimeal (a meal kit service where they tried a mix of vegetarian and meat-based options, 2023/03/01 14:26)."
+     ],
+     "@history/s001/r007": [
+      "- Assistant: Spending quality time together can really strengthen your connection. Many couples enjoy activities like cooking a meal together, going for walks, or exploring new places. Some might have traditions like game nights or movie marathons that allow for relaxation and fun. Others find joy in shared hobbies, whether it’s a sport, crafting, or even volunteering together."
+     ]
+    },
+    "verdict": "correct",
+    "note": ""
+   },
+   {
+    "id": "meme-nofiller/pl_035/update/1#5",
+    "dir": "meme-nofiller__pl_035",
+    "session": 1,
+    "stale": [
+     "zorvista premium"
+    ],
+    "current": [
+     "meal kit (kelvimeal)"
+    ],
+    "evidence": {
+     "@overlay/subscriptions/current": [
+      "Zorvista Premium replacement",
+      "The user is currently subscribed to the Kelvimeal meal kit service (updated 2023/03/02, replacing Zorvista Premium), which helps with meal planning and trying new recipes with pre-measured ingredients.",
+      "- As of 2023/03/02, the user updated their subscription situation and is subscribed to a meal kit service called Kelvimeal (replacing their earlier subscription to Zorvista Premium from 2023/03/01)."
+     ]
+    },
+    "verdict": "correct",
+    "note": ""
+   },
+   {
+    "id": "meme-nofiller/sw_004/update/4#1",
+    "dir": "meme-nofiller__sw_004",
+    "session": 4,
+    "stale": [
+     "sarah chen"
+    ],
+    "current": [
+     "minjun lee"
+    ],
+    "evidence": {
+     "@overlay/project/code-reviewer-fallback": [
+      "Because the team lead changed from Sarah Chen to Minjun Lee, the code reviewer is now Seoyun Choi (replacing David Lee).",
+      "- If the team lead (formerly Sarah Chen, [[@history/s002/r002]]) changes, the code reviewer becomes Seoyun Choi instead of David Lee ([[project/code-reviewer]])."
+     ],
+     "@overlay/project/code-reviewer": [
+      "- The code reviewer is Seoyun Choi as of 2023/03/06, following the team lead change from Sarah Chen to Minjun Lee ([[project/team-lead]]).",
+      "- Previously, code reviews went to David Lee (assigned by former team lead Sarah Chen on 2023/03/05), with the rule ([[project/code-reviewer-fallback]]) that if the team lead changes, the code reviewer will be Seoyun Choi."
+     ],
+     "@overlay/project/team-lead": [
+      "Sarah Chen team lead",
+      "Minjun Lee is the new team lead (replacing Sarah Chen as of 2023/03/06).",
+      "- Minjun Lee is the new team lead as of 2023/03/06, replacing Sarah Chen (who was previously team lead as of 2023/03/04)."
+     ],
+     "@overlay/project/weekly-report-recipient": [
+      "The weekly report recipient assignment to Taehyun Kim (made by former team lead Sarah Chen) is subject to change / invalidated now that Minjun Lee is the new team lead.",
+      "- The weekly report recipient was Taehyun Kim, assigned by former team lead Sarah Chen on 2023/03/05 with the condition that if the team lead changes, this assignment would change.",
+      "- As of 2023/03/06, Minjun Lee is the new team lead ([[project/team-lead]], replacing Sarah Chen), so Sarah Chen's weekly report recipient assignment to Taehyun Kim is no longer valid / subject to change under the new team lead."
+     ]
+    },
+    "verdict": "correct",
+    "note": ""
+   },
+   {
+    "id": "meme-nofiller/pl_008/update/2#5",
+    "dir": "meme-nofiller__pl_008",
+    "session": 2,
+    "stale": [
+     "xelvoria",
+     "meal kit (kelvimeal)"
+    ],
+    "current": [
+     "dranthazon"
+    ],
+    "evidence": {
+     "@overlay/user/dranthazon-subscription": [
+      "meal kit service",
+      "The user switched their subscription again (previously Xelvoria and Kelvimeal) and is now subscribed to Dranthazon, a board game service.",
+      "- Previously, the user was subscribed to Xelvoria (on 2023/03/01, for cooking tutorials and food-related shows) and then switched to the Kelvimeal meal kit service (on 2023/03/02, for meal prep)."
+     ]
+    },
+    "verdict": "correct",
+    "note": ""
+   },
+   {
+    "id": "meme-nofiller/sw_020/update/1#3",
+    "dir": "meme-nofiller__sw_020",
+    "session": 1,
+    "stale": [
+     "2025 april 11"
+    ],
+    "current": [
+     "2025 june 20"
+    ],
+    "evidence": {
+     "@overlay/project/sprint-deadline": [
+      "Project Sprint Deadline: 2025 June 20",
+      "2025 June 20",
+      "June 20 2025"
+     ]
+    },
+    "verdict": "correct",
+    "note": ""
+   },
+   {
+    "id": "meme-nofiller/sw_034/update/1#3",
+    "dir": "meme-nofiller__sw_034",
+    "session": 1,
+    "stale": [
+     "cryptara vault"
+    ],
+    "current": [
+     "selvex secrets"
+    ],
+    "evidence": {
+     "@overlay/project/secret-manager": [
+      "Cryptara Vault",
+      "The team's secret manager is Selvex Secrets (switched from Cryptara Vault on 2023/03/02) for handling sensitive information in their app.",
+      "- Previously, the team's secret manager was Cryptara Vault (as of 2023/03/01)."
+     ]
+    },
+    "verdict": "correct",
+    "note": ""
+   },
+   {
+    "id": "meme-nofiller/sw_012/update/1#5",
+    "dir": "meme-nofiller__sw_012",
+    "session": 1,
+    "stale": [
+     "cryptara vault"
+    ],
+    "current": [
+     "selvex secrets"
+    ],
+    "evidence": {
+     "@overlay/project/secret-manager": [
+      "Cryptara Vault",
+      "The team's secret manager is Selvex Secrets (updated from Cryptara Vault on 2023/03/03).",
+      "- The team's secret manager is Selvex Secrets (updated on 2023/03/03 from the previous secret manager, Cryptara Vault)."
+     ]
+    },
+    "verdict": "correct",
+    "note": ""
+   },
+   {
+    "id": "meme-nofiller/pl_009/update/1#5",
+    "dir": "meme-nofiller__pl_009",
+    "session": 1,
+    "stale": [
+     "zyvanta sedan"
+    ],
+    "current": [
+     "quorvel ev"
+    ],
+    "evidence": {
+     "@overlay/vehicles/current-car-quorvel-ev": [
+      "switched from Zyvanta Sedan",
+      "The user now drives a Quorvel EV (switched from a Zyvanta Sedan on 2023/03/01), appreciating its efficiency and reduced environmental impact.",
+      "- As of 2023/03/01 (22:12), the user drives a Quorvel EV (an electric vehicle), having switched from their previous Zyvanta Sedan."
+     ]
+    },
+    "verdict": "correct",
+    "note": ""
+   },
+   {
+    "id": "meme-nofiller/pl_012/update/1#5",
+    "dir": "meme-nofiller__pl_012",
+    "session": 1,
+    "stale": [
+     "zyvanta sedan"
+    ],
+    "current": [
+     "dranthis pickup"
+    ],
+    "evidence": {
+     "@overlay/user/vehicle": [
+      "Zyvanta Sedan",
+      "The user drives a Dranthis Pickup, which is versatile for hauling gear and getting to climbing spots (replacing their previous Zyvanta Sedan).",
+      "- The user drives a Dranthis Pickup (as of 2023/03/03), replacing their earlier Zyvanta Sedan (from 2023/03/01)."
+     ]
+    },
+    "verdict": "correct",
+    "note": ""
+   },
+   {
+    "id": "meme-nofiller/pl_029/update/4#1",
+    "dir": "meme-nofiller__pl_029",
+    "session": 4,
+    "stale": [
+     "quivira springs community college"
+    ],
+    "current": [
+     "ms in cs at quessara university"
+    ],
+    "evidence": {
+     "@overlay/education/current-school": [
+      "Quivira Springs Community College",
+      "The user just started an MS in CS at Quessara University (as of 2023/03/05), having previously studied at Quivira Springs Community College.",
+      "- Previously (as of 2023/03/03), the user was studying at Quivira Springs Community College."
+     ],
+     "@overlay/finance/financial-goal": [
+      "User's financial priorities shifted after changing schools to Quessara University (previously maxing out retirement fund while at Quivira Springs Community College); user is now planning a big purchase — an engagement ring.",
+      "- Previously (as of 2023/03/03), the user's financial goal was maxing out their retirement fund, which was determined by studying at Quivira Springs Community College, with the note that if their school changed, their financial priorities would shift."
+     ],
+     "@overlay/work/schedule": [
+      "User's work schedule is now hybrid (3 office + 2 remote) after changing schools to Quessara University (previously 10-to-7 fixed while at Quivira Springs Community College).",
+      "- Since the user changed schools from Quivira Springs Community College to starting an MS in CS at Quessara University ([[education/current-school]]), their work schedule has adjusted to hybrid (3 office + 2 remote).",
+      "- Previously (as of 2023/03/03), the user's work hours were 10-to-7 fixed while studying at Quivira Springs Community College, with the rule that if they changed schools, their work schedule would adjust to hybrid (3 office + 2 remote)."
+     ],
+     "@history/s000/r004": [
+      "I have a college reunion coming up. It’s interesting to reconnect with old friends and see how everyone has changed. Have you ever attended a reunion? What was your experience like?",
+      "- User: I have a college reunion coming up. It’s interesting to reconnect with old friends and see how everyone has changed. Have you ever attended a reunion? What was your experience like?"
+     ]
+    },
+    "verdict": "correct",
+    "note": ""
+   },
+   {
+    "id": "meme-nofiller/sw_001/update/2#3",
+    "dir": "meme-nofiller__sw_001",
+    "session": 2,
+    "stale": [
+     "2025 april 11",
+     "2025 may 23"
+    ],
+    "current": [
+     "2025 june 20"
+    ],
+    "evidence": {
+     "@overlay/project/sprint-deadline": [
+      "Sprint Deadline: 2025 June 20",
+      "2025 June 20",
+      "June 20 2025"
+     ]
+    },
+    "verdict": "correct",
+    "note": ""
+   },
+   {
+    "id": "meme-nofiller/sw_011/update/1#3",
+    "dir": "meme-nofiller__sw_011",
+    "session": 1,
+    "stale": [
+     "karnex pack"
+    ],
+    "current": [
+     "dranith stack"
+    ],
+    "evidence": {
+     "@overlay/team/package-manager": [
+      "Karnex Pack",
+      "The team's package manager is Dranith Stack, having switched from Karnex Pack on 2023/03/02 for better dependency management and build streamlining.",
+      "- The team recently switched from Karnex Pack (used as of 2023/03/01) to Dranith Stack for better dependency management and to streamline their build process."
+     ]
+    },
+    "verdict": "correct",
+    "note": ""
+   },
+   {
+    "id": "meme-nofiller/pl_035/update/4#1",
+    "dir": "meme-nofiller__pl_035",
+    "session": 4,
+    "stale": [
+     "dating"
+    ],
+    "current": [
+     "in a relationship"
+    ],
+    "evidence": {
+     "@overlay/events/upcoming-event": [
+      "reunion depends on dating",
+      "The user has a tech conference coming up (as of 2023/03/05, replacing the previously planned family reunion that depended on their relationship status being dating).",
+      "- Previously on 2023/03/04, the user had stated: \"We have family reunion coming up — this depends on the fact that I'm dating; if that changes, this would change.\" ([[@history/s003/r000]])."
+     ],
+     "@overlay/home/living-situation": [
+      "The user's home is now a two-bedroom apartment (since their relationship status changed from dating to in a relationship on 2023/03/05; previously it was a dormitory while dating).",
+      "- As of 2023/03/05 (Sun) 21:39, because the user's relationship status changed from \"dating\" to \"in a relationship\" (with partner Emily, [[@overlay/profile/relationship-status]], [[@history/s004/r000]]), the user's home is now a two-bedroom apartment.",
+      "- On 2023/03/04, the user had stated: \"My home is a dormitory — this depends on the fact that I'm dating; if that changes, this would change.\""
+     ],
+     "@overlay/profile/relationship-status": [
+      "dating status",
+      "The user is now in a relationship (updated on 2023/03/05, replacing their previous status of dating), and their partner's name is Emily.",
+      "- This replaces the user's earlier relationship status from 2023/03/02 (Thu) 23:45, when they stated their relationship status was \"dating\" (\"It's been a fun experience getting to know someone new\")."
+     ]
+    },
+    "verdict": "correct",
+    "note": ""
+   },
+   {
+    "id": "meme-nofiller/pl_042/update/1#7",
+    "dir": "meme-nofiller__pl_042",
+    "session": 1,
+    "stale": [
+     "zyvanta sedan"
+    ],
+    "current": [
+     "therwyn compact"
+    ],
+    "evidence": {
+     "@overlay/vehicles/current-car": [
+      "formerly Zyvanta Sedan",
+      "User drives a Therwyn Compact (as of 2023/03/02, replacing their previous Zyvanta Sedan).",
+      "- As of 2023/03/02, the user drives a Therwyn Compact, describing it as a reliable car that fits their needs well (replacing the Zyvanta Sedan they drove on 2023/03/01)."
+     ]
+    },
+    "verdict": "correct",
+    "note": ""
+   }
+  ],
+  "flips": []
+ }
+}

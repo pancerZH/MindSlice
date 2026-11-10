@@ -45,6 +45,13 @@ Rules:
    are facets.
 5. **Paths are addresses**: `architecture/async-patterns.md` is `architecture/async-patterns`.
    Use lowercase-kebab-case, group by topic folders, keep paths stable (links depend on them).
+   **Name a card by the durable topic or slot it fills** (`team/lead`, `subscriptions/streaming`),
+   never by the value it holds today (`team/lead-sarah-chen`, `subscriptions/xelvoria`). Ids and
+   `[[links]]` outlive values: a link to a value-named card keeps stating the old value after it
+   changes. When a replacement can't take the slot's id (the card it supersedes is in `@overlay`),
+   qualify the slot with something that won't change, such as the date of the change
+   (`team/lead-2026-11`), never the new value. Link to the slot (`[[team/lead]]`): `read()` follows
+   `supersedes` from it to the current card.
 6. **Links**: `[[path]]` or `[[path|label]]`. Without an `@alias/` prefix a link resolves *only
    inside the same slice* - never into other mounts. Use `[[@persona/tone]]` to reach across slices
    and declare that slice in `slice.toml` `dependencies`.
@@ -74,6 +81,13 @@ Avoid:
   another card's path: aliases are also link and `read()` targets.
 
 ## Stage 1 - Cold start: bootstrap a slice from raw sources
+
+**Already have a folder of Markdown?** Mount it as is first: `mindslice mount ~/notes`. Notes without
+frontmatter and legacy `---` YAML frontmatter (Obsidian, Jekyll, Hugo) are indexed without conversion:
+the title comes from the YAML `title`, the first `# heading` or the file name, the summary from the first
+prose paragraph, `tags` / `aliases` from YAML, and any file name is addressable. A folder name that isn't
+a valid alias becomes one (`My Notes` -> `@My-Notes`). `validate` notes the format of each such card.
+Convert cards to the format below when you curate them; until then they are searchable as they are.
 
 1. **Inventory** the sources (README, CLAUDE.md, ADRs, runbooks, `docs/`, key source modules).
    Note the 4-10 natural topics; these become top-level folders.
@@ -113,6 +127,7 @@ Pick the right operation:
 | A card is now wrong or outdated (changed value, correction) | `create` with `--supersedes @project/api/auth-flow` |
 | Rewrite an overlay card you just read | `--op replace --if-match <sha256 from read>` |
 | A request to forget, or a card that should never have been written | `--op delete` |
+| The response lists `affected_backlinks` / `affected_extensions` | Update or rebase each one now (below) |
 
 Prefer `append` over creating near-duplicates; `search` first to find the right card. Give new
 cards aliases too (`--alias`, repeatable), following the rules above.
@@ -132,6 +147,15 @@ Lineage is what keeps stale facts behind current ones, and only the writer can d
   hides nothing. A sub-case, a refinement or a conditional rule replaces nothing.
 - **Keep facts that change independently on separate cards**, since `supersedes` and `delete` act
   on whole cards, but keep each card concrete (rule 3).
+- **Finish what a supersede or delete starts.** Every `write` that supersedes or deletes a card
+  returns the cards that still point at it: `affected_backlinks` (they `[[link]]` to it) and
+  `affected_extensions` (they `extends` it), with `total_affected_*` counts. In the same session,
+  for each one you can edit: rewrite a card that still states the old value as current, or that
+  links to a card named after the old value; rebase an extension that still holds
+  (`--op replace --extends <replacement>`), and supersede or delete one whose premise is gone. A
+  link to a slot (`[[team/lead]]`) can stay. Items marked `read_only` live in base slices:
+  supersede one from `@overlay` only if it states the old value as current (`read()` already flags
+  extensions with `baseline_superseded_by`). The engine lists; it never edits them for you.
 
 When a search comes back empty or weak, look at `unmatched_terms`: the query words no card contains.
 Rephrase those (fix a typo, try a synonym or the team's other language), or reuse the vocabulary of
@@ -152,3 +176,9 @@ the cards you did find, before concluding the memory has nothing.
    excluded overlay cards abort the export; add `--include-deps` to pull them in. Cross-slice
    references become `dependencies`. Archives: `team.slice.tar.gz` / `team.zip` (deterministic).
 5. **Verify**: `mindslice validate team.slice`, then publish the directory as a Git repo or archive.
+6. **Mount it** (`mindslice mount team.slice --precedence 60 --role curated`) to serve it locally.
+   Mounting retires the `@overlay` copies the slice holds unchanged, so they don't shadow it or turn
+   its `supersedes` into competing replacements, and rewrites links to them from the overlay cards
+   that stay (`[[team/lead]]` -> `[[@team/team/lead]]`). The result lists `retired_overlay_cards`,
+   `rebased_references`, `shadowing_overlay_cards` (copies kept: edited since the pack, or staged) and
+   `broken_references` (from read-only slices). `--keep-overlay` keeps every copy.

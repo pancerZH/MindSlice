@@ -1,0 +1,168 @@
+{
+ "cell": "agent-overlay@gemini-4-argon-medium",
+ "population": 35,
+ "cases": [
+  {
+   "id": "pl_016/after2",
+   "point": "end",
+   "query": "What's my current financial goal?",
+   "stale": [
+    "paying off student loans"
+   ],
+   "evidence": {
+    "@overlay/personal/relationship-status": [
+     "  - The user's earlier financial goal of paying off student loans ([[@overlay/finance/student-loans-goal]], [[@history/s003/r001]]) was determined by the fact that they were engaged (\"if that changes, my priorities would shift\")."
+    ]
+   },
+   "verdict": "matching error",
+   "note": "the card marks the dependent as changed, affected, invalidated or past (words v2 doesn't treat as past markers)"
+  },
+  {
+   "id": "pl_022/after2",
+   "point": "end",
+   "query": "What's my work schedule?",
+   "stale": [
+    "9-to-5 fixed"
+   ],
+   "evidence": {
+    "@overlay/user/school": [
+     "- Additionally, the user's 9-to-5 fixed work hours depended on studying at Quivira Springs Community College ([[user/work-hours]]), so changing to the online coding bootcamp affects their work schedule."
+    ]
+   },
+   "verdict": "matching error",
+   "note": "the card marks the dependent as changed, affected, invalidated or past (words v2 doesn't treat as past markers)"
+  },
+  {
+   "id": "pl_027/after2",
+   "point": "end",
+   "query": "What regular appointments do I have?",
+   "stale": [
+    "physical therapy (2x/week)"
+   ],
+   "evidence": {
+    "@overlay/user/physical-therapy-appointment": [
+     "The user's regular physical therapy appointment (2x/week in Pyresta Meadow) depended on living in Pyresta Meadow and is subject to change now that they moved to Orinthal Park on 2023/03/04.",
+     "- While living in Pyresta Meadow on 2023/03/03, the user's regular appointment was physical therapy (2x/week), which they stated depended on living in Pyresta Meadow and would change if they moved."
+    ]
+   },
+   "verdict": "matching error",
+   "note": "the card marks the dependent as changed, affected, invalidated or past (words v2 doesn't treat as past markers)"
+  },
+  {
+   "id": "pl_043/after2",
+   "point": "end",
+   "query": "What family event do I have coming up?",
+   "stale": [
+    "baby shower"
+   ],
+   "evidence": {
+    "@overlay/events/half-marathon": [
+     "- Note on other upcoming events: Earlier on 2023/03/03 (Fri) 09:24, the user also mentioned having a baby shower coming up ([[@overlay/events/baby-shower]]), which depended on being in a relationship ([[@overlay/personal/relationship-status]])."
+    ],
+    "@overlay/personal/relationship-status": [
+     "- Dependent plans affected by relationship status change: On 2023/03/03 (Fri) 09:24, the user stated that their upcoming baby shower ([[@overlay/events/baby-shower]]) and their \"no travel planned\" plan ([[@overlay/travel/no-travel-planned]]) depended on the fact that they were in a relationship, and added the rule: \"If my relationship status changes, I will plan island getaway.\""
+    ]
+   },
+   "verdict": "matching error",
+   "note": "the card marks the dependent as changed, affected, invalidated or past (words v2 doesn't treat as past markers)"
+  },
+  {
+   "id": "pl_010/after2",
+   "point": "end",
+   "query": "Who do I live with?",
+   "stale": [
+    "with roommate"
+   ],
+   "evidence": {
+    "@overlay/personal/relationship-status": [
+     "- Earlier plans/situations that depended on being single and would change when relationship status changes: mountain ski trip plan ([[travel/mountain-ski-trip]]) and living with a roommate ([[living/live-with-roommate]])."
+    ]
+   },
+   "verdict": "matching error",
+   "note": "the card marks the dependent as changed, affected, invalidated or past (words v2 doesn't treat as past markers)"
+  },
+  {
+   "id": "pl_050/after2",
+   "point": "end",
+   "query": "How long is my commute?",
+   "stale": [
+    "50 min"
+   ],
+   "evidence": {
+    "@overlay/commute/commute-duration": [
+     "50 min commute",
+     "- Because that 50 min commute depended on living in Pyresta Meadow and the user moved to Zaravel Heights on 2023/03/05, the 50 min commute duration has changed (new duration from Zaravel Heights not yet specified)."
+    ]
+   },
+   "verdict": "matching error",
+   "note": "the card marks the dependent as changed, affected, invalidated or past (words v2 doesn't treat as past markers)"
+  },
+  {
+   "id": "sw_023/after2",
+   "point": "end",
+   "query": "Who reviews our code?",
+   "stale": [
+    "seoyun choi"
+   ],
+   "evidence": {
+    "@overlay/team/code-reviews": [
+     "Seoyun Choi",
+     "Code reviews were assigned to Seoyun Choi by former team lead Yuna Park, which is subject to change now that Sarah Chen is the new team lead."
+    ]
+   },
+   "verdict": "matching error",
+   "note": "the card marks the dependent as changed, affected, invalidated or past (words v2 doesn't treat as past markers)"
+  },
+  {
+   "id": "pl_029/after2",
+   "point": "end",
+   "query": "What's my current financial goal?",
+   "stale": [
+    "maxing out retirement fund"
+   ],
+   "evidence": {
+    "@overlay/finance/financial-goal": [
+     "maxing out retirement fund"
+    ]
+   },
+   "verdict": "matching error",
+   "note": "the card marks the dependent as changed, affected, invalidated or past (words v2 doesn't treat as past markers)"
+  },
+  {
+   "id": "pl_034/after3",
+   "point": "end",
+   "query": "What medication am I taking?",
+   "stale": [
+    "korathril"
+   ],
+   "evidence": {
+    "@overlay/health/lactose-intolerance": [
+     "- Because the user's health condition (seasonal allergies) has changed, cards depending on seasonal allergies are affected: [[health/medication-korathril]], [[fitness/exercise-routine]], [[fitness/routine-if-health-changes]], [[fitness/workout-facility-kaelstrom]], and [[fitness/facility-if-routine-changes]]."
+    ]
+   },
+   "verdict": "matching error",
+   "note": "the card marks the dependent as changed, affected, invalidated or past (words v2 doesn't treat as past markers)"
+  },
+  {
+   "id": "sw_044/after3",
+   "point": "end",
+   "query": "What's our build tool?",
+   "stale": [
+    "zelthra pack"
+   ],
+   "evidence": {
+    "@overlay/project/build-tool": [
+     "Zelthra Pack",
+     "Zelthra Pack was the build tool for Dravex, but after migrating to the Korvel framework on 2023/03/05, the build tool changes (new tool unspecified)."
+    ],
+    "@overlay/project/build-command": [
+     "Zelthra Pack command",
+     "`zelthra pack --minify` was the build command for Zelthra Pack (Dravex), which changed after migrating to the Korvel framework on 2023/03/05."
+    ]
+   },
+   "verdict": "matching error",
+   "note": "the card marks the dependent as changed, affected, invalidated or past (words v2 doesn't treat as past markers)"
+  }
+ ],
+ "rule": "Abs-hop1 questions whose first page v2 says holds an unwarned stale card: correct when a card on it presents the old dependent value as current; a matching error when every flagged card marks it as changed, affected, invalidated, superseded or past, or the words belong to another entity"
+}

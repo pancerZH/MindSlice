@@ -1,0 +1,3193 @@
+{
+ "arm": "agent-policy@gemini-3.8-flash-medium",
+ "population": {
+  "retired": 63,
+  "lost": 222
+ },
+ "cases": {
+  "retired": [
+   {
+    "id": "meme-nofiller/pl_044/update/1#5",
+    "dir": "meme-nofiller__pl_044",
+    "update_kind": "tracking",
+    "session": 1,
+    "stale": [
+     "xelvoria"
+    ],
+    "current": [
+     "zorvista premium"
+    ],
+    "anchors": [],
+    "offenders": {
+     "@overlay/subscriptions/xelvoria": [
+      "Xelvoria Subscription",
+      "Xelvoria",
+      "Xelvoria subscription",
+      "Xelvoria platform",
+      "User is subscribed to Xelvoria and finds its content really engaging.",
+      "- User is an active subscriber to Xelvoria (as of March 2023).",
+      "- User finds the content on Xelvoria to be really engaging.",
+      "- User brought up Xelvoria as an engaging subscription platform.",
+      "- User enjoys following series and themes on Xelvoria.",
+      "- Subscription to Xelvoria is part of user's media and content interests."
+     ]
+    },
+    "cards_stating_current": [
+     "@overlay/subscriptions/zorvista-premium"
+    ],
+    "verdict": "correct",
+    "note": ""
+   },
+   {
+    "id": "meme-nofiller/pl_011/update/1#5",
+    "dir": "meme-nofiller__pl_011",
+    "update_kind": "tracking",
+    "session": 1,
+    "stale": [
+     "xelvoria"
+    ],
+    "current": [
+     "daily journal subscription"
+    ],
+    "anchors": [],
+    "offenders": {
+     "@overlay/user/subscriptions/xelvoria": [
+      "User Subscription: Xelvoria Platform",
+      "Xelvoria subscription",
+      "Xelvoria platform",
+      "Xelvoria member",
+      "subscribed to Xelvoria",
+      "The user is subscribed to Xelvoria, an interesting platform offering a variety of content (as of March 2023).",
+      "- The user is subscribed to the platform Xelvoria (as of March 2023).",
+      "- They describe Xelvoria as an interesting platform that offers a variety of content."
+     ]
+    },
+    "cards_stating_current": [
+     "@overlay/user/subscriptions/daily-journal"
+    ],
+    "verdict": "correct",
+    "note": ""
+   },
+   {
+    "id": "meme-nofiller/pl_012/update/2#5",
+    "dir": "meme-nofiller__pl_012",
+    "update_kind": "tracking",
+    "session": 2,
+    "stale": [
+     "zyvanta sedan",
+     "dranthis pickup"
+    ],
+    "current": [
+     "vorantel suv"
+    ],
+    "anchors": [],
+    "offenders": {
+     "@overlay/hobbies/rock-climbing": [
+      "The user practices rock climbing several times a week, utilizing a nearby climbing gym and driving a Dranthis Pickup to outdoor spots.",
+      "- User drives a Dranthis Pickup ([[vehicles/dranthis-pickup]]) to haul gear and reach climbing locations."
+     ]
+    },
+    "cards_stating_current": [
+     "@overlay/vehicles/vorantel-suv"
+    ],
+    "verdict": "correct",
+    "note": ""
+   },
+   {
+    "id": "meme-nofiller/pl_019/update/2#5",
+    "dir": "meme-nofiller__pl_019",
+    "update_kind": "tracking",
+    "session": 2,
+    "stale": [
+     "a daily news podcast"
+    ],
+    "current": [
+     "thyrelion (anime)"
+    ],
+    "anchors": [],
+    "offenders": {
+     "@overlay/media/podcasts/daily-news": [
+      "User listens to a daily news podcast as of March 2023, focusing on politics and significant global events.",
+      "- As of March 2, 2023, the user listens to a daily news podcast to keep up with current events."
+     ]
+    },
+    "cards_stating_current": [],
+    "verdict": "correct",
+    "note": ""
+   },
+   {
+    "id": "meme-nofiller/pl_025/update/2#5",
+    "dir": "meme-nofiller__pl_025",
+    "update_kind": "tracking",
+    "session": 2,
+    "stale": [
+     "xelvoria"
+    ],
+    "current": [
+     "pyrethon plus"
+    ],
+    "anchors": [],
+    "offenders": {
+     "@overlay/hobbies/woodworking": [
+      "- The user learns new woodworking techniques and project ideas through [[subscriptions/xelvoria]]."
+     ],
+     "@overlay/subscriptions/xelvoria": [
+      "Xelvoria Subscription for Woodworking",
+      "Xelvoria",
+      "Xelvoria woodworking",
+      "Xelvoria platform",
+      "The user is subscribed to Xelvoria, an online woodworking platform used to learn new techniques and project ideas.",
+      "- The user is subscribed to Xelvoria as of March 2023.",
+      "- The user considers Xelvoria a great resource for learning new woodworking techniques and finding project ideas.",
+      "- Uses Xelvoria to support their hobby documented in [[hobbies/woodworking]].",
+      "- Finds value in online woodworking tutorials, project plans, and community resources on Xelvoria.",
+      "- Explores new furniture and craft techniques introduced through Xelvoria content."
+     ]
+    },
+    "cards_stating_current": [
+     "@overlay/subscriptions/pyrethon-plus"
+    ],
+    "verdict": "correct",
+    "note": ""
+   },
+   {
+    "id": "meme-nofiller/pl_006/update/4#1",
+    "dir": "meme-nofiller__pl_006",
+    "update_kind": "root",
+    "session": 4,
+    "stale": [
+     "pre-diabetes"
+    ],
+    "current": [
+     "anxiety disorder"
+    ],
+    "anchors": [],
+    "offenders": {
+     "@overlay/health/exercise-routine-cycling": [
+      "The user's exercise routine is cycling on weekends, triggered by the health condition change (pre-diabetes resolved) as of March 2023.",
+      "- This routine was triggered by the contingency rule: if health condition changed from [[@overlay/health/pre-diabetes]], exercise routine switches to cycling on weekends.",
+      "- On March 4, 2023, pre-diabetes was treated and resolved (see [[@overlay/health/anxiety-disorder]]), triggering this change in routine."
+     ],
+     "@overlay/health/regular-appointment-physical-therapy": [
+      "- This appointment was triggered by the contingency rule: if health condition changed from [[@overlay/health/pre-diabetes]], regular appointment switches to physical therapy (2x/week).",
+      "- On March 4, 2023, pre-diabetes was treated and resolved (see [[@overlay/health/anxiety-disorder]]), triggering the change in regular appointments."
+     ]
+    },
+    "cards_stating_current": [
+     "@overlay/health/anxiety-disorder"
+    ],
+    "verdict": "matching error",
+    "note": "line marks the value as past ('treated and resolved', 'previously')"
+   },
+   {
+    "id": "meme-nofiller/pl_043/update/1#5",
+    "dir": "meme-nofiller__pl_043",
+    "update_kind": "tracking",
+    "session": 1,
+    "stale": [
+     "xelvoria"
+    ],
+    "current": [
+     "thyranote"
+    ],
+    "anchors": [],
+    "offenders": {
+     "@overlay/subscriptions/xelvoria": [
+      "Subscription: Xelvoria Content Platform",
+      "Xelvoria subscription",
+      "Xelvoria platform",
+      "The user is subscribed to Xelvoria, which they find to be an interesting platform for discovering new content.",
+      "- The user is subscribed to Xelvoria (Session 1, 2023-03-01).",
+      "- The user describes Xelvoria as an interesting platform for discovering new content."
+     ]
+    },
+    "cards_stating_current": [
+     "@overlay/subscriptions/thyranote"
+    ],
+    "verdict": "correct",
+    "note": ""
+   },
+   {
+    "id": "meme-nofiller/sw_011/update/4#1",
+    "dir": "meme-nofiller__sw_011",
+    "update_kind": "root",
+    "session": 4,
+    "stale": [
+     "quenthar"
+    ],
+    "current": [
+     "veltrion"
+    ],
+    "anchors": [],
+    "offenders": {
+     "@overlay/project/design-system": [
+      "Team Design System: Quenthar Design v1",
+      "Quenthar Design",
+      "Quenthar Design v1",
+      "Quenthar UI",
+      "The team's design system is Quenthar Design v1.",
+      "- The team's design system is Quenthar Design v1 as of March 1, 2023.",
+      "- Quenthar Design v1 provides the UI components and design guidelines for the team's project.",
+      "- Related framework: The team uses [[project/framework]] in conjunction with Quenthar Design v1.",
+      "- The user asked for best practices for maintaining consistency in design when using Quenthar Design v1."
+     ]
+    },
+    "cards_stating_current": [
+     "@overlay/project/framework-veltrion"
+    ],
+    "verdict": "matching error",
+    "note": "another entity's value contains the old framework name (no dependency in MEME)"
+   },
+   {
+    "id": "meme-nofiller/pl_031/update/4#1",
+    "dir": "meme-nofiller__pl_031",
+    "update_kind": "root",
+    "session": 4,
+    "stale": [
+     "seasonal allergies"
+    ],
+    "current": [
+     "anxiety disorder"
+    ],
+    "anchors": [],
+    "offenders": {
+     "@overlay/health/medication-quelmithin": [
+      "- Related health condition: user also mentioned having seasonal allergies in [[health/seasonal-allergies]]."
+     ]
+    },
+    "cards_stating_current": [
+     "@overlay/health/anxiety-disorder",
+     "@overlay/health/seasonal-allergies-resolved"
+    ],
+    "verdict": "correct",
+    "note": ""
+   },
+   {
+    "id": "meme-nofiller/pl_034/update/2#3",
+    "dir": "meme-nofiller__pl_034",
+    "update_kind": "tracking",
+    "session": 2,
+    "stale": [
+     "xelvoria",
+     "thyranote"
+    ],
+    "current": [
+     "zorvista premium"
+    ],
+    "anchors": [],
+    "offenders": {
+     "@overlay/hobbies/woodworking": [
+      "- Related platform subscription: [[subscriptions/xelvoria]]."
+     ],
+     "@overlay/subscriptions/thyranote": [
+      "Thyranote subscription for organization and task management",
+      "Thyranote subscription",
+      "Thyranote app",
+      "Thyranote",
+      "The user is subscribed to Thyranote and uses it to organize their thoughts and tasks.",
+      "- User stated on 2023-03-02 that they are subscribed to Thyranote.",
+      "- User finds Thyranote helpful for organizing their thoughts and tasks.",
+      "- User inquired about special features in Thyranote that can help with productivity."
+     ],
+     "@overlay/subscriptions/xelvoria": [
+      "Xelvoria subscription for woodworking",
+      "Xelvoria subscription",
+      "Xelvoria woodworking",
+      "Xelvoria platform",
+      "The user is subscribed to Xelvoria, a platform offering resources and tutorials for woodworking.",
+      "- User is subscribed to Xelvoria as of 2023-03-01.",
+      "- Xelvoria is an online platform offering a variety of woodworking resources and tutorials.",
+      "- User finds Xelvoria quite helpful for learning woodworking techniques and getting project guidance.",
+      "- User mentioned Xelvoria in the context of their woodworking hobby: [[hobbies/woodworking]].",
+      "- User asked if the assistant has heard of or used Xelvoria or similar platforms."
+     ]
+    },
+    "cards_stating_current": [
+     "@overlay/subscriptions/zorvista-premium"
+    ],
+    "verdict": "correct",
+    "note": ""
+   },
+   {
+    "id": "meme-nofiller/pl_027/update/1#5",
+    "dir": "meme-nofiller__pl_027",
+    "update_kind": "tracking",
+    "session": 1,
+    "stale": [
+     "xelvoria"
+    ],
+    "current": [
+     "thyranote"
+    ],
+    "anchors": [],
+    "offenders": {
+     "@overlay/user/subscriptions/xelvoria": [
+      "Xelvoria Media Subscription",
+      "Xelvoria",
+      "Xelvoria subscription",
+      "The user is subscribed to Xelvoria and finds it to have really interesting content.",
+      "- The user is subscribed to the media service Xelvoria as of 2023/03/01.",
+      "- User stated: \"I'm subscribed to Xelvoria. I've found it to have some really interesting content.\"",
+      "- User asked if the assistant had ever heard of Xelvoria."
+     ]
+    },
+    "cards_stating_current": [
+     "@overlay/user/subscriptions/thyranote"
+    ],
+    "verdict": "correct",
+    "note": ""
+   },
+   {
+    "id": "meme-nofiller/pl_044/update/4#1",
+    "dir": "meme-nofiller__pl_044",
+    "update_kind": "root",
+    "session": 4,
+    "stale": [
+     "high blood pressure"
+    ],
+    "current": [
+     "herniated disc"
+    ],
+    "anchors": [],
+    "offenders": {
+     "@overlay/health/high-blood-pressure-resolved": [
+      "High Blood Pressure Treated and Resolved",
+      "high blood pressure resolved",
+      "User's high blood pressure has been treated and resolved as of March 2023.",
+      "- User's high blood pressure (hypertension) has been successfully treated and resolved (noted March 2023).",
+      "- User previously had to manage high blood pressure carefully with lifestyle changes and monitoring.",
+      "- High blood pressure is no longer an active medical condition for the user.",
+      "- The resolution of high blood pressure marks a change in the user's health condition."
+     ]
+    },
+    "cards_stating_current": [
+     "@overlay/health/herniated-disc",
+     "@overlay/health/sleep-schedule-1am-9am",
+     "@overlay/health/yoga-exercise-routine"
+    ],
+    "verdict": "correct",
+    "note": "corrected after the re-score: the worksheet showed only 3 lines per card; a hidden line names the old value as current"
+   },
+   {
+    "id": "meme-nofiller/sw_021/update/4#1",
+    "dir": "meme-nofiller__sw_021",
+    "update_kind": "root",
+    "session": 4,
+    "stale": [
+     "alex kim"
+    ],
+    "current": [
+     "seokjin kang"
+    ],
+    "anchors": [],
+    "offenders": {
+     "@overlay/team/approval-authority": [
+      "- Related leadership and review governance include team lead Alex Kim [[team/team-lead]] and core code review policy [[code-reviews/policy]]."
+     ]
+    },
+    "cards_stating_current": [
+     "@overlay/team/seokjin-kang"
+    ],
+    "verdict": "correct",
+    "note": ""
+   },
+   {
+    "id": "meme-nofiller/sw_043/update/4#1",
+    "dir": "meme-nofiller__sw_043",
+    "update_kind": "root",
+    "session": 4,
+    "stale": [
+     "crysthene db"
+    ],
+    "current": [
+     "thalnex store"
+    ],
+    "anchors": [],
+    "offenders": {
+     "@overlay/tech/deadlock-error-log": [
+      "- Error type: `DeadlockDetected` on table `aurora_orders` in the [[tech/database|Crysthene DB]] database."
+     ]
+    },
+    "cards_stating_current": [
+     "@overlay/tech/database-thalnex-store"
+    ],
+    "verdict": "correct",
+    "note": "borderline: the database link is labelled with the old database in an error-log card"
+   },
+   {
+    "id": "meme-nofiller/pl_008/update/2#5",
+    "dir": "meme-nofiller__pl_008",
+    "update_kind": "tracking",
+    "session": 2,
+    "stale": [
+     "xelvoria"
+    ],
+    "current": [
+     "dranthazon"
+    ],
+    "anchors": [],
+    "offenders": {
+     "@overlay/hobbies/cooking": [
+      "- Uses expert cooking tutorials and food shows on [[subscriptions/xelvoria]] to develop new cooking techniques."
+     ],
+     "@overlay/subscriptions/xelvoria": [
+      "Xelvoria Platform Subscription",
+      "Xelvoria subscription",
+      "Xelvoria platform",
+      "The user is subscribed to Xelvoria to watch cooking tutorials and food-related shows to learn culinary techniques.",
+      "- The user is currently subscribed to Xelvoria (as of March 2023).",
+      "- Describes Xelvoria as an interesting platform featuring extensive content.",
+      "- Watches cooking tutorials and food-related shows on Xelvoria to support their [[hobbies/cooking]] hobby.",
+      "- Uses Xelvoria to learn new cooking techniques and recipes directly from experts."
+     ]
+    },
+    "cards_stating_current": [
+     "@overlay/subscriptions/dranthazon"
+    ],
+    "verdict": "correct",
+    "note": ""
+   },
+   {
+    "id": "meme-nofiller/pl_014/update/2#5",
+    "dir": "meme-nofiller__pl_014",
+    "update_kind": "tracking",
+    "session": 2,
+    "stale": [
+     "daily journal subscription",
+     "dranthazon"
+    ],
+    "current": [
+     "pyrethon plus"
+    ],
+    "anchors": [],
+    "offenders": {
+     "@overlay/habits/journaling": [
+      "Daily Journal Subscription and Routine"
+     ],
+     "@overlay/subscriptions/dranthazon": [
+      "Dranthazon Content Subscription",
+      "Dranthazon",
+      "Dranthazon subscription",
+      "The user is subscribed to Dranthazon and finds its variety of engaging content keeps things fresh.",
+      "- User maintains an active subscription to Dranthazon.",
+      "- Finds Dranthazon offers a variety of engaging content that keeps them interested and entertained.",
+      "- Values the broad variety and freshness of content available on Dranthazon."
+     ]
+    },
+    "cards_stating_current": [
+     "@overlay/subscriptions/pyrethon-plus"
+    ],
+    "verdict": "correct",
+    "note": ""
+   },
+   {
+    "id": "meme-nofiller/pl_024/update/1#5",
+    "dir": "meme-nofiller__pl_024",
+    "update_kind": "tracking",
+    "session": 1,
+    "stale": [
+     "sarah"
+    ],
+    "current": [
+     "jessica"
+    ],
+    "anchors": [],
+    "offenders": {
+     "@overlay/hobbies/video-games": [
+      "The user plays video games as a major hobby, favoring action-adventure and RPG open-world games, and often plays together with partner Sarah.",
+      "- Frequently plays video games together with partner [[relationships/partner-sarah|Sarah]], finding shared gaming especially enjoyable."
+     ]
+    },
+    "cards_stating_current": [
+     "@overlay/finance/engagement-ring",
+     "@overlay/hobbies/hiking",
+     "@overlay/relationships/partner-jessica"
+    ],
+    "verdict": "correct",
+    "note": ""
+   },
+   {
+    "id": "meme-nofiller/sw_001/update/4#1",
+    "dir": "meme-nofiller__sw_001",
+    "update_kind": "root",
+    "session": 4,
+    "stale": [
+     "synthari"
+    ],
+    "current": [
+     "veltrion"
+    ],
+    "anchors": [],
+    "offenders": {
+     "@overlay/development/dev-server": [
+      "synthari launch",
+      "synthari hmr",
+      "Run the local development server using 'synthari launch --hmr' for hot module replacement.",
+      "- Command to run local development server: `synthari launch --hmr`.",
+      "- Uses `synthari` CLI tool with the `launch` subcommand."
+     ]
+    },
+    "cards_stating_current": [
+     "@overlay/development/veltrion-framework"
+    ],
+    "verdict": "matching error",
+    "note": "another entity's value contains the old framework name (no dependency in MEME)"
+   },
+   {
+    "id": "meme-nofiller/sw_034/update/4#1",
+    "dir": "meme-nofiller__sw_034",
+    "update_kind": "root",
+    "session": 4,
+    "stale": [
+     "veltrion"
+    ],
+    "current": [
+     "synthari"
+    ],
+    "anchors": [],
+    "offenders": {
+     "@overlay/tech-stack/design-system": [
+      "Veltrion UI Kit v2 Design System",
+      "Veltrion UI Kit",
+      "Veltrion UI Kit v2",
+      "The team uses Veltrion UI Kit v2 as their design system for creating consistent UI components.",
+      "- The team's design system is Veltrion UI Kit v2 as of March 2023.",
+      "- Integrated alongside the [[tech-stack/framework|Veltrion framework]]."
+     ]
+    },
+    "cards_stating_current": [
+     "@overlay/tech-stack/synthari-framework"
+    ],
+    "verdict": "correct",
+    "note": "corrected after the re-score: the worksheet showed only 3 lines per card; a hidden line names the old value as current"
+   },
+   {
+    "id": "meme-nofiller/pl_022/update/1#5",
+    "dir": "meme-nofiller__pl_022",
+    "update_kind": "tracking",
+    "session": 1,
+    "stale": [
+     "james"
+    ],
+    "current": [
+     "alex"
+    ],
+    "anchors": [],
+    "offenders": {
+     "@overlay/hobbies/woodworking": [
+      "- The user's partner [[personal/partner|James]] is very supportive of their woodworking endeavors."
+     ],
+     "@overlay/personal/partner": [
+      "Partner James",
+      "partner James",
+      "James",
+      "significant other James",
+      "The user's partner is named James, and he is supportive of the user's woodworking projects.",
+      "- The user's partner is named James.",
+      "- James is quite supportive of the user's woodworking hobby and projects.",
+      "- In March 2023, the user discussed involving James in their woodworking activities."
+     ]
+    },
+    "cards_stating_current": [
+     "@overlay/hobbies/tennis"
+    ],
+    "verdict": "correct",
+    "note": ""
+   },
+   {
+    "id": "meme-nofiller/pl_028/update/2#5",
+    "dir": "meme-nofiller__pl_028",
+    "update_kind": "tracking",
+    "session": 2,
+    "stale": [
+     "zorvista premium",
+     "dranthazon"
+    ],
+    "current": [
+     "pyrethon plus"
+    ],
+    "anchors": [],
+    "offenders": {
+     "@overlay/hobbies/basketball": [
+      "- The user uses [[subscriptions/dranthazon]] for basketball training content and shooting techniques (noted 2023/03/03)."
+     ],
+     "@overlay/subscriptions/dranthazon": [
+      "User Subscription: Dranthazon Basketball Training",
+      "Dranthazon",
+      "Dranthazon subscription",
+      "Dranthazon app",
+      "The user subscribes to Dranthazon for basketball training content and shooting techniques.",
+      "- The user is subscribed to Dranthazon (noted 2023/03/03).",
+      "- Dranthazon offers content that helps with basketball training, including shooting techniques (noted 2023/03/03).",
+      "- The user utilizes Dranthazon to support their [[hobbies/basketball]] training and skill development (noted 2023/03/03)."
+     ],
+     "@overlay/subscriptions/zorvista-premium": [
+      "User Subscription: Zorvista Premium",
+      "Zorvista Premium",
+      "The user subscribes to Zorvista Premium, enjoying its features and catalog of shows and content.",
+      "- The user is subscribed to Zorvista Premium as of 2023/03/01.",
+      "- The user finds that Zorvista Premium has great features that enhance their experience (noted 2023/03/01)."
+     ]
+    },
+    "cards_stating_current": [
+     "@overlay/subscriptions/pyrethon-plus"
+    ],
+    "verdict": "correct",
+    "note": ""
+   },
+   {
+    "id": "meme-nofiller/pl_041/update/4#1",
+    "dir": "meme-nofiller__pl_041",
+    "update_kind": "root",
+    "session": 4,
+    "stale": [
+     "seasonal allergies"
+    ],
+    "current": [
+     "lactose intolerance"
+    ],
+    "anchors": [],
+    "offenders": {
+     "@overlay/health/dyntheral-medication": [
+      "- Previously took Korathril for seasonal allergies, with an established condition that changing health conditions would switch medication to Dyntheral."
+     ],
+     "@overlay/health/exercise-routine": [
+      "- Previously determined by seasonal allergies, with an established condition that the routine remains yoga 2x/week if the health condition changes."
+     ]
+    },
+    "cards_stating_current": [
+     "@overlay/health/lactose-intolerance"
+    ],
+    "verdict": "matching error",
+    "note": "line marks the value as past ('treated and resolved', 'previously')"
+   },
+   {
+    "id": "meme-nofiller/pl_045/update/2#5",
+    "dir": "meme-nofiller__pl_045",
+    "update_kind": "tracking",
+    "session": 2,
+    "stale": [
+     "xelvoria",
+     "zorvista premium"
+    ],
+    "current": [
+     "daily journal subscription"
+    ],
+    "anchors": [],
+    "offenders": {
+     "@overlay/subscriptions/xelvoria": [
+      "Subscription to Xelvoria",
+      "Xelvoria",
+      "Xelvoria subscription",
+      "Xelvoria shows",
+      "The user is subscribed to Xelvoria and enjoys exploring the shows and content offered on the platform.",
+      "- The user is subscribed to Xelvoria (as of 2023/03/01).",
+      "- Finds it interesting to explore the content and features offered on Xelvoria.",
+      "- Explores various shows, series, and unique media segments on Xelvoria.",
+      "- Interested in discussing standout shows and recommendations on Xelvoria.",
+      "- Maintains an active digital media / streaming subscription with Xelvoria."
+     ]
+    },
+    "cards_stating_current": [
+     "@overlay/subscriptions/daily-journal"
+    ],
+    "verdict": "correct",
+    "note": ""
+   },
+   {
+    "id": "meme-nofiller/pl_032/update/1#5",
+    "dir": "meme-nofiller__pl_032",
+    "update_kind": "tracking",
+    "session": 1,
+    "stale": [
+     "thyranote"
+    ],
+    "current": [
+     "zorvista premium"
+    ],
+    "anchors": [],
+    "offenders": {
+     "@overlay/hobbies/reading": [
+      "- User manages and tracks reading and notes using [[tools/thyranote]]."
+     ],
+     "@overlay/tools/thyranote": [
+      "Thyranote Reading Tracker Subscription",
+      "Thyranote",
+      "Thyranote subscription",
+      "The user subscribes to Thyranote to track reading progress and organize notes as of March 2023.",
+      "- User has been subscribed to Thyranote as of March 1, 2023.",
+      "- User finds Thyranote helpful for keeping track of reading and notes."
+     ]
+    },
+    "cards_stating_current": [
+     "@overlay/entertainment/zorvista-premium"
+    ],
+    "verdict": "correct",
+    "note": ""
+   },
+   {
+    "id": "meme-nofiller/pl_049/update/2#5",
+    "dir": "meme-nofiller__pl_049",
+    "update_kind": "tracking",
+    "session": 2,
+    "stale": [
+     "xelvoria",
+     "dranthazon"
+    ],
+    "current": [
+     "pyrethon plus"
+    ],
+    "anchors": [],
+    "offenders": {
+     "@overlay/music/guitar": [
+      "- The user uses [[subscriptions/xelvoria]] for musician resources."
+     ],
+     "@overlay/subscriptions/xelvoria": [
+      "Xelvoria Platform Subscription",
+      "Xelvoria",
+      "Xelvoria platform",
+      "Xelvoria subscription",
+      "The user is subscribed to Xelvoria, an online platform providing resources and tools for musicians.",
+      "- The user is subscribed to Xelvoria as of March 2023.",
+      "- Xelvoria is an online platform offering resources, lessons, and tools for musicians."
+     ]
+    },
+    "cards_stating_current": [
+     "@overlay/subscriptions/pyrethon-plus"
+    ],
+    "verdict": "correct",
+    "note": ""
+   },
+   {
+    "id": "meme-nofiller/sw_033/update/4#1",
+    "dir": "meme-nofiller__sw_033",
+    "update_kind": "root",
+    "session": 4,
+    "stale": [
+     "seokjin kang"
+    ],
+    "current": [
+     "jihoon ryu"
+    ],
+    "anchors": [],
+    "offenders": {
+     "@overlay/engineering/code-review-policy": [
+      "- Lead approval for core/ is provided by team lead [[team/team-lead]] (Seokjin Kang)."
+     ],
+     "@overlay/engineering/package-manager-synthari": [
+      "- Team lead [[team/team-lead]] (Seokjin Kang) is guiding the team through the transition to Synthari Modules."
+     ]
+    },
+    "cards_stating_current": [
+     "@overlay/team/team-lead-jihoon-ryu",
+     "@overlay/team/weekly-report-recipient-james-lee"
+    ],
+    "verdict": "correct",
+    "note": ""
+   },
+   {
+    "id": "meme-nofiller/pl_039/update/4#1",
+    "dir": "meme-nofiller__pl_039",
+    "update_kind": "root",
+    "session": 4,
+    "stale": [
+     "ms in cs at quessara university"
+    ],
+    "current": [
+     "online bootcamp (coding)"
+    ],
+    "anchors": [],
+    "offenders": {
+     "@overlay/work/bike-commute": [
+      "The user takes their bike to work, a routine that depends on studying for an MS in CS at Quessara University and would change if their school changes.",
+      "- Biking to work depends on the user studying for an [[education/quessara-university|MS in CS at Quessara University]]; if that changes, this commute would change too."
+     ]
+    },
+    "cards_stating_current": [],
+    "verdict": "correct",
+    "note": ""
+   },
+   {
+    "id": "meme-nofiller/pl_042/update/4#1",
+    "dir": "meme-nofiller__pl_042",
+    "update_kind": "root",
+    "session": 4,
+    "stale": [
+     "pre-diabetes"
+    ],
+    "current": [
+     "high blood pressure"
+    ],
+    "anchors": [],
+    "offenders": {
+     "@overlay/health/diet": [
+      "- Aligns dietary habits with managing metabolic health and blood sugar [[health/pre-diabetes]]."
+     ]
+    },
+    "cards_stating_current": [
+     "@overlay/health/high-blood-pressure"
+    ],
+    "verdict": "correct",
+    "note": ""
+   },
+   {
+    "id": "meme-nofiller/pl_011/update/4#1",
+    "dir": "meme-nofiller__pl_011",
+    "update_kind": "root",
+    "session": 4,
+    "stale": [
+     "tendinitis"
+    ],
+    "current": [
+     "seasonal allergies"
+    ],
+    "anchors": [],
+    "offenders": {
+     "@overlay/user/hobbies/running-club": [
+      "- They are mindful of pacing, recovery, and technique to stay active while managing physical health and conditions such as [[user/health/tendinitis]]."
+     ]
+    },
+    "cards_stating_current": [
+     "@overlay/user/health/seasonal-allergies"
+    ],
+    "verdict": "correct",
+    "note": ""
+   },
+   {
+    "id": "meme-nofiller/pl_041/update/2#5",
+    "dir": "meme-nofiller__pl_041",
+    "update_kind": "tracking",
+    "session": 2,
+    "stale": [
+     "dranthis pickup",
+     "vorantel suv"
+    ],
+    "current": [
+     "xylorim scooter"
+    ],
+    "anchors": [],
+    "offenders": {
+     "@overlay/vehicles/planned-electric-car": [
+      "- Currently drives a [[vehicles/current-vehicle]] (Dranthis Pickup)."
+     ]
+    },
+    "cards_stating_current": [
+     "@overlay/vehicles/xylorim-scooter"
+    ],
+    "verdict": "correct",
+    "note": ""
+   },
+   {
+    "id": "meme-nofiller/pl_037/update/2#5",
+    "dir": "meme-nofiller__pl_037",
+    "update_kind": "tracking",
+    "session": 2,
+    "stale": [
+     "a daily news podcast"
+    ],
+    "current": [
+     "a history documentary series"
+    ],
+    "anchors": [],
+    "offenders": {
+     "@overlay/media/daily-news-podcasts": [
+      "The user regularly listens to a daily news podcast to stay updated on current events while doing other things, preferring a mix of news for a well-rounded perspective.",
+      "- The user's current media habit is listening to a daily news podcast (as of March 2023)."
+     ]
+    },
+    "cards_stating_current": [
+     "@overlay/media/history-documentary-series"
+    ],
+    "verdict": "correct",
+    "note": ""
+   },
+   {
+    "id": "meme-nofiller/pl_024/update/2#5",
+    "dir": "meme-nofiller__pl_024",
+    "update_kind": "tracking",
+    "session": 2,
+    "stale": [
+     "sarah",
+     "jessica"
+    ],
+    "current": [
+     "taylor"
+    ],
+    "anchors": [],
+    "offenders": {
+     "@overlay/hobbies/video-games": [
+      "The user plays video games as a major hobby, favoring action-adventure and RPG open-world games, and often plays together with partner Sarah.",
+      "- Frequently plays video games together with partner [[relationships/partner-sarah|Sarah]], finding shared gaming especially enjoyable."
+     ]
+    },
+    "cards_stating_current": [
+     "@overlay/hobbies/hiking",
+     "@overlay/relationships/partner-taylor"
+    ],
+    "verdict": "correct",
+    "note": ""
+   },
+   {
+    "id": "meme-nofiller/pl_032/update/2#5",
+    "dir": "meme-nofiller__pl_032",
+    "update_kind": "tracking",
+    "session": 2,
+    "stale": [
+     "thyranote",
+     "zorvista premium"
+    ],
+    "current": [
+     "meal kit (kelvimeal)"
+    ],
+    "anchors": [],
+    "offenders": {
+     "@overlay/entertainment/zorvista-premium": [
+      "Zorvista Premium Streaming Subscription",
+      "Zorvista Premium",
+      "The user is subscribed to Zorvista Premium as of March 2023, appreciating its selection of television shows.",
+      "- User is currently subscribed to the Zorvista Premium streaming service (stated March 3, 2023).",
+      "- User considers Zorvista Premium to have a good selection of television shows."
+     ],
+     "@overlay/hobbies/reading": [
+      "- User manages and tracks reading and notes using [[tools/thyranote]]."
+     ],
+     "@overlay/tools/thyranote": [
+      "Thyranote Reading Tracker Subscription",
+      "Thyranote",
+      "Thyranote subscription",
+      "The user subscribes to Thyranote to track reading progress and organize notes as of March 2023.",
+      "- User has been subscribed to Thyranote as of March 1, 2023.",
+      "- User finds Thyranote helpful for keeping track of reading and notes."
+     ]
+    },
+    "cards_stating_current": [],
+    "verdict": "correct",
+    "note": ""
+   },
+   {
+    "id": "meme-nofiller/pl_014/update/1#7",
+    "dir": "meme-nofiller__pl_014",
+    "update_kind": "tracking",
+    "session": 1,
+    "stale": [
+     "daily journal subscription"
+    ],
+    "current": [
+     "dranthazon"
+    ],
+    "anchors": [],
+    "offenders": {
+     "@overlay/habits/journaling": [
+      "Daily Journal Subscription and Routine"
+     ]
+    },
+    "cards_stating_current": [
+     "@overlay/subscriptions/dranthazon"
+    ],
+    "verdict": "correct",
+    "note": ""
+   },
+   {
+    "id": "meme-nofiller/pl_009/update/4#1",
+    "dir": "meme-nofiller__pl_009",
+    "update_kind": "root",
+    "session": 4,
+    "stale": [
+     "tendinitis"
+    ],
+    "current": [
+     "chronic migraine"
+    ],
+    "anchors": [],
+    "offenders": {
+     "@overlay/interests/running": [
+      "- Navigates physical activity challenges alongside tendinitis [[health/tendinitis]]."
+     ]
+    },
+    "cards_stating_current": [
+     "@overlay/health/chronic-migraine",
+     "@overlay/health/dietary-restriction-no-alcohol",
+     "@overlay/health/exercise-routine-yoga"
+    ],
+    "verdict": "correct",
+    "note": ""
+   },
+   {
+    "id": "meme-nofiller/pl_022/update/2#3",
+    "dir": "meme-nofiller__pl_022",
+    "update_kind": "tracking",
+    "session": 2,
+    "stale": [
+     "james",
+     "alex"
+    ],
+    "current": [
+     "taylor"
+    ],
+    "anchors": [],
+    "offenders": {
+     "@overlay/hobbies/tennis": [
+      "Tennis Hobby and Practice with Alex",
+      "tennis partner Alex",
+      "Alex tennis",
+      "The user plays tennis, is working on improving their serve and consistency, and practices with their partner Alex.",
+      "- The user has a partner named Alex with whom they practice tennis.",
+      "- In March 2023, the user sought advice on serve consistency and whether having a practice partner like Alex can improve their tennis skills.",
+      "- In tennis discussions, the user referred to Alex as their partner ('my partner's name is Alex'); distinct from their partner [[personal/partner|James]] mentioned in personal/woodworking contexts."
+     ],
+     "@overlay/hobbies/woodworking": [
+      "- The user's partner [[personal/partner|James]] is very supportive of their woodworking endeavors."
+     ]
+    },
+    "cards_stating_current": [
+     "@overlay/hobbies/wine-tasting",
+     "@overlay/personal/partner-taylor"
+    ],
+    "verdict": "correct",
+    "note": ""
+   },
+   {
+    "id": "meme-nofiller/pl_040/update/1#5",
+    "dir": "meme-nofiller__pl_040",
+    "update_kind": "tracking",
+    "session": 1,
+    "stale": [
+     "zyvanta sedan"
+    ],
+    "current": [
+     "quorvel ev"
+    ],
+    "anchors": [],
+    "offenders": {
+     "@overlay/transport/bus-commute": [
+      "- The user also owns and drives a Zyvanta Sedan ([[transport/vehicle]])."
+     ]
+    },
+    "cards_stating_current": [
+     "@overlay/transport/quorvel-ev"
+    ],
+    "verdict": "correct",
+    "note": ""
+   },
+   {
+    "id": "meme-nofiller/pl_048/update/1#3",
+    "dir": "meme-nofiller__pl_048",
+    "update_kind": "tracking",
+    "session": 1,
+    "stale": [
+     "jessica"
+    ],
+    "current": [
+     "alex"
+    ],
+    "anchors": [],
+    "offenders": {
+     "@overlay/hobbies/woodworking": [
+      "- Collaborates on woodworking projects with partner [[personal/partner-jessica]].",
+      "- Has built both decorative pieces and functional items such as shelves with Jessica."
+     ]
+    },
+    "cards_stating_current": [
+     "@overlay/hobbies/cycling",
+     "@overlay/personal/partner-alex"
+    ],
+    "verdict": "correct",
+    "note": ""
+   },
+   {
+    "id": "meme-nofiller/pl_046/update/2#5",
+    "dir": "meme-nofiller__pl_046",
+    "update_kind": "tracking",
+    "session": 2,
+    "stale": [
+     "xelvoria"
+    ],
+    "current": [
+     "dranthazon"
+    ],
+    "anchors": [],
+    "offenders": {
+     "@overlay/user/hobbies/pottery": [
+      "- The user looks for tutorials and tips across different art forms on [[user/subscriptions/xelvoria]] to inspire their art and pottery practice."
+     ]
+    },
+    "cards_stating_current": [
+     "@overlay/user/subscriptions/dranthazon"
+    ],
+    "verdict": "correct",
+    "note": ""
+   },
+   {
+    "id": "meme-nofiller/sw_009/update/4#1",
+    "dir": "meme-nofiller__sw_009",
+    "update_kind": "root",
+    "session": 4,
+    "stale": [
+     "narvex cloud"
+    ],
+    "current": [
+     "orinthal serve"
+    ],
+    "anchors": [],
+    "offenders": {
+     "@overlay/team/release-schedule": [
+      "- Production deployments are executed to Narvex Cloud ([[team/deployment]])."
+     ]
+    },
+    "cards_stating_current": [
+     "@overlay/team/deployment-orinthal-serve"
+    ],
+    "verdict": "correct",
+    "note": ""
+   },
+   {
+    "id": "meme-nofiller/pl_036/update/2#5",
+    "dir": "meme-nofiller__pl_036",
+    "update_kind": "tracking",
+    "session": 2,
+    "stale": [
+     "james",
+     "jordan"
+    ],
+    "current": [
+     "taylor"
+    ],
+    "anchors": [],
+    "offenders": {
+     "@overlay/user/fitness/running": [
+      "The user is a member of a running club, actively training to improve running performance and considering running with partner Jordan.",
+      "- The user values training with a partner or buddy, specifically partner Jordan ([[user/relationships/partner-jordan]]), to enhance motivation and consistency."
+     ],
+     "@overlay/user/hobbies/art": [
+      "- The user's partner James ([[user/relationships/partner]]) is supportive of their art hobby."
+     ]
+    },
+    "cards_stating_current": [
+     "@overlay/user/hobbies/wine-tasting",
+     "@overlay/user/relationships/partner-taylor"
+    ],
+    "verdict": "correct",
+    "note": ""
+   },
+   {
+    "id": "meme-nofiller/sw_038/update/4#1",
+    "dir": "meme-nofiller__sw_038",
+    "update_kind": "root",
+    "session": 4,
+    "stale": [
+     "synthari"
+    ],
+    "current": [
+     "dravex"
+    ],
+    "anchors": [],
+    "offenders": {
+     "@overlay/tooling/dev-server": [
+      "Local Development Server: synthari launch --hmr",
+      "synthari launch",
+      "synthari launch --hmr",
+      "The team runs the dev server using the command 'synthari launch --hmr' with Hot Module Replacement enabled.",
+      "- As of 2023/03/01, the team runs the dev server using the command `synthari launch --hmr`."
+     ],
+     "@overlay/tooling/package-manager-synthari": [
+      "Team Package Manager: Synthari Modules",
+      "Synthari Modules",
+      "Synthari package manager",
+      "Synthari Modules package manager",
+      "The team switched their package manager to Synthari Modules for dependency management, replacing Veltrion Pkg.",
+      "- As of 2023/03/03, the team switched to Synthari Modules as their package manager.",
+      "- Synthari Modules is used for dependency management across the project to streamline managing dependencies."
+     ]
+    },
+    "cards_stating_current": [
+     "@overlay/tooling/framework-dravex"
+    ],
+    "verdict": "matching error",
+    "note": "another entity's value contains the old framework name (no dependency in MEME)"
+   },
+   {
+    "id": "meme-nofiller/pl_032/update/4#1",
+    "dir": "meme-nofiller__pl_032",
+    "update_kind": "root",
+    "session": 4,
+    "stale": [
+     "in a relationship"
+    ],
+    "current": [
+     "married"
+    ],
+    "anchors": [],
+    "offenders": {
+     "@overlay/finances/house-down-payment": [
+      "- User is in a relationship ([[personal/relationship-status]]) and considers how being in a relationship impacts financial planning when saving for a house."
+     ]
+    },
+    "cards_stating_current": [
+     "@overlay/personal/marital-status",
+     "@overlay/personal/partner"
+    ],
+    "verdict": "correct",
+    "note": ""
+   },
+   {
+    "id": "meme-nofiller/pl_034/update/4#1",
+    "dir": "meme-nofiller__pl_034",
+    "update_kind": "root",
+    "session": 4,
+    "stale": [
+     "seasonal allergies"
+    ],
+    "current": [
+     "lactose intolerance"
+    ],
+    "anchors": [],
+    "offenders": {
+     "@overlay/health/seasonal-allergies-resolved": [
+      "Seasonal allergies treated and resolved",
+      "seasonal allergies resolved",
+      "seasonal allergies treated",
+      "The user's seasonal allergies have been treated and resolved as of 2023-03-05.",
+      "- User reported on 2023-03-05 that their seasonal allergies have been treated and resolved.",
+      "- User previously experienced seasonal allergies that were bothersome during pollen seasons (first reported 2023-03-01).",
+      "- User's previous running routine (3x/week) was linked to seasonal allergies: [[fitness/exercise-routine]].",
+      "- Supersedes the active seasonal allergies condition recorded in [[health/seasonal-allergies]]."
+     ]
+    },
+    "cards_stating_current": [
+     "@overlay/dietary/lactose-intolerance"
+    ],
+    "verdict": "matching error",
+    "note": "line marks the value as past ('treated and resolved', 'previously')"
+   },
+   {
+    "id": "meme-nofiller/pl_028/update/1#5",
+    "dir": "meme-nofiller__pl_028",
+    "update_kind": "tracking",
+    "session": 1,
+    "stale": [
+     "zorvista premium"
+    ],
+    "current": [
+     "dranthazon"
+    ],
+    "anchors": [],
+    "offenders": {
+     "@overlay/subscriptions/zorvista-premium": [
+      "User Subscription: Zorvista Premium",
+      "Zorvista Premium",
+      "The user subscribes to Zorvista Premium, enjoying its features and catalog of shows and content.",
+      "- The user is subscribed to Zorvista Premium as of 2023/03/01.",
+      "- The user finds that Zorvista Premium has great features that enhance their experience (noted 2023/03/01)."
+     ]
+    },
+    "cards_stating_current": [
+     "@overlay/hobbies/basketball",
+     "@overlay/subscriptions/dranthazon"
+    ],
+    "verdict": "correct",
+    "note": ""
+   },
+   {
+    "id": "meme-nofiller/pl_019/update/4#1",
+    "dir": "meme-nofiller__pl_019",
+    "update_kind": "root",
+    "session": 4,
+    "stale": [
+     "single"
+    ],
+    "current": [
+     "in a relationship"
+    ],
+    "anchors": [],
+    "offenders": {
+     "@overlay/personal/living-situation": [
+      "- Maintains a household with family alongside an independent, single lifestyle ([[personal/relationship-status]])."
+     ]
+    },
+    "cards_stating_current": [
+     "@overlay/personal/in-a-relationship"
+    ],
+    "verdict": "correct",
+    "note": ""
+   },
+   {
+    "id": "meme-nofiller/sw_019/update/4#1",
+    "dir": "meme-nofiller__sw_019",
+    "update_kind": "root",
+    "session": 4,
+    "stale": [
+     "narvex cloud"
+    ],
+    "current": [
+     "zephyra platform"
+    ],
+    "anchors": [],
+    "offenders": {
+     "@overlay/team/release-schedule": [
+      "- Releases are deployed to Narvex Cloud (see [[tech-stack/narvex-cloud]])."
+     ]
+    },
+    "cards_stating_current": [
+     "@overlay/tech-stack/deploy-command-zephyra",
+     "@overlay/tech-stack/log-drain-korinth",
+     "@overlay/tech-stack/zephyra-platform"
+    ],
+    "verdict": "correct",
+    "note": ""
+   },
+   {
+    "id": "meme-nofiller/pl_022/update/4#1",
+    "dir": "meme-nofiller__pl_022",
+    "update_kind": "root",
+    "session": 4,
+    "stale": [
+     "quivira springs community college"
+    ],
+    "current": [
+     "online bootcamp (coding)"
+    ],
+    "anchors": [],
+    "offenders": {
+     "@overlay/hobbies/wine-tasting": [
+      "- The user balances attending wine tasting club activities with studying at [[personal/education|Quivira Springs Community College]]."
+     ],
+     "@overlay/personal/education": [
+      "Studies at Quivira Springs Community College",
+      "Quivira Springs Community College",
+      "The user is studying at Quivira Springs Community College as of March 2023, finding it challenging to balance school with hobbies and social activities.",
+      "- The user is currently studying at Quivira Springs Community College as of March 2023.",
+      "- The user has a busy academic schedule at Quivira Springs Community College and uses social meetups to unwind."
+     ],
+     "@overlay/personal/financial-goal": [
+      "The user's financial goal is saving for their kids' education fund, determined by studying at Quivira Springs Community College; priorities shift if that changes.",
+      "- This financial goal is determined by the fact that the user is studying at [[personal/education|Quivira Springs Community College]].",
+      "- If the user's educational situation at Quivira Springs Community College changes, their financial priorities would shift."
+     ],
+     "@overlay/personal/financial-goal-wedding": [
+      "- The wedding savings goal depends on the user's schooling status at [[personal/education|Quivira Springs Community College]].",
+      "- If the user transfers or departs from Quivira Springs Community College, their financial priority shifts immediately to wedding savings.",
+      "- While the user remains enrolled at Quivira Springs Community College, the active financial priority remains the kids' education fund."
+     ],
+     "@overlay/personal/potluck-group": [
+      "- Attending the potluck dinner group is a way for the user to unwind after a busy week of school at [[personal/education|Quivira Springs Community College]]."
+     ]
+    },
+    "cards_stating_current": [],
+    "verdict": "correct",
+    "note": ""
+   },
+   {
+    "id": "meme-nofiller/pl_036/update/4#1",
+    "dir": "meme-nofiller__pl_036",
+    "update_kind": "root",
+    "session": 4,
+    "stale": [
+     "thornvale crossing"
+    ],
+    "current": [
+     "orinthal park"
+    ],
+    "anchors": [],
+    "offenders": {
+     "@overlay/user/hobbies/wine-tasting": [
+      "- The user is interested in discovering places that offer wine tasting near their home in Thornvale Crossing ([[user/location/residence]])."
+     ]
+    },
+    "cards_stating_current": [
+     "@overlay/user/location/residence-orinthal-park",
+     "@overlay/user/social/game-night"
+    ],
+    "verdict": "correct",
+    "note": ""
+   },
+   {
+    "id": "meme-nofiller/sw_042/update/4#1",
+    "dir": "meme-nofiller__sw_042",
+    "update_kind": "root",
+    "session": 4,
+    "stale": [
+     "seokjin kang"
+    ],
+    "current": [
+     "yuna park"
+    ],
+    "anchors": [],
+    "offenders": {
+     "@overlay/team/escalations": [
+      "- Works alongside team lead [[team/lead]] Seokjin Kang on team coordination and resolution."
+     ],
+     "@overlay/team/meetings": [
+      "- Team lead [[team/lead]] Seokjin Kang facilitates team alignment during these weekly sessions."
+     ],
+     "@overlay/team/release-strategy": [
+      "- Team processes and schedules align with [[team/lead]] Seokjin Kang and sprint targets like [[project/sprint-deadline]]."
+     ],
+     "@overlay/team/weekly-report": [
+      "- Weekly reporting aligns with team leadership under [[team/lead]] Seokjin Kang."
+     ]
+    },
+    "cards_stating_current": [
+     "@overlay/team/lead-yuna-park"
+    ],
+    "verdict": "correct",
+    "note": ""
+   }
+  ],
+  "lost": [
+   {
+    "id": "meme-nofiller/sw_033/3#5",
+    "dir": "meme-nofiller__sw_033",
+    "point": 3,
+    "category": "plain",
+    "value": "connectionrefusederror: [errno 111] connection refused. service crysthene-db-primary on port 5432 is not accepting connections. last successful heartbeat was at 2024-03-15t08:23:41z. check firewall rules and verify that max_connections has not been exceeded",
+    "entity": "error_log",
+    "anchors": [],
+    "near": {
+     "@overlay/engineering/crysthene-db-error": [
+      "Error Log: crysthene-db-primary Connection Refused",
+      "crysthene-db-primary error",
+      "crysthene-db-primary",
+      "ConnectionRefusedError"
+     ],
+     "@overlay/engineering/package-manager (inactive)": [
+      "- The user noted Karnex Pack has been efficient for managing dependencies."
+     ],
+     "@overlay/engineering/default-branch": [
+      "- The trunk branch is used as the primary base branch for development, extending the branching strategy described in [[engineering/branching-strategy]]."
+     ],
+     "@overlay/engineering/production-logs": [
+      "production log drain",
+      "velturis log stream",
+      "aurora log drain",
+      "- The stream.velturis.io/aurora log drain is essential for keeping track of all events occurring in production."
+     ],
+     "@overlay/team/oncall-rotation": [
+      "primary secondary oncall",
+      "The team uses a paired on-call rotation with a primary and a secondary person on duty.",
+      "- The paired on-call setup assigns two people on duty: a primary on-call and a secondary on-call person.",
+      "- The secondary person provides backup coverage and support for the primary responder."
+     ],
+     "@overlay/team/team-lead": [
+      "- Recommended communication practices with Seokjin Kang include regular check-ins, open feedback channels, and addressing transition challenges directly."
+     ]
+    },
+    "verdict": "matching error",
+    "note": "verbatim text kept with escaped line breaks or split across bullets (every word present, in order)"
+   },
+   {
+    "id": "meme-nofiller/pl_017/3#3",
+    "dir": "meme-nofiller__pl_017",
+    "point": 3,
+    "category": "dependent",
+    "value": "physical therapy (2x/week)",
+    "entity": "regular_appointment",
+    "anchors": [],
+    "near": {
+     "@overlay/user/health/physical-therapy": [
+      "Regular Appointment: Physical Therapy",
+      "physical therapy",
+      "PT appointment",
+      "regular appointment"
+     ],
+     "@overlay/user/health/chiropractor": [
+      "Contingency Appointment: Chiropractor",
+      "chiropractor appointment",
+      "regular appointment after moving",
+      "contingency appointment"
+     ],
+     "@overlay/user/fitness/thandrel-ymca": [
+      "- Regular gym and workout venue is Thandrel YMCA while living at Belvona Harbor."
+     ]
+    },
+    "verdict": "matching error",
+    "note": "stated in other words (annotation format, word order, units)"
+   },
+   {
+    "id": "meme-nofiller/pl_022/3#3",
+    "dir": "meme-nofiller__pl_022",
+    "point": 3,
+    "category": "dependent",
+    "value": "9-to-5 fixed",
+    "entity": "work_schedule",
+    "anchors": [],
+    "near": {
+     "@overlay/personal/work-hours": [
+      "Work Hours: Fixed 9-to-5 Schedule",
+      "work hours",
+      "work schedule",
+      "fixed work hours"
+     ],
+     "@overlay/personal/commute": [
+      "Commuting to Work by Car",
+      "work commute",
+      "driving to work",
+      "transportation to work"
+     ],
+     "@overlay/personal/education": [
+      "- The user has a busy academic schedule at Quivira Springs Community College and uses social meetups to unwind."
+     ],
+     "@overlay/plans/laptop-purchase": [
+      "The user is planning to purchase a new laptop, evaluating specifications needed to support their woodworking design work and Japanese language learning."
+     ]
+    },
+    "verdict": "matching error",
+    "note": "stated in other words (annotation format, word order, units)"
+   },
+   {
+    "id": "meme-nofiller/pl_027/3#1",
+    "dir": "meme-nofiller__pl_027",
+    "point": 3,
+    "category": "dependent",
+    "value": "10 min",
+    "entity": "commute_duration",
+    "anchors": [],
+    "near": {
+     "@overlay/user/commute/work-commute": [
+      "Work Commute by Subway and Bus",
+      "work commute",
+      "commute",
+      "daily commute"
+     ]
+    },
+    "verdict": "matching error",
+    "note": "stated in other words (annotation format, word order, units)"
+   },
+   {
+    "id": "meme-nofiller/pl_040/0#11",
+    "dir": "meme-nofiller__pl_040",
+    "point": "end",
+    "category": "plain",
+    "value": "whispers of zarinthea (tv)",
+    "entity": "media_consumption",
+    "anchors": [],
+    "near": {
+     "@overlay/media/whispers-of-zarinthea": [
+      "Whispers of Zarinthea TV show",
+      "Whispers of Zarinthea",
+      "current media",
+      "The user's current TV show is Whispers of Zarinthea, which they find interesting."
+     ]
+    },
+    "verdict": "matching error",
+    "note": "stated in other words (annotation format, word order, units)"
+   },
+   {
+    "id": "meme-nofiller/pl_008/2#9",
+    "dir": "meme-nofiller__pl_008",
+    "point": 3,
+    "category": "plain",
+    "value": "shift work (night)",
+    "entity": "work_schedule",
+    "anchors": [],
+    "near": {
+     "@overlay/career/work-schedule": [
+      "Night Shift Work Schedule",
+      "night shift",
+      "shift work",
+      "night work schedule"
+     ],
+     "@overlay/relationships/partner": [
+      "The user's partner is named James, providing mutual support while navigating the user's night shift schedule.",
+      "- The user values having James to share life with, noting it makes a big difference especially when dealing with a night shift schedule [[career/work-schedule]].",
+      "- The user and James coordinate schedules and personal time together to balance work shifts and relationship time."
+     ],
+     "@overlay/career/occupation": [
+      "- Their work keeps them actively engaged with various technical challenges and projects."
+     ],
+     "@overlay/career/office-location": [
+      "work location"
+     ],
+     "@overlay/career/work-project": [
+      "Current Work Project: Backend Migration",
+      "work project",
+      "The user is currently working on backend migration at Thalwren Inc; if their employer changes, they will work on a marketing campaign.",
+      "- The user's work project depends on their employer; if their employer changes, this project would change."
+     ],
+     "@overlay/transportation/commute (inactive)": [
+      "commute to work"
+     ],
+     "@overlay/transportation/work-commute": [
+      "Walking Commute to Work",
+      "walking to work",
+      "commute to work",
+      "work commute"
+     ]
+    },
+    "verdict": "matching error",
+    "note": "stated in other words (annotation format, word order, units)"
+   },
+   {
+    "id": "meme-nofiller/sw_030/3#7",
+    "dir": "meme-nofiller__sw_030",
+    "point": "end",
+    "category": "plain",
+    "value": "panicexception: thread 'tokio-runtime-worker' panicked at 'index out of bounds: the len is 0 but the index is 5', src/handlers/auth.rs:142:23. stack trace shows recursive call in middleware_chain to request_validator to token_parser. restart triggered automatic failover at 2024-04-02t14:18:33z",
+    "entity": "error_log",
+    "anchors": [],
+    "near": {
+     "@overlay/devops/auth-panic-error": [
+      "Error Log: Auth Handler Panic and Failover Incident",
+      "auth panic error log",
+      "PanicException tokio-runtime-worker",
+      "src/handlers/auth.rs:142:23"
+     ],
+     "@overlay/tech-stack/database-connection": [
+      "- The connection string depends directly on [[tech-stack/database]] (Crysthene DB); if the database changes, this connection string will change.",
+      "- Necessary application configuration changes must be mapped out prior to updating the database connection string.",
+      "- Associated with the core database setup alongside [[tech-stack/migrations]] and backup routines in [[devops/database-backups]]."
+     ],
+     "@overlay/tech-stack/database-thalnex": [
+      "- The user asked for tips and things to watch out for during the transition to Thalnex Store.",
+      "- Supersedes [[tech-stack/database]] in the core application stack alongside [[tech-stack/design-system]] and [[tech-stack/package-manager-veltrion]]."
+     ],
+     "@overlay/devops/database-backups": [
+      "- Backups protect data integrity and ensure high availability for [[tech-stack/database]] (Crysthene DB)."
+     ],
+     "@overlay/devops/on-call-rotation": [
+      "On-Call Rotation: Weekly Mon-Sun Rotation",
+      "on-call rotation",
+      "on-call schedule",
+      "weekly on-call"
+     ],
+     "@overlay/devops/release-schedule": [
+      "- Aligns with deployment workflows referencing [[git/default-branch]], database migrations in [[tech-stack/migrations]], and [[devops/runbooks]]."
+     ],
+     "@overlay/devops/runbooks": [
+      "- Supports operational response across project systems such as [[tech-stack/database]] and development workflow [[git/default-branch]]."
+     ],
+     "@overlay/devops/secret-manager": [
+      "- The user inquired about tips and things to watch out for when using Cryptara Vault.",
+      "- Planning and executing proper application integration is key when rolling out Cryptara Vault across services."
+     ],
+     "@overlay/git/code-review-policy": [
+      "Code Review Policy: 2 Approvals and Security Review for auth/",
+      "auth review policy",
+      "The team requires 2 approvals plus a security review for changes to the auth/ directory to enforce solid security practices.",
+      "- The team's code review policy strictly requires 2 approvals and a security review for any pull request touching the auth/ directory (recorded 2023/03/02)."
+     ],
+     "@overlay/tech-stack/database (inactive)": [
+      "- Part of the core application stack alongside [[tech-stack/design-system]] and [[tech-stack/package-manager]]."
+     ]
+    },
+    "verdict": "matching error",
+    "note": "verbatim text kept with escaped line breaks or split across bullets (every word present, in order)"
+   },
+   {
+    "id": "meme-nofiller/sw_006/2#1",
+    "dir": "meme-nofiller__sw_006",
+    "point": 3,
+    "category": "plain",
+    "value": "async written updates in slack",
+    "entity": "standup_format",
+    "anchors": [],
+    "near": {
+     "@overlay/team/standup": [
+      "Team Standup Format - Async Slack Updates",
+      "standup format",
+      "async standup",
+      "Slack standup"
+     ],
+     "@overlay/team/approval-authority": [
+      "- Regular check-ins and updates with Soyeon Park help ensure alignment and clear expectations."
+     ],
+     "@overlay/team/weekly-reports": [
+      "- Keep updates concise and focus on key takeaways for reporting."
+     ],
+     "@overlay/tech/design-system": [
+      "- Best practices include ensuring team familiarity through regular training and documentation updates.",
+      "- A version control process for design system updates helps manage component changes without disruption."
+     ]
+    },
+    "verdict": "matching error",
+    "note": "stated in other words (annotation format, word order, units)"
+   },
+   {
+    "id": "meme-nofiller/sw_012/0#9",
+    "dir": "meme-nofiller__sw_012",
+    "point": 3,
+    "category": "plain",
+    "value": "async written updates in slack",
+    "entity": "standup_format",
+    "anchors": [],
+    "near": {
+     "@overlay/process/standup": [
+      "Slack Asynchronous Written Standup Format",
+      "standup format",
+      "Slack standup",
+      "async standup"
+     ],
+     "@overlay/auth/token-format": [
+      "auth token format",
+      "The team uses the Cerberix-SAML-assertion token format for authentication and managing user sessions and access.",
+      "- The team uses Cerberix-SAML-assertion as their authentication token format (reported March 2023).",
+      "- Authentication and session verification rely on SAML assertions in the Cerberix format."
+     ],
+     "@overlay/database/migrations": [
+      "- Schema changes and database structure updates are applied using Zyndra Alter."
+     ],
+     "@overlay/project/changelog": [
+      "The project changelog is hosted on the GitHub Releases page for tracking updates and release changes.",
+      "- Used for tracking updates, version changes, and release history across the project.",
+      "- Release updates and new features are documented on GitHub Releases."
+     ]
+    },
+    "verdict": "matching error",
+    "note": "stated in other words (annotation format, word order, units)"
+   },
+   {
+    "id": "meme-nofiller/sw_002/3#11",
+    "dir": "meme-nofiller__sw_002",
+    "point": 3,
+    "category": "plain",
+    "value": "segmentationfault at 0x00007fff5a3b2c40 in vorathis_query_planner.so. backtrace: frame 0 query_optimize, frame 1 plan_join, frame 2 execute_select. core dump saved to /var/crash/core.aurora.18923 on 2024-06-12t03:55:09z. last known good build was commit 7a4f9e2; bisect against recent migrations",
+    "entity": "error_log",
+    "anchors": [],
+    "near": {
+     "@overlay/aurora/error-log-vorathis": [
+      "Aurora Error Log - SegmentationFault in vorathis_query_planner.so",
+      "vorathis_query_planner.so crash",
+      "SegmentationFault at 0x00007fff5a3b2c40",
+      "core.aurora.18923"
+     ],
+     "@overlay/aurora/ci-config": [
+      "Aurora CI Config - orinthal-build.yml",
+      "Aurora CI config",
+      "orinthal-build.yml",
+      "Project Aurora's CI config is orinthal-build.yml on Narvex Cloud, and will be korinth-deploy.yaml if deploy targets change."
+     ],
+     "@overlay/aurora/code-review-policy": [
+      "Aurora Code Review Policy - Lead Approval for Core",
+      "core directory reviews",
+      "Aurora code review",
+      "Project Aurora's code review policy requires lead approval for changes to the core/ directory to ensure code quality."
+     ],
+     "@overlay/aurora/deploy-command": [
+      "Aurora Deploy Command - orinthal publish --tier production",
+      "Aurora deploy command",
+      "The deploy command for project Aurora is orinthal publish --tier production, determined by the CI config orinthal-build.yml.",
+      "- The deployment command for project Aurora is orinthal publish --tier production (recorded 2023-03-05)."
+     ],
+     "@overlay/aurora/design-system": [
+      "Aurora Design System - Synthari Elements v1.2",
+      "Aurora design system",
+      "The team uses Synthari Elements v1.2 as their design system for project Aurora.",
+      "- Planning design system updates is balanced against the sprint deadline [[aurora/sprint-deadline]]."
+     ],
+     "@overlay/aurora/dockerfile": [
+      "Aurora Dockerfile - deploy/Dockerfile.korinth",
+      "Aurora Dockerfile",
+      "Docker build file",
+      "The Dockerfile for Aurora is located at deploy/Dockerfile.korinth, and will be at deploy/Dockerfile.zephyra if the Docker image changes."
+     ],
+     "@overlay/aurora/log-drain": [
+      "Aurora Log Drain - stream.velturis.io/aurora",
+      "Aurora log drain",
+      "stream.velturis.io/aurora",
+      "Aurora logging stream"
+     ],
+     "@overlay/aurora/test-coverage": [
+      "Aurora Test Coverage Target - 90% Core Modules",
+      "core modules coverage",
+      "Aurora test coverage",
+      "The team's test coverage target for project Aurora is 90% for core modules to catch issues early."
+     ],
+     "@overlay/aurora/cloud-deployment": [
+      "Aurora Cloud Deployment - Narvex Cloud",
+      "Aurora cloud deployment",
+      "Project Aurora deploys to Narvex Cloud, selected for its scalability and ease of use.",
+      "- The team deploys project Aurora to Narvex Cloud (recorded 2023-03-03)."
+     ],
+     "@overlay/aurora/default-branch": [
+      "Aurora Default Branch - develop",
+      "Aurora default branch",
+      "The default branch for project Aurora is develop, keeping the main branch stable while features are worked on.",
+      "- The team's default branch for project Aurora is develop (recorded 2023-03-02)."
+     ]
+    },
+    "verdict": "matching error",
+    "note": "verbatim text kept with escaped line breaks or split across bullets (every word present, in order)"
+   },
+   {
+    "id": "meme-nofiller/sw_034/2#5",
+    "dir": "meme-nofiller__sw_034",
+    "point": 3,
+    "category": "plain",
+    "value": "workspace with /services and /common",
+    "entity": "project_structure",
+    "anchors": [],
+    "near": {
+     "@overlay/dev/workspace-structure": [
+      "Project Workspace Structure (/services and /common)",
+      "workspace structure",
+      "project structure",
+      "services directory"
+     ],
+     "@overlay/dev/build-command": [
+      "project build command",
+      "- The project build command is `pyronis pack --quick` as of March 2023.",
+      "- The build command is determined by the project using [[dev/build-tool|Pyronis Build]]."
+     ],
+     "@overlay/dev/build-tool": [
+      "project build tool",
+      "- The team uses Pyronis Build as their project build tool as of March 2023."
+     ],
+     "@overlay/dev/test-command": [
+      "project test command",
+      "- The project test command is `tarvex verify --all` as of March 2023.",
+      "- The test command is determined by the project using [[dev/test-tool|Tarvex Verify]]."
+     ],
+     "@overlay/dev/test-tool": [
+      "- Tarvex Verify is responsible for running test suites and verification across the project."
+     ],
+     "@overlay/docs/onboarding-guide": [
+      "- Dedicated to helping new team members get integrated smoothly into the project, complementing [[docs/project-docs|general project documentation]]."
+     ],
+     "@overlay/docs/project-docs": [
+      "Aurora Team Project Documentation Repository",
+      "project docs",
+      "Project documentation is maintained at github.com/aurora-team/docs for collaboration and onboarding.",
+      "- Project documentation is hosted at github.com/aurora-team/docs as of March 2023."
+     ],
+     "@overlay/tech-stack/design-system": [
+      "- Used for creating consistent UI components across the project."
+     ],
+     "@overlay/tech-stack/framework": [
+      "project framework",
+      "The team uses Veltrion as their project framework alongside the Veltrion UI Kit v2.",
+      "- Serves as the core development framework for the project."
+     ]
+    },
+    "verdict": "matching error",
+    "note": "stated in other words (annotation format, word order, units)"
+   },
+   {
+    "id": "meme-nofiller/pl_008/2#9",
+    "dir": "meme-nofiller__pl_008",
+    "point": "end",
+    "category": "plain",
+    "value": "shift work (night)",
+    "entity": "work_schedule",
+    "anchors": [],
+    "near": {
+     "@overlay/career/work-schedule": [
+      "Night Shift Work Schedule",
+      "night shift",
+      "shift work",
+      "night work schedule"
+     ],
+     "@overlay/relationships/partner": [
+      "The user's partner is named James, providing mutual support while navigating the user's night shift schedule.",
+      "- The user values having James to share life with, noting it makes a big difference especially when dealing with a night shift schedule [[career/work-schedule]].",
+      "- The user and James coordinate schedules and personal time together to balance work shifts and relationship time."
+     ],
+     "@overlay/career/occupation": [
+      "- Their work keeps them actively engaged with various technical challenges and projects."
+     ],
+     "@overlay/career/office-location": [
+      "work location"
+     ],
+     "@overlay/career/work-project": [
+      "Current Work Project: Backend Migration",
+      "work project",
+      "The user is currently working on backend migration at Thalwren Inc; if their employer changes, they will work on a marketing campaign.",
+      "- The user's work project depends on their employer; if their employer changes, this project would change."
+     ],
+     "@overlay/transportation/work-commute": [
+      "Walking Commute to Work",
+      "walking to work",
+      "commute to work",
+      "work commute"
+     ]
+    },
+    "verdict": "matching error",
+    "note": "stated in other words (annotation format, word order, units)"
+   },
+   {
+    "id": "meme-nofiller/sw_050/2#7",
+    "dir": "meme-nofiller__sw_050",
+    "point": "end",
+    "category": "plain",
+    "value": "70% overall, 95% for auth",
+    "entity": "test_coverage_target",
+    "anchors": [],
+    "near": {
+     "@overlay/aurora/test-coverage-targets": [
+      "Aurora Test Coverage Targets",
+      "test coverage targets",
+      "aurora test coverage",
+      "coverage target"
+     ],
+     "@overlay/aurora/infrastructure (inactive)": [
+      "aurora deployment target"
+     ],
+     "@overlay/aurora/infrastructure-zephyra": [
+      "aurora deployment target"
+     ],
+     "@overlay/aurora/sprint-deadline": [
+      "sprint target date"
+     ],
+     "@overlay/aurora/staging-environment": [
+      "- Staging is used to verify and test releases prior to production deployments."
+     ]
+    },
+    "verdict": "matching error",
+    "note": "stated in other words (annotation format, word order, units)"
+   },
+   {
+    "id": "meme-nofiller/pl_010/3#7",
+    "dir": "meme-nofiller__pl_010",
+    "point": "end",
+    "category": "rule",
+    "value": "zynthera bay beach trip (1 week)",
+    "entity": "travel_plan",
+    "anchors": [],
+    "near": {
+     "@overlay/travel/zynthera-bay-trip": [
+      "Zynthera Bay Beach Trip Contingency Plan",
+      "Zynthera Bay",
+      "Zynthera Bay beach trip",
+      "beach trip plan"
+     ],
+     "@overlay/travel/mountain-ski-trip": [
+      "Mountain Ski Trip Plan",
+      "ski trip",
+      "ski trip planning",
+      "winter ski trip"
+     ],
+     "@overlay/finances/engagement-ring-purchase": [
+      "- This purchase plan connects to being engaged [[lifestyle/engaged-relationship-status]]."
+     ]
+    },
+    "verdict": "matching error",
+    "note": "stated in other words (annotation format, word order, units)"
+   },
+   {
+    "id": "meme-nofiller/pl_025/2#11",
+    "dir": "meme-nofiller__pl_025",
+    "point": "end",
+    "category": "plain",
+    "value": "the veldrakon spiral (tv)",
+    "entity": "media_consumption",
+    "anchors": [],
+    "near": {
+     "@overlay/media/the-veldrakon-spiral": [
+      "Current Media: The Veldrakon Spiral (TV Series)",
+      "The Veldrakon Spiral",
+      "Veldrakon Spiral",
+      "current media"
+     ]
+    },
+    "verdict": "matching error",
+    "note": "stated in other words (annotation format, word order, units)"
+   },
+   {
+    "id": "meme-nofiller/pl_038/3#3",
+    "dir": "meme-nofiller__pl_038",
+    "point": 3,
+    "category": "dependent",
+    "value": "cross-country road trip (2 weeks)",
+    "entity": "travel_plan",
+    "anchors": [],
+    "near": {
+     "@overlay/plans/cross-country-road-trip": [
+      "Travel Plans: Cross-Country Road Trip",
+      "cross-country road trip",
+      "two-week road trip",
+      "road trip planning"
+     ],
+     "@overlay/plans/island-getaway": [
+      "Travel Plans: Island Getaway Contingency",
+      "relationship status change trip",
+      "contingency travel",
+      "If the user's relationship status changes, they plan to take an island getaway."
+     ],
+     "@overlay/transportation/planned-electric-car (inactive)": [
+      "EV purchase plan"
+     ]
+    },
+    "verdict": "matching error",
+    "note": "stated in other words (annotation format, word order, units)"
+   },
+   {
+    "id": "meme-nofiller/sw_001/3#11",
+    "dir": "meme-nofiller__sw_001",
+    "point": 3,
+    "category": "plain",
+    "value": "outofmemoryerror: java heap space. gc overhead limit exceeded after 8 consecutive failed collections in pool 'ps old gen'. heap dump written to /var/log/aurora/heap-2024-05-08.hprof at 18:42:11z. recommend increasing -xmx beyond 4g or investigating memory leak in orderprocessor",
+    "entity": "error_log",
+    "anchors": [],
+    "near": {
+     "@overlay/development/order-processor-oom-error": [
+      "OrderProcessor OutOfMemoryError Log",
+      "OutOfMemoryError",
+      "OrderProcessor error",
+      "Java heap space error"
+     ],
+     "@overlay/meetings/standup": [
+      "Async Written Standup Format in Slack",
+      "written updates",
+      "The team uses an asynchronous written standup format in Slack to accommodate team members across different time zones.",
+      "- The team's standup format consists of asynchronous (async) written updates."
+     ],
+     "@overlay/project/docs": [
+      "aurora docs",
+      "Project documentation is maintained at github.com/aurora-team/docs for onboarding and team reference.",
+      "- Project documentation repository is located at github.com/aurora-team/docs.",
+      "- Organization / team repository on GitHub under aurora-team."
+     ],
+     "@overlay/project/incident-runbook": [
+      "docs.aurora.internal/runbooks",
+      "The incident runbook for handling incidents is located at docs.aurora.internal/runbooks.",
+      "- The incident runbook is hosted at docs.aurora.internal/runbooks."
+     ],
+     "@overlay/project/team-channel": [
+      "Aurora Team Channel #aurora-dev",
+      "#aurora-dev",
+      "aurora-dev",
+      "The team's discussion channel is #aurora-dev for all development topics and project updates."
+     ]
+    },
+    "verdict": "matching error",
+    "note": "verbatim text kept with escaped line breaks or split across bullets (every word present, in order)"
+   },
+   {
+    "id": "meme-nofiller/pl_027/3#3",
+    "dir": "meme-nofiller__pl_027",
+    "point": 3,
+    "category": "dependent",
+    "value": "physical therapy (2x/week)",
+    "entity": "regular_appointment",
+    "anchors": [],
+    "near": {
+     "@overlay/user/health/physical-therapy": [
+      "Physical Therapy Appointments",
+      "physical therapy",
+      "regular appointments",
+      "therapy sessions"
+     ]
+    },
+    "verdict": "matching error",
+    "note": "stated in other words (annotation format, word order, units)"
+   },
+   {
+    "id": "meme-nofiller/pl_030/3#1",
+    "dir": "meme-nofiller__pl_030",
+    "point": 3,
+    "category": "dependent",
+    "value": "employer + supplemental",
+    "entity": "insurance",
+    "anchors": [],
+    "near": {
+     "@overlay/work/insurance": [
+      "Work Benefits: Health Insurance",
+      "health insurance",
+      "insurance coverage",
+      "employer insurance"
+     ],
+     "@overlay/work/employer-elyndra-health": [
+      "employer"
+     ],
+     "@overlay/work/office-location": [
+      "- This remote office location is through the user's employer, Elyndra Health [[work/employer-elyndra-health]].",
+      "- If the user's employer changes, the office location would change.",
+      "- If the user changes their employer, their office will be in Quivira Springs."
+     ],
+     "@overlay/work/role-data-scientist": [
+      "- The user works as a data scientist at Elyndra Health [[work/employer-elyndra-health]]."
+     ],
+     "@overlay/work/schedule": [
+      "- The user's day shift work schedule is through their employer, Elyndra Health [[work/employer-elyndra-health]].",
+      "- If the user's employer changes, their work hours would change.",
+      "- If the user changes their employer, their work schedule will be 9-to-5 fixed."
+     ]
+    },
+    "verdict": "matching error",
+    "note": "stated in other words (annotation format, word order, units)"
+   },
+   {
+    "id": "meme-nofiller/sw_005/0#9",
+    "dir": "meme-nofiller__sw_005",
+    "point": 3,
+    "category": "plain",
+    "value": "15-min daily video call",
+    "entity": "standup_format",
+    "anchors": [],
+    "near": {
+     "@overlay/aurora/standup": [
+      "Aurora Team Daily Standup Format",
+      "team standup",
+      "daily standup",
+      "15-min standup"
+     ],
+     "@overlay/aurora/team-meeting": [
+      "- Format: Team discussion / sync",
+      "- Related standup schedule: [[aurora/standup]]"
+     ],
+     "@overlay/aurora/sprint-deadline (inactive)": [
+      "- Related team syncs: [[aurora/team-meeting]] and [[aurora/standup]]"
+     ],
+     "@overlay/aurora/sprint-deadline-2025-05-23 (inactive)": [
+      "- Related team syncs: [[aurora/team-meeting]] and [[aurora/standup]]"
+     ],
+     "@overlay/aurora/sprint-deadline-2025-06-06": [
+      "- Related team syncs: [[aurora/team-meeting]] and [[aurora/standup]]"
+     ]
+    },
+    "verdict": "matching error",
+    "note": "stated in other words (annotation format, word order, units)"
+   },
+   {
+    "id": "meme-nofiller/sw_026/3#11",
+    "dir": "meme-nofiller__sw_026",
+    "point": 3,
+    "category": "plain",
+    "value": "outofmemoryerror: java heap space. gc overhead limit exceeded after 8 consecutive failed collections in pool 'ps old gen'. heap dump written to /var/log/aurora/heap-2024-05-08.hprof at 18:42:11z. recommend increasing -xmx beyond 4g or investigating memory leak in orderprocessor",
+    "entity": "error_log",
+    "anchors": [],
+    "near": {
+     "@overlay/ops/oom-error": [
+      "Error Log: OrderProcessor OutOfMemoryError Java Heap Space",
+      "OutOfMemoryError",
+      "Java heap space",
+      "OrderProcessor memory leak"
+     ],
+     "@overlay/ops/runbook": [
+      "Incident Runbook: notion.so/aurora-team/incidents",
+      "notion.so/aurora-team/incidents",
+      "aurora incident runbook",
+      "The team's incident runbook is hosted at notion.so/aurora-team/incidents to keep operational procedures in check."
+     ],
+     "@overlay/project/documentation": [
+      "Project Documentation Site: docs.aurora.internal/wiki",
+      "docs.aurora.internal/wiki",
+      "aurora wiki",
+      "Centralized project documentation is hosted at docs.aurora.internal/wiki for team alignment and onboarding."
+     ]
+    },
+    "verdict": "matching error",
+    "note": "verbatim text kept with escaped line breaks or split across bullets (every word present, in order)"
+   },
+   {
+    "id": "meme-nofiller/sw_049/3#7",
+    "dir": "meme-nofiller__sw_049",
+    "point": 3,
+    "category": "plain",
+    "value": "certificateverificationerror: certificate chain validation failed for crysthene-db-primary.internal. subject cn does not match expected hostname; chain depth 2 unverified. observed at 2024-07-22t11:09:47z by tls_handshake_listener. rotate the cert via cryptara vault and restart the connection pool to recover",
+    "entity": "error_log",
+    "anchors": [],
+    "near": {
+     "@overlay/ops/crysthene-db-cert-error": [
+      "Certificate Verification Error: crysthene-db-primary.internal",
+      "CertificateVerificationError",
+      "crysthene-db-primary.internal",
+      "crysthene db cert error"
+     ],
+     "@overlay/ops/incident-runbook": [
+      "internal runbooks",
+      "The team's incident runbook is hosted at docs.aurora.internal/runbooks for incident handling.",
+      "- The incident runbook is hosted at docs.aurora.internal/runbooks."
+     ],
+     "@overlay/project/onboarding-guide": [
+      "internal onboarding",
+      "docs.aurora.internal/onboarding",
+      "The Aurora team onboarding guide is located at docs.aurora.internal/onboarding to help new team members get up to speed.",
+      "- The team's onboarding guide is located at docs.aurora.internal/onboarding."
+     ]
+    },
+    "verdict": "matching error",
+    "note": "verbatim text kept with escaped line breaks or split across bullets (every word present, in order)"
+   },
+   {
+    "id": "meme-nofiller/sw_006/3#5",
+    "dir": "meme-nofiller__sw_006",
+    "point": "end",
+    "category": "plain",
+    "value": "segmentationfault at 0x00007fff5a3b2c40 in vorathis_query_planner.so. backtrace: frame 0 query_optimize, frame 1 plan_join, frame 2 execute_select. core dump saved to /var/crash/core.aurora.18923 on 2024-06-12t03:55:09z. last known good build was commit 7a4f9e2; bisect against recent migrations",
+    "entity": "error_log",
+    "anchors": [],
+    "near": {
+     "@overlay/tech/vorathis-query-planner-error": [
+      "Error Log - vorathis_query_planner.so SegmentationFault",
+      "vorathis error log",
+      "vorathis_query_planner.so",
+      "SegmentationFault at 0x00007fff5a3b2c40"
+     ],
+     "@overlay/team/channel": [
+      "Team Communication Channel - #aurora-dev",
+      "#aurora-dev",
+      "aurora-dev",
+      "The team uses #aurora-dev as their primary channel for all development discussions."
+     ],
+     "@overlay/team/incident-runbook": [
+      "Incident Runbook - wiki.aurora.dev/incident-response",
+      "wiki.aurora.dev/incident-response",
+      "aurora runbook",
+      "The team's incident runbook is hosted at wiki.aurora.dev/incident-response to guide handling of production incidents."
+     ],
+     "@overlay/team/onboarding": [
+      "Onboarding Guide - notion.so/aurora-team/new-hire",
+      "notion.so/aurora-team/new-hire",
+      "aurora onboarding",
+      "The team onboarding guide is located at notion.so/aurora-team/new-hire."
+     ],
+     "@overlay/team/standup": [
+      "- Standup updates are structured around three main points: accomplishments since last update, next tasks, and any blockers."
+     ]
+    },
+    "verdict": "matching error",
+    "note": "verbatim text kept with escaped line breaks or split across bullets (every word present, in order)"
+   },
+   {
+    "id": "meme-nofiller/sw_034/3#9",
+    "dir": "meme-nofiller__sw_034",
+    "point": "end",
+    "category": "plain",
+    "value": "deadlockdetected: transactions 4821 and 4823 are deadlocked on table aurora_orders. query 1 was update orders set status = 'shipped' where region = 'us-east'. query 2 was delete from orders where created_at < now() - interval '30 days'. first seen at 2024-08-04t22:33:18z; recommend serializable isolation review",
+    "entity": "error_log",
+    "anchors": [],
+    "near": {
+     "@overlay/ops/aurora-orders-deadlock": [
+      "Aurora Orders Table Deadlock Error Log",
+      "DeadlockDetected error log",
+      "aurora_orders deadlock",
+      "transaction 4821 4823 deadlock"
+     ],
+     "@overlay/dev/build-tool": [
+      "- Build tool operations and packaging are managed through Pyronis Build."
+     ],
+     "@overlay/dev/code-review": [
+      "Code Review Policy for auth/ Directory",
+      "code review policy",
+      "PR review policy",
+      "auth review policy"
+     ],
+     "@overlay/ops/on-call-rotation": [
+      "- Handoffs and clear communication plans ensure both members are aligned on responsibilities."
+     ],
+     "@overlay/ops/production-alerts": [
+      "Production alerts are sent to the #zenith-incidents channel for monitoring and incident tracking.",
+      "- Production alerts are routed to the `#zenith-incidents` channel as of March 2023."
+     ],
+     "@overlay/tech-stack/synthari-framework": [
+      "- Core development and project features are built using the Synthari framework."
+     ]
+    },
+    "verdict": "matching error",
+    "note": "verbatim text kept with escaped line breaks or split across bullets (every word present, in order)"
+   },
+   {
+    "id": "meme-nofiller/pl_007/3#1",
+    "dir": "meme-nofiller__pl_007",
+    "point": 3,
+    "category": "dependent",
+    "value": "dermatologist (monthly)",
+    "entity": "regular_appointment",
+    "anchors": [],
+    "near": {
+     "@overlay/health/regular-appointment-dermatologist": [
+      "Regular Dermatologist Appointment",
+      "dermatologist appointment",
+      "monthly dermatologist",
+      "regular appointment"
+     ],
+     "@overlay/entertainment/book-xelvari-dawn": [
+      "- Reading Xelvari Dawn is part of the user's monthly reading for their [[social/monthly-book-club]]."
+     ],
+     "@overlay/health/contingent-therapy-appointment": [
+      "Contingent Weekly Therapy Appointment Upon Relocation",
+      "therapy appointment",
+      "future therapy appointment",
+      "counseling appointment"
+     ],
+     "@overlay/social/monthly-book-club": [
+      "Monthly Book Club",
+      "monthly book club",
+      "monthly reading meetup"
+     ],
+     "@overlay/social/wednesday-trivia-night": [
+      "The user's regular social meetup is trivia night on Wednesdays, which they enjoy for unwinding and testing knowledge as of March 2023.",
+      "- On 2023-03-01, the user shared that their regular social meetup is trivia night on Wednesdays."
+     ]
+    },
+    "verdict": "matching error",
+    "note": "stated in other words (annotation format, word order, units)"
+   },
+   {
+    "id": "meme-nofiller/pl_041/4#3",
+    "dir": "meme-nofiller__pl_041",
+    "point": "end",
+    "category": "plain",
+    "value": "thyrelion (anime)",
+    "entity": "media_consumption",
+    "anchors": [],
+    "near": {
+     "@overlay/media/current-media": [
+      "Current Media: Thyrelion",
+      "Thyrelion",
+      "anime",
+      "current media"
+     ]
+    },
+    "verdict": "matching error",
+    "note": "stated in other words (annotation format, word order, units)"
+   },
+   {
+    "id": "meme-nofiller/sw_036/3#11",
+    "dir": "meme-nofiller__sw_036",
+    "point": "end",
+    "category": "plain",
+    "value": "segmentationfault at 0x00007fff5a3b2c40 in vorathis_query_planner.so. backtrace: frame 0 query_optimize, frame 1 plan_join, frame 2 execute_select. core dump saved to /var/crash/core.aurora.18923 on 2024-06-12t03:55:09z. last known good build was commit 7a4f9e2; bisect against recent migrations",
+    "entity": "error_log",
+    "anchors": [],
+    "near": {
+     "@overlay/team/query-planner-segfault": [
+      "Segmentation fault error log in vorathis_query_planner.so",
+      "vorathis_query_planner.so crash",
+      "core.aurora.18923",
+      "commit 7a4f9e2"
+     ],
+     "@overlay/team/logging-drain": [
+      "Team log drain destination stream.velturis.io/aurora",
+      "log drain",
+      "stream velturis aurora",
+      "velturis aurora"
+     ],
+     "@overlay/team/changelog": [
+      "Team changelog notion.so/aurora-team/releases",
+      "notion.so/aurora-team/releases",
+      "aurora-team releases",
+      "The changelog is hosted at notion.so/aurora-team/releases for tracking updates and changes."
+     ],
+     "@overlay/team/ci-config": [
+      "orinthal-build.yml",
+      "The CI config is thandrel-flow.toml, determined by deploying on Narvex Cloud; if deploy targets change, it will be orinthal-build.yml.",
+      "- If the team changes deploy targets, the CI config will be orinthal-build.yml."
+     ],
+     "@overlay/team/docker-image": [
+      "Team Docker image narvex-registry/aurora:latest",
+      "narvex-registry/aurora:latest",
+      "aurora container image",
+      "korinth-repo/aurora:stable"
+     ],
+     "@overlay/team/dockerfile-path": [
+      "aurora Dockerfile",
+      "The Dockerfile is at infra/narvex/Dockerfile, determined by the Docker image narvex-registry/aurora:latest; if the image changes, this would change.",
+      "- The Dockerfile path is determined by the fact that the Docker image is [[team/docker-image|narvex-registry/aurora:latest]]; if that changes, this would change."
+     ],
+     "@overlay/team/incident-runbook": [
+      "Team incident runbook github.com/aurora-team/runbooks",
+      "github.com/aurora-team/runbooks",
+      "The incident runbook is hosted at github.com/aurora-team/runbooks and used by the team during outages.",
+      "- The team's incident runbook is hosted at github.com/aurora-team/runbooks."
+     ],
+     "@overlay/team/monitoring-dashboard": [
+      "Team monitoring dashboard metrics.thandrel.io/aurora-prod",
+      "metrics.thandrel.io/aurora-prod",
+      "The monitoring dashboard is located at metrics.thandrel.io/aurora-prod for tracking system performance and alerts.",
+      "- The team's monitoring dashboard is hosted at metrics.thandrel.io/aurora-prod."
+     ],
+     "@overlay/team/onboarding-guide": [
+      "Team onboarding guide docs.aurora.internal/onboarding",
+      "docs.aurora.internal/onboarding",
+      "aurora onboarding",
+      "The team onboarding guide is located at docs.aurora.internal/onboarding."
+     ],
+     "@overlay/team/sprint-deadline": [
+      "aurora sprint deadline"
+     ]
+    },
+    "verdict": "matching error",
+    "note": "verbatim text kept with escaped line breaks or split across bullets (every word present, in order)"
+   },
+   {
+    "id": "meme-nofiller/sw_035/2#7",
+    "dir": "meme-nofiller__sw_035",
+    "point": "end",
+    "category": "plain",
+    "value": "monday/thursday sync, async rest",
+    "entity": "standup_format",
+    "anchors": [],
+    "near": {
+     "@overlay/project/standup-format": [
+      "Team Standup Format",
+      "standup format",
+      "standup schedule",
+      "sync standup"
+     ],
+     "@overlay/project/team-meeting": [
+      "Monday 11am meeting",
+      "team sync",
+      "The team meeting takes place every Monday at 11am.",
+      "- Team meeting is held every Monday at 11am."
+     ]
+    },
+    "verdict": "matching error",
+    "note": "stated in other words (annotation format, word order, units)"
+   },
+   {
+    "id": "meme-nofiller/sw_019/3#15",
+    "dir": "meme-nofiller__sw_019",
+    "point": "end",
+    "category": "rule",
+    "value": "deleted",
+    "entity": "ci_config",
+    "anchors": [],
+    "near": {
+     "@overlay/tech-stack/deploy-command (inactive)": [
+      "The deploy command is korinth release --prod; if CI config changes, the deploy command will be zephyra push --target prod.",
+      "- Determined by the CI configuration being orinthal-build.yml (see [[tech-stack/ci-config]]).",
+      "- If the CI config changes, the deploy command will be zephyra push --target prod."
+     ],
+     "@overlay/tech-stack/deploy-command-zephyra": [
+      "The deploy command is zephyra push --target prod following the CI config change.",
+      "- Triggered by CI config change and removal (supersedes [[tech-stack/deploy-command]])."
+     ]
+    },
+    "verdict": "matching error",
+    "note": "stated in other words (annotation format, word order, units)"
+   },
+   {
+    "id": "meme-nofiller/sw_047/4#3",
+    "dir": "meme-nofiller__sw_047",
+    "point": "end",
+    "category": "plain",
+    "value": "onboarding.md in repo root",
+    "entity": "onboarding_guide",
+    "anchors": [],
+    "near": {
+     "@overlay/workflow/onboarding-guide": [
+      "Onboarding Guide Location: ONBOARDING.md",
+      "ONBOARDING.md",
+      "onboarding guide",
+      "onboarding documentation"
+     ]
+    },
+    "verdict": "matching error",
+    "note": "stated in other words (annotation format, word order, units)"
+   },
+   {
+    "id": "meme-nofiller/pl_020/3#1",
+    "dir": "meme-nofiller__pl_020",
+    "point": 3,
+    "category": "dependent",
+    "value": "dentist (every 6 months)",
+    "entity": "regular_appointment",
+    "anchors": [],
+    "near": {
+     "@overlay/health/dentist-appointments": [
+      "Regular Dental Appointments",
+      "dentist appointments",
+      "regular dentist appointment",
+      "dentist every 6 months"
+     ]
+    },
+    "verdict": "matching error",
+    "note": "stated in other words (annotation format, word order, units)"
+   },
+   {
+    "id": "meme-nofiller/sw_025/3#5",
+    "dir": "meme-nofiller__sw_025",
+    "point": 3,
+    "category": "plain",
+    "value": "certificateverificationerror: certificate chain validation failed for crysthene-db-primary.internal. subject cn does not match expected hostname; chain depth 2 unverified. observed at 2024-07-22t11:09:47z by tls_handshake_listener. rotate the cert via cryptara vault and restart the connection pool to recover",
+    "entity": "error_log",
+    "anchors": [],
+    "near": {
+     "@overlay/security/crysthene-db-cert-error": [
+      "Error Log: CertificateVerificationError for crysthene-db-primary.internal",
+      "CertificateVerificationError",
+      "crysthene db error",
+      "crysthene-db-primary cert error"
+     ],
+     "@overlay/development/default-branch": [
+      "primary branch"
+     ]
+    },
+    "verdict": "matching error",
+    "note": "verbatim text kept with escaped line breaks or split across bullets (every word present, in order)"
+   },
+   {
+    "id": "meme-nofiller/sw_019/3#13",
+    "dir": "meme-nofiller__sw_019",
+    "point": "end",
+    "category": "plain",
+    "value": "panicexception: thread 'tokio-runtime-worker' panicked at 'index out of bounds: the len is 0 but the index is 5', src/handlers/auth.rs:142:23. stack trace shows recursive call in middleware_chain to request_validator to token_parser. restart triggered automatic failover at 2024-04-02t14:18:33z",
+    "entity": "error_log",
+    "anchors": [],
+    "near": {
+     "@overlay/incidents/auth-panic-error": [
+      "Error Log: PanicException in src/handlers/auth.rs",
+      "PanicException auth.rs",
+      "tokio-runtime-worker panic",
+      "index out of bounds auth.rs"
+     ],
+     "@overlay/tech-stack/deploy-command-zephyra": [
+      "- Triggered by CI config change and removal (supersedes [[tech-stack/deploy-command]]).",
+      "- Associated with deployment on Zephyra Platform (see [[tech-stack/zephyra-platform]])."
+     ],
+     "@overlay/tech-stack/log-drain (inactive)": [
+      "[INACTIVE] Log Drain: drain.zephyra.io/proj-42",
+      "log drain",
+      "log target",
+      "- Determined by deployment infrastructure on Narvex Cloud (see [[tech-stack/narvex-cloud]])."
+     ],
+     "@overlay/tech-stack/log-drain-korinth": [
+      "Log Drain: logs.korinth.dev/aurora",
+      "log drain",
+      "log target",
+      "- Determined by deployment target moving to Zephyra Platform (see [[tech-stack/zephyra-platform]])."
+     ],
+     "@overlay/team/incident-runbook": [
+      "- Used in incident response alongside the alerts channel (see [[team/production-alerts]]) and on-call rotation (see [[team/on-call-rotation]])."
+     ],
+     "@overlay/team/on-call-rotation": [
+      "Team On-Call Rotation and Weekly Signup",
+      "on-call rotation",
+      "on-call duties",
+      "volunteer on-call"
+     ],
+     "@overlay/team/production-alerts": [
+      "- Ties into team incident response and on-call monitoring (see [[team/on-call-rotation]])."
+     ],
+     "@overlay/team/release-schedule": [
+      "- Releases are deployed to Narvex Cloud (see [[tech-stack/narvex-cloud]])."
+     ],
+     "@overlay/tech-stack/deploy-command (inactive)": [
+      "- Determined by the CI configuration being orinthal-build.yml (see [[tech-stack/ci-config]])."
+     ],
+     "@overlay/tech-stack/docker-image": [
+      "- Deployed to Narvex Cloud infrastructure (see [[tech-stack/narvex-cloud]]).",
+      "- Determines the Dockerfile location (see [[tech-stack/dockerfile]])."
+     ]
+    },
+    "verdict": "matching error",
+    "note": "verbatim text kept with escaped line breaks or split across bullets (every word present, in order)"
+   },
+   {
+    "id": "meme-nofiller/sw_038/2#7",
+    "dir": "meme-nofiller__sw_038",
+    "point": "end",
+    "category": "plain",
+    "value": "async written updates in slack",
+    "entity": "standup_format",
+    "anchors": [],
+    "near": {
+     "@overlay/operations/standup-format": [
+      "Team Standup Format: Async Slack Updates",
+      "standup format",
+      "standup",
+      "async standup"
+     ],
+     "@overlay/project/changelog": [
+      "The project changelog is hosted at docs.aurora.internal/changelog to keep track of updates and changes.",
+      "- The changelog serves as a handy location to track all updates, modifications, and changes made to the project."
+     ]
+    },
+    "verdict": "matching error",
+    "note": "stated in other words (annotation format, word order, units)"
+   },
+   {
+    "id": "meme-nofiller/sw_018/3#9",
+    "dir": "meme-nofiller__sw_018",
+    "point": 3,
+    "category": "plain",
+    "value": "outofmemoryerror: java heap space. gc overhead limit exceeded after 8 consecutive failed collections in pool 'ps old gen'. heap dump written to /var/log/aurora/heap-2024-05-08.hprof at 18:42:11z. recommend increasing -xmx beyond 4g or investigating memory leak in orderprocessor",
+    "entity": "error_log",
+    "anchors": [],
+    "near": {
+     "@overlay/incidents/order-processor-oom-error": [
+      "Error Log: OutOfMemoryError in OrderProcessor",
+      "OutOfMemoryError",
+      "Java heap space error",
+      "OrderProcessor OOM"
+     ],
+     "@overlay/process/changelog": [
+      "Aurora Team Release Changelog",
+      "notion.so/aurora-team/releases",
+      "aurora releases",
+      "The team's release changelog is located at notion.so/aurora-team/releases."
+     ],
+     "@overlay/process/incident-runbook": [
+      "Incident Runbook: wiki.aurora.dev/incident-response",
+      "wiki.aurora.dev/incident-response",
+      "The team's incident runbook is located at wiki.aurora.dev/incident-response for troubleshooting and managing incidents.",
+      "- The team's incident runbook is hosted at wiki.aurora.dev/incident-response."
+     ],
+     "@overlay/process/production-alerts": [
+      "Production Alerts Channel: #aurora-pager",
+      "#aurora-pager",
+      "aurora pager",
+      "The team's production alerts are sent to the #aurora-pager channel for rapid issue detection."
+     ],
+     "@overlay/process/standup": [
+      "- The asynchronous text format was adopted to keep the team updated without the pressure or scheduling overhead of a live meeting."
+     ],
+     "@overlay/tooling/database-connection-string": [
+      "crysthene://replica-db:5432/aurora-ro",
+      "vorathis://cluster-main:27017/aurora",
+      "The database connection string is crysthene://replica-db:5432/aurora-ro, and will change to vorathis://cluster-main:27017/aurora if the database changes.",
+      "- The database connection string is `crysthene://replica-db:5432/aurora-ro`."
+     ]
+    },
+    "verdict": "matching error",
+    "note": "verbatim text kept with escaped line breaks or split across bullets (every word present, in order)"
+   },
+   {
+    "id": "meme-nofiller/sw_020/3#11",
+    "dir": "meme-nofiller__sw_020",
+    "point": "end",
+    "category": "plain",
+    "value": "deadlockdetected: transactions 4821 and 4823 are deadlocked on table aurora_orders. query 1 was update orders set status = 'shipped' where region = 'us-east'. query 2 was delete from orders where created_at < now() - interval '30 days'. first seen at 2024-08-04t22:33:18z; recommend serializable isolation review",
+    "entity": "error_log",
+    "anchors": [],
+    "near": {
+     "@overlay/aurora/deadlock-error-log": [
+      "Aurora Orders Table Deadlock Error Log",
+      "DeadlockDetected",
+      "aurora_orders deadlock",
+      "orders deadlock error"
+     ],
+     "@overlay/aurora/deployment": [
+      "- Project docs are located at [[aurora/docs]]."
+     ],
+     "@overlay/aurora/logging": [
+      "Aurora Centralized Logging and Log Drain",
+      "log drain",
+      "- Centralized log management is used for tracking issues and monitoring system performance."
+     ],
+     "@overlay/aurora/standup": [
+      "- Standup updates are structured as text posts to ensure accountability and smooth communication."
+     ],
+     "@overlay/aurora/test-coverage": [
+      "- Testing standards and coverage adequacy are evaluated during pull request reviews."
+     ]
+    },
+    "verdict": "matching error",
+    "note": "verbatim text kept with escaped line breaks or split across bullets (every word present, in order)"
+   },
+   {
+    "id": "meme-nofiller/pl_040/0#11",
+    "dir": "meme-nofiller__pl_040",
+    "point": 3,
+    "category": "plain",
+    "value": "whispers of zarinthea (tv)",
+    "entity": "media_consumption",
+    "anchors": [],
+    "near": {
+     "@overlay/media/whispers-of-zarinthea": [
+      "Whispers of Zarinthea TV show",
+      "Whispers of Zarinthea",
+      "current media",
+      "The user's current TV show is Whispers of Zarinthea, which they find interesting."
+     ]
+    },
+    "verdict": "matching error",
+    "note": "stated in other words (annotation format, word order, units)"
+   },
+   {
+    "id": "meme-nofiller/sw_039/3#13",
+    "dir": "meme-nofiller__sw_039",
+    "point": "end",
+    "category": "plain",
+    "value": "panicexception: thread 'tokio-runtime-worker' panicked at 'index out of bounds: the len is 0 but the index is 5', src/handlers/auth.rs:142:23. stack trace shows recursive call in middleware_chain to request_validator to token_parser. restart triggered automatic failover at 2024-04-02t14:18:33z",
+    "entity": "error_log",
+    "anchors": [],
+    "near": {
+     "@overlay/tech-stack/auth-panic-error": [
+      "Error Log: Tokio Worker PanicException in auth.rs",
+      "PanicException",
+      "tokio-runtime-worker panic",
+      "src/handlers/auth.rs:142:23"
+     ],
+     "@overlay/tech-stack/log-drain": [
+      "Log Drain Destination: logs.korinth.dev/aurora",
+      "log drain",
+      "log drain URL",
+      "- The log drain destination is determined by the infrastructure (deployed on [[tech-stack/cloud-infrastructure]])."
+     ],
+     "@overlay/project/code-review": [
+      "- Complements testing and quality standards tracked in [[tech-stack/test-coverage]]."
+     ],
+     "@overlay/project/documentation": [
+      "- Can be used to house runbooks and incident response procedures alongside [[project/on-call-rotation]] and [[project/communication-channel]]."
+     ],
+     "@overlay/project/on-call-rotation": [
+      "On-Call Rotation: Volunteer-Based Weekly Signup",
+      "on-call rotation",
+      "volunteer on-call",
+      "weekly on-call signup"
+     ],
+     "@overlay/project/production-alerts": [
+      "on-call alerts",
+      "- Works in conjunction with the team's on-call rotation ([[project/on-call-rotation]]) to ensure on-call members are alerted to issues."
+     ],
+     "@overlay/tech-stack/ci-config": [
+      "- The CI configuration is determined by the infrastructure (deployed on [[tech-stack/cloud-infrastructure]]); if that changes, this would change."
+     ],
+     "@overlay/tech-stack/cloud-infrastructure-korinth-hosting": [
+      "- Supersedes earlier deployment infrastructure on Thandrel Infra ([[tech-stack/cloud-infrastructure]])."
+     ],
+     "@overlay/tech-stack/deploy-command": [
+      "- The deploy command is determined by the CI configuration being [[tech-stack/ci-config]] (orinthal-build.yml); if CI changes, this would change."
+     ],
+     "@overlay/tech-stack/design-system": [
+      "- Mentioned on 2023-03-01 during project tech stack discussion."
+     ]
+    },
+    "verdict": "matching error",
+    "note": "verbatim text kept with escaped line breaks or split across bullets (every word present, in order)"
+   },
+   {
+    "id": "meme-nofiller/pl_036/3#7",
+    "dir": "meme-nofiller__pl_036",
+    "point": "end",
+    "category": "rule",
+    "value": "10 min",
+    "entity": "commute_duration",
+    "anchors": [],
+    "near": {
+     "@overlay/user/transportation/commute-duration": [
+      "Commute Duration from Thornvale Crossing",
+      "commute duration",
+      "commute time",
+      "30 min commute"
+     ],
+     "@overlay/user/fitness/running": [
+      "- Running forms a core part of the user's active lifestyle alongside cycling ([[user/transportation/commute]])."
+     ],
+     "@overlay/user/food/meal-kit": [
+      "- The meal kit service helps the user navigate a busy schedule and balance work with hobbies like biking ([[user/transportation/commute]]) and art ([[user/hobbies/art]])."
+     ],
+     "@overlay/user/hobbies/art": [
+      "- The user balances work and hobbies like art and biking ([[user/transportation/commute]])."
+     ],
+     "@overlay/user/transportation/commute": [
+      "Work Commute by Bike",
+      "bike commute",
+      "commute",
+      "- The user takes a bicycle to work for their daily commute (stated 2023/03/01)."
+     ]
+    },
+    "verdict": "matching error",
+    "note": "stated in other words (annotation format, word order, units)"
+   },
+   {
+    "id": "meme-nofiller/pl_019/2#5",
+    "dir": "meme-nofiller__pl_019",
+    "point": "end",
+    "category": "plain",
+    "value": "thyrelion (anime)",
+    "entity": "media_consumption",
+    "anchors": [],
+    "near": {
+     "@overlay/media/anime/thyrelion": [
+      "Current Media: Thyrelion Anime",
+      "Thyrelion",
+      "Thyrelion anime",
+      "current media"
+     ],
+     "@overlay/media/video-games": [
+      "- Reflects user's interest in interactive entertainment alongside [[media/anime/thyrelion]] and [[media/podcasts/daily-news]]."
+     ],
+     "@overlay/media/books/quorath-codex (inactive)": [
+      "User's current reading media as of March 2023 is \"The Quorath Codex\".",
+      "- Current media is the book titled \"The Quorath Codex\" as of 2023-03-01."
+     ]
+    },
+    "verdict": "matching error",
+    "note": "stated in other words (annotation format, word order, units)"
+   },
+   {
+    "id": "meme-nofiller/sw_007/4#7",
+    "dir": "meme-nofiller__sw_007",
+    "point": "end",
+    "category": "plain",
+    "value": "changelog.md in repo root",
+    "entity": "changelog_location",
+    "anchors": [],
+    "near": {
+     "@overlay/ops/changelog": [
+      "Project Changelog Location",
+      "changelog",
+      "CHANGELOG.md",
+      "repo changelog"
+     ],
+     "@overlay/ops/incident-runbook": [
+      "Incident Runbook Location"
+     ]
+    },
+    "verdict": "matching error",
+    "note": "stated in other words (annotation format, word order, units)"
+   },
+   {
+    "id": "meme-nofiller/sw_012/3#7",
+    "dir": "meme-nofiller__sw_012",
+    "point": "end",
+    "category": "plain",
+    "value": "deadlockdetected: transactions 4821 and 4823 are deadlocked on table aurora_orders. query 1 was update orders set status = 'shipped' where region = 'us-east'. query 2 was delete from orders where created_at < now() - interval '30 days'. first seen at 2024-08-04t22:33:18z; recommend serializable isolation review",
+    "entity": "error_log",
+    "anchors": [],
+    "near": {
+     "@overlay/database/deadlock-error": [
+      "Aurora Orders Table Deadlock Error Log",
+      "aurora_orders deadlock",
+      "DeadlockDetected error log",
+      "transactions 4821 and 4823 deadlock"
+     ],
+     "@overlay/process/standup": [
+      "- Standup updates are conducted asynchronously to keep everyone in the loop without needing to coordinate meeting schedules.",
+      "- Team members post their daily status and progress updates directly in Slack."
+     ],
+     "@overlay/project/changelog": [
+      "- Team members and users refer to the GitHub Releases page to review release notes and changes.",
+      "- Release updates and new features are documented on GitHub Releases."
+     ],
+     "@overlay/database/backup-schedule": [
+      "- Backups are performed on the schedule of 2:00 UTC and 14:00 UTC every day."
+     ],
+     "@overlay/database/keldaris (inactive)": [
+      "- Database migration tools and practices are managed to support schema evolutions in Keldaris DB."
+     ],
+     "@overlay/database/migrations": [
+      "- Schema changes and database structure updates are applied using Zyndra Alter."
+     ],
+     "@overlay/database/model-syntax": [
+      "Models are defined with Pyravar.entity('Model', attrs), determined by the use of Pyravar Mapper.",
+      "- Database models are defined with Pyravar.entity('Model', attrs) (reported March 2023)."
+     ],
+     "@overlay/database/orm": [
+      "- Model definitions and database queries in the application are built around Pyravar Mapper."
+     ],
+     "@overlay/database/thalnex-store": [
+      "- Data migration and performance tuning are critical considerations following the switch to Thalnex Store."
+     ],
+     "@overlay/process/code-review": [
+      "Team Code Review Approval Policy",
+      "code review policy",
+      "peer review policy",
+      "code review approval"
+     ]
+    },
+    "verdict": "matching error",
+    "note": "verbatim text kept with escaped line breaks or split across bullets (every word present, in order)"
+   },
+   {
+    "id": "meme-nofiller/sw_023/0#1",
+    "dir": "meme-nofiller__sw_023",
+    "point": "end",
+    "category": "plain",
+    "value": "paired oncall (primary + secondary)",
+    "entity": "oncall_rotation",
+    "anchors": [],
+    "near": {
+     "@overlay/team/on-call-rotation": [
+      "Team On-Call Rotation Setup",
+      "paired oncall",
+      "on-call rotation",
+      "primary secondary oncall"
+     ],
+     "@overlay/team/escalation-contact": [
+      "- Kevin Park is the primary contact person for escalations.",
+      "- Escalations interface with incident response alongside [[ops/incident-runbook]], [[ops/production-alerts]], and [[team/on-call-rotation]]."
+     ],
+     "@overlay/ops/certificate-verification-error": [
+      "Error Log: CertificateVerificationError on crysthene-db-primary.internal",
+      "crysthene-db-primary.internal",
+      "CertificateVerificationError on crysthene-db-primary.internal observed at 2024-07-22T11:09:47Z; recover by rotating cert via Cryptara Vault and restarting connection pool.",
+      "- Exact error log: \"CertificateVerificationError: certificate chain validation failed for crysthene-db-primary.internal. Subject CN does not match expected hostname; chain depth 2 unverified. Observed at 2024-07-22T11:09:47Z by tls_handshake_listener. Rotate the cert via Cryptara Vault and restart t"
+     ],
+     "@overlay/ops/incident-runbook": [
+      "- Incident runbooks coordinate with alerts received in [[ops/production-alerts]] and the team's [[team/on-call-rotation]]."
+     ],
+     "@overlay/ops/production-alerts": [
+      "- Critical issues caught in #aurora-alerts connect with the team's incident handling and [[team/on-call-rotation]]."
+     ],
+     "@overlay/team/approval-authority-contingency (inactive)": [
+      "- This rule serves as an if-then contingency policy extending the primary approval authority assignment [[team/approval-authority]]."
+     ]
+    },
+    "verdict": "matching error",
+    "note": "stated in other words (annotation format, word order, units)"
+   },
+   {
+    "id": "meme-nofiller/sw_015/3#13",
+    "dir": "meme-nofiller__sw_015",
+    "point": 3,
+    "category": "plain",
+    "value": "segmentationfault at 0x00007fff5a3b2c40 in vorathis_query_planner.so. backtrace: frame 0 query_optimize, frame 1 plan_join, frame 2 execute_select. core dump saved to /var/crash/core.aurora.18923 on 2024-06-12t03:55:09z. last known good build was commit 7a4f9e2; bisect against recent migrations",
+    "entity": "error_log",
+    "anchors": [],
+    "near": {
+     "@overlay/tech/error-log-vorathis-query-planner": [
+      "Segmentation fault in vorathis_query_planner.so error log",
+      "vorathis_query_planner.so error",
+      "core.aurora.18923",
+      "0x00007fff5a3b2c40 segfault"
+     ],
+     "@overlay/tech/dockerfile": [
+      "aurora Dockerfile",
+      "The Dockerfile is at deploy/Dockerfile.orinthal, determined by the Docker image orinthal-registry/aurora:deploy; if the image changes, this would change.",
+      "- Purpose: Docker build file for building the Aurora application container.",
+      "- Image dependency: determined by the team Docker image orinthal-registry/aurora:deploy ([[tech/docker-image]])."
+     ],
+     "@overlay/tech/log-drain": [
+      "Log drain endpoint stream.velturis.io/aurora",
+      "stream.velturis.io/aurora",
+      "log drain",
+      "aurora log drain"
+     ],
+     "@overlay/tech/build-tool": [
+      "Team build tool Pyronis Build",
+      "Pyronis Build",
+      "team build tool",
+      "build tool"
+     ],
+     "@overlay/tech/docker-image": [
+      "Team Docker image orinthal-registry/aurora:deploy",
+      "orinthal-registry/aurora:deploy",
+      "aurora deploy image",
+      "The team's Docker image is orinthal-registry/aurora:deploy, used to maintain a consistent environment across all stages."
+     ],
+     "@overlay/tech/incident-runbook": [
+      "Incident runbook wiki.aurora.dev/incident-response",
+      "wiki.aurora.dev/incident-response",
+      "The incident runbook is at wiki.aurora.dev/incident-response, containing detailed procedures for handling various incidents.",
+      "- Incident runbook location: wiki.aurora.dev/incident-response."
+     ],
+     "@overlay/tech/monitoring-dashboard": [
+      "Monitoring dashboard status.orinthal.dev/aurora",
+      "status.orinthal.dev/aurora",
+      "aurora monitoring",
+      "metrics.thandrel.io/aurora-prod"
+     ],
+     "@overlay/tech/package-manager-dranith-stack": [
+      "- Core purpose: dependency management and package configuration across the project."
+     ],
+     "@overlay/tech/production-alerts": [
+      "Production alerts channel #aurora-pager",
+      "#aurora-pager",
+      "aurora-pager",
+      "aurora pager"
+     ],
+     "@overlay/tech/staging-environment": [
+      "Staging environment preview.zephyra.io/aurora",
+      "preview.zephyra.io/aurora",
+      "aurora staging",
+      "The staging environment is at preview.zephyra.io/aurora, determined by deployment on Zephyra Platform; if infrastructure changes, this would change."
+     ]
+    },
+    "verdict": "matching error",
+    "note": "verbatim text kept with escaped line breaks or split across bullets (every word present, in order)"
+   },
+   {
+    "id": "meme-nofiller/sw_039/2#9",
+    "dir": "meme-nofiller__sw_039",
+    "point": 3,
+    "category": "plain",
+    "value": "volunteer-based with weekly signup",
+    "entity": "oncall_rotation",
+    "anchors": [],
+    "near": {
+     "@overlay/project/on-call-rotation": [
+      "On-Call Rotation: Volunteer-Based Weekly Signup",
+      "on-call rotation",
+      "volunteer on-call",
+      "weekly on-call signup"
+     ]
+    },
+    "verdict": "matching error",
+    "note": "stated in other words (annotation format, word order, units)"
+   },
+   {
+    "id": "meme-nofiller/pl_028/3#17",
+    "dir": "meme-nofiller__pl_028",
+    "point": 3,
+    "category": "rule",
+    "value": "20 min",
+    "entity": "commute_duration",
+    "anchors": [],
+    "near": {
+     "@overlay/transit/commute-duration": [
+      "User Commute Duration: 10 Minutes",
+      "commute duration",
+      "commute time",
+      "10 minute commute"
+     ],
+     "@overlay/transit/work-commute": [
+      "User Commute: Subway and Bus Transfer to Work",
+      "work commute",
+      "subway bus commute",
+      "commute routine"
+     ],
+     "@overlay/work/caeltura-systems": [
+      "- The user commutes to work by subway and bus transfer ([[transit/work-commute]])."
+     ]
+    },
+    "verdict": "matching error",
+    "note": "stated in other words (annotation format, word order, units)"
+   },
+   {
+    "id": "meme-nofiller/sw_035/4#7",
+    "dir": "meme-nofiller__sw_035",
+    "point": "end",
+    "category": "plain",
+    "value": "every monday 11am",
+    "entity": "meeting_day",
+    "anchors": [],
+    "near": {
+     "@overlay/project/team-meeting": [
+      "Team Meeting Schedule",
+      "team meeting",
+      "weekly team meeting",
+      "Monday 11am meeting"
+     ],
+     "@overlay/project/standup-format": [
+      "The team's standup format is Monday and Thursday synchronous, and asynchronous for the rest of the week.",
+      "- The team's standup format is Monday/Thursday synchronous, and asynchronous for the rest of the week."
+     ]
+    },
+    "verdict": "matching error",
+    "note": "stated in other words (annotation format, word order, units)"
+   },
+   {
+    "id": "meme-nofiller/sw_049/3#7",
+    "dir": "meme-nofiller__sw_049",
+    "point": "end",
+    "category": "plain",
+    "value": "certificateverificationerror: certificate chain validation failed for crysthene-db-primary.internal. subject cn does not match expected hostname; chain depth 2 unverified. observed at 2024-07-22t11:09:47z by tls_handshake_listener. rotate the cert via cryptara vault and restart the connection pool to recover",
+    "entity": "error_log",
+    "anchors": [],
+    "near": {
+     "@overlay/ops/crysthene-db-cert-error": [
+      "Certificate Verification Error: crysthene-db-primary.internal",
+      "CertificateVerificationError",
+      "crysthene-db-primary.internal",
+      "crysthene db cert error"
+     ],
+     "@overlay/ops/on-call-rotation": [
+      "- Operational coverage and incident response duties rotate among team members every two weeks.",
+      "- Governs responsibilities for handling operational incidents and service issues like [[ops/crysthene-db-cert-error]]."
+     ],
+     "@overlay/project/onboarding-guide": [
+      "internal onboarding",
+      "docs.aurora.internal/onboarding",
+      "The Aurora team onboarding guide is located at docs.aurora.internal/onboarding to help new team members get up to speed.",
+      "- The team's onboarding guide is located at docs.aurora.internal/onboarding."
+     ]
+    },
+    "verdict": "matching error",
+    "note": "verbatim text kept with escaped line breaks or split across bullets (every word present, in order)"
+   },
+   {
+    "id": "meme-nofiller/sw_025/2#3",
+    "dir": "meme-nofiller__sw_025",
+    "point": "end",
+    "category": "plain",
+    "value": "2025 june 20",
+    "entity": "sprint_deadline",
+    "anchors": [],
+    "near": {
+     "@overlay/project/sprint-deadline-2025-06-06 (inactive)": [
+      "[INACTIVE] Project Sprint Deadline: June 6, 2025",
+      "sprint deadline",
+      "sprint end date",
+      "project deadline"
+     ],
+     "@overlay/project/sprint-deadline-2025-06-20": [
+      "Project Sprint Deadline: June 20, 2025",
+      "sprint deadline",
+      "sprint end date",
+      "project deadline"
+     ],
+     "@overlay/project/sprint-deadline (inactive)": [
+      "[INACTIVE] Project Sprint Deadline: March 28, 2025",
+      "sprint deadline",
+      "sprint end date",
+      "project deadline"
+     ],
+     "@overlay/project/release-cadence": [
+      "Release Cadence: Sprint-End Releases Every 2 Weeks",
+      "sprint release schedule",
+      "sprint-end releases",
+      "The team ships sprint-end releases every 2 weeks to keep iterations fresh and fast."
+     ]
+    },
+    "verdict": "matching error",
+    "note": "stated in other words (annotation format, word order, units)"
+   },
+   {
+    "id": "meme-nofiller/sw_002/3#11",
+    "dir": "meme-nofiller__sw_002",
+    "point": "end",
+    "category": "plain",
+    "value": "segmentationfault at 0x00007fff5a3b2c40 in vorathis_query_planner.so. backtrace: frame 0 query_optimize, frame 1 plan_join, frame 2 execute_select. core dump saved to /var/crash/core.aurora.18923 on 2024-06-12t03:55:09z. last known good build was commit 7a4f9e2; bisect against recent migrations",
+    "entity": "error_log",
+    "anchors": [],
+    "near": {
+     "@overlay/aurora/error-log-vorathis": [
+      "Aurora Error Log - SegmentationFault in vorathis_query_planner.so",
+      "vorathis_query_planner.so crash",
+      "SegmentationFault at 0x00007fff5a3b2c40",
+      "core.aurora.18923"
+     ],
+     "@overlay/aurora/ci-config": [
+      "Aurora CI Config - orinthal-build.yml",
+      "Aurora CI config",
+      "orinthal-build.yml",
+      "Project Aurora's CI config is orinthal-build.yml on Narvex Cloud, and will be korinth-deploy.yaml if deploy targets change."
+     ],
+     "@overlay/aurora/code-review-policy": [
+      "Aurora Code Review Policy - Lead Approval for Core",
+      "core directory reviews",
+      "Aurora code review",
+      "Project Aurora's code review policy requires lead approval for changes to the core/ directory to ensure code quality."
+     ],
+     "@overlay/aurora/deploy-command": [
+      "Aurora Deploy Command - orinthal publish --tier production",
+      "Aurora deploy command",
+      "The deploy command for project Aurora is orinthal publish --tier production, determined by the CI config orinthal-build.yml.",
+      "- The deployment command for project Aurora is orinthal publish --tier production (recorded 2023-03-05)."
+     ],
+     "@overlay/aurora/design-system": [
+      "Aurora Design System - Synthari Elements v1.2",
+      "Aurora design system",
+      "The team uses Synthari Elements v1.2 as their design system for project Aurora.",
+      "- Planning design system updates is balanced against the sprint deadline [[aurora/sprint-deadline]]."
+     ],
+     "@overlay/aurora/dockerfile": [
+      "Aurora Dockerfile - deploy/Dockerfile.korinth",
+      "Aurora Dockerfile",
+      "Docker build file",
+      "The Dockerfile for Aurora is located at deploy/Dockerfile.korinth, and will be at deploy/Dockerfile.zephyra if the Docker image changes."
+     ],
+     "@overlay/aurora/log-drain": [
+      "Aurora Log Drain - stream.velturis.io/aurora",
+      "Aurora log drain",
+      "stream.velturis.io/aurora",
+      "Aurora logging stream"
+     ],
+     "@overlay/aurora/test-coverage": [
+      "Aurora Test Coverage Target - 90% Core Modules",
+      "core modules coverage",
+      "Aurora test coverage",
+      "The team's test coverage target for project Aurora is 90% for core modules to catch issues early."
+     ],
+     "@overlay/aurora/cloud-deployment (inactive)": [
+      "[INACTIVE] Aurora Cloud Deployment - Narvex Cloud",
+      "Aurora cloud deployment",
+      "Project Aurora deploys to Narvex Cloud, selected for its scalability and ease of use.",
+      "- The team deploys project Aurora to Narvex Cloud (recorded 2023-03-03)."
+     ],
+     "@overlay/aurora/cloud-deployment-thandrel": [
+      "Aurora Cloud Deployment - Thandrel Infra",
+      "Aurora cloud deployment",
+      "Project Aurora's deployment moved to Thandrel Infra, with focus on monitoring tools, scaling options, and alerts.",
+      "- Project Aurora's deployment moved to Thandrel Infra (recorded 2023-03-05), replacing the previous deployment on Narvex Cloud."
+     ]
+    },
+    "verdict": "matching error",
+    "note": "verbatim text kept with escaped line breaks or split across bullets (every word present, in order)"
+   }
+  ]
+ }
+}

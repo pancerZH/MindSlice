@@ -1,0 +1,48 @@
+{
+ "registered": "2026-11-08T17:10Z",
+ "role": "secondary scoring of the confirmatory run (PLAN.md section 9a); v2 stays the registered primary",
+ "run": "confirm-mab32k",
+ "matcher_v3_files": [
+  "evals/agent/matcher3.py",
+  "evals/agent/rescore3.py",
+  "evals/agent/rescore.py",
+  "evals/agent/plan.py",
+  "evals/agent/judge.py",
+  "evals/agent/score.py",
+  "evals/agent/sessions.py",
+  "evals/external/datasets.py"
+ ],
+ "matcher_v3_digest": "604902208468affb9ca2fc8d386e453024e058b6a2137add8a7f4153e85848a9",
+ "matcher_v2_digest": "228d623eeeb7898b8ab128add51a092a475652591838e328af8b8091c62ff885",
+ "runner_digest": "e1567df5a8969bd21c7dfa292aed0b6f813b2f68f648b1d345e29725939a0b61",
+ "confirm_records_read": false,
+ "lines": [
+  {
+   "id": "G1",
+   "stat": "stale-first, flat minus agent (paired; MemoryAgentBench conflicts)",
+   "line": 0.3
+  },
+  {
+   "id": "G2",
+   "stat": "retired (MemoryAgentBench conflicts)",
+   "line": 0.7
+  },
+  {
+   "id": "G3",
+   "stat": "current@10, agent minus flat (paired; every judged question)",
+   "line": -0.05
+  },
+  {
+   "id": "G4",
+   "stat": "lost (every judged current value; upper bound for confirmed)",
+   "line": 0.05
+  }
+ ],
+ "audit": {
+  "seed": 20261106,
+  "retired_failures": 50,
+  "lost_cases": 50,
+  "unreliable_above": 0.2,
+  "evidence": "the workspace at the judgment point, replayed from the logged writes"
+ }
+}

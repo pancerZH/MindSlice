@@ -1,0 +1,2414 @@
+{
+ "arm": "agent-default@gemini-4-argon-medium",
+ "population": {
+  "retired": 43,
+  "lost": 34
+ },
+ "cases": {
+  "retired": [
+   {
+    "id": "meme-nofiller/sw_034/update/4#1",
+    "dir": "meme-nofiller__sw_034",
+    "update_kind": "root",
+    "session": 4,
+    "stale": [
+     "veltrion"
+    ],
+    "current": [
+     "synthari"
+    ],
+    "anchors": [],
+    "offenders": {
+     "@overlay/project/design-system": [
+      "Team Design System: Veltrion UI Kit v2",
+      "Veltrion UI Kit v2",
+      "The team's design system is Veltrion UI Kit v2.",
+      "- As of 2023-03-01, the team's design system is Veltrion UI Kit v2 for creating consistent UI components.",
+      "- The design system integrates with the team's [[project/framework]] (Veltrion)."
+     ]
+    },
+    "cards_stating_current": [
+     "@overlay/project/build-command",
+     "@overlay/project/build-tool",
+     "@overlay/project/framework",
+     "@overlay/project/test-command",
+     "@overlay/project/testing-tool"
+    ],
+    "verdict": "correct",
+    "note": "corrected after the re-score: the worksheet showed only 3 lines per card; a hidden line names the old value as current"
+   },
+   {
+    "id": "meme-nofiller/pl_014/update/1#7",
+    "dir": "meme-nofiller__pl_014",
+    "update_kind": "tracking",
+    "session": 1,
+    "stale": [
+     "daily journal subscription"
+    ],
+    "current": [
+     "dranthazon"
+    ],
+    "anchors": [],
+    "offenders": {
+     "@overlay/subscriptions/daily-journal": [
+      "Daily Journal Subscription",
+      "Daily Journal subscription",
+      "The user is subscribed to a Daily Journal subscription to track their thoughts and daily activities.",
+      "- The user uses the Daily Journal subscription to keep track of their thoughts and daily activities."
+     ]
+    },
+    "cards_stating_current": [
+     "@overlay/subscriptions/dranthazon"
+    ],
+    "verdict": "correct",
+    "note": ""
+   },
+   {
+    "id": "meme-nofiller/pl_015/update/4#1",
+    "dir": "meme-nofiller__pl_015",
+    "update_kind": "root",
+    "session": 4,
+    "stale": [
+     "single"
+    ],
+    "current": [
+     "married"
+    ],
+    "anchors": [],
+    "offenders": {
+     "@overlay/hobbies/photography": [
+      "- Being single ( see [[user/relationship-status]] ) gives the user freedom to focus on photography without distractions."
+     ]
+    },
+    "cards_stating_current": [
+     "@overlay/user/living-with-sibling",
+     "@overlay/user/relationship-status-married",
+     "@overlay/user/upcoming-concert"
+    ],
+    "verdict": "correct",
+    "note": ""
+   },
+   {
+    "id": "meme-nofiller/pl_019/update/2#5",
+    "dir": "meme-nofiller__pl_019",
+    "update_kind": "tracking",
+    "session": 2,
+    "stale": [
+     "a daily news podcast"
+    ],
+    "current": [
+     "thyrelion (anime)"
+    ],
+    "anchors": [],
+    "offenders": {
+     "@overlay/media/news-podcast": [
+      "As of 2023-03-02, the user listens to a daily news podcast focused on politics and significant global events.",
+      "- As of 2023-03-02, the user listens to a daily news podcast to keep up with current events."
+     ]
+    },
+    "cards_stating_current": [
+     "@overlay/media/current-media"
+    ],
+    "verdict": "correct",
+    "note": ""
+   },
+   {
+    "id": "meme-nofiller/pl_025/update/4#1",
+    "dir": "meme-nofiller__pl_025",
+    "update_kind": "root",
+    "session": 4,
+    "stale": [
+     "quenlix group"
+    ],
+    "current": [
+     "thalwren inc"
+    ],
+    "anchors": [],
+    "offenders": {
+     "@overlay/work/current-project": [
+      "- The user works at [[work/employer]] (Quenlix Group) on a variety of challenging projects."
+     ]
+    },
+    "cards_stating_current": [
+     "@overlay/preferences/favorite-restaurant-thalwren",
+     "@overlay/routine/commute-thalwren",
+     "@overlay/work/company-offsite",
+     "@overlay/work/employer-thalwren",
+     "@overlay/work/job-title-thalwren"
+    ],
+    "verdict": "correct",
+    "note": ""
+   },
+   {
+    "id": "meme-nofiller/pl_006/update/4#1",
+    "dir": "meme-nofiller__pl_006",
+    "update_kind": "root",
+    "session": 4,
+    "stale": [
+     "pre-diabetes"
+    ],
+    "current": [
+     "anxiety disorder"
+    ],
+    "anchors": [],
+    "offenders": {
+     "@overlay/health/gym-kaelstrom-fitness": [
+      "- Previously, when the user's exercise routine was yoga 2x/week (for pre-diabetes), they worked out at Zorathel Peak Gym, with the rule that if their exercise routine changed, they would work out at Kaelstrom Fitness."
+     ]
+    },
+    "cards_stating_current": [
+     "@overlay/health/appointment-physical-therapy",
+     "@overlay/health/condition-anxiety-disorder",
+     "@overlay/health/exercise-routine-cycling",
+     "@overlay/health/medication-dyntheral"
+    ],
+    "verdict": "matching error",
+    "note": "line marks it as past ('Previously...')"
+   },
+   {
+    "id": "meme-nofiller/pl_033/update/4#1",
+    "dir": "meme-nofiller__pl_033",
+    "update_kind": "root",
+    "session": 4,
+    "stale": [
+     "quenlix group"
+    ],
+    "current": [
+     "dranthex logistics"
+    ],
+    "anchors": [],
+    "offenders": {
+     "@overlay/user/job-title": [
+      "- See [[user/workplace]] (Quenlix Group) and [[user/work-hours]] (9-to-5 fixed)."
+     ]
+    },
+    "cards_stating_current": [
+     "@overlay/user/commute-quivira-springs",
+     "@overlay/user/current-project-post-quenlix",
+     "@overlay/user/favorite-restaurant-velmara-taqueria",
+     "@overlay/user/insurance-employer-health-plan",
+     "@overlay/user/office-location-quivira-springs"
+    ],
+    "verdict": "correct",
+    "note": ""
+   },
+   {
+    "id": "meme-nofiller/pl_039/update/2#5",
+    "dir": "meme-nofiller__pl_039",
+    "update_kind": "tracking",
+    "session": 2,
+    "stale": [
+     "whispers of zarinthea (tv)",
+     "a true crime podcast"
+    ],
+    "current": [
+     "xelvari dawn (book)"
+    ],
+    "anchors": [],
+    "offenders": {
+     "@overlay/media/podcasts": [
+      "The user currently listens to a true crime podcast and enjoys the investigative aspects (as of 2023-03-02).",
+      "- As of 2023-03-02, the user currently listens to a true crime podcast."
+     ]
+    },
+    "cards_stating_current": [
+     "@overlay/media/current-media"
+    ],
+    "verdict": "correct",
+    "note": ""
+   },
+   {
+    "id": "meme-nofiller/pl_028/update/2#5",
+    "dir": "meme-nofiller__pl_028",
+    "update_kind": "tracking",
+    "session": 2,
+    "stale": [
+     "zorvista premium",
+     "dranthazon"
+    ],
+    "current": [
+     "pyrethon plus"
+    ],
+    "anchors": [],
+    "offenders": {
+     "@overlay/user/hobby-basketball": [
+      "- They use [[user/subscription-dranthazon]] for basketball training content and shooting techniques."
+     ]
+    },
+    "cards_stating_current": [
+     "@overlay/user/project-data-pipeline-build",
+     "@overlay/user/subscription-pyrethon-plus"
+    ],
+    "verdict": "correct",
+    "note": ""
+   },
+   {
+    "id": "meme-nofiller/sw_001/update/4#1",
+    "dir": "meme-nofiller__sw_001",
+    "update_kind": "root",
+    "session": 4,
+    "stale": [
+     "synthari"
+    ],
+    "current": [
+     "veltrion"
+    ],
+    "anchors": [],
+    "offenders": {
+     "@overlay/project/dev-server": [
+      "Dev Server Command: synthari launch --hmr",
+      "synthari launch --hmr",
+      "Run the local dev server with `synthari launch --hmr` for hot module replacement.",
+      "- Run the local development server using the command `synthari launch --hmr` for hot module replacement (HMR), as stated on 2023/03/01."
+     ]
+    },
+    "cards_stating_current": [
+     "@overlay/project/build-command-quorix-forge",
+     "@overlay/project/build-tool-quorix-forge",
+     "@overlay/project/framework-veltrion",
+     "@overlay/project/package-manager",
+     "@overlay/project/secret-manager"
+    ],
+    "verdict": "matching error",
+    "note": "another entity's value contains the old framework name (no dependency in MEME)"
+   },
+   {
+    "id": "meme-nofiller/pl_008/update/2#5",
+    "dir": "meme-nofiller__pl_008",
+    "update_kind": "tracking",
+    "session": 2,
+    "stale": [
+     "xelvoria"
+    ],
+    "current": [
+     "dranthazon"
+    ],
+    "anchors": [],
+    "offenders": {
+     "@overlay/user/hobby-cooking": [
+      "- The user watches cooking tutorials and food-related shows on [[user/subscription-xelvoria]] to learn new techniques and recipes from experts."
+     ],
+     "@overlay/user/meal-kit-kelvimeal": [
+      "- Related cooking and food cards: [[user/hobby-cooking]], [[user/subscription-xelvoria]]."
+     ]
+    },
+    "cards_stating_current": [
+     "@overlay/user/hobby-board-games",
+     "@overlay/user/subscription-dranthazon"
+    ],
+    "verdict": "correct",
+    "note": ""
+   },
+   {
+    "id": "meme-nofiller/pl_018/update/4#1",
+    "dir": "meme-nofiller__pl_018",
+    "update_kind": "root",
+    "session": 4,
+    "stale": [
+     "mba at vorenthal business school"
+    ],
+    "current": [
+     "part-time jd at belvona harbor law"
+    ],
+    "anchors": [],
+    "offenders": {
+     "@overlay/work/commute": [
+      "- Previously (as of March 3, 2023), while studying for an MBA at Vorenthal Business School, the user walked to work, with the rule that if they changed schools they would take commuter rail to get there instead."
+     ]
+    },
+    "cards_stating_current": [
+     "@overlay/education/jd-belvona-harbor-law"
+    ],
+    "verdict": "matching error",
+    "note": "line marks it as past ('Previously...')"
+   },
+   {
+    "id": "meme-nofiller/pl_017/update/2#5",
+    "dir": "meme-nofiller__pl_017",
+    "update_kind": "tracking",
+    "session": 2,
+    "stale": [
+     "zyvanta sedan",
+     "therwyn compact"
+    ],
+    "current": [
+     "vorantel suv"
+    ],
+    "anchors": [],
+    "offenders": {
+     "@overlay/hobbies/running": [
+      "- They drive their Therwyn Compact to get to the running club ([[vehicles/car]])."
+     ]
+    },
+    "cards_stating_current": [
+     "@overlay/vehicles/car"
+    ],
+    "verdict": "correct",
+    "note": ""
+   },
+   {
+    "id": "meme-nofiller/sw_011/update/4#1",
+    "dir": "meme-nofiller__sw_011",
+    "update_kind": "root",
+    "session": 4,
+    "stale": [
+     "quenthar"
+    ],
+    "current": [
+     "veltrion"
+    ],
+    "anchors": [],
+    "offenders": {
+     "@overlay/team/design-system": [
+      "Team Design System: Quenthar Design v1",
+      "Quenthar Design v1",
+      "The user's team uses Quenthar Design v1 as their design system.",
+      "- As of 2023/03/01, the user's team uses Quenthar Design v1 as their design system."
+     ]
+    },
+    "cards_stating_current": [
+     "@overlay/team/framework-veltrion"
+    ],
+    "verdict": "matching error",
+    "note": "another entity's value contains the old framework name (no dependency in MEME)"
+   },
+   {
+    "id": "meme-nofiller/pl_014/update/2#5",
+    "dir": "meme-nofiller__pl_014",
+    "update_kind": "tracking",
+    "session": 2,
+    "stale": [
+     "daily journal subscription",
+     "dranthazon"
+    ],
+    "current": [
+     "pyrethon plus"
+    ],
+    "anchors": [],
+    "offenders": {
+     "@overlay/subscriptions/daily-journal": [
+      "Daily Journal Subscription",
+      "Daily Journal subscription",
+      "The user is subscribed to a Daily Journal subscription to track their thoughts and daily activities.",
+      "- The user uses the Daily Journal subscription to keep track of their thoughts and daily activities."
+     ],
+     "@overlay/subscriptions/dranthazon": [
+      "Dranthazon Subscription",
+      "Dranthazon",
+      "The user is subscribed to Dranthazon, which offers a variety of engaging content.",
+      "- The user is subscribed to Dranthazon (mentioned on 2023-03-03).",
+      "- They appreciate that Dranthazon offers a variety of content that keeps things fresh and keeps them engaged."
+     ]
+    },
+    "cards_stating_current": [
+     "@overlay/subscriptions/pyrethon-plus"
+    ],
+    "verdict": "correct",
+    "note": ""
+   },
+   {
+    "id": "meme-nofiller/sw_028/update/4#1",
+    "dir": "meme-nofiller__sw_028",
+    "update_kind": "root",
+    "session": 4,
+    "stale": [
+     "orinthal serve"
+    ],
+    "current": [
+     "narvex cloud"
+    ],
+    "anchors": [],
+    "offenders": {
+     "@overlay/team/release-schedule": [
+      "- Releases are built from the default branch [[team/default-branch]] (`release`) and deployed to [[team/deployment-platform]] (Orinthal Serve)."
+     ]
+    },
+    "cards_stating_current": [
+     "@overlay/team/ci-config-zephyra",
+     "@overlay/team/deploy-command-zephyra",
+     "@overlay/team/deployment-platform-narvex-cloud",
+     "@overlay/team/docker-image-thandrel"
+    ],
+    "verdict": "correct",
+    "note": ""
+   },
+   {
+    "id": "meme-nofiller/pl_022/update/1#5",
+    "dir": "meme-nofiller__pl_022",
+    "update_kind": "tracking",
+    "session": 1,
+    "stale": [
+     "james"
+    ],
+    "current": [
+     "alex"
+    ],
+    "anchors": [],
+    "offenders": {
+     "@overlay/hobbies/woodworking": [
+      "- Their partner [[profile/partner]] (James) is quite supportive of their woodworking projects."
+     ]
+    },
+    "cards_stating_current": [
+     "@overlay/hobbies/tennis",
+     "@overlay/profile/partner"
+    ],
+    "verdict": "correct",
+    "note": ""
+   },
+   {
+    "id": "meme-nofiller/pl_032/update/1#5",
+    "dir": "meme-nofiller__pl_032",
+    "update_kind": "tracking",
+    "session": 1,
+    "stale": [
+     "thyranote"
+    ],
+    "current": [
+     "zorvista premium"
+    ],
+    "anchors": [],
+    "offenders": {
+     "@overlay/hobbies/reading": [
+      "- Uses [[subscriptions/thyranote]] to keep track of reading progress and notes."
+     ],
+     "@overlay/subscriptions/thyranote": [
+      "User Subscription: Thyranote",
+      "Thyranote subscription",
+      "The user is subscribed to Thyranote to track their reading and notes (as of 2023-03-01).",
+      "- As of 2023-03-01, the user is subscribed to Thyranote.",
+      "- Uses Thyranote for keeping track of reading and notes (related to [[hobbies/reading]])."
+     ]
+    },
+    "cards_stating_current": [
+     "@overlay/subscriptions/zorvista-premium"
+    ],
+    "verdict": "correct",
+    "note": ""
+   },
+   {
+    "id": "meme-nofiller/pl_042/update/4#1",
+    "dir": "meme-nofiller__pl_042",
+    "update_kind": "root",
+    "session": 4,
+    "stale": [
+     "pre-diabetes"
+    ],
+    "current": [
+     "high blood pressure"
+    ],
+    "anchors": [],
+    "offenders": {
+     "@overlay/user/dietary-restriction": [
+      "- This diet supports managing their health condition of pre-diabetes (see [[user/health-prediabetes]])."
+     ]
+    },
+    "cards_stating_current": [
+     "@overlay/user/exercise-routine-swimming",
+     "@overlay/user/health-high-blood-pressure",
+     "@overlay/user/medication-status",
+     "@overlay/user/workout-facility-none"
+    ],
+    "verdict": "correct",
+    "note": ""
+   },
+   {
+    "id": "meme-nofiller/pl_022/update/2#3",
+    "dir": "meme-nofiller__pl_022",
+    "update_kind": "tracking",
+    "session": 2,
+    "stale": [
+     "james",
+     "alex"
+    ],
+    "current": [
+     "taylor"
+    ],
+    "anchors": [],
+    "offenders": {
+     "@overlay/hobbies/tennis": [
+      "- The user mentioned practicing tennis with their partner [[profile/partner]] (Alex)."
+     ],
+     "@overlay/hobbies/woodworking": [
+      "- Their partner [[profile/partner]] (James) is quite supportive of their woodworking projects."
+     ]
+    },
+    "cards_stating_current": [
+     "@overlay/hobbies/wine-tasting",
+     "@overlay/profile/partner"
+    ],
+    "verdict": "correct",
+    "note": ""
+   },
+   {
+    "id": "meme-nofiller/pl_034/update/1#5",
+    "dir": "meme-nofiller__pl_034",
+    "update_kind": "tracking",
+    "session": 1,
+    "stale": [
+     "xelvoria"
+    ],
+    "current": [
+     "thyranote"
+    ],
+    "anchors": [],
+    "offenders": {
+     "@overlay/hobbies/woodworking": [
+      "Woodworking Hobby and Xelvoria Subscription",
+      "Xelvoria subscription",
+      "User's hobby is woodworking (beginner as of March 2023); building a pine bookshelf and coffee table, and subscribed to Xelvoria.",
+      "- The user is subscribed to Xelvoria, a platform offering woodworking resources."
+     ]
+    },
+    "cards_stating_current": [
+     "@overlay/subscriptions/thyranote"
+    ],
+    "verdict": "correct",
+    "note": ""
+   },
+   {
+    "id": "meme-nofiller/pl_047/update/4#1",
+    "dir": "meme-nofiller__pl_047",
+    "update_kind": "root",
+    "session": 4,
+    "stale": [
+     "zypherix labs"
+    ],
+    "current": [
+     "dranthex logistics"
+    ],
+    "anchors": [],
+    "offenders": {
+     "@overlay/work/current-project": [
+      "- Employer: [[work/employer]] (Zypherix Labs)."
+     ]
+    },
+    "cards_stating_current": [
+     "@overlay/work/commute-duration",
+     "@overlay/work/commute-mode",
+     "@overlay/work/employer-dranthex-logistics",
+     "@overlay/work/job-title",
+     "@overlay/work/office-location"
+    ],
+    "verdict": "correct",
+    "note": ""
+   },
+   {
+    "id": "meme-nofiller/pl_044/update/4#1",
+    "dir": "meme-nofiller__pl_044",
+    "update_kind": "root",
+    "session": 4,
+    "stale": [
+     "high blood pressure"
+    ],
+    "current": [
+     "herniated disc"
+    ],
+    "anchors": [],
+    "offenders": {
+     "@overlay/user/dietary-restriction": [
+      "- Related to [[user/health-condition]] (high blood pressure)."
+     ]
+    },
+    "cards_stating_current": [
+     "@overlay/user/exercise-routine",
+     "@overlay/user/health-condition",
+     "@overlay/user/sleep-pattern",
+     "@overlay/user/workout-facility"
+    ],
+    "verdict": "correct",
+    "note": ""
+   },
+   {
+    "id": "meme-nofiller/pl_026/update/2#5",
+    "dir": "meme-nofiller__pl_026",
+    "update_kind": "tracking",
+    "session": 2,
+    "stale": [
+     "thyranote"
+    ],
+    "current": [
+     "pyrethon plus"
+    ],
+    "anchors": [],
+    "offenders": {
+     "@overlay/user/hobby-guitar": [
+      "- See also [[user/subscription-thyranote]] for the platform they use to track practice sessions."
+     ]
+    },
+    "cards_stating_current": [
+     "@overlay/user/subscription-pyrethon-plus"
+    ],
+    "verdict": "correct",
+    "note": ""
+   },
+   {
+    "id": "meme-nofiller/pl_035/update/2#5",
+    "dir": "meme-nofiller__pl_035",
+    "update_kind": "tracking",
+    "session": 2,
+    "stale": [
+     "zorvista premium"
+    ],
+    "current": [
+     "pyrethon plus"
+    ],
+    "anchors": [],
+    "offenders": {
+     "@overlay/media/streaming-and-watching": [
+      "Zorvista Premium",
+      "User is subscribed to Zorvista Premium and is currently watching a history documentary series (as of 2023-03-01).",
+      "- User is subscribed to Zorvista Premium for documentaries and shows (as of 2023-03-01).",
+      "- User is currently watching and focused on a history documentary series on Zorvista Premium (as of 2023-03-01)."
+     ]
+    },
+    "cards_stating_current": [
+     "@overlay/lifestyle/current-subscription"
+    ],
+    "verdict": "correct",
+    "note": ""
+   },
+   {
+    "id": "meme-nofiller/pl_009/update/4#1",
+    "dir": "meme-nofiller__pl_009",
+    "update_kind": "root",
+    "session": 4,
+    "stale": [
+     "tendinitis"
+    ],
+    "current": [
+     "chronic migraine"
+    ],
+    "anchors": [],
+    "offenders": {
+     "@overlay/user/subscriptions": [
+      "The user is subscribed to Xelvoria, a health and wellness platform that helps with running and tendinitis.",
+      "- Xelvoria is a health and wellness platform whose content provides insights and strategies for managing health, fitness, [[user/running-club]] performance, and [[user/health-condition]] (tendinitis)."
+     ]
+    },
+    "cards_stating_current": [
+     "@overlay/user/dietary-restriction-no-alcohol",
+     "@overlay/user/exercise-routine-yoga",
+     "@overlay/user/health-condition-migraine",
+     "@overlay/user/workout-facility-crysthene-pool"
+    ],
+    "verdict": "correct",
+    "note": ""
+   },
+   {
+    "id": "meme-nofiller/pl_032/update/2#5",
+    "dir": "meme-nofiller__pl_032",
+    "update_kind": "tracking",
+    "session": 2,
+    "stale": [
+     "thyranote",
+     "zorvista premium"
+    ],
+    "current": [
+     "meal kit (kelvimeal)"
+    ],
+    "anchors": [],
+    "offenders": {
+     "@overlay/hobbies/reading": [
+      "- Uses [[subscriptions/thyranote]] to keep track of reading progress and notes."
+     ],
+     "@overlay/subscriptions/kelvimeal": [
+      "The user switched subscriptions and is now subscribed to the Kelvimeal meal kit service (as of 2023-03-04), replacing Zorvista Premium and Thyranote.",
+      "- Previously subscribed to [[subscriptions/zorvista-premium]] (streaming service, as of 2023-03-03) and [[subscriptions/thyranote]] (reading/notes tracker, as of 2023-03-01) before switching to Kelvimeal."
+     ]
+    },
+    "cards_stating_current": [],
+    "verdict": "correct",
+    "note": ""
+   },
+   {
+    "id": "meme-nofiller/sw_003/update/4#1",
+    "dir": "meme-nofiller__sw_003",
+    "update_kind": "root",
+    "session": 4,
+    "stale": [
+     "velturis edge"
+    ],
+    "current": [
+     "thandrel infra"
+    ],
+    "anchors": [],
+    "offenders": {
+     "@overlay/team/monitoring-dashboard": [
+      "- The dedicated monitoring dashboard at `observe.velturis.io/aurora` is used to track system health and performance alongside [[team/production-alerts-channel]] (`#zenith-incidents`) and [[team/deployment-target]] (Velturis Edge)."
+     ]
+    },
+    "cards_stating_current": [
+     "@overlay/team/deployment-target-thandrel-infra"
+    ],
+    "verdict": "correct",
+    "note": ""
+   },
+   {
+    "id": "meme-nofiller/pl_024/update/1#5",
+    "dir": "meme-nofiller__pl_024",
+    "update_kind": "tracking",
+    "session": 1,
+    "stale": [
+     "sarah"
+    ],
+    "current": [
+     "jessica"
+    ],
+    "anchors": [],
+    "offenders": {
+     "@overlay/user/financial-goal": [
+      "- As of 2023/03/01, the user's financial goal is saving for a wedding with their partner [[user/partner]] (Sarah)."
+     ],
+     "@overlay/user/hobby-video-games": [
+      "The user's hobby is playing video games, especially open-world action-adventure games and RPGs, often with their partner Sarah."
+     ]
+    },
+    "cards_stating_current": [
+     "@overlay/user/hobby-basketball",
+     "@overlay/user/partner-jessica",
+     "@overlay/user/planned-purchase-engagement-ring"
+    ],
+    "verdict": "correct",
+    "note": ""
+   },
+   {
+    "id": "meme-nofiller/pl_043/update/1#5",
+    "dir": "meme-nofiller__pl_043",
+    "update_kind": "tracking",
+    "session": 1,
+    "stale": [
+     "xelvoria"
+    ],
+    "current": [
+     "thyranote"
+    ],
+    "anchors": [],
+    "offenders": {
+     "@overlay/user/subscription": [
+      "User Subscription: Xelvoria",
+      "Xelvoria",
+      "The user is subscribed to Xelvoria (as of 2023-03-01).",
+      "- As of 2023-03-01, the user is subscribed to Xelvoria, a platform for discovering new content."
+     ]
+    },
+    "cards_stating_current": [
+     "@overlay/user/sport-rock-climbing",
+     "@overlay/user/subscription-thyranote"
+    ],
+    "verdict": "correct",
+    "note": ""
+   },
+   {
+    "id": "meme-nofiller/sw_038/update/4#1",
+    "dir": "meme-nofiller__sw_038",
+    "update_kind": "root",
+    "session": 4,
+    "stale": [
+     "synthari"
+    ],
+    "current": [
+     "dravex"
+    ],
+    "anchors": [],
+    "offenders": {
+     "@overlay/project/dev-server": [
+      "Dev Server Command: synthari launch --hmr",
+      "synthari launch --hmr",
+      "The team runs the development server using `synthari launch --hmr` (with Hot Module Replacement).",
+      "- To run the local development server, the team uses the command `synthari launch --hmr` (reported 2023/03/01)."
+     ],
+     "@overlay/project/package-manager": [
+      "Team Package Manager: Synthari Modules",
+      "Synthari Modules",
+      "The team's package manager is Synthari Modules (switched from Veltrion Pkg, previously Pyronis Bundle).",
+      "- The team's package manager is Synthari Modules, used to streamline dependency management (switched on 2023/03/03)."
+     ]
+    },
+    "cards_stating_current": [
+     "@overlay/project/build-command",
+     "@overlay/project/build-tool",
+     "@overlay/project/framework",
+     "@overlay/project/project-structure",
+     "@overlay/project/test-command"
+    ],
+    "verdict": "matching error",
+    "note": "another entity's value contains the old framework name (no dependency in MEME)"
+   },
+   {
+    "id": "meme-nofiller/pl_022/update/4#1",
+    "dir": "meme-nofiller__pl_022",
+    "update_kind": "root",
+    "session": 4,
+    "stale": [
+     "quivira springs community college"
+    ],
+    "current": [
+     "online bootcamp (coding)"
+    ],
+    "anchors": [],
+    "offenders": {
+     "@overlay/hobbies/potluck-meetup": [
+      "- The user attends the potluck dinner group to unwind after a busy week studying at [[profile/education]] (Quivira Springs Community College) and to enjoy different types of food."
+     ],
+     "@overlay/hobbies/wine-tasting": [
+      "- The user finds balancing their wine tasting club and other activities with studying at [[profile/education]] (Quivira Springs Community College) to be a bit challenging."
+     ]
+    },
+    "cards_stating_current": [
+     "@overlay/profile/education-bootcamp",
+     "@overlay/profile/subscription"
+    ],
+    "verdict": "correct",
+    "note": ""
+   },
+   {
+    "id": "meme-nofiller/pl_025/update/2#5",
+    "dir": "meme-nofiller__pl_025",
+    "update_kind": "tracking",
+    "session": 2,
+    "stale": [
+     "xelvoria"
+    ],
+    "current": [
+     "pyrethon plus"
+    ],
+    "anchors": [],
+    "offenders": {
+     "@overlay/hobbies/woodworking": [
+      "- The user is subscribed to [[subscriptions/xelvoria]], which they use to learn new woodworking techniques and projects."
+     ]
+    },
+    "cards_stating_current": [
+     "@overlay/subscriptions/pyrethon-plus"
+    ],
+    "verdict": "correct",
+    "note": ""
+   },
+   {
+    "id": "meme-nofiller/pl_046/update/2#5",
+    "dir": "meme-nofiller__pl_046",
+    "update_kind": "tracking",
+    "session": 2,
+    "stale": [
+     "xelvoria"
+    ],
+    "current": [
+     "dranthazon"
+    ],
+    "anchors": [],
+    "offenders": {
+     "@overlay/user/hobby": [
+      "- See also [[user/subscriptions]] for art tutorials on Xelvoria and [[user/education]] for courses at Quivira Springs Community College."
+     ]
+    },
+    "cards_stating_current": [
+     "@overlay/user/subscriptions"
+    ],
+    "verdict": "correct",
+    "note": ""
+   },
+   {
+    "id": "meme-nofiller/pl_041/update/2#5",
+    "dir": "meme-nofiller__pl_041",
+    "update_kind": "tracking",
+    "session": 2,
+    "stale": [
+     "dranthis pickup",
+     "vorantel suv"
+    ],
+    "current": [
+     "xylorim scooter"
+    ],
+    "anchors": [],
+    "offenders": {
+     "@overlay/user/hobby-photography": [
+      "- The user uses a [[user/vehicles|Dranthis Pickup]] to reach remote landscapes and carry photography gear."
+     ],
+     "@overlay/user/planned-purchases": [
+      "- Current vehicle: [[user/vehicles|Dranthis Pickup]]."
+     ]
+    },
+    "cards_stating_current": [
+     "@overlay/user/vehicle-xylorim-scooter"
+    ],
+    "verdict": "correct",
+    "note": ""
+   },
+   {
+    "id": "meme-nofiller/pl_043/update/2#5",
+    "dir": "meme-nofiller__pl_043",
+    "update_kind": "tracking",
+    "session": 2,
+    "stale": [
+     "xelvoria",
+     "thyranote"
+    ],
+    "current": [
+     "zorvista premium"
+    ],
+    "anchors": [],
+    "offenders": {
+     "@overlay/user/sport-rock-climbing": [
+      "- The user tracks their climbing goals and progress using [[user/subscription-thyranote|Thyranote]]."
+     ]
+    },
+    "cards_stating_current": [
+     "@overlay/user/subscription-zorvista-premium"
+    ],
+    "verdict": "correct",
+    "note": ""
+   },
+   {
+    "id": "meme-nofiller/pl_039/update/1#5",
+    "dir": "meme-nofiller__pl_039",
+    "update_kind": "tracking",
+    "session": 1,
+    "stale": [
+     "whispers of zarinthea (tv)"
+    ],
+    "current": [
+     "a true crime podcast"
+    ],
+    "anchors": [],
+    "offenders": {
+     "@overlay/media/current-watching": [
+      "Current Media: Whispers of Zarinthea (TV)",
+      "- The user finds the storyline of Whispers of Zarinthea (TV) captivating."
+     ]
+    },
+    "cards_stating_current": [
+     "@overlay/media/podcasts"
+    ],
+    "verdict": "correct",
+    "note": ""
+   },
+   {
+    "id": "meme-nofiller/pl_036/update/2#5",
+    "dir": "meme-nofiller__pl_036",
+    "update_kind": "tracking",
+    "session": 2,
+    "stale": [
+     "james",
+     "jordan"
+    ],
+    "current": [
+     "taylor"
+    ],
+    "anchors": [],
+    "offenders": {
+     "@overlay/hobbies/running-club": [
+      "- The user is interested in tips for improving their running performance and training with a partner like [[relationships/partner-jordan]]."
+     ]
+    },
+    "cards_stating_current": [
+     "@overlay/hobbies/wine-tasting-club",
+     "@overlay/relationships/partner-taylor"
+    ],
+    "verdict": "correct",
+    "note": ""
+   },
+   {
+    "id": "meme-nofiller/pl_049/update/1#5",
+    "dir": "meme-nofiller__pl_049",
+    "update_kind": "tracking",
+    "session": 1,
+    "stale": [
+     "xelvoria"
+    ],
+    "current": [
+     "dranthazon"
+    ],
+    "anchors": [],
+    "offenders": {
+     "@overlay/hobbies/guitar": [
+      "- See [[subscriptions/xelvoria]] for the musician resource platform they use and [[events/upcoming-concert]] for their upcoming performance."
+     ]
+    },
+    "cards_stating_current": [
+     "@overlay/subscriptions/dranthazon"
+    ],
+    "verdict": "correct",
+    "note": ""
+   },
+   {
+    "id": "meme-nofiller/pl_041/update/1#5",
+    "dir": "meme-nofiller__pl_041",
+    "update_kind": "tracking",
+    "session": 1,
+    "stale": [
+     "dranthis pickup"
+    ],
+    "current": [
+     "vorantel suv"
+    ],
+    "anchors": [],
+    "offenders": {
+     "@overlay/user/hobby-photography": [
+      "- The user uses a [[user/vehicles|Dranthis Pickup]] to reach remote landscapes and carry photography gear."
+     ],
+     "@overlay/user/planned-purchases": [
+      "- Current vehicle: [[user/vehicles|Dranthis Pickup]]."
+     ]
+    },
+    "cards_stating_current": [
+     "@overlay/user/vehicle-vorantel-suv"
+    ],
+    "verdict": "correct",
+    "note": ""
+   },
+   {
+    "id": "meme-nofiller/pl_024/update/2#5",
+    "dir": "meme-nofiller__pl_024",
+    "update_kind": "tracking",
+    "session": 2,
+    "stale": [
+     "sarah",
+     "jessica"
+    ],
+    "current": [
+     "taylor"
+    ],
+    "anchors": [],
+    "offenders": {
+     "@overlay/user/financial-goal": [
+      "- As of 2023/03/01, the user's financial goal is saving for a wedding with their partner [[user/partner]] (Sarah)."
+     ],
+     "@overlay/user/hobby-basketball": [
+      "The user plays pickup basketball with friends at local courts (not in a league) and enjoys going out for hikes with their partner Jessica.",
+      "- Both the user and their partner [[user/partner-jessica]] (Jessica) enjoy going out for hikes together outdoors to stay active."
+     ],
+     "@overlay/user/hobby-video-games": [
+      "The user's hobby is playing video games, especially open-world action-adventure games and RPGs, often with their partner Sarah."
+     ],
+     "@overlay/user/planned-purchase-engagement-ring": [
+      "The user is planning a big purchase of an engagement ring for their partner Jessica and is currently exploring gemstones and settings.",
+      "- As of 2023/03/01 (14:15), the user is planning a big purchase: an engagement ring for their partner [[user/partner-jessica]] (Jessica).",
+      "- The user is currently exploring different ring styles, gemstones (such as diamonds, sapphires, or emeralds), and settings to choose something special that reflects Jessica's style."
+     ]
+    },
+    "cards_stating_current": [
+     "@overlay/user/hobby-hiking-club",
+     "@overlay/user/partner-taylor"
+    ],
+    "verdict": "correct",
+    "note": ""
+   },
+   {
+    "id": "meme-nofiller/pl_049/update/2#5",
+    "dir": "meme-nofiller__pl_049",
+    "update_kind": "tracking",
+    "session": 2,
+    "stale": [
+     "xelvoria",
+     "dranthazon"
+    ],
+    "current": [
+     "pyrethon plus"
+    ],
+    "anchors": [],
+    "offenders": {
+     "@overlay/hobbies/guitar": [
+      "- See [[subscriptions/xelvoria]] for the musician resource platform they use and [[events/upcoming-concert]] for their upcoming performance."
+     ]
+    },
+    "cards_stating_current": [
+     "@overlay/hobbies/book-club",
+     "@overlay/subscriptions/pyrethon-plus"
+    ],
+    "verdict": "correct",
+    "note": ""
+   },
+   {
+    "id": "meme-nofiller/pl_048/update/4#1",
+    "dir": "meme-nofiller__pl_048",
+    "update_kind": "root",
+    "session": 4,
+    "stale": [
+     "pre-diabetes"
+    ],
+    "current": [
+     "herniated disc"
+    ],
+    "anchors": [],
+    "offenders": {
+     "@overlay/health/workout-facility": [
+      "- Because the user's [[health/exercise-routine]] changed from yoga 2x/week to walking daily (when their health condition changed from [[health/pre-diabetes]] to [[health/herniated-disc]] on 2023-03-04), the user's workout facility is now Kaelstrom Fitness (per the conditional rule stated on 2023-03-"
+     ],
+     "@overlay/hobbies/cycling": [
+      "The user is part of a cycling club that rides on weekends, cycles to stay active and manage pre-diabetes, and shares rides with their partner Chris and friends/family.",
+      "- The user uses cycling as an exercise habit to help manage their [[health/pre-diabetes]]."
+     ]
+    },
+    "cards_stating_current": [
+     "@overlay/health/dietary-restriction",
+     "@overlay/health/exercise-routine",
+     "@overlay/health/herniated-disc",
+     "@overlay/health/sleep-schedule"
+    ],
+    "verdict": "correct",
+    "note": ""
+   }
+  ],
+  "lost": [
+   {
+    "id": "meme-nofiller/pl_010/0#5",
+    "dir": "meme-nofiller__pl_010",
+    "point": 3,
+    "category": "plain",
+    "value": "brunch with college friends monthly",
+    "entity": "social_gathering",
+    "anchors": [],
+    "near": {
+     "@overlay/finance/credit-card-debt-goal": [
+      "The user's financial goal is paying off credit card debt via consistent monthly payments and cutting unnecessary expenses (as of March 2023).",
+      "- They are working on paying off the credit card debt steadily by focusing on making consistent monthly payments.",
+      "- They have cut back on unnecessary expenses to free up more money for their monthly debt payments."
+     ],
+     "@overlay/personal/home-residence": [
+      "- As of March 1, 2023, the user's home is a college dormitory."
+     ],
+     "@overlay/personal/living-with-roommate": [
+      "- As of March 4, 2023, the user lives with a roommate (in addition to living in a college dormitory, [[personal/home-residence]])."
+     ],
+     "@overlay/social/board-game-group": [
+      "Regular Social Meetup and Hobby: Board Game Group",
+      "regular social meetup",
+      "- As of March 3, 2023, the user is part of a board game group that meets regularly to play different games (updating their previous regular social meetup of monthly brunch with college friends from March 1, 2023)."
+     ],
+     "@overlay/social/regular-meetup (inactive)": [
+      "[INACTIVE] Regular Social Meetup: Monthly Brunch with College Friends",
+      "regular social meetup",
+      "brunch with college friends",
+      "monthly brunch"
+     ],
+     "@overlay/social/thanksgiving-gathering": [
+      "Upcoming Event: Thanksgiving Gathering Planning",
+      "Thanksgiving gathering",
+      "The user is planning an upcoming Thanksgiving gathering with a warm, inviting atmosphere, autumn decorations, and a gratitude wall (as of March 3, 2023).",
+      "- As of March 3, 2023, the user has an upcoming Thanksgiving gathering / get-together and asked for planning tips."
+     ]
+    },
+    "verdict": "correct",
+    "note": "corrected after the re-score: the only card stating it as current was inactive (superseded); the other mention marks it as past"
+   },
+   {
+    "id": "meme-nofiller/pl_010/3#7",
+    "dir": "meme-nofiller__pl_010",
+    "point": "end",
+    "category": "rule",
+    "value": "zynthera bay beach trip (1 week)",
+    "entity": "travel_plan",
+    "anchors": [],
+    "near": {
+     "@overlay/personal/relationship-status-engaged": [
+      "- Because the user's relationship status changed from single to engaged, their conditional travel plan switches from a mountain ski trip to a 1-week beach trip to Zynthera Bay ([[personal/ski-trip-plan]])."
+     ],
+     "@overlay/personal/ski-trip-plan": [
+      "Travel Plans: Mountain Ski Trip (Single) vs. Zynthera Bay Beach Trip",
+      "mountain ski trip",
+      "ski trip",
+      "travel plans"
+     ]
+    },
+    "verdict": "matching error",
+    "note": "stated in other words (annotation format, word order, or escaped line breaks in a verbatim text)"
+   },
+   {
+    "id": "meme-nofiller/pl_032/2#5",
+    "dir": "meme-nofiller__pl_032",
+    "point": 3,
+    "category": "plain",
+    "value": "meal kit (kelvimeal)",
+    "entity": "subscription_service",
+    "anchors": [],
+    "near": {
+     "@overlay/entertainment/whispers-of-zarinthea": [
+      "- Mentioned alongside their subscription to [[subscriptions/zorvista-premium]]."
+     ],
+     "@overlay/subscriptions/kelvimeal": [
+      "User Subscription: Kelvimeal Meal Kit",
+      "meal kit subscription",
+      "Kelvimeal",
+      "current subscription"
+     ],
+     "@overlay/subscriptions/thyranote (inactive)": [
+      "[INACTIVE] User Subscription: Thyranote",
+      "Thyranote subscription",
+      "note-taking service",
+      "subscribed service"
+     ],
+     "@overlay/subscriptions/zorvista-premium (inactive)": [
+      "[INACTIVE] User Subscription: Zorvista Premium",
+      "streaming subscription",
+      "streaming service",
+      "current subscription"
+     ]
+    },
+    "verdict": "matching error",
+    "note": "stated in other words (annotation format, word order, or escaped line breaks in a verbatim text)"
+   },
+   {
+    "id": "meme-nofiller/pl_028/1#7",
+    "dir": "meme-nofiller__pl_028",
+    "point": "end",
+    "category": "plain",
+    "value": "9-to-5 fixed",
+    "entity": "work_schedule",
+    "anchors": [],
+    "near": {
+     "@overlay/user/work-caeltura-systems (inactive)": [
+      "[INACTIVE] User Work and Schedule: Caeltura Systems (9-to-5 Fixed)",
+      "work schedule",
+      "work hours",
+      "The user works at Caeltura Systems on a fixed 9-to-5 work schedule (as of 2023-03-03)."
+     ],
+     "@overlay/user/commute-duration-10-min (inactive)": [
+      "[INACTIVE] User Commute Duration: 10 Minutes (or 20 Minutes if Work Location Changes)",
+      "The user's commute is about 10 minutes depending on their office in Luminara Flats (as of 2023-03-04); if their work location changes, it will be around 20 minutes.",
+      "- If their office or work location changes (such as moving to Tesswick Bay if they change employers from [[user/work-caeltura-systems]]), the commute distance and duration would change.",
+      "- Specifically, if their work location changes, their commute will be around 20 minutes."
+     ],
+     "@overlay/user/commute-duration-20-min": [
+      "- As of 2023-03-05, the user's commute duration is around 20 minutes following their move to a new office in Tesswick Bay ([[user/office-location-tesswick-bay]]) at Quenlix Group ([[user/work-quenlix-group]]).",
+      "- Previously (as of 2023-03-04), their commute was about 10 minutes to their office in Luminara Flats, with the condition that if their work location changed, their commute would be around 20 minutes."
+     ],
+     "@overlay/user/commute-subway-bus": [
+      "work transportation",
+      "The user commutes to work via subway and bus transfer (as of 2023-03-01).",
+      "- The user commutes to work by taking the subway and a bus transfer (as of 2023-03-01).",
+      "- Their commute duration is about 10 minutes to the Luminara Flats office, or around 20 minutes if their work location changes (see [[user/commute-duration-10-min]] and [[user/office-location-luminara-flats]])."
+     ],
+     "@overlay/user/favorite-restaurant-velmara-taqueria": [
+      "- As of 2023-03-05, the user's favorite restaurant changed because their office moved from Luminara Flats to Tesswick Bay ([[user/office-location-tesswick-bay]]) when they joined Quenlix Group ([[user/work-quenlix-group]])."
+     ],
+     "@overlay/user/hobby-basketball": [
+      "- Fitting in basketball practice can be challenging due to their fixed 9-to-5 schedule at [[user/work-caeltura-systems]]."
+     ],
+     "@overlay/user/insurance-interim-coverage": [
+      "- As of 2023-03-05, the user's insurance coverage plan changed because they accepted a new position at Quenlix Group ([[user/work-quenlix-group]]), leaving Caeltura Systems."
+     ],
+     "@overlay/user/job-title-designer": [
+      "- As of 2023-03-05, the user's job title is designer at their new employer, Quenlix Group ([[user/work-quenlix-group]])."
+     ],
+     "@overlay/user/job-title-staff-engineer (inactive)": [
+      "- They hold this title through their current employer, Caeltura Systems ([[user/work-caeltura-systems]])."
+     ],
+     "@overlay/user/office-location-luminara-flats (inactive)": [
+      "work location",
+      "- This office location is through their current employer, Caeltura Systems ([[user/work-caeltura-systems]])."
+     ]
+    },
+    "verdict": "matching error",
+    "note": "stated in other words (annotation format, word order, or escaped line breaks in a verbatim text)"
+   },
+   {
+    "id": "meme-nofiller/pl_007/3#7",
+    "dir": "meme-nofiller__pl_007",
+    "point": "end",
+    "category": "rule",
+    "value": "therapy (weekly)",
+    "entity": "regular_appointment",
+    "anchors": [],
+    "near": {
+     "@overlay/user/location-home (inactive)": [
+      "- Both the user's 20-minute commute ([[user/commute]]) and monthly dermatologist appointment ([[user/regular-appointment]]) depend on living in Pyresta Meadow; if the user moves, the commute distance changes and their regular appointment becomes weekly therapy."
+     ],
+     "@overlay/user/location-home-corenth-hills": [
+      "- Moving from Pyresta Meadow to Corenth Hills triggered changes to their regular appointment (now weekly therapy instead of monthly dermatologist; see [[user/regular-appointment]]) and invalidated their previous 20-minute commute time from Pyresta Meadow (see [[user/commute]])."
+     ],
+     "@overlay/user/regular-appointment": [
+      "User Regular Appointment: Weekly Therapy (Post-Move to Corenth Hills)",
+      "regular appointment",
+      "weekly therapy",
+      "therapy appointment"
+     ],
+     "@overlay/user/social-meetup-trivia": [
+      "User Regular Social Meetup: Wednesday Trivia Night",
+      "regular meetup",
+      "The user's regular social meetup is trivia night on Wednesdays.",
+      "- The user's regular social meetup is trivia night on Wednesdays, which they enjoy as a fun way to unwind and test knowledge on various topics (stated 2023/03/01)."
+     ]
+    },
+    "verdict": "matching error",
+    "note": "stated in other words (annotation format, word order, or escaped line breaks in a verbatim text)"
+   },
+   {
+    "id": "meme-nofiller/sw_012/4#3",
+    "dir": "meme-nofiller__sw_012",
+    "point": "end",
+    "category": "plain",
+    "value": "every thursday 2pm",
+    "entity": "meeting_day",
+    "anchors": [],
+    "near": {
+     "@overlay/project/database-backups": [
+      "Database Backup Schedule (Twice Daily at 2am and 2pm UTC)",
+      "2am and 2pm UTC",
+      "Database backups run twice daily at 2am and 2pm UTC (as of 2023/03/03).",
+      "- As of 2023/03/03, database backups run twice daily at 2am and 2pm UTC for data recovery."
+     ],
+     "@overlay/project/team-meeting": [
+      "Team Meeting Schedule (Every Thursday at 2pm)",
+      "team meeting",
+      "team meeting schedule",
+      "weekly meeting"
+     ]
+    },
+    "verdict": "matching error",
+    "note": "stated in other words (annotation format, word order, or escaped line breaks in a verbatim text)"
+   },
+   {
+    "id": "meme-nofiller/sw_036/4#7",
+    "dir": "meme-nofiller__sw_036",
+    "point": "end",
+    "category": "plain",
+    "value": "2025 june 20",
+    "entity": "sprint_deadline",
+    "anchors": [],
+    "near": {
+     "@overlay/team/sprint-deadline": [
+      "Team Sprint Deadline: 2025-06-20 (June 20, 2025)",
+      "sprint deadline",
+      "current sprint deadline",
+      "June 20 2025"
+     ]
+    },
+    "verdict": "matching error",
+    "note": "stated in other words (annotation format, word order, or escaped line breaks in a verbatim text)"
+   },
+   {
+    "id": "meme-nofiller/pl_036/0#1",
+    "dir": "meme-nofiller__pl_036",
+    "point": 3,
+    "category": "plain",
+    "value": "drawing/painting",
+    "entity": "hobby",
+    "anchors": [],
+    "near": {
+     "@overlay/hobbies/drawing-painting": [
+      "User Hobby: Drawing and Painting",
+      "drawing and painting",
+      "hobby",
+      "art hobby"
+     ],
+     "@overlay/hobbies/running-club": [
+      "User Hobby: Running Club",
+      "running hobby",
+      "- The user participates in a running club as of March 3, 2023 (previously mentioned drawing and painting on March 1, 2023)."
+     ],
+     "@overlay/hobbies/wine-tasting-club": [
+      "User Hobby: Wine Tasting Club",
+      "wine hobby",
+      "- The user is part of a wine tasting club and is just starting out in wine tasting, exploring different varieties (as of March 3, 2023 at 06:52; previously mentioned a [[hobbies/running-club]] earlier on March 3, 2023 and [[hobbies/drawing-painting]] on March 1, 2023)."
+     ],
+     "@overlay/preferences/favorite-restaurant": [
+      "- The user likes going to Lorwen & Sage as a go-to place for meals, especially after a long day of drawing or painting."
+     ]
+    },
+    "verdict": "matching error",
+    "note": "stated in other words (annotation format, word order, or escaped line breaks in a verbatim text)"
+   },
+   {
+    "id": "meme-nofiller/pl_038/0#11",
+    "dir": "meme-nofiller__pl_038",
+    "point": 3,
+    "category": "plain",
+    "value": "electric car",
+    "entity": "planned_purchase",
+    "anchors": [],
+    "near": {
+     "@overlay/user/planned-purchases (inactive)": [
+      "[INACTIVE] User Planned Purchase: Electric Car",
+      "big purchase",
+      "electric car",
+      "electric vehicle"
+     ],
+     "@overlay/user/vehicle (inactive)": [
+      "car",
+      "current car",
+      "- User is also planning to purchase an electric car ([[user/planned-purchases]])."
+     ],
+     "@overlay/user/hobby-photography": [
+      "- See also [[user/vehicle]], [[user/office-location]], [[user/living-situation]], [[user/planned-purchases]]."
+     ],
+     "@overlay/user/vehicle-quorvel-ev (inactive)": [
+      "electric vehicle",
+      "current car",
+      "car",
+      "User currently drives a Quorvel EV electric vehicle, having transitioned from a Therwyn Compact."
+     ],
+     "@overlay/user/vehicle-vorantel-suv": [
+      "current car",
+      "car",
+      "- User previously drove a Quorvel EV electric vehicle ([[user/vehicle-quorvel-ev]], as of 2023-03-01 23:29) and before that a Therwyn Compact ([[user/vehicle]], as of 2023-03-01 23:09)."
+     ]
+    },
+    "verdict": "correct",
+    "note": "only a superseded card states it"
+   },
+   {
+    "id": "meme-nofiller/sw_046/3#11",
+    "dir": "meme-nofiller__sw_046",
+    "point": "end",
+    "category": "plain",
+    "value": "deadlockdetected: transactions 4821 and 4823 are deadlocked on table aurora_orders. query 1 was update orders set status = 'shipped' where region = 'us-east'. query 2 was delete from orders where created_at < now() - interval '30 days'. first seen at 2024-08-04t22:33:18z; recommend serializable isolation review",
+    "entity": "error_log",
+    "anchors": [],
+    "near": {
+     "@overlay/project/changelog": [
+      "where is the changelog"
+     ],
+     "@overlay/project/default-branch": [
+      "- The team's default branch in version control is `trunk`, where development efforts and pull requests are focused. (Recorded 2023-03-02)"
+     ],
+     "@overlay/project/error-log-aurora-orders-deadlock": [
+      "Error Log: DeadlockDetected on table aurora_orders (Transactions 4821 and 4823)",
+      "error log",
+      "deadlock error",
+      "DeadlockDetected"
+     ],
+     "@overlay/project/team-channel": [
+      "- The team's communication channel is `#vortex-team`, where all project-related discussions take place. (Recorded 2023-03-02)"
+     ]
+    },
+    "verdict": "matching error",
+    "note": "stated in other words (annotation format, word order, or escaped line breaks in a verbatim text)"
+   },
+   {
+    "id": "meme-nofiller/sw_018/3#9",
+    "dir": "meme-nofiller__sw_018",
+    "point": 3,
+    "category": "plain",
+    "value": "outofmemoryerror: java heap space. gc overhead limit exceeded after 8 consecutive failed collections in pool 'ps old gen'. heap dump written to /var/log/aurora/heap-2024-05-08.hprof at 18:42:11z. recommend increasing -xmx beyond 4g or investigating memory leak in orderprocessor",
+    "entity": "error_log",
+    "anchors": [],
+    "near": {
+     "@overlay/team/changelog": [
+      "aurora-team releases",
+      "The team's changelog is hosted at notion.so/aurora-team/releases.",
+      "- The team's changelog is located at notion.so/aurora-team/releases (as of 2023-03-01).",
+      "- Implies the team name is Aurora Team (\"aurora-team\")."
+     ],
+     "@overlay/team/database-connection-string": [
+      "Database Connection String: crysthene://replica-db:5432/aurora-ro",
+      "crysthene://replica-db:5432/aurora-ro",
+      "vorathis://cluster-main:27017/aurora",
+      "The database connection string is crysthene://replica-db:5432/aurora-ro (depends on Zyndra Base; will become vorathis://cluster-main:27017/aurora if the database changes)."
+     ],
+     "@overlay/team/incident-runbook": [
+      "Team Incident Runbook: wiki.aurora.dev/incident-response",
+      "wiki.aurora.dev/incident-response",
+      "The team's incident runbook is at wiki.aurora.dev/incident-response.",
+      "- The team's incident runbook is located at wiki.aurora.dev/incident-response (reported on 2023-03-03)."
+     ],
+     "@overlay/team/oom-error-log": [
+      "Exact Error Log: OutOfMemoryError in OrderProcessor (2024-05-08)",
+      "error log",
+      "OutOfMemoryError",
+      "Java heap space"
+     ],
+     "@overlay/team/package-manager": [
+      "- Previously, the team switched to Quorix Hub on 2023-03-02, after using Zelthra Lib on 2023-03-01."
+     ],
+     "@overlay/team/production-alerts": [
+      "Team Production Alerts: #aurora-pager",
+      "#aurora-pager",
+      "aurora-pager",
+      "Production alerts go to the #aurora-pager channel."
+     ]
+    },
+    "verdict": "matching error",
+    "note": "stated in other words (annotation format, word order, or escaped line breaks in a verbatim text)"
+   },
+   {
+    "id": "meme-nofiller/sw_044/0#5",
+    "dir": "meme-nofiller__sw_044",
+    "point": "end",
+    "category": "plain",
+    "value": "workspace with /services and /common",
+    "entity": "project_structure",
+    "anchors": [],
+    "near": {
+     "@overlay/project/build-command": [
+      "- Under the Dravex framework and Zelthra Pack build tool (confirmed on 2023-03-04), the project's build command was `zelthra pack --minify`.",
+      "- Using `zelthra pack --minify` depended on using Zelthra Pack as the build tool ([[project/build-tool]]), which in turn depended on using the Dravex framework ([[project/framework]]).",
+      "- Related CLI commands: [[project/dev-server]], [[project/test-command]]."
+     ],
+     "@overlay/project/build-tool": [
+      "Project Build Tool: Changing after Korvel Migration (Previously Zelthra Pack under Dravex)",
+      "project build tool",
+      "- Under the Dravex framework (confirmed on 2023-03-04), the project's build tool was Zelthra Pack.",
+      "- Using Zelthra Pack was explicitly determined by the Dravex application framework ([[project/framework]]), with the rule that if the team switches away from Dravex, the build tool (Zelthra Pack) will change."
+     ],
+     "@overlay/project/changelog": [
+      "Project Changelog: docs.aurora.internal/changelog",
+      "The project changelog is at docs.aurora.internal/changelog for tracking changes, onboarding, and troubleshooting.",
+      "- The project changelog is located at `docs.aurora.internal/changelog` (as of 2023-03-02).",
+      "- Related project configuration: [[project/package-manager]], [[project/test-coverage]], [[project/dev-server]], [[project/design-system]], [[project/workspace-structure]]."
+     ],
+     "@overlay/project/code-review-policy": [
+      "- Related project configuration: [[project/default-branch]], [[project/test-coverage]], [[project/package-manager]], [[project/framework]]."
+     ],
+     "@overlay/project/default-branch": [
+      "- The team prioritizes maintaining a clean history and ensuring all changes are thoroughly reviewed before merging into `production` (see [[project/code-review-policy]]).",
+      "- Related project configuration: [[project/code-review-policy]], [[project/test-coverage]], [[project/changelog]], [[project/package-manager]]."
+     ],
+     "@overlay/project/design-system": [
+      "- Related project configuration: [[project/package-manager]], [[project/workspace-structure]], [[project/secret-manager]], [[team/standup-format]], [[team/team-channel]]."
+     ],
+     "@overlay/project/dev-server": [
+      "- Related project configuration: [[project/package-manager]], [[project/test-coverage]], [[project/changelog]], [[project/design-system]], [[project/workspace-structure]]."
+     ],
+     "@overlay/project/error-log-crysthene-db-cert": [
+      "- Related infrastructure and security cards: [[project/secret-manager]]."
+     ],
+     "@overlay/project/framework": [
+      "- Test framework ([[project/test-framework]]): switched from Quorix Spec to Pyronis Check.",
+      "- Test command ([[project/test-command]]): switched from `quorix spec --run all` to `pyronis check --snapshot`.",
+      "- Build tool ([[project/build-tool]]) and build command ([[project/build-command]]): Zelthra Pack and `zelthra pack --minify` depended on Dravex and would change upon switching away from Dravex (replacement build tool/command for Korvel not yet specified).",
+      "- Related project configuration: [[project/package-manager]], [[project/design-system]], [[project/workspace-structure]], [[project/dev-server]]."
+     ],
+     "@overlay/project/package-manager": [
+      "- Synthari Modules is used for managing project dependencies smoothly.",
+      "- Related project configuration: [[project/design-system]], [[project/workspace-structure]], [[project/secret-manager]], [[project/test-coverage]], [[project/dev-server]], [[project/changelog]], [[project/code-review-policy]], [[project/framework]], [[project/default-branch]], [[team/standup-format]"
+     ]
+    },
+    "verdict": "matching error",
+    "note": "stated in other words (annotation format, word order, or escaped line breaks in a verbatim text)"
+   },
+   {
+    "id": "meme-nofiller/sw_016/4#7",
+    "dir": "meme-nofiller__sw_016",
+    "point": "end",
+    "category": "plain",
+    "value": "every wednesday 10am",
+    "entity": "meeting_day",
+    "anchors": [],
+    "near": {
+     "@overlay/project/release-cadence": [
+      "Release Cadence: Sprint-End Releases Every 2 Weeks",
+      "sprint-end releases every 2 weeks",
+      "The team releases sprint-end releases every 2 weeks.",
+      "- The team releases `sprint-end releases every 2 weeks` (bi-weekly release cadence, established 2023-03-03)."
+     ],
+     "@overlay/project/team-meeting": [
+      "Team Meeting Schedule: Every Wednesday at 10am",
+      "team meeting",
+      "weekly meeting",
+      "Wednesday 10am"
+     ]
+    },
+    "verdict": "matching error",
+    "note": "stated in other words (annotation format, word order, or escaped line breaks in a verbatim text)"
+   },
+   {
+    "id": "meme-nofiller/sw_018/3#9",
+    "dir": "meme-nofiller__sw_018",
+    "point": "end",
+    "category": "plain",
+    "value": "outofmemoryerror: java heap space. gc overhead limit exceeded after 8 consecutive failed collections in pool 'ps old gen'. heap dump written to /var/log/aurora/heap-2024-05-08.hprof at 18:42:11z. recommend increasing -xmx beyond 4g or investigating memory leak in orderprocessor",
+    "entity": "error_log",
+    "anchors": [],
+    "near": {
+     "@overlay/team/changelog": [
+      "aurora-team releases",
+      "The team's changelog is hosted at notion.so/aurora-team/releases.",
+      "- The team's changelog is located at notion.so/aurora-team/releases (as of 2023-03-01).",
+      "- Implies the team name is Aurora Team (\"aurora-team\")."
+     ],
+     "@overlay/team/database": [
+      "- Switching the database from Zyndra Base to Vorathis DB also updated dependent settings: [[team/database-connection-string]] (now `vorathis://cluster-main:27017/aurora`), [[team/orm]] (now Pyravar Mapper), [[team/model-syntax]] (now `Pyravar.record('Model', schema)`), and invalidated the old Zyndra"
+     ],
+     "@overlay/team/database-backups": [
+      "Database Backup Schedule (Outdated After Vorathis DB Switch)",
+      "The old Zyndra Base backup schedule (twice daily at 2am and 2pm UTC) no longer applies after switching to Vorathis DB on 2023-03-05.",
+      "- That backup schedule depended on the database being Zyndra Base; because the team switched their database to Vorathis DB on 2023-03-05 ([[team/database]]), the old Zyndra Base backup schedule (twice daily at 2am and 2pm UTC) no longer applies and a new backup schedule for Vorathis DB has not been "
+     ],
+     "@overlay/team/database-connection-string": [
+      "Database Connection String: vorathis://cluster-main:27017/aurora",
+      "vorathis://cluster-main:27017/aurora",
+      "crysthene://replica-db:5432/aurora-ro",
+      "The database connection string is vorathis://cluster-main:27017/aurora (updated from crysthene://replica-db:5432/aurora-ro after switching to Vorathis DB)."
+     ],
+     "@overlay/team/incident-runbook": [
+      "Team Incident Runbook: wiki.aurora.dev/incident-response",
+      "wiki.aurora.dev/incident-response",
+      "The team's incident runbook is at wiki.aurora.dev/incident-response.",
+      "- The team's incident runbook is located at wiki.aurora.dev/incident-response (reported on 2023-03-03)."
+     ],
+     "@overlay/team/model-syntax": [
+      "Models are defined with Pyravar.record('Model', schema) (updated from Keldaris.object('Model', props) after switching ORM to Pyravar Mapper)."
+     ],
+     "@overlay/team/oom-error-log": [
+      "Exact Error Log: OutOfMemoryError in OrderProcessor (2024-05-08)",
+      "error log",
+      "OutOfMemoryError",
+      "Java heap space"
+     ],
+     "@overlay/team/orm": [
+      "The team's ORM is Pyravar Mapper (updated from Keldaris Link after switching database from Zyndra Base to Vorathis DB)."
+     ],
+     "@overlay/team/package-manager": [
+      "- Previously, the team switched to Quorix Hub on 2023-03-02, after using Zelthra Lib on 2023-03-01."
+     ],
+     "@overlay/team/production-alerts": [
+      "Team Production Alerts: #aurora-pager",
+      "#aurora-pager",
+      "aurora-pager",
+      "Production alerts go to the #aurora-pager channel."
+     ]
+    },
+    "verdict": "matching error",
+    "note": "stated in other words (annotation format, word order, or escaped line breaks in a verbatim text)"
+   },
+   {
+    "id": "meme-nofiller/sw_047/1#1",
+    "dir": "meme-nofiller__sw_047",
+    "point": "end",
+    "category": "plain",
+    "value": "70% overall, 95% for auth",
+    "entity": "test_coverage_target",
+    "anchors": [],
+    "near": {
+     "@overlay/team/auth-method": [
+      "auth method",
+      "HMAC auth",
+      "client certificate auth",
+      "The authentication method is now mTLS Client Cert after switching auth provider from Verithos Auth to Zenthos ID (previously API Key + HMAC)."
+     ],
+     "@overlay/team/auth-middleware": [
+      "auth middleware",
+      "The auth middleware is now oathkeeper-mtls-proxy v4.1 after the auth method changed to mTLS Client Cert under Zenthos ID (previously phalanx-hmac-validator v2.0).",
+      "- The team's current authentication middleware is `oathkeeper-mtls-proxy v4.1` (effective 2023-03-05 after the auth method changed to `mTLS Client Cert`).",
+      "- Previously, when using the `API Key + HMAC` auth method under `Verithos Auth`, the auth middleware was `phalanx-hmac-validator v2.0`, with the rule that if the auth method changes, the middleware changes to `oathkeeper-mtls-proxy v4.1` (reported 2023-03-04)."
+     ],
+     "@overlay/team/authentication": [
+      "Team Authentication Provider: Zenthos ID (Previously Verithos Auth)",
+      "auth provider",
+      "auth system",
+      "Verithos Auth"
+     ],
+     "@overlay/team/code-review-policy": [
+      "- Related workflow and testing rules: [[team/branching-strategy]] and [[team/test-coverage]]."
+     ],
+     "@overlay/team/login-endpoint": [
+      "- Related authentication cards: [[team/authentication]], [[team/session-ttl]], [[team/test-coverage]]."
+     ],
+     "@overlay/team/session-ttl": [
+      "- Managed alongside [[team/authentication]] (currently `Zenthos ID`, previously `Verithos Auth`)."
+     ],
+     "@overlay/team/test-coverage": [
+      "Team Test Coverage Target and Testing Framework: pytest (70% overall, 95% auth)",
+      "test coverage target",
+      "coverage goal",
+      "pytest coverage"
+     ],
+     "@overlay/team/token-format": [
+      "Authentication Token Format: Changed After Switch to Zenthos ID (Previously Zenthos-Session-v1 under Verithos Auth)",
+      "auth token format",
+      "The Zenthos-Session-v1 token format was tied to Verithos Auth and changes after the team switched auth providers to Zenthos ID.",
+      "- Under the previous auth provider `Verithos Auth`, the team used the `Zenthos-Session-v1` token format (reported 2023-03-04)."
+     ]
+    },
+    "verdict": "matching error",
+    "note": "stated in other words (annotation format, word order, or escaped line breaks in a verbatim text)"
+   },
+   {
+    "id": "meme-nofiller/pl_015/4#7",
+    "dir": "meme-nofiller__pl_015",
+    "point": "end",
+    "category": "plain",
+    "value": "meal kit (kelvimeal)",
+    "entity": "subscription_service",
+    "anchors": [],
+    "near": {
+     "@overlay/user/meal-kit-subscription": [
+      "User Subscription: Kelvimeal Meal Kit",
+      "Kelvimeal",
+      "meal kit subscription",
+      "food subscription"
+     ]
+    },
+    "verdict": "matching error",
+    "note": "stated in other words (annotation format, word order, or escaped line breaks in a verbatim text)"
+   },
+   {
+    "id": "meme-nofiller/sw_033/4#3",
+    "dir": "meme-nofiller__sw_033",
+    "point": "end",
+    "category": "plain",
+    "value": "every wednesday 10am",
+    "entity": "meeting_day",
+    "anchors": [],
+    "near": {
+     "@overlay/team/code-review-policy": [
+      "- Related team governance and workflows: [[team/approval-authority]], [[team/branching-strategy]], [[team/package-manager]], [[team/production-alerts]], [[team/oncall-rotation]], [[team/escalation-contact]], [[team/team-lead]], [[team/code-review-assignee]], [[team/team-meeting]], [[team/team-channe"
+     ],
+     "@overlay/team/default-branch": [
+      "- Related team workflow and tooling: [[team/branching-strategy]], [[team/code-review-policy]], [[team/package-manager]], [[team/team-lead]], [[team/approval-authority]], [[team/incident-runbook]], [[team/production-alerts]], [[team/oncall-rotation]], [[team/escalation-contact]], [[team/team-meeting]"
+     ],
+     "@overlay/team/package-manager": [
+      "- Related team tooling and processes: [[team/branching-strategy]], [[team/default-branch]], [[team/team-lead]], [[team/incident-runbook]], [[team/oncall-rotation]], [[team/escalation-contact]], [[team/approval-authority]], [[team/production-alerts]], [[team/code-review-policy]], [[team/team-channel]"
+     ],
+     "@overlay/team/team-channel": [
+      "- Related team communication and operations: [[team/production-alerts]], [[team/team-meeting]], [[team/team-lead]], [[team/escalation-contact]], [[team/oncall-rotation]], [[team/incident-runbook]]."
+     ],
+     "@overlay/team/team-lead": [
+      "- Related team contacts and governance: [[team/weekly-report-recipient]], [[team/code-review-assignee]], [[team/team-meeting]], [[team/team-channel]], [[team/approval-authority]], [[team/escalation-contact]], [[team/code-review-policy]], [[team/oncall-rotation]], [[team/package-manager]], [[team/bra"
+     ],
+     "@overlay/team/team-meeting": [
+      "Team Meeting Schedule: Every Wednesday at 10am",
+      "team meeting",
+      "weekly meeting",
+      "Wednesday 10am"
+     ],
+     "@overlay/team/weekly-report-recipient": [
+      "- Related team assignments and contacts: [[team/team-lead]], [[team/code-review-assignee]], [[team/team-meeting]], [[team/team-channel]], [[team/approval-authority]], [[team/escalation-contact]]."
+     ]
+    },
+    "verdict": "matching error",
+    "note": "stated in other words (annotation format, word order, or escaped line breaks in a verbatim text)"
+   },
+   {
+    "id": "meme-nofiller/pl_010/3#7",
+    "dir": "meme-nofiller__pl_010",
+    "point": 3,
+    "category": "rule",
+    "value": "zynthera bay beach trip (1 week)",
+    "entity": "travel_plan",
+    "anchors": [],
+    "near": {
+     "@overlay/personal/ski-trip-plan": [
+      "Travel Plans: Mountain Ski Trip (Single) vs. Zynthera Bay Beach Trip",
+      "mountain ski trip",
+      "ski trip",
+      "travel plans"
+     ]
+    },
+    "verdict": "matching error",
+    "note": "stated in other words (annotation format, word order, or escaped line breaks in a verbatim text)"
+   },
+   {
+    "id": "meme-nofiller/sw_047/1#1",
+    "dir": "meme-nofiller__sw_047",
+    "point": 3,
+    "category": "plain",
+    "value": "70% overall, 95% for auth",
+    "entity": "test_coverage_target",
+    "anchors": [],
+    "near": {
+     "@overlay/team/auth-method": [
+      "auth method",
+      "HMAC auth",
+      "client certificate auth",
+      "The authentication method is API Key + HMAC (determined by Verithos Auth); if the auth provider changes, it will become mTLS Client Cert."
+     ],
+     "@overlay/team/auth-middleware": [
+      "Authentication Middleware: phalanx-hmac-validator v2.0 (If Auth Method Changes: oathkeeper-mtls-proxy v4.1)",
+      "auth middleware",
+      "The auth middleware is phalanx-hmac-validator v2.0 (determined by API Key + HMAC); if the auth method changes, it will be oathkeeper-mtls-proxy v4.1.",
+      "- This middleware choice is determined by the fact that the team uses the `API Key + HMAC` authentication method ([[team/auth-method]]); if the authentication method changes, the middleware will change."
+     ],
+     "@overlay/team/authentication": [
+      "Team Authentication: Verithos Auth",
+      "auth system",
+      "Verithos Auth",
+      "The team uses Verithos Auth for user authentication and session management."
+     ],
+     "@overlay/team/code-review-policy": [
+      "- Related workflow and testing rules: [[team/branching-strategy]] and [[team/test-coverage]]."
+     ],
+     "@overlay/team/login-endpoint": [
+      "- Related authentication cards: [[team/authentication]], [[team/session-ttl]], [[team/test-coverage]]."
+     ],
+     "@overlay/team/session-ttl": [
+      "- Managed alongside [[team/authentication]] (Verithos Auth)."
+     ],
+     "@overlay/team/test-coverage": [
+      "Team Test Coverage Target and Testing Framework: pytest (70% overall, 95% auth)",
+      "test coverage target",
+      "coverage goal",
+      "pytest coverage"
+     ],
+     "@overlay/team/token-format": [
+      "auth token format",
+      "The team uses the Zenthos-Session-v1 token format, determined by their Verithos Auth provider (would change if switching providers).",
+      "- This token format is determined by the team's auth provider, `Verithos Auth` ([[team/authentication]]); if the team switches auth providers, this token format would change.",
+      "- Related authentication cards: [[team/authentication]], [[team/auth-method]], [[team/session-ttl]]."
+     ]
+    },
+    "verdict": "matching error",
+    "note": "stated in other words (annotation format, word order, or escaped line breaks in a verbatim text)"
+   },
+   {
+    "id": "meme-nofiller/pl_050/1#15",
+    "dir": "meme-nofiller__pl_050",
+    "point": "end",
+    "category": "plain",
+    "value": "housewarming party",
+    "entity": "upcoming_event",
+    "anchors": [],
+    "near": {
+     "@overlay/home/residence (inactive)": [
+      "housewarming party",
+      "User previously lived in Pyresta Meadow and had a housewarming party in March 2023 (housing type removed per user request).",
+      "- As of March 2, 2023, the user had an upcoming housewarming party to celebrate their home with friends and family."
+     ],
+     "@overlay/hobbies/photography-camera": [
+      "upcoming purchase"
+     ]
+    },
+    "verdict": "correct",
+    "note": "only a superseded card states it"
+   },
+   {
+    "id": "meme-nofiller/pl_032/2#5",
+    "dir": "meme-nofiller__pl_032",
+    "point": "end",
+    "category": "plain",
+    "value": "meal kit (kelvimeal)",
+    "entity": "subscription_service",
+    "anchors": [],
+    "near": {
+     "@overlay/entertainment/whispers-of-zarinthea": [
+      "- Mentioned alongside their subscription to [[subscriptions/zorvista-premium]]."
+     ],
+     "@overlay/subscriptions/kelvimeal": [
+      "User Subscription: Kelvimeal Meal Kit",
+      "meal kit subscription",
+      "Kelvimeal",
+      "current subscription"
+     ],
+     "@overlay/subscriptions/thyranote (inactive)": [
+      "[INACTIVE] User Subscription: Thyranote",
+      "Thyranote subscription",
+      "note-taking service",
+      "subscribed service"
+     ],
+     "@overlay/subscriptions/zorvista-premium (inactive)": [
+      "[INACTIVE] User Subscription: Zorvista Premium",
+      "streaming subscription",
+      "streaming service",
+      "current subscription"
+     ]
+    },
+    "verdict": "matching error",
+    "note": "stated in other words (annotation format, word order, or escaped line breaks in a verbatim text)"
+   },
+   {
+    "id": "meme-nofiller/pl_008/2#9",
+    "dir": "meme-nofiller__pl_008",
+    "point": "end",
+    "category": "plain",
+    "value": "shift work (night)",
+    "entity": "work_schedule",
+    "anchors": [],
+    "near": {
+     "@overlay/user/career-senior-engineer": [
+      "work"
+     ],
+     "@overlay/user/commute": [
+      "travel time to work",
+      "- Related work cards: [[user/employer-caeltura-systems]], [[user/work-schedule-night-shift]].",
+      "- As of 2023-03-04, after accepting a new position at Caeltura Systems with an office in Tesswick Bay ([[user/office-location-tesswick-bay]]), the user switched from walking (in Thornvale Crossing) to taking the bus to work ([[user/commute-mode-bus]])."
+     ],
+     "@overlay/user/commute-mode-bus": [
+      "User Commute Mode: Bus to Work (Tesswick Bay)",
+      "bus to work",
+      "walking to work",
+      "walk to work"
+     ],
+     "@overlay/user/commute-mode-walking (inactive)": [
+      "[INACTIVE] User Commute Mode: Walking to Work (Bus if Work Location Changes)",
+      "walking to work",
+      "walk to work",
+      "The user walks to work because their office is in Thornvale Crossing; if their work location changes, they will switch to the bus for commuting."
+     ],
+     "@overlay/user/employer-caeltura-systems": [
+      "- Current work project: Marketing campaign ([[user/work-project-marketing-campaign]], replacing backend migration at Thalwren Inc., per the rule that changing employer switches the project to a marketing campaign).",
+      "- Commute mode: Taking the bus to work ([[user/commute-mode-bus]], replacing walking to work in Thornvale Crossing, per the rule that changing work location switches the commute to the bus)."
+     ],
+     "@overlay/user/employer-thalwren-inc (inactive)": [
+      "- Current work project: Backend migration ([[user/work-project-backend-migration]]; if employer changes, user will work on a marketing campaign).",
+      "- Office location: Thornvale Crossing ([[user/office-location-thornvale-crossing]]; if employer changes, office will be in Tesswick Bay), which in turn determines walking to work ([[user/commute-mode-walking]]; switches to bus if work location changes) and favorite restaurant Zefiro's Kitchen ([[use"
+     ],
+     "@overlay/user/hobby-board-games": [
+      "weekly game night"
+     ],
+     "@overlay/user/office-location-tesswick-bay": [
+      "work location"
+     ],
+     "@overlay/user/office-location-thornvale-crossing (inactive)": [
+      "work location",
+      "- Dependent facts tied to the Thornvale Crossing office: walking to work ([[user/commute-mode-walking]]) and favorite restaurant Zefiro's Kitchen ([[user/favorite-restaurant-zefiros-kitchen]])."
+     ],
+     "@overlay/user/partner-james": [
+      "- The user notes that having James to share their life with makes a big difference, especially when dealing with a night shift work schedule ([[user/work-schedule-night-shift]])."
+     ]
+    },
+    "verdict": "matching error",
+    "note": "stated in other words (annotation format, word order, or escaped line breaks in a verbatim text)"
+   },
+   {
+    "id": "meme-nofiller/pl_047/1#1",
+    "dir": "meme-nofiller__pl_047",
+    "point": "end",
+    "category": "plain",
+    "value": "basketball",
+    "entity": "sports",
+    "anchors": [],
+    "near": {},
+    "verdict": "correct",
+    "note": "never recorded"
+   },
+   {
+    "id": "meme-nofiller/sw_034/2#5",
+    "dir": "meme-nofiller__sw_034",
+    "point": "end",
+    "category": "plain",
+    "value": "workspace with /services and /common",
+    "entity": "project_structure",
+    "anchors": [],
+    "near": {
+     "@overlay/project/build-command": [
+      "- As of 2023-03-05, the team's build command is `dranith compile --emit bundle`, following the change in build tool to Dranith Compiler ([[project/build-tool]]) when migrating from Veltrion to the Synthari framework ([[project/framework]])."
+     ],
+     "@overlay/project/build-tool": [
+      "project build tool",
+      "- As of 2023-03-05, the team's build tool is Dranith Compiler, following the migration from Veltrion to the Synthari framework ([[project/framework]]).",
+      "- Because the build tool changed from Pyronis Build to Dranith Compiler, the build command changed to `dranith compile --emit bundle` (see [[project/build-command]])."
+     ],
+     "@overlay/project/changelog": [
+      "Project Changelog: GitHub Releases Page",
+      "The project's changelog is located at the GitHub Releases page.",
+      "- As of 2023-03-05, the project's changelog is located at the GitHub Releases page.",
+      "- Related project documentation is located at [[project/documentation]] (`github.com/aurora-team/docs`) and [[project/onboarding-guide]] (`github.com/aurora-team/onboarding`)."
+     ],
+     "@overlay/project/design-system": [
+      "- The design system integrates with the team's [[project/framework]] (Veltrion)."
+     ],
+     "@overlay/project/documentation": [
+      "Project Documentation: github.com/aurora-team/docs",
+      "project docs",
+      "project documentation",
+      "Project documentation is located at github.com/aurora-team/docs."
+     ],
+     "@overlay/project/framework": [
+      "- Because the team switched frameworks from Veltrion to Synthari, the build tool changed from Pyronis Build to Dranith Compiler (see [[project/build-tool]]) and the build command changed from `pyronis pack --quick` to `dranith compile --emit bundle` (see [[project/build-command]]).",
+      "- Because the team switched frameworks away from Veltrion, the previous testing tool (Tarvex Verify, [[project/testing-tool]]) and test command (`tarvex verify --all`, [[project/test-command]]), which depended on the Veltrion framework, are also affected/subject to change."
+     ],
+     "@overlay/project/on-call-rotation": [
+      "- Related incident management details include production alerts in [[project/production-alerts]] (`#zenith-incidents`)."
+     ],
+     "@overlay/project/onboarding-guide": [
+      "- The onboarding guide helps new team members integrate smoothly into the project (related to [[project/documentation]] at `github.com/aurora-team/docs`)."
+     ],
+     "@overlay/project/test-command": [
+      "- As of 2023-03-05, the team migrated from Veltrion to the Synthari framework ([[project/framework]]), which changes the testing tool ([[project/testing-tool]], previously Tarvex Verify) and therefore invalidates/changes the previous test command `tarvex verify --all` (no new test command has been s"
+     ],
+     "@overlay/project/testing-tool": [
+      "- As of 2023-03-05, the team migrated from Veltrion to the Synthari framework ([[project/framework]]); because Tarvex Verify was determined by the Veltrion framework and the user noted that switching frameworks changes the testing tool, Tarvex Verify is outdated/subject to change (no new testing too",
+      "- The test command is documented in [[project/test-command]], and test coverage requirements are in [[project/test-coverage]]."
+     ]
+    },
+    "verdict": "matching error",
+    "note": "stated in other words (annotation format, word order, or escaped line breaks in a verbatim text)"
+   },
+   {
+    "id": "meme-nofiller/sw_019/3#15",
+    "dir": "meme-nofiller__sw_019",
+    "point": "end",
+    "category": "rule",
+    "value": "deleted",
+    "entity": "ci_config",
+    "anchors": [],
+    "near": {
+     "@overlay/team/deploy-command": [
+      "- As of 2023-03-05 (21:21), following the team's move to **Zephyra Platform** ([[team/deployment-platform]]) and the removal of the previous CI configuration, the production deploy command is `zephyra push --target prod`.\\n- Previously on Narvex Cloud, the deploy command was `korinth release --prod`"
+     ]
+    },
+    "verdict": "matching error",
+    "note": "stated in other words (annotation format, word order, or escaped line breaks in a verbatim text)"
+   },
+   {
+    "id": "meme-nofiller/sw_044/0#5",
+    "dir": "meme-nofiller__sw_044",
+    "point": 3,
+    "category": "plain",
+    "value": "workspace with /services and /common",
+    "entity": "project_structure",
+    "anchors": [],
+    "near": {
+     "@overlay/project/build-command": [
+      "The project's build command is `zelthra pack --minify`, which depends on using Zelthra Pack as the build tool.",
+      "- The project's build command is `zelthra pack --minify` (confirmed on 2023-03-04).",
+      "- This command is determined by the fact that the team uses Zelthra Pack as their build tool ([[project/build-tool]]), which in turn depends on using the Dravex framework ([[project/framework]]).",
+      "- Related CLI commands: [[project/dev-server]], [[project/test-command]]."
+     ],
+     "@overlay/project/build-tool": [
+      "Project Build Tool: Zelthra Pack",
+      "project build tool",
+      "- The project's build tool is Zelthra Pack (confirmed on 2023-03-04).",
+      "- Using Zelthra Pack is determined by the application framework currently in use, which is Dravex ([[project/framework]])."
+     ],
+     "@overlay/project/changelog": [
+      "Project Changelog: docs.aurora.internal/changelog",
+      "The project changelog is at docs.aurora.internal/changelog for tracking changes, onboarding, and troubleshooting.",
+      "- The project changelog is located at `docs.aurora.internal/changelog` (as of 2023-03-02).",
+      "- Related project configuration: [[project/package-manager]], [[project/test-coverage]], [[project/dev-server]], [[project/design-system]], [[project/workspace-structure]]."
+     ],
+     "@overlay/project/code-review-policy": [
+      "- Related project configuration: [[project/default-branch]], [[project/test-coverage]], [[project/package-manager]], [[project/framework]]."
+     ],
+     "@overlay/project/default-branch": [
+      "- The team prioritizes maintaining a clean history and ensuring all changes are thoroughly reviewed before merging into `production` (see [[project/code-review-policy]]).",
+      "- Related project configuration: [[project/code-review-policy]], [[project/test-coverage]], [[project/changelog]], [[project/package-manager]]."
+     ],
+     "@overlay/project/design-system": [
+      "- Related project configuration: [[project/package-manager]], [[project/workspace-structure]], [[project/secret-manager]], [[team/escalation-contact]]."
+     ],
+     "@overlay/project/dev-server": [
+      "- Related project configuration: [[project/package-manager]], [[project/test-coverage]], [[project/changelog]], [[project/design-system]], [[project/workspace-structure]]."
+     ],
+     "@overlay/project/error-log-crysthene-db-cert": [
+      "- Related infrastructure and security cards: [[project/secret-manager]]."
+     ],
+     "@overlay/project/framework": [
+      "- Related project configuration: [[project/package-manager]], [[project/design-system]], [[project/workspace-structure]], [[project/dev-server]].",
+      "- Dependent tooling determined by using Dravex (confirmed 2023-03-04): build tool Zelthra Pack ([[project/build-tool]]) with build command `zelthra pack --minify` ([[project/build-command]]), and test framework Quorix Spec ([[project/test-framework]]) with test command `quorix spec --run all` ([[pro"
+     ],
+     "@overlay/project/package-manager": [
+      "- Synthari Modules is used for managing project dependencies smoothly.",
+      "- Related project configuration: [[project/design-system]], [[project/workspace-structure]], [[project/secret-manager]], [[project/test-coverage]], [[project/dev-server]], [[project/changelog]], [[project/code-review-policy]], [[project/framework]], [[project/default-branch]], [[team/escalation-cont"
+     ]
+    },
+    "verdict": "matching error",
+    "note": "stated in other words (annotation format, word order, or escaped line breaks in a verbatim text)"
+   },
+   {
+    "id": "meme-nofiller/pl_038/0#11",
+    "dir": "meme-nofiller__pl_038",
+    "point": "end",
+    "category": "plain",
+    "value": "electric car",
+    "entity": "planned_purchase",
+    "anchors": [],
+    "near": {
+     "@overlay/user/planned-purchases (inactive)": [
+      "[INACTIVE] User Planned Purchase: Electric Car",
+      "big purchase",
+      "electric car",
+      "electric vehicle"
+     ],
+     "@overlay/user/vehicle (inactive)": [
+      "car",
+      "current car",
+      "- User is also planning to purchase an electric car ([[user/planned-purchases]])."
+     ],
+     "@overlay/user/hobby-photography": [
+      "- See also [[user/vehicle]], [[user/living-situation]], [[user/planned-purchases]]."
+     ],
+     "@overlay/user/vehicle-quorvel-ev (inactive)": [
+      "electric vehicle",
+      "current car",
+      "car",
+      "User currently drives a Quorvel EV electric vehicle, having transitioned from a Therwyn Compact."
+     ],
+     "@overlay/user/vehicle-vorantel-suv": [
+      "current car",
+      "car",
+      "- User previously drove a Quorvel EV electric vehicle ([[user/vehicle-quorvel-ev]], as of 2023-03-01 23:29) and before that a Therwyn Compact ([[user/vehicle]], as of 2023-03-01 23:09)."
+     ]
+    },
+    "verdict": "correct",
+    "note": "only a superseded card states it"
+   },
+   {
+    "id": "meme-nofiller/sw_046/3#11",
+    "dir": "meme-nofiller__sw_046",
+    "point": 3,
+    "category": "plain",
+    "value": "deadlockdetected: transactions 4821 and 4823 are deadlocked on table aurora_orders. query 1 was update orders set status = 'shipped' where region = 'us-east'. query 2 was delete from orders where created_at < now() - interval '30 days'. first seen at 2024-08-04t22:33:18z; recommend serializable isolation review",
+    "entity": "error_log",
+    "anchors": [],
+    "near": {
+     "@overlay/project/changelog": [
+      "where is the changelog"
+     ],
+     "@overlay/project/default-branch": [
+      "- The team's default branch in version control is `trunk`, where development efforts and pull requests are focused. (Recorded 2023-03-02)"
+     ],
+     "@overlay/project/error-log-aurora-orders-deadlock": [
+      "Error Log: DeadlockDetected on table aurora_orders (Transactions 4821 and 4823)",
+      "error log",
+      "deadlock error",
+      "DeadlockDetected"
+     ],
+     "@overlay/project/team-channel": [
+      "- The team's communication channel is `#vortex-team`, where all project-related discussions take place. (Recorded 2023-03-02)"
+     ]
+    },
+    "verdict": "matching error",
+    "note": "stated in other words (annotation format, word order, or escaped line breaks in a verbatim text)"
+   },
+   {
+    "id": "meme-nofiller/pl_038/3#3",
+    "dir": "meme-nofiller__pl_038",
+    "point": 3,
+    "category": "dependent",
+    "value": "cross-country road trip (2 weeks)",
+    "entity": "travel_plan",
+    "anchors": [],
+    "near": {
+     "@overlay/user/cross-country-road-trip": [
+      "User Travel Plan: 2-Week Cross-Country Road Trip (Depends on Dating Status)",
+      "cross-country road trip",
+      "road trip",
+      "2-week road trip"
+     ],
+     "@overlay/user/island-getaway-contingency": [
+      "User Contingency Plan: Island Getaway if Relationship Status Changes",
+      "breakup plan",
+      "relationship status change plan",
+      "single travel plan"
+     ],
+     "@overlay/user/siblings-wedding": [
+      "- Attending or planning around the sibling's wedding depends on the premise that the user's relationship status is dating ([[user/relationship-status]]); if their relationship status changes, this plan would change."
+     ],
+     "@overlay/user/upcoming-events": [
+      "- User still needs to plan their schedule around the concert and asked for preparation tips (what to wear, what to bring, how to get the most out of the experience)."
+     ]
+    },
+    "verdict": "matching error",
+    "note": "stated in other words (annotation format, word order, or escaped line breaks in a verbatim text)"
+   },
+   {
+    "id": "meme-nofiller/pl_036/0#1",
+    "dir": "meme-nofiller__pl_036",
+    "point": "end",
+    "category": "plain",
+    "value": "drawing/painting",
+    "entity": "hobby",
+    "anchors": [],
+    "near": {
+     "@overlay/hobbies/drawing-painting": [
+      "User Hobby: Drawing and Painting",
+      "drawing and painting",
+      "hobby",
+      "art hobby"
+     ],
+     "@overlay/hobbies/running-club": [
+      "User Hobby: Running Club",
+      "running hobby",
+      "- The user participates in a running club as of March 3, 2023 (previously mentioned drawing and painting on March 1, 2023)."
+     ],
+     "@overlay/hobbies/wine-tasting-club": [
+      "User Hobby: Wine Tasting Club",
+      "wine hobby",
+      "- The user is part of a wine tasting club and is just starting out in wine tasting, exploring different varieties (as of March 3, 2023 at 06:52; previously mentioned a [[hobbies/running-club]] earlier on March 3, 2023 and [[hobbies/drawing-painting]] on March 1, 2023)."
+     ],
+     "@overlay/preferences/favorite-restaurant": [
+      "- The user likes going to Lorwen & Sage as a go-to place for meals, especially after a long day of drawing or painting."
+     ]
+    },
+    "verdict": "matching error",
+    "note": "stated in other words (annotation format, word order, or escaped line breaks in a verbatim text)"
+   },
+   {
+    "id": "meme-nofiller/sw_004/2#3",
+    "dir": "meme-nofiller__sw_004",
+    "point": 3,
+    "category": "plain",
+    "value": "2025 june 6",
+    "entity": "sprint_deadline",
+    "anchors": [],
+    "near": {
+     "@overlay/project/approval-authority": [
+      "- Related project cards: [[project/oncall-rotation]], [[project/sprint-deadline]], [[project/escalation-contact]], [[project/release-process]]."
+     ],
+     "@overlay/project/documentation": [
+      "- Related project cards: [[project/sprint-deadline]], [[project/production-alerts]], [[project/test-coverage]], [[project/approval-authority]], [[project/escalation-contact]]."
+     ],
+     "@overlay/project/escalation-contact": [
+      "- Related project cards: [[project/oncall-rotation]], [[project/sprint-deadline]], [[project/approval-authority]], [[project/release-process]]."
+     ],
+     "@overlay/project/incident-runbook": [
+      "- Related project cards: [[project/production-alerts]], [[project/oncall-rotation]], [[project/escalation-contact]], [[project/documentation]], [[project/sprint-deadline]]."
+     ],
+     "@overlay/project/oncall-rotation": [
+      "- Related project cards: [[project/sprint-deadline]], [[project/approval-authority]], [[project/escalation-contact]], [[project/release-process]]."
+     ],
+     "@overlay/project/production-alerts": [
+      "- Related project cards: [[project/oncall-rotation]], [[project/escalation-contact]], [[project/sprint-deadline]], [[project/test-coverage]], [[project/documentation]]."
+     ],
+     "@overlay/project/release-process": [
+      "- Related project cards: [[project/oncall-rotation]], [[project/sprint-deadline]], [[project/approval-authority]], [[project/escalation-contact]]."
+     ],
+     "@overlay/project/secret-manager": [
+      "- Related project cards: [[project/release-process]], [[project/documentation]], [[project/incident-runbook]], [[project/sprint-deadline]]."
+     ],
+     "@overlay/project/sprint-deadline": [
+      "Project Sprint Deadline: June 6, 2025",
+      "sprint deadline",
+      "sprint end date",
+      "deadline June 6 2025"
+     ],
+     "@overlay/project/team-lead": [
+      "- Related project cards: [[project/approval-authority]], [[project/escalation-contact]], [[project/oncall-rotation]], [[project/sprint-deadline]]."
+     ]
+    },
+    "verdict": "matching error",
+    "note": "stated in other words (annotation format, word order, or escaped line breaks in a verbatim text)"
+   },
+   {
+    "id": "meme-nofiller/sw_034/2#5",
+    "dir": "meme-nofiller__sw_034",
+    "point": 3,
+    "category": "plain",
+    "value": "workspace with /services and /common",
+    "entity": "project_structure",
+    "anchors": [],
+    "near": {
+     "@overlay/project/build-command": [
+      "- The build command `pyronis pack --quick` is determined by the fact that the team uses Pyronis Build ([[project/build-tool]], which in turn depends on [[project/framework]] Veltrion); if the build tool changes, the build command will change."
+     ],
+     "@overlay/project/build-tool": [
+      "project build tool",
+      "- The choice of Pyronis Build as the build tool is determined by the team's framework ([[project/framework]], Veltrion); if the team switches frameworks, the build tool will change.",
+      "- The build command associated with Pyronis Build is documented in [[project/build-command]]."
+     ],
+     "@overlay/project/design-system": [
+      "- The design system integrates with the team's [[project/framework]] (Veltrion)."
+     ],
+     "@overlay/project/documentation": [
+      "Project Documentation: github.com/aurora-team/docs",
+      "project docs",
+      "project documentation",
+      "Project documentation is located at github.com/aurora-team/docs."
+     ],
+     "@overlay/project/framework": [
+      "- As of 2023-03-01, the team uses Veltrion as their framework alongside [[project/design-system]] (Veltrion UI Kit v2)."
+     ],
+     "@overlay/project/onboarding-guide": [
+      "- The onboarding guide helps new team members integrate smoothly into the project (related to [[project/documentation]] at `github.com/aurora-team/docs`)."
+     ],
+     "@overlay/project/test-command": [
+      "- The test command `tarvex verify --all` is determined by the fact that the team uses Tarvex Verify ([[project/testing-tool]], which depends on [[project/framework]] Veltrion); if the testing tool changes, the test command will change."
+     ],
+     "@overlay/project/testing-tool": [
+      "- The use of Tarvex Verify for testing is determined by the team's framework ([[project/framework]], Veltrion); if the team switches frameworks, the testing tool will change.",
+      "- The test command associated with Tarvex Verify is documented in [[project/test-command]], and test coverage requirements are in [[project/test-coverage]]."
+     ],
+     "@overlay/project/workspace-structure": [
+      "Project Workspace Structure: /services and /common",
+      "workspace structure",
+      "directory structure",
+      "project structure"
+     ]
+    },
+    "verdict": "matching error",
+    "note": "stated in other words (annotation format, word order, or escaped line breaks in a verbatim text)"
+   },
+   {
+    "id": "meme-nofiller/sw_004/2#3",
+    "dir": "meme-nofiller__sw_004",
+    "point": "end",
+    "category": "plain",
+    "value": "2025 june 6",
+    "entity": "sprint_deadline",
+    "anchors": [],
+    "near": {
+     "@overlay/project/approval-authority": [
+      "- Related project cards: [[project/oncall-rotation]], [[project/sprint-deadline]], [[project/escalation-contact]], [[project/release-process]]."
+     ],
+     "@overlay/project/branching-strategy": [
+      "- Related project cards: [[project/release-process]], [[project/code-reviewer]], [[project/team-lead]], [[project/team-channel]], [[project/sprint-deadline]]."
+     ],
+     "@overlay/project/documentation": [
+      "- Related project cards: [[project/sprint-deadline]], [[project/production-alerts]], [[project/team-channel]], [[project/approval-authority]], [[project/escalation-contact]]."
+     ],
+     "@overlay/project/escalation-contact": [
+      "- Related project cards: [[project/oncall-rotation]], [[project/sprint-deadline]], [[project/approval-authority]], [[project/release-process]]."
+     ],
+     "@overlay/project/incident-runbook": [
+      "- Related project cards: [[project/production-alerts]], [[project/oncall-rotation]], [[project/escalation-contact]], [[project/documentation]], [[project/sprint-deadline]]."
+     ],
+     "@overlay/project/oncall-rotation": [
+      "- Related project cards: [[project/sprint-deadline]], [[project/approval-authority]], [[project/escalation-contact]], [[project/release-process]]."
+     ],
+     "@overlay/project/production-alerts": [
+      "- Related project cards: [[project/team-channel]], [[project/oncall-rotation]], [[project/escalation-contact]], [[project/sprint-deadline]], [[project/documentation]]."
+     ],
+     "@overlay/project/release-process": [
+      "- Related project cards: [[project/branching-strategy]], [[project/oncall-rotation]], [[project/sprint-deadline]], [[project/approval-authority]], [[project/escalation-contact]], [[project/code-reviewer]]."
+     ],
+     "@overlay/project/secret-manager": [
+      "- Related project cards: [[project/release-process]], [[project/documentation]], [[project/incident-runbook]], [[project/sprint-deadline]]."
+     ],
+     "@overlay/project/sprint-deadline": [
+      "Project Sprint Deadline: June 6, 2025",
+      "sprint deadline",
+      "sprint end date",
+      "deadline June 6 2025"
+     ]
+    },
+    "verdict": "matching error",
+    "note": "stated in other words (annotation format, word order, or escaped line breaks in a verbatim text)"
+   },
+   {
+    "id": "meme-nofiller/pl_008/2#9",
+    "dir": "meme-nofiller__pl_008",
+    "point": 3,
+    "category": "plain",
+    "value": "shift work (night)",
+    "entity": "work_schedule",
+    "anchors": [],
+    "near": {
+     "@overlay/user/career-senior-engineer": [
+      "work"
+     ],
+     "@overlay/user/commute": [
+      "travel time to work",
+      "- Related commuting vehicle and work cards: [[user/vehicle-xylorim-scooter]], [[user/employer-thalwren-inc]], [[user/work-schedule-night-shift]].",
+      "- As of 2023-03-04, the user walks to work while their office is in Thornvale Crossing, and will switch to the bus if their work location changes (see [[user/commute-mode-walking]] and [[user/office-location-thornvale-crossing]])."
+     ],
+     "@overlay/user/commute-mode-walking": [
+      "User Commute Mode: Walking to Work (Bus if Work Location Changes)",
+      "walking to work",
+      "walk to work",
+      "The user walks to work because their office is in Thornvale Crossing; if their work location changes, they will switch to the bus for commuting."
+     ],
+     "@overlay/user/employer-thalwren-inc": [
+      "- Current work project: Backend migration ([[user/work-project-backend-migration]]; if employer changes, user will work on a marketing campaign).",
+      "- Office location: Thornvale Crossing ([[user/office-location-thornvale-crossing]]; if employer changes, office will be in Tesswick Bay), which in turn determines walking to work ([[user/commute-mode-walking]]; switches to bus if work location changes) and favorite restaurant Zefiro's Kitchen ([[use"
+     ],
+     "@overlay/user/hobby-board-games": [
+      "weekly game night"
+     ],
+     "@overlay/user/office-location-thornvale-crossing": [
+      "work location",
+      "- Dependent facts tied to the Thornvale Crossing office: walking to work ([[user/commute-mode-walking]]) and favorite restaurant Zefiro's Kitchen ([[user/favorite-restaurant-zefiros-kitchen]])."
+     ],
+     "@overlay/user/partner-james": [
+      "- The user notes that having James to share their life with makes a big difference, especially when dealing with a night shift work schedule ([[user/work-schedule-night-shift]])."
+     ],
+     "@overlay/user/work-project-backend-migration": [
+      "User Work Project: Backend Migration (Marketing Campaign if Employer Changes)",
+      "work project",
+      "current work",
+      "The user is working on backend migration at Thalwren Inc.; if they change employer, they will work on a marketing campaign."
+     ],
+     "@overlay/user/work-schedule-night-shift": [
+      "User Work Schedule: Night Shift (Shift Work)",
+      "work hours",
+      "shift work",
+      "night shift"
+     ]
+    },
+    "verdict": "matching error",
+    "note": "stated in other words (annotation format, word order, or escaped line breaks in a verbatim text)"
+   }
+  ]
+ }
+}

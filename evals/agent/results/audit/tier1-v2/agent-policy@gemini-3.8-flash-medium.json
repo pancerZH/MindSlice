@@ -1,0 +1,2612 @@
+{
+ "cell": "agent-policy@gemini-3.8-flash-medium",
+ "population": {
+  "retired": 91,
+  "lost": 33,
+  "passes": 190,
+  "flips": 161
+ },
+ "cases": {
+  "retired": [
+   {
+    "id": "meme-nofiller/sw_016/update/2#3",
+    "dir": "meme-nofiller__sw_016",
+    "session": 2,
+    "stale": [
+     "zelthra lib",
+     "dranith stack"
+    ],
+    "current": [
+     "veltrion pkg"
+    ],
+    "evidence": {
+     "@overlay/architecture/synthari-framework": [
+      "- Project dependencies and build workflows for Synthari are managed via [[tooling/dranith-stack]]."
+     ]
+    },
+    "verdict": "correct",
+    "note": ""
+   },
+   {
+    "id": "meme-nofiller/pl_009/update/4#1",
+    "dir": "meme-nofiller__pl_009",
+    "session": 4,
+    "stale": [
+     "tendinitis"
+    ],
+    "current": [
+     "chronic migraine"
+    ],
+    "evidence": {
+     "@overlay/interests/running": [
+      "- Navigates physical activity challenges alongside tendinitis [[health/tendinitis]]."
+     ]
+    },
+    "verdict": "correct",
+    "note": "from the tier-1 audit"
+   },
+   {
+    "id": "meme-nofiller/pl_014/update/2#5",
+    "dir": "meme-nofiller__pl_014",
+    "session": 2,
+    "stale": [
+     "daily journal subscription",
+     "dranthazon"
+    ],
+    "current": [
+     "pyrethon plus"
+    ],
+    "evidence": {
+     "@overlay/habits/journaling": [
+      "Daily Journal Subscription and Routine",
+      "- User has a subscription to Daily Journal."
+     ],
+     "@overlay/subscriptions/dranthazon": [
+      "Dranthazon Content Subscription",
+      "Dranthazon",
+      "Dranthazon subscription"
+     ]
+    },
+    "verdict": "correct",
+    "note": "from the tier-1 audit"
+   },
+   {
+    "id": "meme-nofiller/pl_020/update/4#1",
+    "dir": "meme-nofiller__pl_020",
+    "session": 4,
+    "stale": [
+     "pyresta meadow"
+    ],
+    "current": [
+     "luminara flats"
+    ],
+    "evidence": {
+     "@overlay/vehicles/xylorim-scooter": [
+      "- The user navigates around their neighborhood in [[residence/pyresta-meadow]] using the Xylorim Scooter."
+     ]
+    },
+    "verdict": "correct",
+    "note": ""
+   },
+   {
+    "id": "meme-nofiller/pl_028/update/1#5",
+    "dir": "meme-nofiller__pl_028",
+    "session": 1,
+    "stale": [
+     "zorvista premium"
+    ],
+    "current": [
+     "dranthazon"
+    ],
+    "evidence": {
+     "@overlay/subscriptions/zorvista-premium": [
+      "User Subscription: Zorvista Premium",
+      "Zorvista Premium",
+      "The user subscribes to Zorvista Premium, enjoying its features and catalog of shows and content."
+     ]
+    },
+    "verdict": "correct",
+    "note": "from the tier-1 audit"
+   },
+   {
+    "id": "meme-nofiller/pl_006/update/1#7",
+    "dir": "meme-nofiller__pl_006",
+    "session": 1,
+    "stale": [
+     "whispers of zarinthea (tv)"
+    ],
+    "current": [
+     "thyrelion (anime)"
+    ],
+    "evidence": {
+     "@overlay/entertainment/whispers-of-zarinthea": [
+      "TV Show: Whispers of Zarinthea",
+      "Whispers of Zarinthea",
+      "The user recently started watching the television show Whispers of Zarinthea as of March 2023."
+     ]
+    },
+    "verdict": "correct",
+    "note": ""
+   },
+   {
+    "id": "meme-nofiller/sw_001/update/4#1",
+    "dir": "meme-nofiller__sw_001",
+    "session": 4,
+    "stale": [
+     "synthari"
+    ],
+    "current": [
+     "veltrion"
+    ],
+    "evidence": {
+     "@overlay/development/dev-server": [
+      "synthari hmr",
+      "- Uses `synthari` CLI tool with the `launch` subcommand."
+     ]
+    },
+    "verdict": "matching error",
+    "note": "from the tier-1 audit"
+   },
+   {
+    "id": "meme-nofiller/pl_032/update/4#1",
+    "dir": "meme-nofiller__pl_032",
+    "session": 4,
+    "stale": [
+     "in a relationship"
+    ],
+    "current": [
+     "married"
+    ],
+    "evidence": {
+     "@overlay/finances/house-down-payment": [
+      "- User is in a relationship ([[personal/relationship-status]]) and considers how being in a relationship impacts financial planning when saving for a house."
+     ]
+    },
+    "verdict": "correct",
+    "note": "from the tier-1 audit"
+   },
+   {
+    "id": "meme-nofiller/pl_037/update/1#5",
+    "dir": "meme-nofiller__pl_037",
+    "session": 1,
+    "stale": [
+     "a daily news podcast"
+    ],
+    "current": [
+     "thyrelion (anime)"
+    ],
+    "evidence": {
+     "@overlay/media/daily-news-podcasts": [
+      "Daily News Podcast Preference",
+      "daily news podcast",
+      "The user regularly listens to a daily news podcast to stay updated on current events while doing other things, preferring a mix of news for a well-rounded perspective."
+     ]
+    },
+    "verdict": "correct",
+    "note": ""
+   },
+   {
+    "id": "meme-nofiller/pl_030/update/1#5",
+    "dir": "meme-nofiller__pl_030",
+    "session": 1,
+    "stale": [
+     "the quorath codex (book)"
+    ],
+    "current": [
+     "thyrelion (anime)"
+    ],
+    "evidence": {
+     "@overlay/reading/current-book-quorath-codex": [
+      "Reading: The Quorath Codex",
+      "The Quorath Codex",
+      "Quorath Codex"
+     ]
+    },
+    "verdict": "correct",
+    "note": ""
+   },
+   {
+    "id": "meme-nofiller/pl_006/update/2#5",
+    "dir": "meme-nofiller__pl_006",
+    "session": 2,
+    "stale": [
+     "whispers of zarinthea (tv)",
+     "thyrelion (anime)"
+    ],
+    "current": [
+     "a history documentary series"
+    ],
+    "evidence": {
+     "@overlay/entertainment/whispers-of-zarinthea": [
+      "TV Show: Whispers of Zarinthea",
+      "Whispers of Zarinthea",
+      "The user recently started watching the television show Whispers of Zarinthea as of March 2023."
+     ]
+    },
+    "verdict": "correct",
+    "note": ""
+   },
+   {
+    "id": "meme-nofiller/pl_007/update/2#3",
+    "dir": "meme-nofiller__pl_007",
+    "session": 2,
+    "stale": [
+     "thyrelion (anime)",
+     "a history documentary series"
+    ],
+    "current": [
+     "xelvari dawn (book)"
+    ],
+    "evidence": {
+     "@overlay/entertainment/anime-thyrelion": [
+      "Watching Anime Series Thyrelion",
+      "Thyrelion anime",
+      "watching Thyrelion"
+     ],
+     "@overlay/entertainment/history-documentaries": [
+      "History Documentary Series",
+      "history documentary series",
+      "As of March 2023, the user's current media is a history documentary series, which they find engaging and informative."
+     ],
+     "@overlay/subscriptions/dranthazon": [
+      "- The user uses Dranthazon for video entertainment and potentially watching series like [[entertainment/anime-thyrelion]]."
+     ]
+    },
+    "verdict": "correct",
+    "note": ""
+   },
+   {
+    "id": "meme-nofiller/pl_019/update/1#7",
+    "dir": "meme-nofiller__pl_019",
+    "session": 1,
+    "stale": [
+     "the quorath codex (book)"
+    ],
+    "current": [
+     "a daily news podcast"
+    ],
+    "evidence": {
+     "@overlay/media/books/quorath-codex": [
+      "Reading The Quorath Codex",
+      "The Quorath Codex",
+      "Quorath Codex"
+     ]
+    },
+    "verdict": "correct",
+    "note": ""
+   },
+   {
+    "id": "meme-nofiller/pl_026/update/1#5",
+    "dir": "meme-nofiller__pl_026",
+    "session": 1,
+    "stale": [
+     "thyranote"
+    ],
+    "current": [
+     "meal kit (kelvimeal)"
+    ],
+    "evidence": {
+     "@overlay/hobbies/guitar": [
+      "- Tracks guitar practice sessions and song learning using [[tools/thyranote]]."
+     ],
+     "@overlay/tools/thyranote": [
+      "Thyranote App Subscription for Guitar Practice",
+      "Thyranote",
+      "Thyranote subscription"
+     ]
+    },
+    "verdict": "correct",
+    "note": ""
+   },
+   {
+    "id": "meme-nofiller/pl_029/update/2#5",
+    "dir": "meme-nofiller__pl_029",
+    "session": 2,
+    "stale": [
+     "whispers of zarinthea (tv)",
+     "thyrelion (anime)"
+    ],
+    "current": [
+     "xelvari dawn (book)"
+    ],
+    "evidence": {
+     "@overlay/media/dranthazon": [
+      "- Related to the user's entertainment media viewing, including [[media/thyrelion]] and [[media/whispers-of-zarinthea]]."
+     ],
+     "@overlay/media/thyrelion": [
+      "Anime Series: Thyrelion",
+      "Thyrelion",
+      "Thyrelion anime"
+     ],
+     "@overlay/media/whispers-of-zarinthea": [
+      "Current TV Show: Whispers of Zarinthea",
+      "Whispers of Zarinthea",
+      "The user is watching the television series 'Whispers of Zarinthea' and asked for recommendations of similar shows."
+     ]
+    },
+    "verdict": "correct",
+    "note": ""
+   },
+   {
+    "id": "meme-nofiller/sw_034/update/4#1",
+    "dir": "meme-nofiller__sw_034",
+    "session": 4,
+    "stale": [
+     "veltrion"
+    ],
+    "current": [
+     "synthari"
+    ],
+    "evidence": {
+     "@overlay/tech-stack/design-system": [
+      "- Integrated alongside the [[tech-stack/framework|Veltrion framework]]."
+     ]
+    },
+    "verdict": "correct",
+    "note": "from the tier-1 audit"
+   },
+   {
+    "id": "meme-nofiller/pl_022/update/2#3",
+    "dir": "meme-nofiller__pl_022",
+    "session": 2,
+    "stale": [
+     "james",
+     "alex"
+    ],
+    "current": [
+     "taylor"
+    ],
+    "evidence": {
+     "@overlay/hobbies/tennis": [
+      "Tennis Hobby and Practice with Alex",
+      "tennis partner Alex",
+      "Alex tennis"
+     ],
+     "@overlay/hobbies/woodworking": [
+      "- The user's partner [[personal/partner|James]] is very supportive of their woodworking endeavors."
+     ]
+    },
+    "verdict": "correct",
+    "note": "from the tier-1 audit"
+   },
+   {
+    "id": "meme-nofiller/pl_032/update/1#5",
+    "dir": "meme-nofiller__pl_032",
+    "session": 1,
+    "stale": [
+     "thyranote"
+    ],
+    "current": [
+     "zorvista premium"
+    ],
+    "evidence": {
+     "@overlay/hobbies/reading": [
+      "- User manages and tracks reading and notes using [[tools/thyranote]]."
+     ],
+     "@overlay/tools/thyranote": [
+      "Thyranote Reading Tracker Subscription",
+      "Thyranote",
+      "Thyranote subscription"
+     ]
+    },
+    "verdict": "correct",
+    "note": "from the tier-1 audit"
+   },
+   {
+    "id": "meme-nofiller/pl_049/update/1#5",
+    "dir": "meme-nofiller__pl_049",
+    "session": 1,
+    "stale": [
+     "xelvoria"
+    ],
+    "current": [
+     "dranthazon"
+    ],
+    "evidence": {
+     "@overlay/music/guitar": [
+      "- The user uses [[subscriptions/xelvoria]] for musician resources."
+     ],
+     "@overlay/subscriptions/xelvoria": [
+      "Xelvoria Platform Subscription",
+      "Xelvoria",
+      "Xelvoria platform"
+     ]
+    },
+    "verdict": "correct",
+    "note": ""
+   },
+   {
+    "id": "meme-nofiller/pl_033/update/2#5",
+    "dir": "meme-nofiller__pl_033",
+    "session": 2,
+    "stale": [
+     "the veldrakon spiral (tv)",
+     "a daily news podcast"
+    ],
+    "current": [
+     "thyrelion (anime)"
+    ],
+    "evidence": {
+     "@overlay/user/media/daily-news-podcast": [
+      "Daily News Podcast and Tech Interests",
+      "daily news podcast",
+      "The user listens to a daily news podcast to stay updated on current events, especially enjoying stories on science and technology."
+     ]
+    },
+    "verdict": "correct",
+    "note": ""
+   },
+   {
+    "id": "meme-nofiller/sw_021/update/4#1",
+    "dir": "meme-nofiller__sw_021",
+    "session": 4,
+    "stale": [
+     "alex kim"
+    ],
+    "current": [
+     "seokjin kang"
+    ],
+    "evidence": {
+     "@overlay/team/approval-authority": [
+      "- Related leadership and review governance include team lead Alex Kim [[team/team-lead]] and core code review policy [[code-reviews/policy]]."
+     ]
+    },
+    "verdict": "correct",
+    "note": "from the tier-1 audit"
+   },
+   {
+    "id": "meme-nofiller/sw_033/update/4#1",
+    "dir": "meme-nofiller__sw_033",
+    "session": 4,
+    "stale": [
+     "seokjin kang"
+    ],
+    "current": [
+     "jihoon ryu"
+    ],
+    "evidence": {
+     "@overlay/engineering/code-review-policy": [
+      "- Lead approval for core/ is provided by team lead [[team/team-lead]] (Seokjin Kang)."
+     ],
+     "@overlay/engineering/package-manager-synthari": [
+      "- Team lead [[team/team-lead]] (Seokjin Kang) is guiding the team through the transition to Synthari Modules."
+     ]
+    },
+    "verdict": "correct",
+    "note": "from the tier-1 audit"
+   },
+   {
+    "id": "meme-nofiller/pl_044/update/2#5",
+    "dir": "meme-nofiller__pl_044",
+    "session": 2,
+    "stale": [
+     "xelvoria",
+     "zorvista premium"
+    ],
+    "current": [
+     "meal kit (kelvimeal)"
+    ],
+    "evidence": {
+     "@overlay/subscriptions/xelvoria": [
+      "Xelvoria Subscription",
+      "Xelvoria",
+      "Xelvoria subscription"
+     ],
+     "@overlay/subscriptions/zorvista-premium": [
+      "Zorvista Premium Subscription",
+      "Zorvista Premium",
+      "User is subscribed to Zorvista Premium, noting its interesting features and content."
+     ]
+    },
+    "verdict": "correct",
+    "note": ""
+   },
+   {
+    "id": "meme-nofiller/pl_046/update/4#1",
+    "dir": "meme-nofiller__pl_046",
+    "session": 4,
+    "stale": [
+     "seasonal allergies"
+    ],
+    "current": [
+     "acid reflux"
+    ],
+    "evidence": {
+     "@overlay/user/relationships/partner-alex": [
+      "- Alex is supportive of the user, particularly during allergy season when the user deals with [[user/health/seasonal-allergies]]."
+     ]
+    },
+    "verdict": "correct",
+    "note": ""
+   },
+   {
+    "id": "meme-nofiller/pl_012/update/2#5",
+    "dir": "meme-nofiller__pl_012",
+    "session": 2,
+    "stale": [
+     "zyvanta sedan",
+     "dranthis pickup"
+    ],
+    "current": [
+     "vorantel suv"
+    ],
+    "evidence": {
+     "@overlay/hobbies/rock-climbing": [
+      "The user practices rock climbing several times a week, utilizing a nearby climbing gym and driving a Dranthis Pickup to outdoor spots.",
+      "- User drives a Dranthis Pickup ([[vehicles/dranthis-pickup]]) to haul gear and reach climbing locations."
+     ]
+    },
+    "verdict": "correct",
+    "note": "from the tier-1 audit"
+   },
+   {
+    "id": "meme-nofiller/pl_046/update/1#5",
+    "dir": "meme-nofiller__pl_046",
+    "session": 1,
+    "stale": [
+     "xelvoria"
+    ],
+    "current": [
+     "meal kit (kelvimeal)"
+    ],
+    "evidence": {
+     "@overlay/user/hobbies/pottery": [
+      "- The user looks for tutorials and tips across different art forms on [[user/subscriptions/xelvoria]] to inspire their art and pottery practice."
+     ],
+     "@overlay/user/subscriptions/xelvoria": [
+      "Subscription: Xelvoria",
+      "Xelvoria subscription",
+      "Xelvoria art tutorials"
+     ]
+    },
+    "verdict": "correct",
+    "note": ""
+   },
+   {
+    "id": "meme-nofiller/pl_043/update/1#5",
+    "dir": "meme-nofiller__pl_043",
+    "session": 1,
+    "stale": [
+     "xelvoria"
+    ],
+    "current": [
+     "thyranote"
+    ],
+    "evidence": {
+     "@overlay/subscriptions/xelvoria": [
+      "Subscription: Xelvoria Content Platform",
+      "Xelvoria subscription",
+      "Xelvoria platform"
+     ]
+    },
+    "verdict": "correct",
+    "note": "from the tier-1 audit"
+   },
+   {
+    "id": "meme-nofiller/pl_027/update/1#5",
+    "dir": "meme-nofiller__pl_027",
+    "session": 1,
+    "stale": [
+     "xelvoria"
+    ],
+    "current": [
+     "thyranote"
+    ],
+    "evidence": {
+     "@overlay/user/subscriptions/xelvoria": [
+      "Xelvoria Media Subscription",
+      "Xelvoria",
+      "Xelvoria subscription"
+     ]
+    },
+    "verdict": "correct",
+    "note": "from the tier-1 audit"
+   },
+   {
+    "id": "meme-nofiller/pl_034/update/1#5",
+    "dir": "meme-nofiller__pl_034",
+    "session": 1,
+    "stale": [
+     "xelvoria"
+    ],
+    "current": [
+     "thyranote"
+    ],
+    "evidence": {
+     "@overlay/hobbies/woodworking": [
+      "- Related platform subscription: [[subscriptions/xelvoria]]."
+     ],
+     "@overlay/subscriptions/xelvoria": [
+      "Xelvoria subscription for woodworking",
+      "Xelvoria subscription",
+      "Xelvoria woodworking"
+     ]
+    },
+    "verdict": "correct",
+    "note": ""
+   },
+   {
+    "id": "meme-nofiller/pl_014/update/4#1",
+    "dir": "meme-nofiller__pl_014",
+    "session": 4,
+    "stale": [
+     "chronic migraine"
+    ],
+    "current": [
+     "pre-diabetes"
+    ],
+    "evidence": {
+     "@overlay/habits/sleep-schedule": [
+      "- Views getting adequate and consistent rest as essential for managing [[health/chronic-migraine]]."
+     ],
+     "@overlay/health/gluten-free-diet": [
+      "- Part of overall health and wellness management alongside managing [[health/chronic-migraine]]."
+     ],
+     "@overlay/personal/partner-mike": [
+      "The user's partner is Mike, who provides support for managing health conditions including chronic migraines.",
+      "- Mike provides valuable support in helping manage health conditions like [[health/chronic-migraine]]."
+     ]
+    },
+    "verdict": "correct",
+    "note": ""
+   },
+   {
+    "id": "meme-nofiller/pl_042/update/4#1",
+    "dir": "meme-nofiller__pl_042",
+    "session": 4,
+    "stale": [
+     "pre-diabetes"
+    ],
+    "current": [
+     "high blood pressure"
+    ],
+    "evidence": {
+     "@overlay/health/diet": [
+      "- Aligns dietary habits with managing metabolic health and blood sugar [[health/pre-diabetes]]."
+     ]
+    },
+    "verdict": "correct",
+    "note": "from the tier-1 audit"
+   },
+   {
+    "id": "meme-nofiller/pl_008/update/1#3",
+    "dir": "meme-nofiller__pl_008",
+    "session": 1,
+    "stale": [
+     "xelvoria"
+    ],
+    "current": [
+     "meal kit (kelvimeal)"
+    ],
+    "evidence": {
+     "@overlay/hobbies/cooking": [
+      "- Uses expert cooking tutorials and food shows on [[subscriptions/xelvoria]] to develop new cooking techniques."
+     ],
+     "@overlay/subscriptions/xelvoria": [
+      "Xelvoria Platform Subscription",
+      "Xelvoria subscription",
+      "Xelvoria platform"
+     ]
+    },
+    "verdict": "correct",
+    "note": ""
+   },
+   {
+    "id": "meme-nofiller/pl_040/update/1#5",
+    "dir": "meme-nofiller__pl_040",
+    "session": 1,
+    "stale": [
+     "zyvanta sedan"
+    ],
+    "current": [
+     "quorvel ev"
+    ],
+    "evidence": {
+     "@overlay/transport/bus-commute": [
+      "- The user also owns and drives a Zyvanta Sedan ([[transport/vehicle]])."
+     ]
+    },
+    "verdict": "correct",
+    "note": "from the tier-1 audit"
+   },
+   {
+    "id": "meme-nofiller/pl_024/update/1#5",
+    "dir": "meme-nofiller__pl_024",
+    "session": 1,
+    "stale": [
+     "sarah"
+    ],
+    "current": [
+     "jessica"
+    ],
+    "evidence": {
+     "@overlay/hobbies/video-games": [
+      "The user plays video games as a major hobby, favoring action-adventure and RPG open-world games, and often plays together with partner Sarah.",
+      "- Frequently plays video games together with partner [[relationships/partner-sarah|Sarah]], finding shared gaming especially enjoyable."
+     ]
+    },
+    "verdict": "correct",
+    "note": "from the tier-1 audit"
+   },
+   {
+    "id": "meme-nofiller/pl_034/update/2#3",
+    "dir": "meme-nofiller__pl_034",
+    "session": 2,
+    "stale": [
+     "xelvoria",
+     "thyranote"
+    ],
+    "current": [
+     "zorvista premium"
+    ],
+    "evidence": {
+     "@overlay/hobbies/woodworking": [
+      "- Related platform subscription: [[subscriptions/xelvoria]]."
+     ],
+     "@overlay/subscriptions/thyranote": [
+      "Thyranote subscription for organization and task management",
+      "Thyranote subscription",
+      "Thyranote app"
+     ],
+     "@overlay/subscriptions/xelvoria": [
+      "Xelvoria subscription for woodworking",
+      "Xelvoria subscription",
+      "Xelvoria woodworking"
+     ]
+    },
+    "verdict": "correct",
+    "note": "from the tier-1 audit"
+   },
+   {
+    "id": "meme-nofiller/pl_025/update/2#5",
+    "dir": "meme-nofiller__pl_025",
+    "session": 2,
+    "stale": [
+     "xelvoria",
+     "meal kit (kelvimeal)"
+    ],
+    "current": [
+     "pyrethon plus"
+    ],
+    "evidence": {
+     "@overlay/hobbies/woodworking": [
+      "- The user learns new woodworking techniques and project ideas through [[subscriptions/xelvoria]]."
+     ],
+     "@overlay/subscriptions/kelvimeal": [
+      "Kelvimeal Meal Kit Subscription",
+      "The user is subscribed to Kelvimeal, a meal kit service, and updated their meal plan to include a mix of vegetarian and meat-based options.",
+      "- The user updated their meal plan and subscribed to the meal kit service Kelvimeal as of March 2023."
+     ],
+     "@overlay/subscriptions/xelvoria": [
+      "Xelvoria Subscription for Woodworking",
+      "Xelvoria",
+      "Xelvoria woodworking"
+     ]
+    },
+    "verdict": "correct",
+    "note": "from the tier-1 audit"
+   },
+   {
+    "id": "meme-nofiller/pl_049/update/2#5",
+    "dir": "meme-nofiller__pl_049",
+    "session": 2,
+    "stale": [
+     "xelvoria",
+     "dranthazon"
+    ],
+    "current": [
+     "pyrethon plus"
+    ],
+    "evidence": {
+     "@overlay/music/guitar": [
+      "- The user uses [[subscriptions/xelvoria]] for musician resources."
+     ],
+     "@overlay/subscriptions/xelvoria": [
+      "Xelvoria Platform Subscription",
+      "Xelvoria",
+      "Xelvoria platform"
+     ]
+    },
+    "verdict": "correct",
+    "note": "from the tier-1 audit"
+   },
+   {
+    "id": "meme-nofiller/pl_050/update/1#7",
+    "dir": "meme-nofiller__pl_050",
+    "session": 1,
+    "stale": [
+     "thyranote"
+    ],
+    "current": [
+     "meal kit (kelvimeal)"
+    ],
+    "evidence": {
+     "@overlay/tools/thyranote": [
+      "Thyranote Note-Taking Platform Subscription",
+      "Thyranote",
+      "Thyranote subscription"
+     ]
+    },
+    "verdict": "correct",
+    "note": ""
+   },
+   {
+    "id": "meme-nofiller/pl_035/update/1#5",
+    "dir": "meme-nofiller__pl_035",
+    "session": 1,
+    "stale": [
+     "zorvista premium"
+    ],
+    "current": [
+     "meal kit (kelvimeal)"
+    ],
+    "evidence": {
+     "@overlay/subscriptions/zorvista-premium": [
+      "Zorvista Premium Subscription",
+      "The user subscribes to Zorvista Premium to watch documentaries and shows, including a history documentary series.",
+      "- User is subscribed to Zorvista Premium (as of 2023-03-01)."
+     ]
+    },
+    "verdict": "correct",
+    "note": ""
+   },
+   {
+    "id": "meme-nofiller/pl_041/update/2#5",
+    "dir": "meme-nofiller__pl_041",
+    "session": 2,
+    "stale": [
+     "dranthis pickup",
+     "vorantel suv"
+    ],
+    "current": [
+     "xylorim scooter"
+    ],
+    "evidence": {
+     "@overlay/vehicles/planned-electric-car": [
+      "- Currently drives a [[vehicles/current-vehicle]] (Dranthis Pickup)."
+     ]
+    },
+    "verdict": "correct",
+    "note": "from the tier-1 audit"
+   },
+   {
+    "id": "meme-nofiller/pl_014/update/1#7",
+    "dir": "meme-nofiller__pl_014",
+    "session": 1,
+    "stale": [
+     "daily journal subscription"
+    ],
+    "current": [
+     "dranthazon"
+    ],
+    "evidence": {
+     "@overlay/habits/journaling": [
+      "Daily Journal Subscription and Routine",
+      "- User has a subscription to Daily Journal."
+     ]
+    },
+    "verdict": "correct",
+    "note": "from the tier-1 audit"
+   },
+   {
+    "id": "meme-nofiller/pl_036/update/2#5",
+    "dir": "meme-nofiller__pl_036",
+    "session": 2,
+    "stale": [
+     "james",
+     "jordan"
+    ],
+    "current": [
+     "taylor"
+    ],
+    "evidence": {
+     "@overlay/user/fitness/running": [
+      "The user is a member of a running club, actively training to improve running performance and considering running with partner Jordan.",
+      "- The user values training with a partner or buddy, specifically partner Jordan ([[user/relationships/partner-jordan]]), to enhance motivation and consistency."
+     ],
+     "@overlay/user/hobbies/art": [
+      "- The user's partner James ([[user/relationships/partner]]) is supportive of their art hobby."
+     ]
+    },
+    "verdict": "correct",
+    "note": "from the tier-1 audit"
+   },
+   {
+    "id": "meme-nofiller/pl_039/update/4#1",
+    "dir": "meme-nofiller__pl_039",
+    "session": 4,
+    "stale": [
+     "ms in cs at quessara university"
+    ],
+    "current": [
+     "online bootcamp (coding)"
+    ],
+    "evidence": {
+     "@overlay/education/quessara-university": [
+      "- User is currently studying for an MS in CS (Master of Science in Computer Science) at Quessara University (reported March 2023)."
+     ],
+     "@overlay/work/bike-commute": [
+      "The user takes their bike to work, a routine that depends on studying for an MS in CS at Quessara University and would change if their school changes.",
+      "- Biking to work depends on the user studying for an [[education/quessara-university|MS in CS at Quessara University]]; if that changes, this commute would change too."
+     ]
+    },
+    "verdict": "correct",
+    "note": "from the tier-1 audit"
+   },
+   {
+    "id": "meme-nofiller/pl_008/update/2#5",
+    "dir": "meme-nofiller__pl_008",
+    "session": 2,
+    "stale": [
+     "xelvoria",
+     "meal kit (kelvimeal)"
+    ],
+    "current": [
+     "dranthazon"
+    ],
+    "evidence": {
+     "@overlay/hobbies/cooking": [
+      "- Uses expert cooking tutorials and food shows on [[subscriptions/xelvoria]] to develop new cooking techniques."
+     ],
+     "@overlay/subscriptions/kelvimeal": [
+      "Kelvimeal Meal Kit Subscription",
+      "The user is subscribed to the meal kit service Kelvimeal after recently updating their meal plan for convenient prep.",
+      "- The user is subscribed to Kelvimeal, a meal kit delivery service (as of March 2023)."
+     ],
+     "@overlay/subscriptions/xelvoria": [
+      "Xelvoria Platform Subscription",
+      "Xelvoria subscription",
+      "Xelvoria platform"
+     ]
+    },
+    "verdict": "correct",
+    "note": "from the tier-1 audit"
+   },
+   {
+    "id": "meme-nofiller/pl_031/update/1#5",
+    "dir": "meme-nofiller__pl_031",
+    "session": 1,
+    "stale": [
+     "a true crime podcast"
+    ],
+    "current": [
+     "the quorath codex (book)"
+    ],
+    "evidence": {
+     "@overlay/interests/podcasts-true-crime": [
+      "Media Preference - True Crime Podcasts",
+      "true crime podcasts",
+      "The user listens to true crime podcasts and finds real-life mysteries and cases fascinating."
+     ]
+    },
+    "verdict": "correct",
+    "note": ""
+   },
+   {
+    "id": "meme-nofiller/pl_021/update/1#3",
+    "dir": "meme-nofiller__pl_021",
+    "session": 1,
+    "stale": [
+     "therwyn compact"
+    ],
+    "current": [
+     "vorantel suv"
+    ],
+    "evidence": {
+     "@overlay/commute/subway": [
+      "- The user also drives a [[vehicle/therwyn-compact]] but relies on public transit for commuting to work."
+     ]
+    },
+    "verdict": "correct",
+    "note": ""
+   },
+   {
+    "id": "meme-nofiller/sw_042/update/4#1",
+    "dir": "meme-nofiller__sw_042",
+    "session": 4,
+    "stale": [
+     "seokjin kang"
+    ],
+    "current": [
+     "yuna park"
+    ],
+    "evidence": {
+     "@overlay/team/meetings": [
+      "- Team lead [[team/lead]] Seokjin Kang facilitates team alignment during these weekly sessions."
+     ],
+     "@overlay/team/release-strategy": [
+      "- Team processes and schedules align with [[team/lead]] Seokjin Kang and sprint targets like [[project/sprint-deadline]]."
+     ],
+     "@overlay/team/weekly-report": [
+      "- Weekly reporting aligns with team leadership under [[team/lead]] Seokjin Kang."
+     ]
+    },
+    "verdict": "correct",
+    "note": "from the tier-1 audit"
+   },
+   {
+    "id": "meme-nofiller/pl_025/update/1#5",
+    "dir": "meme-nofiller__pl_025",
+    "session": 1,
+    "stale": [
+     "xelvoria"
+    ],
+    "current": [
+     "meal kit (kelvimeal)"
+    ],
+    "evidence": {
+     "@overlay/hobbies/woodworking": [
+      "- The user learns new woodworking techniques and project ideas through [[subscriptions/xelvoria]]."
+     ],
+     "@overlay/subscriptions/xelvoria": [
+      "Xelvoria Subscription for Woodworking",
+      "Xelvoria",
+      "Xelvoria woodworking"
+     ]
+    },
+    "verdict": "correct",
+    "note": ""
+   },
+   {
+    "id": "meme-nofiller/pl_039/update/1#5",
+    "dir": "meme-nofiller__pl_039",
+    "session": 1,
+    "stale": [
+     "whispers of zarinthea (tv)"
+    ],
+    "current": [
+     "a true crime podcast"
+    ],
+    "evidence": {
+     "@overlay/media/whispers-of-zarinthea": [
+      "TV Show - Whispers of Zarinthea",
+      "Whispers of Zarinthea",
+      "The user's current media is the TV show Whispers of Zarinthea, which they find captivating."
+     ]
+    },
+    "verdict": "correct",
+    "note": ""
+   },
+   {
+    "id": "meme-nofiller/pl_017/update/2#5",
+    "dir": "meme-nofiller__pl_017",
+    "session": 2,
+    "stale": [
+     "zyvanta sedan",
+     "therwyn compact"
+    ],
+    "current": [
+     "vorantel suv"
+    ],
+    "evidence": {
+     "@overlay/user/hobbies/running": [
+      "- Drives a [[user/transportation/therwyn-compact]] to get to running club and other activities."
+     ]
+    },
+    "verdict": "correct",
+    "note": ""
+   }
+  ],
+  "lost": [
+   {
+    "id": "meme-nofiller/pl_008/2#7",
+    "dir": "meme-nofiller__pl_008",
+    "point": "end",
+    "value": "40 min",
+    "entity": "commute_duration",
+    "near": {
+     "@overlay/transportation/work-commute": [
+      "Walking Commute to Work",
+      "commute to work",
+      "work commute"
+     ]
+    },
+    "verdict": "correct",
+    "note": "no card has a duration"
+   },
+   {
+    "id": "meme-nofiller/pl_008/3#11",
+    "dir": "meme-nofiller__pl_008",
+    "point": "end",
+    "value": "try not to become a man of success, but rather try to become a man of value. look around at how people want to get more out of life than they put in. a man of value will give more than he receives",
+    "entity": "life_philosophy",
+    "near": {
+     "@overlay/career/office-location": [
+      "The user's office is located in Thornvale Crossing through employer Thalwren Inc; if they change employers, the office will be in Tesswick Bay.",
+      "- If the user changes their employer, their office will be in Tesswick Bay."
+     ],
+     "@overlay/career/work-project": [
+      "The user is currently working on backend migration at Thalwren Inc; if their employer changes, they will work on a marketing campaign.",
+      "- If the user changes their employer, they will work on a marketing campaign."
+     ],
+     "@overlay/career/work-schedule": [
+      "The user works night shift hours at Thalwren Inc, which impacts their daily routine, time management, and work-life balance.",
+      "- Their night shift schedule impacts how they structure their day and manage personal time.",
+      "- Focuses on balancing work and personal life while navigating the demands of shift work."
+     ],
+     "@overlay/personal/life-philosophy": [
+      "Personal Life Philosophy",
+      "life philosophy",
+      "personal philosophy"
+     ],
+     "@overlay/relationships/partner": [
+      "- The user values having James to share life with, noting it makes a big difference especially when dealing with a night shift schedule [[career/work-schedule]]."
+     ]
+    },
+    "verdict": "matching error",
+    "note": "long value: whole-card in-order alignment anchored on the abridged quote (coverage 0.61; the line alone 1.00)"
+   },
+   {
+    "id": "meme-nofiller/pl_008/3#11",
+    "dir": "meme-nofiller__pl_008",
+    "point": 3,
+    "value": "try not to become a man of success, but rather try to become a man of value. look around at how people want to get more out of life than they put in. a man of value will give more than he receives",
+    "entity": "life_philosophy",
+    "near": {
+     "@overlay/career/office-location": [
+      "The user's office is located in Thornvale Crossing through employer Thalwren Inc; if they change employers, the office will be in Tesswick Bay.",
+      "- If the user changes their employer, their office will be in Tesswick Bay."
+     ],
+     "@overlay/career/work-project": [
+      "The user is currently working on backend migration at Thalwren Inc; if their employer changes, they will work on a marketing campaign.",
+      "- If the user changes their employer, they will work on a marketing campaign."
+     ],
+     "@overlay/career/work-schedule": [
+      "The user works night shift hours at Thalwren Inc, which impacts their daily routine, time management, and work-life balance.",
+      "- Their night shift schedule impacts how they structure their day and manage personal time.",
+      "- Focuses on balancing work and personal life while navigating the demands of shift work."
+     ],
+     "@overlay/personal/life-philosophy": [
+      "Personal Life Philosophy",
+      "life philosophy",
+      "personal philosophy"
+     ],
+     "@overlay/relationships/partner": [
+      "- The user values having James to share life with, noting it makes a big difference especially when dealing with a night shift schedule [[career/work-schedule]]."
+     ]
+    },
+    "verdict": "matching error",
+    "note": "long value: whole-card in-order alignment anchored on the abridged quote (coverage 0.61; the line alone 1.00)"
+   },
+   {
+    "id": "meme-nofiller/pl_014/0#7",
+    "dir": "meme-nofiller__pl_014",
+    "point": "end",
+    "value": "11pm-5:30am (early riser)",
+    "entity": "sleep_pattern",
+    "near": {
+     "@overlay/habits/sleep-schedule": [
+      "Sleep Schedule and Early Riser Routine",
+      "sleep schedule",
+      "sleep habits"
+     ],
+     "@overlay/health/chronic-migraine (inactive)": [
+      "- Discusses coping strategies such as tracking triggers, regular sleep, and stress management."
+     ],
+     "@overlay/health/pre-diabetes": [
+      "- Previously managed chronic migraine episodes with sleep routines, trigger tracking, and partner support."
+     ]
+    },
+    "verdict": "matching error",
+    "note": "'11:00 PM to 5:30 AM'"
+   },
+   {
+    "id": "meme-nofiller/pl_006/1#9",
+    "dir": "meme-nofiller__pl_006",
+    "point": 3,
+    "value": "midnight-8am",
+    "entity": "sleep_pattern",
+    "near": {
+     "@overlay/health/sleep-schedule": [
+      "Health and Routine: Sleep Schedule",
+      "sleep schedule",
+      "sleep habits"
+     ],
+     "@overlay/sports/soccer": [
+      "- The user is mindful of how sleep schedule ([[health/sleep-schedule]]) affects athletic performance on the field."
+     ]
+    },
+    "verdict": "matching error",
+    "note": "'midnight to 8:00 AM'"
+   },
+   {
+    "id": "meme-nofiller/pl_047/1#1",
+    "dir": "meme-nofiller__pl_047",
+    "point": "end",
+    "value": "basketball",
+    "entity": "sports",
+    "near": {},
+    "verdict": "correct",
+    "note": "no card mentions basketball"
+   },
+   {
+    "id": "meme-nofiller/pl_025/0#11",
+    "dir": "meme-nofiller__pl_025",
+    "point": "end",
+    "value": "jessica",
+    "entity": "partner",
+    "near": {},
+    "verdict": "correct",
+    "note": "no card mentions Jessica at the end"
+   },
+   {
+    "id": "meme-nofiller/pl_034/1#9",
+    "dir": "meme-nofiller__pl_034",
+    "point": 3,
+    "value": "11pm-5:30am (early riser)",
+    "entity": "sleep_pattern",
+    "near": {
+     "@overlay/health/sleep-schedule": [
+      "Sleep schedule (11:00 PM to 5:30 AM)",
+      "sleep schedule",
+      "early riser"
+     ],
+     "@overlay/hobbies/woodworking": [
+      "The user's hobby is woodworking, and they are a beginner working on early projects."
+     ]
+    },
+    "verdict": "matching error",
+    "note": "'11:00 PM to 5:30 AM'"
+   },
+   {
+    "id": "meme-nofiller/pl_015/1#7",
+    "dir": "meme-nofiller__pl_015",
+    "point": 3,
+    "value": "condo",
+    "entity": "housing_type",
+    "near": {
+     "@overlay/personal/home-condo (inactive)": [
+      "Home Residence: Condo Living",
+      "home condo",
+      "condo living"
+     ],
+     "@overlay/personal/living-with-parents": [
+      "housing situation",
+      "- Replaces previous residence in a condo ([[personal/home-condo]])."
+     ],
+     "@overlay/personal/plan-live-with-sibling": [
+      "Housing Plan: Living with Sibling Conditional on Relationship Status"
+     ]
+    },
+    "verdict": "correct",
+    "note": "condo superseded by 'living with parents' (not a MEME change)"
+   },
+   {
+    "id": "meme-nofiller/pl_048/3#9",
+    "dir": "meme-nofiller__pl_048",
+    "point": "end",
+    "value": "try not to become a man of success, but rather try to become a man of value. look around at how people want to get more out of life than they put in. a man of value will give more than he receives",
+    "entity": "life_philosophy",
+    "near": {
+     "@overlay/health/workout-facility (inactive)": [
+      "The user goes to Velthari Studio for 2x/week yoga; if their exercise routine changes, they will work out at Kaelstrom Fitness.",
+      "- If the user's exercise routine changes, the user will need a different workout facility.",
+      "- If the user's exercise routine changes, the user will work out at Kaelstrom Fitness."
+     ],
+     "@overlay/personal/life-philosophy": [
+      "Life Philosophy on Value",
+      "life philosophy",
+      "man of value"
+     ],
+     "@overlay/health/dietary-restrictions (inactive)": [
+      "The user's dietary restriction is low-sugar due to pre-diabetes; if their health condition changes, it will be no processed food.",
+      "- If the user's health condition changes, the user's dietary restriction will become no processed food."
+     ],
+     "@overlay/hobbies/cycling": [
+      "- Cycles with friends or family, but notes not having a regular partner for rides."
+     ],
+     "@overlay/personal/college-reunion": [
+      "The user has an upcoming college reunion to reconnect with classmates they have not seen in a while.",
+      "- The user sought suggestions on how to prepare and what to expect at the reunion."
+     ]
+    },
+    "verdict": "matching error",
+    "note": "long value: whole-card in-order alignment anchored on the abridged quote (coverage 0.61; the line alone 1.00)"
+   },
+   {
+    "id": "meme-nofiller/sw_029/2#7",
+    "dir": "meme-nofiller__sw_029",
+    "point": "end",
+    "value": "every wednesday 10am",
+    "entity": "meeting_day",
+    "near": {
+     "@overlay/aurora/database-backups": [
+      "Aurora database backups run twice daily at 2am and 2pm UTC, depending on Zyndra Base; if the database changes, this would change.",
+      "- Aurora database backups run twice daily at 2am and 2pm UTC (02:00 and 14:00 UTC)."
+     ],
+     "@overlay/aurora/deadlock-error": [
+      "- Exact error log recorded word for word: \"DeadlockDetected: transactions 4821 and 4823 are deadlocked on table aurora_orders.\\n  Query 1 was UPDATE orders SET status = 'shipped' WHERE region = 'us-east'.\\n  Query 2 was DELETE FROM orders WHERE created_at < NOW() - INTERVAL '30 days'.\\n  First seen at 2024-08-04T22:33:18Z; recommend serializable isolation review.\"",
+      "- Transaction 4823 ran Query 2: DELETE FROM orders WHERE created_at < NOW() - INTERVAL '30 days'."
+     ],
+     "@overlay/aurora/team-channel": [
+      "- Part of Aurora team operational processes alongside [[aurora/alerts]] and [[aurora/team-meetings]]."
+     ],
+     "@overlay/aurora/team-meetings": [
+      "Aurora Team Weekly Meeting Schedule",
+      "team meeting",
+      "aurora team meeting"
+     ]
+    },
+    "verdict": "matching error",
+    "note": "'every Wednesday at 10:00 AM'"
+   },
+   {
+    "id": "meme-nofiller/pl_048/3#9",
+    "dir": "meme-nofiller__pl_048",
+    "point": 3,
+    "value": "try not to become a man of success, but rather try to become a man of value. look around at how people want to get more out of life than they put in. a man of value will give more than he receives",
+    "entity": "life_philosophy",
+    "near": {
+     "@overlay/health/workout-facility": [
+      "The user goes to Velthari Studio for 2x/week yoga; if their exercise routine changes, they will work out at Kaelstrom Fitness.",
+      "- If the user's exercise routine changes, the user will need a different workout facility.",
+      "- If the user's exercise routine changes, the user will work out at Kaelstrom Fitness."
+     ],
+     "@overlay/personal/life-philosophy": [
+      "Life Philosophy on Value",
+      "life philosophy",
+      "man of value"
+     ],
+     "@overlay/health/dietary-restrictions": [
+      "The user's dietary restriction is low-sugar due to pre-diabetes; if their health condition changes, it will be no processed food.",
+      "- If the user's health condition changes, the user's dietary restriction will become no processed food."
+     ],
+     "@overlay/hobbies/cycling": [
+      "- Cycles with friends or family, but notes not having a regular partner for rides."
+     ],
+     "@overlay/personal/college-reunion": [
+      "The user has an upcoming college reunion to reconnect with classmates they have not seen in a while.",
+      "- The user sought suggestions on how to prepare and what to expect at the reunion."
+     ]
+    },
+    "verdict": "matching error",
+    "note": "long value: whole-card in-order alignment anchored on the abridged quote (coverage 0.61; the line alone 1.00)"
+   },
+   {
+    "id": "meme-nofiller/sw_004/0#9",
+    "dir": "meme-nofiller__sw_004",
+    "point": 3,
+    "value": "continuous deploy on merge",
+    "entity": "release_cadence",
+    "near": {
+     "@overlay/project/release-process": [
+      "Continuous Deployment Release Process",
+      "release process",
+      "continuous deployment"
+     ],
+     "@overlay/project/test-coverage-target": [
+      "- Complements the continuous deployment process in [[project/release-process]]."
+     ]
+    },
+    "verdict": "matching error",
+    "note": "'releases continuously on merge'"
+   },
+   {
+    "id": "meme-nofiller/sw_043/0#7",
+    "dir": "meme-nofiller__sw_043",
+    "point": "end",
+    "value": "every thursday 2pm",
+    "entity": "meeting_day",
+    "near": {
+     "@overlay/tech/database-backups": [
+      "Database backups run twice daily at 2am and 2pm UTC for Crysthene DB; this schedule depends on the current database.",
+      "- Database backups run twice daily at 2am and 2pm UTC.",
+      "- Backup execution frequency: twice per day (02:00 UTC and 14:00 UTC)."
+     ],
+     "@overlay/team/meetings": [
+      "Team Weekly Meeting Schedule",
+      "team meeting",
+      "weekly meeting"
+     ],
+     "@overlay/team/sprint-deadline": [
+      "- Meeting the deadline is crucial for the team to stay on track with their timelines.",
+      "- Complements regular team syncs and planning as noted in [[team/meetings]]."
+     ],
+     "@overlay/team/standup-format": [
+      "daily standup",
+      "- Standup updates are shared asynchronously in Slack rather than via live sync meetings."
+     ],
+     "@overlay/tech/deadlock-error-log": [
+      "- Query 2 was DELETE FROM orders WHERE created_at < NOW() - INTERVAL '30 days'.",
+      "- Query 2: `DELETE FROM orders WHERE created_at < NOW() - INTERVAL '30 days'`."
+     ]
+    },
+    "verdict": "matching error",
+    "note": "'every Thursday at 2:00 PM'"
+   },
+   {
+    "id": "meme-nofiller/pl_014/0#7",
+    "dir": "meme-nofiller__pl_014",
+    "point": 3,
+    "value": "11pm-5:30am (early riser)",
+    "entity": "sleep_pattern",
+    "near": {
+     "@overlay/habits/sleep-schedule": [
+      "Sleep Schedule and Early Riser Routine",
+      "sleep schedule",
+      "sleep habits"
+     ],
+     "@overlay/health/chronic-migraine": [
+      "- Discusses coping strategies such as tracking triggers, regular sleep, and stress management."
+     ]
+    },
+    "verdict": "matching error",
+    "note": "'11:00 PM to 5:30 AM'"
+   },
+   {
+    "id": "meme-nofiller/sw_007/1#7",
+    "dir": "meme-nofiller__sw_007",
+    "point": 3,
+    "value": "any team member can approve",
+    "entity": "code_review_policy",
+    "near": {
+     "@overlay/ops/git-default-branch": [
+      "The team's default branch is main, maintaining a consistent base for development and collaboration.",
+      "- The team's default branch is main.",
+      "- Works alongside the team's [[ops/code-review-policy]] for PR approvals and code quality."
+     ],
+     "@overlay/ops/code-review-policy": [
+      "Code Review Approval Policy",
+      "code review policy",
+      "PR approval policy"
+     ],
+     "@overlay/ops/production-alerts": [
+      "Production alerts go to the #aurora-oncall-alerts channel to keep the team informed about incidents.",
+      "- The channel keeps the team informed about any production incidents in real time.",
+      "- Works alongside the team's weekly [[ops/on-call-rotation]] for active incident handling."
+     ],
+     "@overlay/ops/database-migrations": [
+      "The team uses Thalnex Schema for reliable database migrations and managing schema changes.",
+      "- The team uses Thalnex Schema for managing database migrations."
+     ],
+     "@overlay/ops/database-vorathis-db": [
+      "team database",
+      "The team uses Vorathis DB as their database, which performs well for their use cases.",
+      "- The team is using Vorathis DB as their database."
+     ]
+    },
+    "verdict": "matching error",
+    "note": "'allows any team member to approve' (no 'can')"
+   },
+   {
+    "id": "meme-nofiller/sw_041/1#7",
+    "dir": "meme-nofiller__sw_041",
+    "point": "end",
+    "value": "any team member can approve",
+    "entity": "code_review_policy",
+    "near": {
+     "@overlay/git/code-review-policy": [
+      "Code Review Approval Policy",
+      "code review policy",
+      "code review approval"
+     ],
+     "@overlay/project/changelog": [
+      "- Team members check GitHub Releases for project updates, new features, and bug fixes."
+     ],
+     "@overlay/git/branching-strategy": [
+      "The team uses trunk-based branching with feature flags on the trunk default branch, keeping flags documented and clean.",
+      "- The team uses trunk-based branching with feature flags for version control and development.",
+      "- The team's default repository branch remains trunk for version control and collaboration."
+     ],
+     "@overlay/git/default-branch (inactive)": [
+      "The team's default repository branch is trunk for version control and collaboration.",
+      "- The team's default branch in version control is trunk."
+     ],
+     "@overlay/project/database-backups": [
+      "- If the team changes databases, the backup schedule will be daily at midnight KST (Korea Standard Time).",
+      "- Automated backups and data restoration routines must be re-verified against any newly chosen database system."
+     ]
+    },
+    "verdict": "matching error",
+    "note": "'allows any team member to approve' (no 'can')"
+   },
+   {
+    "id": "meme-nofiller/sw_043/0#7",
+    "dir": "meme-nofiller__sw_043",
+    "point": 3,
+    "value": "every thursday 2pm",
+    "entity": "meeting_day",
+    "near": {
+     "@overlay/tech/database-backups": [
+      "Database backups run twice daily at 2am and 2pm UTC for Crysthene DB; this schedule depends on the current database.",
+      "- Database backups run twice daily at 2am and 2pm UTC.",
+      "- Backup execution frequency: twice per day (02:00 UTC and 14:00 UTC)."
+     ],
+     "@overlay/team/meetings": [
+      "Team Weekly Meeting Schedule",
+      "team meeting",
+      "weekly meeting"
+     ],
+     "@overlay/team/sprint-deadline": [
+      "- Meeting the deadline is crucial for the team to stay on track with their timelines.",
+      "- Complements regular team syncs and planning as noted in [[team/meetings]]."
+     ],
+     "@overlay/tech/deadlock-error-log": [
+      "- Query 2 was DELETE FROM orders WHERE created_at < NOW() - INTERVAL '30 days'.",
+      "- Query 2: `DELETE FROM orders WHERE created_at < NOW() - INTERVAL '30 days'`."
+     ]
+    },
+    "verdict": "matching error",
+    "note": "'every Thursday at 2:00 PM'"
+   },
+   {
+    "id": "meme-nofiller/pl_037/1#13",
+    "dir": "meme-nofiller__pl_037",
+    "point": "end",
+    "value": "company offsite",
+    "entity": "upcoming_event",
+    "near": {
+     "@overlay/personal/child-school-event": [
+      "Upcoming Child's School Event",
+      "child's school event",
+      "school event"
+     ],
+     "@overlay/hobbies/skiing": [
+      "- Currently planning an upcoming mountain ski trip ([[travel/mountain-ski-trip]])."
+     ],
+     "@overlay/hobbies/wine-tasting-club": [
+      "The user belongs to a wine tasting club, enjoys exploring different varietals and regions, and is interested in tips for hosting wine tasting events (as of March 2023).",
+      "- Interested in tips and best practices for hosting wine tasting events."
+     ],
+     "@overlay/media/daily-news-podcasts": [
+      "The user regularly listens to a daily news podcast to stay updated on current events while doing other things, preferring a mix of news for a well-rounded perspective.",
+      "- Likes staying updated on current events while multitasking or doing other things.",
+      "- Appreciates how different podcasts cover the same event with different angles and insights."
+     ],
+     "@overlay/media/history-documentary-series": [
+      "- Finds history documentary series quite engaging and values the insights they offer into different cultures and events."
+     ]
+    },
+    "verdict": "correct",
+    "note": "no card mentions the offsite"
+   },
+   {
+    "id": "meme-nofiller/pl_015/1#7",
+    "dir": "meme-nofiller__pl_015",
+    "point": "end",
+    "value": "condo",
+    "entity": "housing_type",
+    "near": {
+     "@overlay/personal/home-condo (inactive)": [
+      "Home Residence: Condo Living",
+      "home condo",
+      "condo living"
+     ],
+     "@overlay/personal/living-with-parents": [
+      "housing situation",
+      "- Replaces previous residence in a condo ([[personal/home-condo]])."
+     ],
+     "@overlay/personal/plan-live-with-sibling": [
+      "Housing Plan: Living with Sibling Conditional on Relationship Status"
+     ]
+    },
+    "verdict": "correct",
+    "note": "condo superseded by 'living with parents'"
+   },
+   {
+    "id": "meme-nofiller/pl_008/2#7",
+    "dir": "meme-nofiller__pl_008",
+    "point": 3,
+    "value": "40 min",
+    "entity": "commute_duration",
+    "near": {
+     "@overlay/transportation/commute (inactive)": [
+      "Daily Commute Duration",
+      "commute duration",
+      "40-minute commute"
+     ],
+     "@overlay/transportation/work-commute": [
+      "Walking Commute to Work",
+      "commute to work",
+      "work commute"
+     ],
+     "@overlay/transportation/xylorim-scooter": [
+      "daily commute scooter"
+     ]
+    },
+    "verdict": "correct",
+    "note": "the duration card superseded"
+   },
+   {
+    "id": "meme-nofiller/pl_036/3#5",
+    "dir": "meme-nofiller__pl_036",
+    "point": "end",
+    "value": "try not to become a man of success, but rather try to become a man of value. look around at how people want to get more out of life than they put in. a man of value will give more than he receives",
+    "entity": "life_philosophy",
+    "near": {
+     "@overlay/user/philosophy/life-philosophy": [
+      "Life Philosophy: Man of Value",
+      "life philosophy",
+      "personal philosophy"
+     ],
+     "@overlay/user/relationships/partner-taylor": [
+      "The user's partner is Taylor; they share the wine tasting journey together.",
+      "- The user explicitly stated they \"switched again\", replacing prior partner Jordan ([[user/relationships/partner-jordan]]) and earlier partner James ([[user/relationships/partner]]).",
+      "- The user values having a partner like Taylor to share the wine tasting experience and explore wines with rather than tasting alone."
+     ],
+     "@overlay/user/transportation/commute-duration": [
+      "The user's commute is about 30 minutes living in Thornvale Crossing; if they change residence, the commute will be around 10 minutes.",
+      "- If the user changes their residence, their commute will be around 10 minutes."
+     ],
+     "@overlay/user/fitness/gym": [
+      "The user works out at Zorathel Peak Gym, a choice dependent on living in Thornvale Crossing that would change if they move."
+     ],
+     "@overlay/user/health/dental-care": [
+      "- The user looks for practical strategies to make dental visits more comfortable and less stressful.",
+      "- The user values dental offices that prioritize patient comfort through amenities such as massage chairs or virtual reality headsets."
+     ]
+    },
+    "verdict": "matching error",
+    "note": "long value: whole-card in-order alignment anchored on the abridged quote (coverage 0.61; the line alone 1.00)"
+   },
+   {
+    "id": "meme-nofiller/sw_019/4#3",
+    "dir": "meme-nofiller__sw_019",
+    "point": "end",
+    "value": "85% line coverage required",
+    "entity": "test_coverage_target",
+    "near": {
+     "@overlay/tech-stack/test-coverage": [
+      "Test Coverage Target: 85% Line Coverage",
+      "test coverage",
+      "coverage target"
+     ],
+     "@overlay/incidents/auth-panic-error": [
+      "- File and line: src/handlers/auth.rs:142:23."
+     ],
+     "@overlay/tech-stack/deploy-command-zephyra": [
+      "Deploy Command: zephyra push --target prod",
+      "zephyra push --target prod",
+      "The deploy command is zephyra push --target prod following the CI config change."
+     ],
+     "@overlay/tech-stack/deploy-command (inactive)": [
+      "zephyra push --target prod",
+      "The deploy command is korinth release --prod; if CI config changes, the deploy command will be zephyra push --target prod.",
+      "- If the CI config changes, the deploy command will be zephyra push --target prod."
+     ],
+     "@overlay/tech-stack/log-drain-korinth": [
+      "log target",
+      "Logs drain to logs.korinth.dev/aurora, following the deployment target change to Zephyra Platform.",
+      "- Determined by deployment target moving to Zephyra Platform (see [[tech-stack/zephyra-platform]])."
+     ]
+    },
+    "verdict": "matching error",
+    "note": "'requires 85% line coverage'"
+   },
+   {
+    "id": "meme-nofiller/sw_004/0#9",
+    "dir": "meme-nofiller__sw_004",
+    "point": "end",
+    "value": "continuous deploy on merge",
+    "entity": "release_cadence",
+    "near": {
+     "@overlay/project/release-process (inactive)": [
+      "Continuous Deployment Release Process",
+      "release process",
+      "continuous deployment"
+     ],
+     "@overlay/project/gitflow-branching": [
+      "GitFlow Branching and Release Process",
+      "release process",
+      "release branches"
+     ]
+    },
+    "verdict": "correct",
+    "note": "release cadence replaced by the GitFlow branching card"
+   },
+   {
+    "id": "meme-nofiller/sw_029/2#7",
+    "dir": "meme-nofiller__sw_029",
+    "point": 3,
+    "value": "every wednesday 10am",
+    "entity": "meeting_day",
+    "near": {
+     "@overlay/aurora/database-backups": [
+      "Aurora database backups run twice daily at 2am and 2pm UTC, depending on Zyndra Base; if the database changes, this would change.",
+      "- Aurora database backups run twice daily at 2am and 2pm UTC (02:00 and 14:00 UTC)."
+     ],
+     "@overlay/aurora/deadlock-error": [
+      "- Exact error log recorded word for word: \"DeadlockDetected: transactions 4821 and 4823 are deadlocked on table aurora_orders.\\n  Query 1 was UPDATE orders SET status = 'shipped' WHERE region = 'us-east'.\\n  Query 2 was DELETE FROM orders WHERE created_at < NOW() - INTERVAL '30 days'.\\n  First seen at 2024-08-04T22:33:18Z; recommend serializable isolation review.\"",
+      "- Transaction 4823 ran Query 2: DELETE FROM orders WHERE created_at < NOW() - INTERVAL '30 days'."
+     ],
+     "@overlay/aurora/team-meetings": [
+      "Aurora Team Weekly Meeting Schedule",
+      "team meeting",
+      "aurora team meeting"
+     ]
+    },
+    "verdict": "matching error",
+    "note": "'every Wednesday at 10:00 AM'"
+   },
+   {
+    "id": "meme-nofiller/pl_034/1#9",
+    "dir": "meme-nofiller__pl_034",
+    "point": "end",
+    "value": "11pm-5:30am (early riser)",
+    "entity": "sleep_pattern",
+    "near": {
+     "@overlay/health/sleep-schedule": [
+      "Sleep schedule (11:00 PM to 5:30 AM)",
+      "sleep schedule",
+      "early riser"
+     ],
+     "@overlay/hobbies/woodworking": [
+      "The user's hobby is woodworking, and they are a beginner working on early projects."
+     ]
+    },
+    "verdict": "matching error",
+    "note": "'11:00 PM to 5:30 AM'"
+   },
+   {
+    "id": "meme-nofiller/sw_041/1#7",
+    "dir": "meme-nofiller__sw_041",
+    "point": 3,
+    "value": "any team member can approve",
+    "entity": "code_review_policy",
+    "near": {
+     "@overlay/git/code-review-policy": [
+      "Code Review Approval Policy",
+      "code review policy",
+      "code review approval"
+     ],
+     "@overlay/onboarding/guide": [
+      "Team Onboarding Guide Location",
+      "The team onboarding guide is located at docs.aurora.internal/onboarding to help new members get up to speed.",
+      "- The documentation is vital for getting new team members up to speed quickly."
+     ],
+     "@overlay/git/default-branch": [
+      "The team's default repository branch is trunk for version control and collaboration.",
+      "- The team's default branch in version control is trunk."
+     ],
+     "@overlay/project/database-backups": [
+      "- If the team changes databases, the backup schedule will be daily at midnight KST (Korea Standard Time).",
+      "- Automated backups and data restoration routines must be re-verified against any newly chosen database system."
+     ],
+     "@overlay/project/database-connection-string": [
+      "- Any change to the backend database will require updating this URI across configuration files and environments."
+     ]
+    },
+    "verdict": "matching error",
+    "note": "'allows any team member to approve' (no 'can')"
+   },
+   {
+    "id": "meme-nofiller/pl_036/3#5",
+    "dir": "meme-nofiller__pl_036",
+    "point": 3,
+    "value": "try not to become a man of success, but rather try to become a man of value. look around at how people want to get more out of life than they put in. a man of value will give more than he receives",
+    "entity": "life_philosophy",
+    "near": {
+     "@overlay/user/philosophy/life-philosophy": [
+      "Life Philosophy: Man of Value",
+      "life philosophy",
+      "personal philosophy"
+     ],
+     "@overlay/user/relationships/partner-taylor": [
+      "The user's partner is Taylor; they share the wine tasting journey together.",
+      "- The user explicitly stated they \"switched again\", replacing prior partner Jordan ([[user/relationships/partner-jordan]]) and earlier partner James ([[user/relationships/partner]]).",
+      "- The user values having a partner like Taylor to share the wine tasting experience and explore wines with rather than tasting alone."
+     ],
+     "@overlay/user/transportation/commute-duration": [
+      "The user's commute is about 30 minutes living in Thornvale Crossing; if they change residence, the commute will be around 10 minutes.",
+      "- If the user changes their residence, their commute will be around 10 minutes."
+     ],
+     "@overlay/user/fitness/gym": [
+      "The user works out at Zorathel Peak Gym, a choice dependent on living in Thornvale Crossing that would change if they move."
+     ],
+     "@overlay/user/health/dental-care": [
+      "- The user looks for practical strategies to make dental visits more comfortable and less stressful.",
+      "- The user values dental offices that prioritize patient comfort through amenities such as massage chairs or virtual reality headsets."
+     ]
+    },
+    "verdict": "matching error",
+    "note": "long value: whole-card in-order alignment anchored on the abridged quote (coverage 0.61; the line alone 1.00)"
+   },
+   {
+    "id": "meme-nofiller/pl_025/1#13",
+    "dir": "meme-nofiller__pl_025",
+    "point": 3,
+    "value": "in a relationship",
+    "entity": "relationship_status",
+    "near": {
+     "@overlay/relationships/partner-jessica": [
+      "- The user feels their relationship adds a nice balance to life outside of work and hobbies as of March 2023."
+     ]
+    },
+    "verdict": "correct",
+    "note": "status never stated (only the partner)"
+   },
+   {
+    "id": "meme-nofiller/pl_038/0#11",
+    "dir": "meme-nofiller__pl_038",
+    "point": 3,
+    "value": "electric car",
+    "entity": "planned_purchase",
+    "near": {
+     "@overlay/transportation/current-vehicle (inactive)": [
+      "user's car",
+      "- Linked to future purchase plans: [[transportation/planned-electric-car]]."
+     ],
+     "@overlay/transportation/planned-electric-car (inactive)": [
+      "Planned Purchase: Electric Car",
+      "electric car purchase",
+      "EV purchase plan"
+     ],
+     "@overlay/transportation/quorvel-ev (inactive)": [
+      "Quorvel electric vehicle",
+      "user electric car",
+      "The user drives a Quorvel EV, appreciating its efficiency and having had a smooth transition to an electric vehicle."
+     ],
+     "@overlay/transportation/vorantel-suv": [
+      "current car",
+      "user car",
+      "- The user previously drove a Quorvel EV (electric vehicle) as of 2023/03/01."
+     ]
+    },
+    "verdict": "correct",
+    "note": "all holders inactive"
+   },
+   {
+    "id": "meme-nofiller/sw_007/1#7",
+    "dir": "meme-nofiller__sw_007",
+    "point": "end",
+    "value": "any team member can approve",
+    "entity": "code_review_policy",
+    "near": {
+     "@overlay/ops/git-default-branch": [
+      "The team's default branch is main, maintaining a consistent base for development and collaboration.",
+      "- The team's default branch is main.",
+      "- Works alongside the team's [[ops/code-review-policy]] for PR approvals and code quality."
+     ],
+     "@overlay/ops/code-review-policy": [
+      "Code Review Approval Policy",
+      "code review policy",
+      "PR approval policy"
+     ],
+     "@overlay/ops/production-alerts": [
+      "Production alerts go to the #aurora-oncall-alerts channel to keep the team informed about incidents.",
+      "- The channel keeps the team informed about any production incidents in real time.",
+      "- Works alongside the team's weekly [[ops/on-call-rotation]] for active incident handling."
+     ],
+     "@overlay/ops/changelog": [
+      "- Works alongside the team's [[ops/release-schedule]] and [[ops/git-default-branch]] workflow."
+     ],
+     "@overlay/ops/database-keldaris-db": [
+      "team database",
+      "The team switched their database to Keldaris DB, replacing Vorathis DB.",
+      "- The team switched their database to Keldaris DB, replacing Vorathis DB."
+     ]
+    },
+    "verdict": "matching error",
+    "note": "'allows any team member to approve' (no 'can')"
+   },
+   {
+    "id": "meme-nofiller/pl_038/0#11",
+    "dir": "meme-nofiller__pl_038",
+    "point": "end",
+    "value": "electric car",
+    "entity": "planned_purchase",
+    "near": {
+     "@overlay/transportation/current-vehicle (inactive)": [
+      "user's car",
+      "- Linked to future purchase plans: [[transportation/planned-electric-car]]."
+     ],
+     "@overlay/transportation/planned-electric-car (inactive)": [
+      "Planned Purchase: Electric Car",
+      "electric car purchase",
+      "EV purchase plan"
+     ],
+     "@overlay/transportation/quorvel-ev (inactive)": [
+      "Quorvel electric vehicle",
+      "user electric car",
+      "The user drives a Quorvel EV, appreciating its efficiency and having had a smooth transition to an electric vehicle."
+     ],
+     "@overlay/transportation/vorantel-suv": [
+      "current car",
+      "user car",
+      "- The user previously drove a Quorvel EV (electric vehicle) as of 2023/03/01."
+     ]
+    },
+    "verdict": "correct",
+    "note": "all holders inactive"
+   },
+   {
+    "id": "meme-nofiller/pl_006/1#9",
+    "dir": "meme-nofiller__pl_006",
+    "point": "end",
+    "value": "midnight-8am",
+    "entity": "sleep_pattern",
+    "near": {
+     "@overlay/health/sleep-schedule": [
+      "Health and Routine: Sleep Schedule",
+      "sleep schedule",
+      "sleep habits"
+     ],
+     "@overlay/sports/soccer": [
+      "- The user is mindful of how sleep schedule ([[health/sleep-schedule]]) affects athletic performance on the field."
+     ]
+    },
+    "verdict": "matching error",
+    "note": "'midnight to 8:00 AM'"
+   }
+  ],
+  "passes": [
+   {
+    "id": "meme-nofiller/sw_042/update/1#3",
+    "dir": "meme-nofiller__sw_042",
+    "session": 1,
+    "stale": [
+     "2025 march 28"
+    ],
+    "current": [
+     "2025 may 23"
+    ],
+    "evidence": {
+     "@overlay/project/sprint-deadline-2025-05-23": [
+      "Project Sprint Deadline - May 23, 2025",
+      "May 23 2025",
+      "2025 May 23"
+     ]
+    },
+    "verdict": "correct",
+    "note": ""
+   },
+   {
+    "id": "meme-nofiller/pl_015/update/4#1",
+    "dir": "meme-nofiller__pl_015",
+    "session": 4,
+    "stale": [
+     "single"
+    ],
+    "current": [
+     "married"
+    ],
+    "evidence": {
+     "@overlay/personal/living-with-parents": [
+      "User lives with parents as of March 2023; this living arrangement depends on being single and would change if relationship status changes.",
+      "- User stated that living with parents depends on the fact that they are single ([[personal/relationship-status]])."
+     ],
+     "@overlay/personal/plan-live-with-sibling": [
+      "User plans to live with their sibling if their relationship status changes from single (March 2023).",
+      "- User currently resides with parents ([[personal/living-with-parents]]), which also depends on being single."
+     ],
+     "@overlay/personal/relationship-status-married": [
+      "User is now married as of March 2023, transitioning from previously being single.",
+      "- Replaces and supersedes previous relationship status of being single ([[personal/relationship-status]]).",
+      "- Prior status as single had allowed focusing on personal interests such as [[hobbies/photography]] without distractions."
+     ],
+     "@overlay/personal/sibling-wedding": [
+      "User has a sibling's wedding coming up as of March 2023; this depends on being single and would change if relationship status changes.",
+      "- User explicitly stated this depends on the fact that they are single ([[personal/relationship-status]])."
+     ]
+    },
+    "verdict": "correct",
+    "note": ""
+   },
+   {
+    "id": "meme-nofiller/pl_020/update/2#5",
+    "dir": "meme-nofiller__pl_020",
+    "session": 2,
+    "stale": [
+     "zyvanta sedan",
+     "therwyn compact"
+    ],
+    "current": [
+     "xylorim scooter"
+    ],
+    "evidence": {
+     "@overlay/vehicles/xylorim-scooter": [
+      "The user drives a Xylorim Scooter for getting around, appreciating its compact size for parking and storage and not needing gas stations.",
+      "- The user previously drove a Therwyn Compact (chosen for efficiency and maneuverability) and before that a Zyvanta Sedan.",
+      "- The user likes how compact the Xylorim Scooter is, making it easy to park and store."
+     ]
+    },
+    "verdict": "correct",
+    "note": ""
+   },
+   {
+    "id": "meme-nofiller/pl_030/update/4#1",
+    "dir": "meme-nofiller__pl_030",
+    "session": 4,
+    "stale": [
+     "elyndra health"
+    ],
+    "current": [
+     "dranthex logistics"
+    ],
+    "evidence": {
+     "@overlay/work/employer-dranthex-logistics": [
+      "The user accepted a new position at Dranthex Logistics as of March 5, 2023, succeeding their previous role at Elyndra Health.",
+      "- The user was previously employed at Elyndra Health [[work/employer-elyndra-health]] (stated March 2, 2023).",
+      "- The user previously worked as a data scientist [[work/role-data-scientist]] at Elyndra Health."
+     ],
+     "@overlay/work/insurance": [
+      "Work Benefits: Health Insurance",
+      "health insurance",
+      "Elyndra Health insurance"
+     ],
+     "@overlay/work/office-location": [
+      "Elyndra Health office",
+      "The user's office is remote through Elyndra Health; if they change employers, their office will be in Quivira Springs (stated March 4, 2023).",
+      "- This remote office location is through the user's employer, Elyndra Health [[work/employer-elyndra-health]]."
+     ],
+     "@overlay/work/role-data-scientist": [
+      "The user's job title is data scientist at Elyndra Health, working with large datasets to derive insights and support decision-making in the health sector.",
+      "- The user works as a data scientist at Elyndra Health [[work/employer-elyndra-health]].",
+      "- The user derives insights from large datasets to support decision-making processes in the health sector."
+     ],
+     "@overlay/work/schedule": [
+      "The user's work hours are shift work (day) through Elyndra Health; if they change employers, their schedule will be 9-to-5 fixed (stated March 4, 2023).",
+      "- The user's day shift work schedule is through their employer, Elyndra Health [[work/employer-elyndra-health]].",
+      "- The work schedule determines their current daily working rhythm at Elyndra Health."
+     ]
+    },
+    "verdict": "correct",
+    "note": ""
+   },
+   {
+    "id": "meme-nofiller/sw_004/update/1#3",
+    "dir": "meme-nofiller__sw_004",
+    "session": 1,
+    "stale": [
+     "2025 march 28"
+    ],
+    "current": [
+     "2025 april 11"
+    ],
+    "evidence": {
+     "@overlay/project/sprint-deadline-april-2025": [
+      "Project Sprint Deadline (April 11, 2025)",
+      "April 11 2025 deadline",
+      "April 2025 deadline"
+     ]
+    },
+    "verdict": "correct",
+    "note": ""
+   },
+   {
+    "id": "meme-nofiller/pl_007/update/4#1",
+    "dir": "meme-nofiller__pl_007",
+    "session": 4,
+    "stale": [
+     "pyresta meadow"
+    ],
+    "current": [
+     "corenth hills"
+    ],
+    "evidence": {
+     "@overlay/commute/commute-duration": [
+      "The user has a commute of about 20 minutes, which depends on living in Pyresta Meadow and would change if their residence changes.",
+      "- The 20-minute commute duration depends specifically on where the user lives in Pyresta Meadow ([[personal/residence-pyresta-meadow]])."
+     ],
+     "@overlay/personal/residence-corenth-hills": [
+      "As of March 2023, the user moved to Corenth Hills, having previously lived in Pyresta Meadow.",
+      "- The user previously resided in Pyresta Meadow ([[personal/residence-pyresta-meadow]]) before moving to Corenth Hills in March 2023."
+     ]
+    },
+    "verdict": "correct",
+    "note": ""
+   },
+   {
+    "id": "meme-nofiller/sw_039/update/2#5",
+    "dir": "meme-nofiller__sw_039",
+    "session": 2,
+    "stale": [
+     "2025 may 9",
+     "2025 june 6"
+    ],
+    "current": [
+     "2025 june 20"
+    ],
+    "evidence": {
+     "@overlay/project/sprint-deadline-2025-06-20": [
+      "Project Sprint Deadline: June 20, 2025",
+      "June 20 2025 deadline",
+      "2025-06-20 deadline"
+     ]
+    },
+    "verdict": "correct",
+    "note": ""
+   },
+   {
+    "id": "meme-nofiller/sw_012/update/2#3",
+    "dir": "meme-nofiller__sw_012",
+    "session": 2,
+    "stale": [
+     "cryptara vault",
+     "selvex secrets"
+    ],
+    "current": [
+     "pyronos crypt"
+    ],
+    "evidence": {
+     "@overlay/security/pyronos-crypt": [
+      "Pyronos Crypt Team Secret Manager",
+      "secret manager",
+      "secrets management"
+     ]
+    },
+    "verdict": "correct",
+    "note": ""
+   },
+   {
+    "id": "meme-nofiller/sw_020/update/1#3",
+    "dir": "meme-nofiller__sw_020",
+    "session": 1,
+    "stale": [
+     "2025 april 11"
+    ],
+    "current": [
+     "2025 june 20"
+    ],
+    "evidence": {
+     "@overlay/aurora/sprint-deadline-2025-06-20": [
+      "2025 June 20",
+      "The Aurora team's sprint deadline is June 20, 2025.",
+      "- The sprint deadline for project Aurora is 2025 June 20."
+     ]
+    },
+    "verdict": "correct",
+    "note": ""
+   },
+   {
+    "id": "meme-nofiller/sw_007/update/4#1",
+    "dir": "meme-nofiller__sw_007",
+    "session": 4,
+    "stale": [
+     "vorathis db"
+    ],
+    "current": [
+     "keldaris db"
+    ],
+    "evidence": {
+     "@overlay/ops/database-backups": [
+      "db backups"
+     ],
+     "@overlay/ops/database-connection-string": [
+      "db connection string",
+      "The database connection string is zyndra://base-main:9042/aurora, which depends on Vorathis DB.",
+      "- Database connection configuration depends on using Vorathis DB ([[ops/database-vorathis-db]])."
+     ],
+     "@overlay/ops/database-keldaris-db": [
+      "Database Keldaris DB",
+      "Keldaris DB",
+      "Vorathis DB replacement"
+     ],
+     "@overlay/ops/database-migrations": [
+      "db migrations"
+     ],
+     "@overlay/ops/error-crysthene-db-cert": [
+      "Error Log Crysthene DB Certificate Chain Validation",
+      "crysthene-db-primary.internal",
+      "Exact error log for CertificateVerificationError on crysthene-db-primary.internal observed at 2024-07-22T11:09:47Z requiring cert rotation via Cryptara Vault."
+     ]
+    },
+    "verdict": "correct",
+    "note": ""
+   },
+   {
+    "id": "meme-nofiller/sw_044/update/2#3",
+    "dir": "meme-nofiller__sw_044",
+    "session": 2,
+    "stale": [
+     "pyronis bundle",
+     "quorix hub"
+    ],
+    "current": [
+     "synthari modules"
+    ],
+    "evidence": {
+     "@overlay/project/package-manager-synthari-modules": [
+      "Quorix Hub",
+      "Pyronis Bundle",
+      "The team uses Synthari Modules as its package manager for dependency management, switching from Quorix Hub."
+     ]
+    },
+    "verdict": "correct",
+    "note": ""
+   },
+   {
+    "id": "meme-nofiller/pl_008/update/4#1",
+    "dir": "meme-nofiller__pl_008",
+    "session": 4,
+    "stale": [
+     "thalwren inc"
+    ],
+    "current": [
+     "caeltura systems"
+    ],
+    "evidence": {
+     "@overlay/career/caeltura-systems": [
+      "- Superseded their previous employment at Thalwren Inc [[career/employer]]."
+     ],
+     "@overlay/career/insurance": [
+      "Thalwren insurance coverage",
+      "The user has an interim coverage plan for insurance through their employer Thalwren Inc, which would change if their employer changes.",
+      "- This insurance plan is provided through their employer, Thalwren Inc [[career/employer]]."
+     ],
+     "@overlay/career/office-location": [
+      "Thalwren office",
+      "The user's office is located in Thornvale Crossing through employer Thalwren Inc; if they change employers, the office will be in Tesswick Bay.",
+      "- This office location is through their employer, Thalwren Inc [[career/employer]]."
+     ],
+     "@overlay/career/work-project": [
+      "Thalwren project",
+      "The user is currently working on backend migration at Thalwren Inc; if their employer changes, they will work on a marketing campaign.",
+      "- This project assignment is through their employer, Thalwren Inc [[career/employer]]."
+     ],
+     "@overlay/career/work-schedule": [
+      "Thalwren work shift",
+      "The user works night shift hours at Thalwren Inc, which impacts their daily routine, time management, and work-life balance.",
+      "- The user works shift work on the night shift for their job at Thalwren Inc [[career/employer]] (as of March 2023)."
+     ]
+    },
+    "verdict": "correct",
+    "note": ""
+   },
+   {
+    "id": "meme-nofiller/pl_011/update/2#5",
+    "dir": "meme-nofiller__pl_011",
+    "session": 2,
+    "stale": [
+     "xelvoria",
+     "daily journal subscription"
+    ],
+    "current": [
+     "pyrethon plus"
+    ],
+    "evidence": {
+     "@overlay/user/hobbies/wine-tasting-club": [
+      "- They are learning about different wine regions and tasting techniques through their subscription to [[user/subscriptions/pyrethon-plus]]."
+     ],
+     "@overlay/user/lifestyle/sleep-schedule": [
+      "- They maintain this consistent sleep schedule as part of their regular daily habits and lifestyle."
+     ],
+     "@overlay/user/subscriptions/pyrethon-plus": [
+      "User Subscription: Pyrethon Plus",
+      "Pyrethon Plus subscription",
+      "wine subscription"
+     ]
+    },
+    "verdict": "correct",
+    "note": ""
+   },
+   {
+    "id": "meme-nofiller/pl_025/update/4#1",
+    "dir": "meme-nofiller__pl_025",
+    "session": 4,
+    "stale": [
+     "quenlix group"
+    ],
+    "current": [
+     "thalwren inc"
+    ],
+    "evidence": {
+     "@overlay/hobbies/book-club": [
+      "book discussion group"
+     ],
+     "@overlay/lifestyle/potluck-dinner-group": [
+      "Potluck Dinner Group Social Meetup",
+      "potluck dinner group",
+      "potluck group"
+     ],
+     "@overlay/work/job-title-staff-engineer": [
+      "- Transitioned to staff engineer upon changing employer from Quenlix Group (where previous job title was marketing lead)."
+     ],
+     "@overlay/work/office-location-quivira-springs": [
+      "- Moved office location to Quivira Springs following the change in employer from Quenlix Group (previously in Zaravel Heights)."
+     ],
+     "@overlay/work/thalwren-inc": [
+      "The user accepted a new position at Thalwren Inc. as of March 2023, transitioning from Quenlix Group.",
+      "- Transitions employer from Quenlix Group to Thalwren Inc."
+     ]
+    },
+    "verdict": "correct",
+    "note": ""
+   },
+   {
+    "id": "meme-nofiller/sw_002/update/2#3",
+    "dir": "meme-nofiller__sw_002",
+    "session": 2,
+    "stale": [
+     "2025 april 25",
+     "2025 june 6"
+    ],
+    "current": [
+     "2025 june 20"
+    ],
+    "evidence": {
+     "@overlay/aurora/sprint-deadline-2025-06-20": [
+      "Aurora Sprint Deadline - 2025 June 20",
+      "June 20 2025 deadline",
+      "2025 June 20 deadline"
+     ]
+    },
+    "verdict": "correct",
+    "note": ""
+   }
+  ],
+  "flips": [
+   {
+    "id": "meme-nofiller/pl_019/2#5",
+    "dir": "meme-nofiller__pl_019",
+    "point": 3,
+    "value": "thyrelion (anime)",
+    "holders": {
+     "@overlay/media/anime/thyrelion": [
+      "Current Media: Thyrelion Anime",
+      "Thyrelion"
+     ]
+    },
+    "verdict": "correct",
+    "note": ""
+   },
+   {
+    "id": "meme-nofiller/pl_027/0#11",
+    "dir": "meme-nofiller__pl_027",
+    "point": "end",
+    "value": "whispers of zarinthea (tv)",
+    "holders": {
+     "@overlay/user/media/whispers-of-zarinthea": [
+      "Whispers of Zarinthea TV Show",
+      "Whispers of Zarinthea"
+     ]
+    },
+    "verdict": "correct",
+    "note": ""
+   },
+   {
+    "id": "meme-nofiller/pl_036/0#1",
+    "dir": "meme-nofiller__pl_036",
+    "point": "end",
+    "value": "drawing/painting",
+    "holders": {
+     "@overlay/user/food/favorite-restaurant": [
+      "The user's favorite restaurant is Lorwen & Sage, a go-to dining spot especially enjoyed after long days of drawing or painting.",
+      "- The user finds it especially nice to visit Lorwen & Sage after a long day of drawing or painting ([[user/hobbies/art]])."
+     ],
+     "@overlay/user/hobbies/art": [
+      "Drawing and Painting Hobby",
+      "The user's hobby is drawing and painting, which they have been getting into more recently, experimenting with watercolor and charcoal."
+     ]
+    },
+    "verdict": "correct",
+    "note": ""
+   },
+   {
+    "id": "meme-nofiller/sw_007/0#9",
+    "dir": "meme-nofiller__sw_007",
+    "point": "end",
+    "value": "biweekly friday afternoon",
+    "holders": {
+     "@overlay/ops/release-schedule": [
+      "The team releases biweekly on Friday afternoons.",
+      "- The team releases software on a biweekly schedule on Friday afternoon."
+     ]
+    },
+    "verdict": "correct",
+    "note": ""
+   },
+   {
+    "id": "meme-nofiller/pl_009/4#3",
+    "dir": "meme-nofiller__pl_009",
+    "point": "end",
+    "value": "the quorath codex (book)",
+    "holders": {
+     "@overlay/interests/the-quorath-codex": [
+      "Current Media: The Quorath Codex",
+      "The Quorath Codex"
+     ]
+    },
+    "verdict": "correct",
+    "note": ""
+   },
+   {
+    "id": "meme-nofiller/sw_047/3#7",
+    "dir": "meme-nofiller__sw_047",
+    "point": "end",
+    "value": "connectionrefusederror: [errno 111] connection refused. service crysthene-db-primary on port 5432 is not accepting connections. last successful heartbeat was at 2024-03-15t08:23:41z. check firewall rules and verify that max_connections has not been exceeded",
+    "holders": {
+     "@overlay/tech-stack/crysthene-db-error-log": [
+      "Database Error Log: crysthene-db-primary Connection Refused",
+      "crysthene-db-primary error log"
+     ]
+    },
+    "verdict": "correct",
+    "note": ""
+   },
+   {
+    "id": "meme-nofiller/sw_018/0#1",
+    "dir": "meme-nofiller__sw_018",
+    "point": 3,
+    "value": "volunteer-based with weekly signup",
+    "holders": {
+     "@overlay/process/on-call-rotation": [
+      "The team operates a volunteer-based on-call rotation with weekly signups."
+     ]
+    },
+    "verdict": "correct",
+    "note": ""
+   },
+   {
+    "id": "meme-nofiller/sw_025/3#5",
+    "dir": "meme-nofiller__sw_025",
+    "point": "end",
+    "value": "certificateverificationerror: certificate chain validation failed for crysthene-db-primary.internal. subject cn does not match expected hostname; chain depth 2 unverified. observed at 2024-07-22t11:09:47z by tls_handshake_listener. rotate the cert via cryptara vault and restart the connection pool to recover",
+    "holders": {
+     "@overlay/security/crysthene-db-cert-error": [
+      "- Exact error log word for word: \"CertificateVerificationError: certificate chain validation failed for crysthene-db-primary.internal.\\n  Subject CN does not match expected hostname; chain depth 2 unverified.\\n  Observed at 2024-07-22T11:09:47Z by tls_handshake_listener.\\n  Rotate the cert via Cryptara Vault and restart the connection pool to recover.\""
+     ]
+    },
+    "verdict": "correct",
+    "note": ""
+   },
+   {
+    "id": "meme-nofiller/sw_012/3#7",
+    "dir": "meme-nofiller__sw_012",
+    "point": 3,
+    "value": "deadlockdetected: transactions 4821 and 4823 are deadlocked on table aurora_orders. query 1 was update orders set status = 'shipped' where region = 'us-east'. query 2 was delete from orders where created_at < now() - interval '30 days'. first seen at 2024-08-04t22:33:18z; recommend serializable isolation review",
+    "holders": {
+     "@overlay/database/deadlock-error": [
+      "- Exact error log: \"DeadlockDetected: transactions 4821 and 4823 are deadlocked on table aurora_orders.\\n  Query 1 was UPDATE orders SET status = 'shipped' WHERE region = 'us-east'.\\n  Query 2 was DELETE FROM orders WHERE created_at < NOW() - INTERVAL '30 days'.\\n  First seen at 2024-08-04T22:33:18Z; recommend serializable isolation review.\""
+     ]
+    },
+    "verdict": "correct",
+    "note": ""
+   },
+   {
+    "id": "meme-nofiller/pl_010/3#7",
+    "dir": "meme-nofiller__pl_010",
+    "point": 3,
+    "value": "zynthera bay beach trip (1 week)",
+    "holders": {
+     "@overlay/travel/zynthera-bay-trip": [
+      "If the user's relationship status changes, they will plan a 1-week beach trip to Zynthera Bay.",
+      "- If the user's relationship status changes, the user will plan a 1-week beach trip to Zynthera Bay (as of March 2023)."
+     ]
+    },
+    "verdict": "correct",
+    "note": ""
+   },
+   {
+    "id": "meme-nofiller/pl_016/3#7",
+    "dir": "meme-nofiller__pl_016",
+    "point": 3,
+    "value": "zynthera bay beach trip (1 week)",
+    "holders": {
+     "@overlay/personal/travel/zynthera-bay-beach-trip": [
+      "If their relationship status changes, the user plans to take a 1-week beach trip to Zynthera Bay.",
+      "- If the user's relationship status changes, they will plan a 1-week beach trip to Zynthera Bay."
+     ]
+    },
+    "verdict": "correct",
+    "note": ""
+   },
+   {
+    "id": "meme-nofiller/pl_028/3#7",
+    "dir": "meme-nofiller__pl_028",
+    "point": 3,
+    "value": "10 min",
+    "holders": {
+     "@overlay/transit/commute-duration": [
+      "User Commute Duration: 10 Minutes",
+      "10 minute commute"
+     ]
+    },
+    "verdict": "correct",
+    "note": ""
+   },
+   {
+    "id": "meme-nofiller/sw_006/2#1",
+    "dir": "meme-nofiller__sw_006",
+    "point": "end",
+    "value": "async written updates in slack",
+    "holders": {
+     "@overlay/team/standup": [
+      "Team Standup Format - Async Slack Updates",
+      "standup format"
+     ]
+    },
+    "verdict": "correct",
+    "note": ""
+   },
+   {
+    "id": "meme-nofiller/sw_011/4#3",
+    "dir": "meme-nofiller__sw_011",
+    "point": "end",
+    "value": "paired oncall (primary + secondary)",
+    "holders": {
+     "@overlay/project/oncall-rotation": [
+      "On-Call Rotation: Paired On-Call (Primary + Secondary)",
+      "on-call rotation"
+     ]
+    },
+    "verdict": "correct",
+    "note": ""
+   },
+   {
+    "id": "meme-nofiller/pl_036/3#7",
+    "dir": "meme-nofiller__pl_036",
+    "point": 3,
+    "value": "10 min",
+    "holders": {
+     "@overlay/user/transportation/commute-duration": [
+      "The user's commute is about 30 minutes living in Thornvale Crossing; if they change residence, the commute will be around 10 minutes.",
+      "- If the user changes their residence, their commute will be around 10 minutes."
+     ]
+    },
+    "verdict": "correct",
+    "note": ""
+   },
+   {
+    "id": "meme-nofiller/sw_001/2#1",
+    "dir": "meme-nofiller__sw_001",
+    "point": 3,
+    "value": "async written updates in slack",
+    "holders": {
+     "@overlay/meetings/standup": [
+      "Async Written Standup Format in Slack",
+      "standup format"
+     ]
+    },
+    "verdict": "correct",
+    "note": ""
+   },
+   {
+    "id": "meme-nofiller/sw_016/3#11",
+    "dir": "meme-nofiller__sw_016",
+    "point": "end",
+    "value": "outofmemoryerror: java heap space. gc overhead limit exceeded after 8 consecutive failed collections in pool 'ps old gen'. heap dump written to /var/log/aurora/heap-2024-05-08.hprof at 18:42:11z. recommend increasing -xmx beyond 4g or investigating memory leak in orderprocessor",
+    "holders": {
+     "@overlay/tooling/order-processor-oom-error": [
+      "OrderProcessor OutOfMemoryError Log",
+      "OutOfMemoryError"
+     ]
+    },
+    "verdict": "correct",
+    "note": ""
+   },
+   {
+    "id": "meme-nofiller/sw_044/3#9",
+    "dir": "meme-nofiller__sw_044",
+    "point": 3,
+    "value": "certificateverificationerror: certificate chain validation failed for crysthene-db-primary.internal. subject cn does not match expected hostname; chain depth 2 unverified. observed at 2024-07-22t11:09:47z by tls_handshake_listener. rotate the cert via cryptara vault and restart the connection pool to recover",
+    "holders": {
+     "@overlay/project/crysthene-db-cert-error": [
+      "Certificate Verification Error: crysthene-db-primary.internal",
+      "CertificateVerificationError"
+     ]
+    },
+    "verdict": "correct",
+    "note": ""
+   },
+   {
+    "id": "meme-nofiller/sw_018/1#7",
+    "dir": "meme-nofiller__sw_018",
+    "point": "end",
+    "value": "round-robin text post by 10am",
+    "holders": {
+     "@overlay/process/standup": [
+      "The team holds asynchronous standup via a round-robin text post submitted by 10am.",
+      "- The team's standup format is an asynchronous round-robin text post submitted by 10am."
+     ]
+    },
+    "verdict": "correct",
+    "note": ""
+   },
+   {
+    "id": "meme-nofiller/pl_008/4#3",
+    "dir": "meme-nofiller__pl_008",
+    "point": "end",
+    "value": "pickup basketball saturdays",
+    "holders": {
+     "@overlay/hobbies/pickup-basketball": [
+      "The user's regular social meetup is playing pickup basketball on Saturdays.",
+      "- The user participates in a regular social meetup playing pickup basketball on Saturdays (as of March 2023)."
+     ]
+    },
+    "verdict": "correct",
+    "note": ""
+   }
+  ]
+ }
+}

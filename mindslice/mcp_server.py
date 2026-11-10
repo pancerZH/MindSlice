@@ -9,12 +9,13 @@ agent writes into ``staging/`` for human review via ``diff``/``apply``).
 
 from __future__ import annotations
 
+import difflib
 import json
 import sys
 from typing import IO, Any
 
 from . import __version__
-from .errors import MindSliceError
+from .errors import InvalidArgumentsError, MindSliceError
 from .workspace import Workspace
 
 PROTOCOL_VERSIONS = ("2025-06-18", "2025-03-26", "2024-11-05")
@@ -114,12 +115,21 @@ TOOLS: list[dict[str, Any]] = [
             "card as its premise; if that baseline is later superseded or deleted, this card is flagged. A wrong "
             "supersedes hides a card that is still true and extends hides nothing, so when unsure, use extends. "
             "Use delete to forget on request or to remove a wrong card. stage=true buffers the change in staging/ "
-            "for human review."
+            "for human review. Name the id by the durable topic or slot it fills (team/lead, "
+            "subscriptions/streaming), never by its current value (team/lead-sarah-chen): ids and links outlive "
+            "values. When a write supersedes or deletes a card, the response lists affected_backlinks (cards that "
+            "[[link]] to it) and affected_extensions (cards that extend it). Fix them in the same session: rewrite "
+            "a card that still states the old value as current or links to a card named after it; rebase an "
+            "extension that still holds (replace with extends naming the replacement), else supersede or delete "
+            "it. A link to a slot can stay (read() follows supersedes). read_only items are in base slices: "
+            "supersede one only if it states the old value as current."
         ),
         "inputSchema": {
             "type": "object",
             "properties": {
-                "id": {"type": "string", "description": "overlay-relative card path without .md, e.g. \"api/auth-edge-cases\""},
+                "id": {"type": "string", "description": "overlay-relative card path without .md, named by durable topic or slot, "
+                       "e.g. \"team/lead\" (not \"team/lead-sarah-chen\"); if the slot's id is taken by the card being "
+                       "superseded, qualify it with the date of the change (\"team/lead-2026-11\"), not the new value"},
                 "op": {"type": "string", "enum": ["create", "replace", "append", "delete"], "default": "create"},
                 "content": {"type": ["string", "array"], "items": {"type": "string"}, "description": "card body (Markdown), or bullet statements for append"},
                 "summary": {"type": "string", "description": "1-2 sentence abstract (<= 240 chars) stating the key fact with its concrete value; shown in search previews"},
@@ -142,7 +152,11 @@ INSTRUCTIONS = (
     "relevant cards, and read() an address for full content (it composes extensions and follows replacements). "
     "Record durable learnings, user corrections and debugging lessons with write() into @overlay: prefer append "
     "to grow an existing card, extends when a card refines, adds an exception or if-then rule to, or depends on "
-    "another, supersedes to replace an outdated card (not delete), and delete only to forget on request."
+    "another, supersedes to replace an outdated card (not delete), and delete only to forget on request. Name a "
+    "card by the durable topic or slot it fills (team/lead, subscriptions/streaming), never by the value in it "
+    "(team/lead-sarah-chen, subscriptions/xelvoria). When a write supersedes or deletes a card, its response lists "
+    "affected_backlinks and affected_extensions, the cards that still link to or extend it: update or rebase each "
+    "of them in the same session."
 )
 
 
@@ -205,12 +219,16 @@ class MCPServer:
         name = params.get("name")
         if name not in {t["name"] for t in TOOLS}:
             return _tool_result({"error": "UnknownTool", "message": f"unknown tool {name!r}"}, is_error=True)
+        arguments = params.get("arguments")
         try:
-            payload = self.call_tool(name, params.get("arguments") or {})
+            check_arguments(name, {} if arguments is None else arguments)
+            payload = self.call_tool(name, arguments or {})
         except MindSliceError as exc:
             return _tool_result(exc.to_dict(), is_error=True)
-        except (TypeError, ValueError, KeyError) as exc:
-            return _tool_result({"error": type(exc).__name__, "message": str(exc)}, is_error=True)
+        except (TypeError, ValueError, KeyError) as exc:  # raised below the arguments check: still the caller's input
+            err = InvalidArgumentsError(f"{name}: the arguments could not be used ({type(exc).__name__}: {exc}).",
+                                        tool=name, cause=type(exc).__name__)
+            return _tool_result(err.to_dict(), is_error=True)
         return _tool_result(payload)
 
     def serve(self, stdin: IO[str], stdout: IO[str]) -> None:
@@ -230,6 +248,39 @@ class MCPServer:
             if response is not None:
                 stdout.write(json.dumps(response, ensure_ascii=False) + "\n")
                 stdout.flush()
+
+
+# Names a caller is likely to use for another argument of the same tool (shown as a hint, never accepted).
+_ARGUMENT_HINTS = {"write": {"address": "id", "path": "id", "card": "id", "body": "content", "text": "content"},
+                   "read": {"id": "address", "path": "address", "card": "address"},
+                   "search": {"q": "query", "queries": "query", "text": "query"}}
+
+
+def check_arguments(name: str, arguments: Any) -> None:
+    """The tool call's argument names against the tool's input schema: a missing required argument or one the
+    schema doesn't have raises ``InvalidArgumentsError`` naming each, with the allowed names (and a hint where
+    a name looks like another argument). Values are not checked here; the tool checks them."""
+    schema = next(t["inputSchema"] for t in TOOLS if t["name"] == name)
+    if not isinstance(arguments, dict):
+        raise InvalidArgumentsError(f"{name}: arguments must be a JSON object, not {type(arguments).__name__}.", tool=name)
+    allowed = list(schema.get("properties", {}))
+    missing = [k for k in schema.get("required", []) if k not in arguments]
+    unexpected = sorted(k for k in arguments if k not in allowed) if schema.get("additionalProperties") is False else []
+    if not missing and not unexpected:
+        return
+    hints = {}
+    for k in unexpected:
+        guess = _ARGUMENT_HINTS.get(name, {}).get(k) or next(iter(difflib.get_close_matches(k, allowed, n=1, cutoff=0.75)), None)
+        if guess:
+            hints[k] = guess
+    parts = []
+    if missing:
+        parts.append("missing required argument" + ("s " if len(missing) > 1 else " ") + ", ".join(f"'{k}'" for k in missing))
+    if unexpected:
+        parts.append("unknown argument" + ("s " if len(unexpected) > 1 else " ") + ", ".join(
+            f"'{k}'" + (f" (did you mean '{hints[k]}'?)" if k in hints else "") for k in unexpected))
+    raise InvalidArgumentsError(f"{name}: " + "; ".join(parts) + ". Allowed arguments: " + ", ".join(allowed) + ".",
+                                tool=name, missing=missing, unexpected=unexpected, allowed=allowed, **({"hints": hints} if hints else {}))
 
 
 def _tool_result(payload: dict[str, Any], is_error: bool = False) -> dict[str, Any]:

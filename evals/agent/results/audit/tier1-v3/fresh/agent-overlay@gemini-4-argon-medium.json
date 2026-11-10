@@ -1,0 +1,64 @@
+{
+ "cell": "agent-overlay@gemini-4-argon-medium",
+ "rule": "Fresh labels for matcher v3 (cases where v3 and v2 disagree and no audit had judged them; every case v3 newly flags, and 20 of the pages it clears, seed 20261106), judged before any change made after seeing them. Verdict rules as in the tier-1 and v2 audits",
+ "cases": {
+  "lost": [
+   {
+    "id": "meme-nofiller/pl_024/0#7",
+    "point": "end",
+    "head": "value 'saving for wedding' (financial_goal): v2 holders ['@overlay/profile/relationship-status']",
+    "evidence": {
+     "@overlay/profile/relationship-status": [
+      "- Prior to being married and later separated, the user had a financial goal of saving for a wedding on 2023/03/01 at 09:00 (@history/s000/r003) and planned a big purchase of an engagement ring on 2023/03/01 at 14:15 (@history/s001/r006, @history/s001/r007)."
+     ]
+    },
+    "direction": "v3 newly lost",
+    "verdict": "correct",
+    "note": "the only card narrates the goal as past ('Prior to being married ... the user had a financial goal of saving for a wedding')"
+   }
+  ],
+  "absence_clean": [
+   {
+    "id": "pl_030/after3",
+    "point": "end",
+    "head": "Q: What insurance do I have? [Abs-hop1] stale=['employer + supplemental'] current=[]",
+    "evidence": {
+     "@overlay/work/employer": [
+      "- Because the user changed their employer from Elyndra Health, their employer + supplemental insurance through Elyndra Health also changes ([[@overlay/work/insurance]])."
+     ]
+    },
+    "direction": "v3 cleared",
+    "verdict": "correct",
+    "note": "every flagged line marks the value as changed, affected, invalidated, determined by a changed premise, or past"
+   },
+   {
+    "id": "sw_002/after3",
+    "point": "end",
+    "head": "Q: What's our log drain endpoint? [Abs-hop1] stale=['stream.velturis.io/aurora'] current=[]",
+    "evidence": {
+     "@overlay/project/deployment-target": [
+      "- Log drain (`stream.velturis.io/aurora`) and deploy command (`orinthal publish --tier production`) were determined by Narvex Cloud and `orinthal-build.yml`, so they are also affected by this move: [[project/log-drain]], [[project/deploy-command]]."
+     ]
+    },
+    "direction": "v3 cleared",
+    "verdict": "correct",
+    "note": "every flagged line marks the value as changed, affected, invalidated, determined by a changed premise, or past"
+   },
+   {
+    "id": "pl_028/after4",
+    "point": "end",
+    "head": "Q: What's my favorite restaurant? [Abs-hop2] stale=['velmara taqueria'] current=[]",
+    "evidence": {
+     "@overlay/preferences/favorite-restaurant-changed": [
+      "Velmara Taqueria",
+      "The user's favorite restaurant was Velmara Taqueria while their office was in Luminara Flats, which was subject to change upon moving offices to Tesswick Bay at Quenlix Group.",
+      "- On 2023/03/04, the user stated that their favorite restaurant was Velmara Taqueria, but noted that this depended on their office being in Luminara Flats (\"My favorite restaurant is Velmara Taqueria — this depends on where our office is in Luminara Flats; if I move, this would change.\")."
+     ]
+    },
+    "direction": "v3 cleared",
+    "verdict": "correct",
+    "note": "every flagged line marks the value as changed, affected, invalidated, determined by a changed premise, or past"
+   }
+  ]
+ }
+}

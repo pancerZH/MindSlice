@@ -35,6 +35,31 @@ records the amended lines and both runs).
    its lines: the predecessor is among the top 3 results for 0.685 of writes that supersede (0.80 needed),
    and the hint fires on most cards that merely extend a baseline, often naming that baseline.
 
+## Scope: what this shows, and what it doesn't
+
+These are retrieval and structure measurements with no language model anywhere, so read them as follows.
+
+- **Lexical retrieval, not dense.** `search()` is BM25 over SQLite FTS5: it finds what the question words
+  say, near completely (Mode A, "Where it works"), and misses implicit paraphrase, which is most of LoCoMo's
+  multi-hop questions and MEME's "free time" (Mode A, "Where it doesn't"; Vocabulary gaps). That second group
+  is what dense retrievers and rerankers over the raw history are built for, and where they should recall
+  more. No dense system was run on this harness, so there is no measured comparison here, in either direction.
+  MindSlice's remedy is authoring (`aliases`, +0.16 nDCG@5 on the retrieval evaluation's vocabulary-gap
+  queries) and the reader rephrasing after `unmatched_terms`; templated cards here have neither.
+- **Answer accuracy.** That needs a reader model; these are retrieval and structure measurements.
+- **Whether an agent writes good lineage.** Mode B's lineage is the annotations', the oracle. Agents writing it
+  themselves were measured afterwards in [`evals/agent`](../agent/REPORT.md): on MEME a stale card ranks first on
+  0-0.6% of Cascade pages for Gemini agents (flat 33%), and how much they retire depends on the model and on
+  whether the raw history is mounted under their lineage. Mode C shows the engine can't stand in for the agent
+  lexically.
+- **Token cost.** Nothing here calls a model. What a working agent pays to read memory (about 3k tokens per
+  question, independent of the memory's size) and why the agent evaluation's token totals price a benchmark
+  replay rather than use are in [the agent report's boundaries](../agent/REPORT.md#against-flat-history-and-raw-history-rag).
+- **Authored cards.** Titles, summaries and aliases here are templates. Authored cards would change Mode A
+  (aliases did on the retrieval evaluation).
+- **Comparisons with published systems.** They chunk, weight and key differently, often with LLM-written
+  memory. Read these numbers against future MindSlice versions on this harness.
+
 ## What was run
 
 | Dataset | Haystacks | Questions | Cards built | Evidence used |
@@ -220,7 +245,8 @@ the lines read once on the other half ([PLAN.md](PLAN.md), "Mode C"; tables in
   the hint fires on 215 of 258 such writes, and in 120 its top candidate is the very card being extended.
   A wrong `supersedes` there would hide a valid card.
 - **So the engine stays as it is**, and noticing supersession remains the agent's job. Whether agents do
-  it is the open question; [`evals/agent_test.md`](../agent_test.md) is the plan for measuring it.
+  it was then measured ([`evals/agent_test.md`](../agent_test.md) the plan, [`evals/agent/REPORT.md`](../agent/REPORT.md)
+  the results).
 
 ## Dataset issues found along the way
 
@@ -234,18 +260,6 @@ the lines read once on the other half ([PLAN.md](PLAN.md), "Mode C"; tables in
   knowledge-update pair is dated against its `_1`/`_2` order. Sessions are out of date order in 211
   haystacks.
 - **LoCoMo** has 8 evidence ids that name no turn.
-
-## What this does not show
-
-- **Answer accuracy.** That needs a reader model; these are retrieval and structure measurements.
-- **Whether an agent writes good lineage.** Mode B's lineage is the annotations'. In practice the
-  bottleneck is an agent noticing that a new statement supersedes an old one; this harness gives the
-  oracle for that, not the agent (Mode C shows the engine can't stand in for it lexically).
-  [`evals/agent_test.md`](../agent_test.md) plans that measurement.
-- **Authored cards.** Titles, summaries and aliases here are templates. Authored cards would change Mode A
-  (aliases did on the retrieval evaluation).
-- **Comparisons with published systems.** They chunk, weight and key differently, often with LLM-written
-  memory. Read these numbers against future MindSlice versions on this harness.
 
 ## Engine follow-ups
 

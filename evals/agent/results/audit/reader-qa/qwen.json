@@ -1,0 +1,1753 @@
+{
+ "reader": "qwen",
+ "cases": [
+  {
+   "arm": "flat",
+   "unit": "meme-nofiller__pl_008|pl_008/after1|end",
+   "set": "target",
+   "task": "Cas",
+   "query": "What project am I working on?",
+   "answer": "backend migration — this is through my employer (I work at Thalwren Inc.)",
+   "gold": [
+    "marketing campaign"
+   ],
+   "verdict": "wrong",
+   "reason": "states the stale value"
+  },
+  {
+   "arm": "flat",
+   "unit": "meme-nofiller__pl_008|pl_008/after2|end",
+   "set": "target",
+   "task": "Cas",
+   "query": "How do I get to work?",
+   "answer": "You take the walking to work (because your office is in Thornvale Crossing).",
+   "gold": [
+    "bus"
+   ],
+   "verdict": "wrong",
+   "reason": "states the stale value"
+  },
+  {
+   "arm": "flat",
+   "unit": "meme-nofiller__pl_009|pl_009/after1|end",
+   "set": "target",
+   "task": "Cas",
+   "query": "What dietary restrictions do I have?",
+   "answer": "low-sodium",
+   "gold": [
+    "no alcohol"
+   ],
+   "verdict": "wrong",
+   "reason": "states the stale value"
+  },
+  {
+   "arm": "flat",
+   "unit": "meme-nofiller__pl_009|pl_009/before1|3",
+   "set": "control",
+   "task": "Cas",
+   "query": "Where do I work out?",
+   "answer": "Crysthene Pool",
+   "gold": [
+    "zorathel peak gym"
+   ],
+   "verdict": "wrong",
+   "reason": "states another value"
+  },
+  {
+   "arm": "flat",
+   "unit": "meme-nofiller__pl_011|pl_011/before1|3",
+   "set": "control",
+   "task": "Cas",
+   "query": "Where do I work out?",
+   "answer": "Pyravar CrossFit",
+   "gold": [],
+   "verdict": "wrong",
+   "reason": "MEME's expected answer is 'none'"
+  },
+  {
+   "arm": "flat",
+   "unit": "meme-nofiller__pl_012|pl_012/after1|end",
+   "set": "target",
+   "task": "Cas",
+   "query": "Who do I live with?",
+   "answer": "your partner",
+   "gold": [
+    "with partner"
+   ],
+   "verdict": "correct",
+   "reason": "states the gold value in other words"
+  },
+  {
+   "arm": "flat",
+   "unit": "meme-nofiller__pl_013|pl_013/after1|end",
+   "set": "target",
+   "task": "Cas",
+   "query": "What's my work schedule?",
+   "answer": "My work hours are shift work (night) — this is through my employer (I work at Quenlix Group); if my employer changes, this would change.",
+   "gold": [
+    "4-day work week"
+   ],
+   "verdict": "wrong",
+   "reason": "states the stale value"
+  },
+  {
+   "arm": "flat",
+   "unit": "meme-nofiller__pl_013|pl_013/before4|3",
+   "set": "control",
+   "task": "Del",
+   "query": "What's my sleep schedule?",
+   "answer": "I usually sleep from 10pm to 6am.",
+   "gold": [
+    "10pm-6am"
+   ],
+   "verdict": "correct",
+   "reason": "states the gold value in other words"
+  },
+  {
+   "arm": "flat",
+   "unit": "meme-nofiller__pl_014|pl_014/after2|end",
+   "set": "target",
+   "task": "Cas",
+   "query": "Where do I work out?",
+   "answer": "Pyravar CrossFit",
+   "gold": [
+    "kaelstrom fitness"
+   ],
+   "verdict": "wrong",
+   "reason": "states the stale value"
+  },
+  {
+   "arm": "flat",
+   "unit": "meme-nofiller__pl_014|pl_014/before3|3",
+   "set": "control",
+   "task": "Del",
+   "query": "What insurance do I have?",
+   "answer": "a dental and vision bundle for insurance",
+   "gold": [
+    "dental + vision bundle"
+   ],
+   "verdict": "correct",
+   "reason": "states the gold value in other words"
+  },
+  {
+   "arm": "flat",
+   "unit": "meme-nofiller__pl_015|pl_015/after1|end",
+   "set": "target",
+   "task": "Cas",
+   "query": "Who do I live with?",
+   "answer": "parents",
+   "gold": [
+    "with sibling"
+   ],
+   "verdict": "wrong",
+   "reason": "states the stale value"
+  },
+  {
+   "arm": "flat",
+   "unit": "meme-nofiller__pl_018|pl_018/after1|end",
+   "set": "target",
+   "task": "Cas",
+   "query": "How do I get to work?",
+   "answer": "You take the walking to work — this depends on the fact that you're studying at MBA at Vorenthal Business School; if that changes, this would change too.",
+   "gold": [
+    "commuter rail"
+   ],
+   "verdict": "wrong",
+   "reason": "states the stale value"
+  },
+  {
+   "arm": "flat",
+   "unit": "meme-nofiller__pl_019|pl_019/after1|end",
+   "set": "target",
+   "task": "Cas",
+   "query": "What's my current financial goal?",
+   "answer": "maxing out retirement fund",
+   "gold": [
+    "saving for wedding"
+   ],
+   "verdict": "wrong",
+   "reason": "states the stale value"
+  },
+  {
+   "arm": "flat",
+   "unit": "meme-nofiller__pl_019|pl_019/before2|3",
+   "set": "control",
+   "task": "Del",
+   "query": "What's my regular social meetup?",
+   "answer": "pickup basketball on Saturdays",
+   "gold": [
+    "pickup basketball saturdays"
+   ],
+   "verdict": "correct",
+   "reason": "states the gold value in other words"
+  },
+  {
+   "arm": "flat",
+   "unit": "meme-nofiller__pl_020|pl_020/after1|end",
+   "set": "target",
+   "task": "Cas",
+   "query": "How long is my commute?",
+   "answer": "about 20 min",
+   "gold": [
+    "30 min"
+   ],
+   "verdict": "wrong",
+   "reason": "states the stale value"
+  },
+  {
+   "arm": "flat",
+   "unit": "meme-nofiller__pl_021|pl_021/after1|end",
+   "set": "target",
+   "task": "Cas",
+   "query": "What's my work schedule?",
+   "answer": "flexible hours",
+   "gold": [
+    "hybrid (3 office + 2 remote)"
+   ],
+   "verdict": "wrong",
+   "reason": "states the stale value"
+  },
+  {
+   "arm": "flat",
+   "unit": "meme-nofiller__pl_021|pl_021/after2|end",
+   "set": "target",
+   "task": "Cas",
+   "query": "Where do I work out?",
+   "answer": "Pyravar CrossFit",
+   "gold": [
+    "velthari studio"
+   ],
+   "verdict": "wrong",
+   "reason": "states the stale value"
+  },
+  {
+   "arm": "flat",
+   "unit": "meme-nofiller__pl_022|pl_022/after1|end",
+   "set": "target",
+   "task": "Cas",
+   "query": "What's my current financial goal?",
+   "answer": "saving for kids' education fund",
+   "gold": [
+    "saving for wedding"
+   ],
+   "verdict": "wrong",
+   "reason": "states the stale value"
+  },
+  {
+   "arm": "flat",
+   "unit": "meme-nofiller__pl_023|pl_023/after1|end",
+   "set": "target",
+   "task": "Cas",
+   "query": "What's my sleep schedule?",
+   "answer": "I usually sleep midnight-8am.",
+   "gold": [
+    "irregular"
+   ],
+   "verdict": "wrong",
+   "reason": "states the stale value"
+  },
+  {
+   "arm": "flat",
+   "unit": "meme-nofiller__pl_024|pl_024/after1|end",
+   "set": "target",
+   "task": "Cas",
+   "query": "What type of home do I live in?",
+   "answer": "a condo",
+   "gold": [
+    "townhouse"
+   ],
+   "verdict": "wrong",
+   "reason": "states the stale value"
+  },
+  {
+   "arm": "flat",
+   "unit": "meme-nofiller__pl_025|pl_025/after2|end",
+   "set": "target",
+   "task": "Cas",
+   "query": "How do I get to work?",
+   "answer": "You walk to work.",
+   "gold": [
+    "bus"
+   ],
+   "verdict": "wrong",
+   "reason": "states another value"
+  },
+  {
+   "arm": "flat",
+   "unit": "meme-nofiller__pl_029|pl_029/before2|3",
+   "set": "control",
+   "task": "Del",
+   "query": "What's my sleep schedule?",
+   "answer": "I usually sleep from 11pm to 7am.",
+   "gold": [
+    "11pm-7am"
+   ],
+   "verdict": "correct",
+   "reason": "states the gold value in other words"
+  },
+  {
+   "arm": "flat",
+   "unit": "meme-nofiller__pl_030|pl_030/after1|end",
+   "set": "target",
+   "task": "Cas",
+   "query": "What's my work schedule?",
+   "answer": "shift work (day)",
+   "gold": [
+    "9-to-5 fixed"
+   ],
+   "verdict": "wrong",
+   "reason": "states the stale value"
+  },
+  {
+   "arm": "flat",
+   "unit": "meme-nofiller__pl_030|pl_030/before4|3",
+   "set": "control",
+   "task": "Del",
+   "query": "What's my current financial goal?",
+   "answer": "paying off my student loans",
+   "gold": [
+    "paying off student loans"
+   ],
+   "verdict": "correct",
+   "reason": "states the gold value in other words"
+  },
+  {
+   "arm": "flat",
+   "unit": "meme-nofiller__pl_031|pl_031/before1|3",
+   "set": "control",
+   "task": "Cas",
+   "query": "Where do I work out?",
+   "answer": "home gym",
+   "gold": [
+    "pyravar crossfit"
+   ],
+   "verdict": "wrong",
+   "reason": "states another value"
+  },
+  {
+   "arm": "flat",
+   "unit": "meme-nofiller__pl_032|pl_032/after1|end",
+   "set": "target",
+   "task": "Cas",
+   "query": "What family event do I have coming up?",
+   "answer": "a baby shower",
+   "gold": [
+    "parent's birthday"
+   ],
+   "verdict": "wrong",
+   "reason": "states the stale value"
+  },
+  {
+   "arm": "flat",
+   "unit": "meme-nofiller__pl_033|pl_033/after2|end",
+   "set": "target",
+   "task": "Cas",
+   "query": "What's my favorite restaurant?",
+   "answer": "Lorwen & Sage — this depends on where your office is in remote; if you move, this would change.",
+   "gold": [
+    "velmara taqueria"
+   ],
+   "verdict": "wrong",
+   "reason": "states the stale value"
+  },
+  {
+   "arm": "flat",
+   "unit": "meme-nofiller__pl_035|pl_035/after1|end",
+   "set": "target",
+   "task": "Cas",
+   "query": "What type of home do I live in?",
+   "answer": "a dormitory",
+   "gold": [
+    "two-bedroom apartment"
+   ],
+   "verdict": "wrong",
+   "reason": "states the stale value"
+  },
+  {
+   "arm": "flat",
+   "unit": "meme-nofiller__pl_037|pl_037/after1|end",
+   "set": "target",
+   "task": "Cas",
+   "query": "What family event do I have coming up?",
+   "answer": "child's school event",
+   "gold": [
+    "none currently"
+   ],
+   "verdict": "wrong",
+   "reason": "states the stale value"
+  },
+  {
+   "arm": "flat",
+   "unit": "meme-nofiller__pl_038|pl_038/after1|end",
+   "set": "target",
+   "task": "Cas",
+   "query": "What trip am I planning?",
+   "answer": "cross-country road trip (2 weeks)",
+   "gold": [
+    "island getaway"
+   ],
+   "verdict": "wrong",
+   "reason": "states the stale value"
+  },
+  {
+   "arm": "flat",
+   "unit": "meme-nofiller__pl_039|pl_039/after1|end",
+   "set": "target",
+   "task": "Cas",
+   "query": "What am I currently learning?",
+   "answer": "online bootcamp (coding)",
+   "gold": [
+    "japanese"
+   ],
+   "verdict": "wrong",
+   "reason": "states another value"
+  },
+  {
+   "arm": "flat",
+   "unit": "meme-nofiller__pl_040|pl_040/before1|3",
+   "set": "control",
+   "task": "Cas",
+   "query": "Where do I work out?",
+   "answer": "Pyravar CrossFit",
+   "gold": [],
+   "verdict": "wrong",
+   "reason": "MEME's expected answer is 'none'"
+  },
+  {
+   "arm": "flat",
+   "unit": "meme-nofiller__pl_042|pl_042/before1|3",
+   "set": "control",
+   "task": "Cas",
+   "query": "Where do I work out?",
+   "answer": "none",
+   "gold": [
+    "velthari studio"
+   ],
+   "verdict": "wrong",
+   "reason": "states another value"
+  },
+  {
+   "arm": "flat",
+   "unit": "meme-nofiller__pl_044|pl_044/before3|3",
+   "set": "control",
+   "task": "Del",
+   "query": "What's my regular social meetup?",
+   "answer": "game night with my neighbors",
+   "gold": [
+    "game night with neighbors"
+   ],
+   "verdict": "correct",
+   "reason": "states the gold value in other words"
+  },
+  {
+   "arm": "flat",
+   "unit": "meme-nofiller__pl_045|pl_045/after1|end",
+   "set": "target",
+   "task": "Cas",
+   "query": "What trip am I planning?",
+   "answer": "mountain ski trip",
+   "gold": [
+    "no travel planned"
+   ],
+   "verdict": "wrong",
+   "reason": "states the stale value"
+  },
+  {
+   "arm": "flat",
+   "unit": "meme-nofiller__pl_045|pl_045/before1|3",
+   "set": "control",
+   "task": "Abs",
+   "query": "Who do I live with?",
+   "answer": "Your partner and child (James).",
+   "gold": [
+    "with partner and child"
+   ],
+   "verdict": "correct",
+   "reason": "states the gold value in other words"
+  },
+  {
+   "arm": "flat",
+   "unit": "meme-nofiller__pl_046|pl_046/after2|end",
+   "set": "target",
+   "task": "Cas",
+   "query": "Where do I work out?",
+   "answer": "Pyravar CrossFit",
+   "gold": [
+    "crysthene pool"
+   ],
+   "verdict": "wrong",
+   "reason": "states the stale value"
+  },
+  {
+   "arm": "flat",
+   "unit": "meme-nofiller__pl_047|pl_047/before3|3",
+   "set": "control",
+   "task": "Abs",
+   "query": "How do I get to work?",
+   "answer": "You drive a Xylorim Scooter.",
+   "gold": [
+    "bike"
+   ],
+   "verdict": "wrong",
+   "reason": "states another value"
+  },
+  {
+   "arm": "flat",
+   "unit": "meme-nofiller__pl_047|pl_047/before4|3",
+   "set": "control",
+   "task": "Del",
+   "query": "What's my regular social meetup?",
+   "answer": "pickup basketball on Saturdays",
+   "gold": [
+    "pickup basketball saturdays"
+   ],
+   "verdict": "correct",
+   "reason": "states the gold value in other words"
+  },
+  {
+   "arm": "flat",
+   "unit": "meme-nofiller__pl_050|pl_050/after1|end",
+   "set": "target",
+   "task": "Cas",
+   "query": "Where do I work out?",
+   "answer": "You go to Pyravar CrossFit for workouts.",
+   "gold": [
+    "zorathel peak gym"
+   ],
+   "verdict": "wrong",
+   "reason": "states the stale value"
+  },
+  {
+   "arm": "flat",
+   "unit": "meme-nofiller__sw_001|sw_001/after1|end",
+   "set": "target",
+   "task": "Cas",
+   "query": "What's our build tool?",
+   "answer": "Zelthra Pack",
+   "gold": [
+    "quorix forge"
+   ],
+   "verdict": "wrong",
+   "reason": "states the stale value"
+  },
+  {
+   "arm": "flat",
+   "unit": "meme-nofiller__sw_001|sw_001/after2|end",
+   "set": "target",
+   "task": "Cas",
+   "query": "What's the build command?",
+   "answer": "zelthra pack --sourcemap",
+   "gold": [
+    "quorix forge --target prod"
+   ],
+   "verdict": "wrong",
+   "reason": "states the stale value"
+  },
+  {
+   "arm": "flat",
+   "unit": "meme-nofiller__sw_002|sw_002/after1|end",
+   "set": "target",
+   "task": "Cas",
+   "query": "What's our CI configuration?",
+   "answer": "orinthal-build.yml",
+   "gold": [
+    "korinth-deploy.yaml"
+   ],
+   "verdict": "wrong",
+   "reason": "states the stale value"
+  },
+  {
+   "arm": "flat",
+   "unit": "meme-nofiller__sw_002|sw_002/after2|end",
+   "set": "target",
+   "task": "Cas",
+   "query": "Where's the Dockerfile?",
+   "answer": "deploy/Dockerfile.korinth",
+   "gold": [
+    "deploy/dockerfile.zephyra"
+   ],
+   "verdict": "wrong",
+   "reason": "states the stale value"
+  },
+  {
+   "arm": "flat",
+   "unit": "meme-nofiller__sw_003|sw_003/after1|end",
+   "set": "target",
+   "task": "Cas",
+   "query": "What's our log drain endpoint?",
+   "answer": "drain.zephyra.io/proj-42",
+   "gold": [
+    "sink.orinthal.dev/aurora"
+   ],
+   "verdict": "wrong",
+   "reason": "states the stale value"
+  },
+  {
+   "arm": "flat",
+   "unit": "meme-nofiller__sw_003|sw_003/after2|end",
+   "set": "target",
+   "task": "Cas",
+   "query": "What's the deploy command?",
+   "answer": "thandrel ship --channel beta",
+   "gold": [
+    "narvex deploy --env prod"
+   ],
+   "verdict": "wrong",
+   "reason": "states the stale value"
+  },
+  {
+   "arm": "flat",
+   "unit": "meme-nofiller__sw_005|sw_005/after2|end",
+   "set": "target",
+   "task": "Cas",
+   "query": "What's the deploy command?",
+   "answer": "narvex deploy --env prod",
+   "gold": [
+    "orinthal publish --tier sandbox"
+   ],
+   "verdict": "wrong",
+   "reason": "states the stale value"
+  },
+  {
+   "arm": "flat",
+   "unit": "meme-nofiller__sw_005|sw_005/before4|3",
+   "set": "control",
+   "task": "Del",
+   "query": "When's our team meeting?",
+   "answer": "The team meeting is every Thursday at 2pm.",
+   "gold": [
+    "every thursday 2pm"
+   ],
+   "verdict": "correct",
+   "reason": "states the gold value in other words"
+  },
+  {
+   "arm": "flat",
+   "unit": "meme-nofiller__sw_007|sw_007/after2|end",
+   "set": "target",
+   "task": "Cas",
+   "query": "What's the model syntax?",
+   "answer": "Crysthene.define('Model', {fields})",
+   "gold": [
+    "thalnex.document('model', {fields})"
+   ],
+   "verdict": "wrong",
+   "reason": "states the stale value"
+  },
+  {
+   "arm": "flat",
+   "unit": "meme-nofiller__sw_008|sw_008/after1|end",
+   "set": "target",
+   "task": "Cas",
+   "query": "What token format do we use?",
+   "answer": "We use Verithos-JWT-v2 token format — this is determined by our auth provider (we use Phalanx Gate); if we switch providers, this would change.",
+   "gold": [
+    "oathkeeper-mtls-cert"
+   ],
+   "verdict": "wrong",
+   "reason": "states the stale value"
+  },
+  {
+   "arm": "flat",
+   "unit": "meme-nofiller__sw_009|sw_009/after2|end",
+   "set": "target",
+   "task": "Cas",
+   "query": "What's the deploy command?",
+   "answer": "korinth release --canary",
+   "gold": [
+    "zephyra push --target preview"
+   ],
+   "verdict": "wrong",
+   "reason": "states the stale value"
+  },
+  {
+   "arm": "flat",
+   "unit": "meme-nofiller__sw_009|sw_009/before4|3",
+   "set": "control",
+   "task": "Del",
+   "query": "Where's the changelog?",
+   "answer": "The changelog is at CHANGELOG.md in the repo root.",
+   "gold": [
+    "changelog.md in repo root"
+   ],
+   "verdict": "correct",
+   "reason": "states the gold value in other words"
+  },
+  {
+   "arm": "flat",
+   "unit": "meme-nofiller__sw_010|sw_010/after1|end",
+   "set": "target",
+   "task": "Cas",
+   "query": "What's our CI configuration?",
+   "answer": "Our CI config is zephyra-pipeline.json.",
+   "gold": [
+    "thandrel-flow.toml"
+   ],
+   "verdict": "wrong",
+   "reason": "states the stale value"
+  },
+  {
+   "arm": "flat",
+   "unit": "meme-nofiller__sw_010|sw_010/after2|end",
+   "set": "target",
+   "task": "Cas",
+   "query": "What's the deploy command?",
+   "answer": "zephyra push --target preview",
+   "gold": [
+    "thandrel ship --channel beta"
+   ],
+   "verdict": "wrong",
+   "reason": "states the stale value"
+  },
+  {
+   "arm": "flat",
+   "unit": "meme-nofiller__sw_011|sw_011/after1|end",
+   "set": "target",
+   "task": "Cas",
+   "query": "How do I run the dev server?",
+   "answer": "To run the dev server, use korvel dev --open.",
+   "gold": [
+    "moxira serve --hot"
+   ],
+   "verdict": "wrong",
+   "reason": "states the stale value"
+  },
+  {
+   "arm": "flat",
+   "unit": "meme-nofiller__sw_012|sw_012/after2|end",
+   "set": "target",
+   "task": "Cas",
+   "query": "What's the model syntax?",
+   "answer": "Models are defined with Pyravar.entity('Model', attrs).",
+   "gold": [
+    "vorathis.collection('model', spec)"
+   ],
+   "verdict": "wrong",
+   "reason": "states the stale value"
+  },
+  {
+   "arm": "flat",
+   "unit": "meme-nofiller__sw_014|sw_014/after1|end",
+   "set": "target",
+   "task": "Cas",
+   "query": "Who's the escalation contact?",
+   "answer": "Kevin Park",
+   "gold": [
+    "rachel yoo"
+   ],
+   "verdict": "wrong",
+   "reason": "states the stale value"
+  },
+  {
+   "arm": "flat",
+   "unit": "meme-nofiller__sw_015|sw_015/after2|end",
+   "set": "target",
+   "task": "Cas",
+   "query": "What's the deploy command?",
+   "answer": "narvex deploy --env prod",
+   "gold": [
+    "thandrel ship --channel beta"
+   ],
+   "verdict": "wrong",
+   "reason": "states the stale value"
+  },
+  {
+   "arm": "flat",
+   "unit": "meme-nofiller__sw_016|sw_016/after2|end",
+   "set": "target",
+   "task": "Cas",
+   "query": "What's the build command?",
+   "answer": "pyronis pack --optimize",
+   "gold": [
+    "tarvex compile --debug"
+   ],
+   "verdict": "wrong",
+   "reason": "states the stale value"
+  },
+  {
+   "arm": "flat",
+   "unit": "meme-nofiller__sw_017|sw_017/after1|end",
+   "set": "target",
+   "task": "Cas",
+   "query": "What authentication method do we use?",
+   "answer": "API Key + HMAC — this is determined by our auth provider (we use Phalanx Gate); if we switch providers, this would change.",
+   "gold": [
+    "saml 2.0 sso"
+   ],
+   "verdict": "wrong",
+   "reason": "states the stale value"
+  },
+  {
+   "arm": "flat",
+   "unit": "meme-nofiller__sw_018|sw_018/after2|end",
+   "set": "target",
+   "task": "Cas",
+   "query": "What's the model syntax?",
+   "answer": "Keldaris.object('Model', props)",
+   "gold": [
+    "pyravar.record('model', schema)"
+   ],
+   "verdict": "wrong",
+   "reason": "states the stale value"
+  },
+  {
+   "arm": "flat",
+   "unit": "meme-nofiller__sw_018|sw_018/before3|3",
+   "set": "control",
+   "task": "Del",
+   "query": "How often do we release?",
+   "answer": "The team releases biweekly on Friday afternoons.",
+   "gold": [
+    "biweekly friday afternoon"
+   ],
+   "verdict": "correct",
+   "reason": "states the gold value in other words"
+  },
+  {
+   "arm": "flat",
+   "unit": "meme-nofiller__sw_022|sw_022/after1|end",
+   "set": "target",
+   "task": "Cas",
+   "query": "What's the session TTL?",
+   "answer": "Session TTL is 4 hours",
+   "gold": [
+    "1 hour"
+   ],
+   "verdict": "wrong",
+   "reason": "states the stale value"
+  },
+  {
+   "arm": "flat",
+   "unit": "meme-nofiller__sw_022|sw_022/before3|3",
+   "set": "control",
+   "task": "Del",
+   "query": "How often do we release?",
+   "answer": "The team releases continuously on merge, meaning code is automatically deployed as soon as it is merged.",
+   "gold": [
+    "continuous deploy on merge"
+   ],
+   "verdict": "correct",
+   "reason": "states the gold value in other words"
+  },
+  {
+   "arm": "flat",
+   "unit": "meme-nofiller__sw_023|sw_023/after1|end",
+   "set": "target",
+   "task": "Cas",
+   "query": "Who has approval authority?",
+   "answer": "VP Helen Chen — Yuna Park assigned it",
+   "gold": [
+    "vp taehyun kim"
+   ],
+   "verdict": "wrong",
+   "reason": "states the stale value"
+  },
+  {
+   "arm": "flat",
+   "unit": "meme-nofiller__sw_024|sw_024/after1|end",
+   "set": "target",
+   "task": "Cas",
+   "query": "What authentication method do we use?",
+   "answer": "mTLS Client Cert",
+   "gold": [
+    "jwt bearer"
+   ],
+   "verdict": "wrong",
+   "reason": "states the stale value"
+  },
+  {
+   "arm": "flat",
+   "unit": "meme-nofiller__sw_025|sw_025/after1|end",
+   "set": "target",
+   "task": "Cas",
+   "query": "Who's the escalation contact?",
+   "answer": "Kevin Park",
+   "gold": [
+    "jiwon han"
+   ],
+   "verdict": "wrong",
+   "reason": "states the stale value"
+  },
+  {
+   "arm": "flat",
+   "unit": "meme-nofiller__sw_026|sw_026/after1|end",
+   "set": "target",
+   "task": "Cas",
+   "query": "What's our project structure?",
+   "answer": "Our project follows a monorepo with /apps and /packages — this is determined by which framework we use (we use Moxira); if we switch frameworks, this would change.",
+   "gold": [
+    "layered with /domain, /infra, /api"
+   ],
+   "verdict": "wrong",
+   "reason": "states the stale value"
+  },
+  {
+   "arm": "flat",
+   "unit": "meme-nofiller__sw_026|sw_026/after2|end",
+   "set": "target",
+   "task": "Cas",
+   "query": "What's the build command?",
+   "answer": "tarvex compile --release",
+   "gold": [
+    "karnex build --analyze"
+   ],
+   "verdict": "wrong",
+   "reason": "states the stale value"
+  },
+  {
+   "arm": "flat",
+   "unit": "meme-nofiller__sw_027|sw_027/after2|end",
+   "set": "target",
+   "task": "Cas",
+   "query": "What's the model syntax?",
+   "answer": "Models are defined with Thalnex.graph('Model', edges)",
+   "gold": [
+    "zyndra.struct('model', types)"
+   ],
+   "verdict": "wrong",
+   "reason": "states the stale value"
+  },
+  {
+   "arm": "flat",
+   "unit": "meme-nofiller__sw_028|sw_028/after2|end",
+   "set": "target",
+   "task": "Cas",
+   "query": "What's the deploy command?",
+   "answer": "korinth release --prod",
+   "gold": [
+    "zephyra push --target prod"
+   ],
+   "verdict": "wrong",
+   "reason": "states the stale value"
+  },
+  {
+   "arm": "flat",
+   "unit": "meme-nofiller__sw_029|sw_029/after2|end",
+   "set": "target",
+   "task": "Cas",
+   "query": "What's the model syntax?",
+   "answer": "Models are defined with Keldaris.object('Model', props).",
+   "gold": [
+    "thalnex.document('model', {fields})"
+   ],
+   "verdict": "wrong",
+   "reason": "states the stale value"
+  },
+  {
+   "arm": "flat",
+   "unit": "meme-nofiller__sw_030|sw_030/after1|end",
+   "set": "target",
+   "task": "Cas",
+   "query": "What ORM do we use?",
+   "answer": "Keldaris Link",
+   "gold": [
+    "thalnex query"
+   ],
+   "verdict": "wrong",
+   "reason": "states the stale value"
+  },
+  {
+   "arm": "flat",
+   "unit": "meme-nofiller__sw_030|sw_030/after2|end",
+   "set": "target",
+   "task": "Cas",
+   "query": "What's the model syntax?",
+   "answer": "Models are defined with Keldaris.node('Model', shape) — this is determined by the fact that we use Keldaris Link; if that changes, this would change.",
+   "gold": [
+    "thalnex.document('model', {fields})"
+   ],
+   "verdict": "wrong",
+   "reason": "states the stale value"
+  },
+  {
+   "arm": "flat",
+   "unit": "meme-nofiller__sw_031|sw_031/after1|end",
+   "set": "target",
+   "task": "Cas",
+   "query": "What authentication method do we use?",
+   "answer": "mTLS Client Cert",
+   "gold": [
+    "session cookie + csrf"
+   ],
+   "verdict": "wrong",
+   "reason": "states the stale value"
+  },
+  {
+   "arm": "flat",
+   "unit": "meme-nofiller__sw_031|sw_031/after2|end",
+   "set": "target",
+   "task": "Cas",
+   "query": "What's the auth middleware config?",
+   "answer": "zenithos-session-middleware v1.8",
+   "gold": [
+    "zenthos-session-middleware v1.8"
+   ],
+   "verdict": "wrong",
+   "reason": "misspells the invented name (the cards spell it Zenthos)"
+  },
+  {
+   "arm": "flat",
+   "unit": "meme-nofiller__sw_032|sw_032/after1|end",
+   "set": "target",
+   "task": "Cas",
+   "query": "What token format do we use?",
+   "answer": "Cerberix-SAML-assertion token format",
+   "gold": [
+    "oathkeeper-mtls-cert"
+   ],
+   "verdict": "wrong",
+   "reason": "states the stale value"
+  },
+  {
+   "arm": "flat",
+   "unit": "meme-nofiller__sw_032|sw_032/after2|end",
+   "set": "target",
+   "task": "Cas",
+   "query": "What's the auth middleware config?",
+   "answer": "kryptal-bearer-check v2.2",
+   "gold": [
+    "verithos-pkce-guard v1.4"
+   ],
+   "verdict": "wrong",
+   "reason": "states the stale value"
+  },
+  {
+   "arm": "flat",
+   "unit": "meme-nofiller__sw_033|sw_033/after1|end",
+   "set": "target",
+   "task": "Cas",
+   "query": "Who receives the weekly report?",
+   "answer": "Hyunwoo Nam",
+   "gold": [
+    "james lee"
+   ],
+   "verdict": "wrong",
+   "reason": "states the stale value"
+  },
+  {
+   "arm": "flat",
+   "unit": "meme-nofiller__sw_034|sw_034/after1|end",
+   "set": "target",
+   "task": "Cas",
+   "query": "What's our build tool?",
+   "answer": "Our build tool is Pyronis Build.",
+   "gold": [
+    "dranith compiler"
+   ],
+   "verdict": "wrong",
+   "reason": "states the stale value"
+  },
+  {
+   "arm": "flat",
+   "unit": "meme-nofiller__sw_034|sw_034/after2|end",
+   "set": "target",
+   "task": "Cas",
+   "query": "What's the build command?",
+   "answer": "pyronis pack --quick",
+   "gold": [
+    "dranith compile --emit bundle"
+   ],
+   "verdict": "wrong",
+   "reason": "states the stale value"
+  },
+  {
+   "arm": "flat",
+   "unit": "meme-nofiller__sw_034|sw_034/before4|3",
+   "set": "control",
+   "task": "Del",
+   "query": "What's our backup schedule?",
+   "answer": "Database backups run every 12 hours with a 7-day retention policy.",
+   "gold": [
+    "every 12 hours with 7-day retention"
+   ],
+   "verdict": "correct",
+   "reason": "states the gold value in other words"
+  },
+  {
+   "arm": "flat",
+   "unit": "meme-nofiller__sw_035|sw_035/after2|end",
+   "set": "target",
+   "task": "Cas",
+   "query": "What's the model syntax?",
+   "answer": "Pyravar.record('Model', schema)",
+   "gold": [
+    "keldaris.node('model', shape)"
+   ],
+   "verdict": "wrong",
+   "reason": "states the stale value"
+  },
+  {
+   "arm": "flat",
+   "unit": "meme-nofiller__sw_036|sw_036/after2|end",
+   "set": "target",
+   "task": "Cas",
+   "query": "What's the deploy command?",
+   "answer": "thandrel ship --channel stable",
+   "gold": [
+    "orinthal publish --tier sandbox"
+   ],
+   "verdict": "wrong",
+   "reason": "states the stale value"
+  },
+  {
+   "arm": "flat",
+   "unit": "meme-nofiller__sw_037|sw_037/after1|end",
+   "set": "target",
+   "task": "Cas",
+   "query": "What's our log drain endpoint?",
+   "answer": "logs.korinth.dev/aurora",
+   "gold": [
+    "sink.orinthal.dev/aurora"
+   ],
+   "verdict": "wrong",
+   "reason": "states the stale value"
+  },
+  {
+   "arm": "flat",
+   "unit": "meme-nofiller__sw_037|sw_037/after2|end",
+   "set": "target",
+   "task": "Cas",
+   "query": "What's the deploy command?",
+   "answer": "thandrel ship --channel stable",
+   "gold": [
+    "velturis deploy --region ap-northeast"
+   ],
+   "verdict": "wrong",
+   "reason": "states the stale value"
+  },
+  {
+   "arm": "flat",
+   "unit": "meme-nofiller__sw_038|sw_038/after2|end",
+   "set": "target",
+   "task": "Cas",
+   "query": "What's the test command?",
+   "answer": "karnex test --ci",
+   "gold": [
+    "zelthra assert --suite all"
+   ],
+   "verdict": "wrong",
+   "reason": "states the stale value"
+  },
+  {
+   "arm": "flat",
+   "unit": "meme-nofiller__sw_039|sw_039/after1|end",
+   "set": "target",
+   "task": "Cas",
+   "query": "What's our monitoring URL?",
+   "answer": "status.orinthal.dev/aurora",
+   "gold": [
+    "metrics.thandrel.io/aurora-prod"
+   ],
+   "verdict": "wrong",
+   "reason": "states the stale value"
+  },
+  {
+   "arm": "flat",
+   "unit": "meme-nofiller__sw_039|sw_039/after2|end",
+   "set": "target",
+   "task": "Cas",
+   "query": "What's the deploy command?",
+   "answer": "orinthal publish --tier sandbox",
+   "gold": [
+    "velturis deploy --region us-east"
+   ],
+   "verdict": "wrong",
+   "reason": "states the stale value"
+  },
+  {
+   "arm": "flat",
+   "unit": "meme-nofiller__sw_040|sw_040/after2|end",
+   "set": "target",
+   "task": "Cas",
+   "query": "What's the auth middleware config?",
+   "answer": "phalanx-hmac-validator v2.0",
+   "gold": [
+    "oathkeeper-mtls-proxy v4.1"
+   ],
+   "verdict": "wrong",
+   "reason": "states the stale value"
+  },
+  {
+   "arm": "flat",
+   "unit": "meme-nofiller__sw_041|sw_041/after2|end",
+   "set": "target",
+   "task": "Cas",
+   "query": "What's the model syntax?",
+   "answer": "Vorathis.collection('Model', spec)",
+   "gold": [
+    "pyravar.entity('model', attrs)"
+   ],
+   "verdict": "wrong",
+   "reason": "states the stale value"
+  },
+  {
+   "arm": "flat",
+   "unit": "meme-nofiller__sw_042|sw_042/after1|end",
+   "set": "target",
+   "task": "Cas",
+   "query": "Who has approval authority?",
+   "answer": "VP Taehyun Kim",
+   "gold": [
+    "director hyunwoo nam"
+   ],
+   "verdict": "wrong",
+   "reason": "states the stale value"
+  },
+  {
+   "arm": "flat",
+   "unit": "meme-nofiller__sw_043|sw_043/after2|end",
+   "set": "target",
+   "task": "Cas",
+   "query": "What's the model syntax?",
+   "answer": "Zyndra.struct('Model', types)",
+   "gold": [
+    "thalnex.document('model', {fields})"
+   ],
+   "verdict": "wrong",
+   "reason": "states the stale value"
+  },
+  {
+   "arm": "flat",
+   "unit": "meme-nofiller__sw_044|sw_044/after2|end",
+   "set": "target",
+   "task": "Cas",
+   "query": "What's the test command?",
+   "answer": "quorix spec --run all",
+   "gold": [
+    "pyronis check --snapshot"
+   ],
+   "verdict": "wrong",
+   "reason": "states the stale value"
+  },
+  {
+   "arm": "flat",
+   "unit": "meme-nofiller__sw_045|sw_045/after1|end",
+   "set": "target",
+   "task": "Cas",
+   "query": "Who's the escalation contact?",
+   "answer": "Kevin Park",
+   "gold": [
+    "jiwon han"
+   ],
+   "verdict": "wrong",
+   "reason": "states the stale value"
+  },
+  {
+   "arm": "flat",
+   "unit": "meme-nofiller__sw_046|sw_046/after1|end",
+   "set": "target",
+   "task": "Cas",
+   "query": "What's our build tool?",
+   "answer": "Tarvex CLI — this is determined by which framework we use (we use Quenthar); if we switch frameworks, this would change.",
+   "gold": [
+    "karnex bundler"
+   ],
+   "verdict": "wrong",
+   "reason": "states the stale value"
+  },
+  {
+   "arm": "flat",
+   "unit": "meme-nofiller__sw_046|sw_046/after2|end",
+   "set": "target",
+   "task": "Cas",
+   "query": "What's the test command?",
+   "answer": "dranith probe --mode fast",
+   "gold": [
+    "zelthra assert --suite all"
+   ],
+   "verdict": "wrong",
+   "reason": "states the stale value"
+  },
+  {
+   "arm": "flat",
+   "unit": "meme-nofiller__sw_047|sw_047/after1|end",
+   "set": "target",
+   "task": "Cas",
+   "query": "What authentication method do we use?",
+   "answer": "API Key + HMAC",
+   "gold": [
+    "mtls client cert"
+   ],
+   "verdict": "wrong",
+   "reason": "states the stale value"
+  },
+  {
+   "arm": "flat",
+   "unit": "meme-nofiller__sw_048|sw_048/after1|end",
+   "set": "target",
+   "task": "Cas",
+   "query": "What's the login endpoint?",
+   "answer": "/cerberix/saml/sso-init",
+   "gold": [
+    "auth/kryptal/signin"
+   ],
+   "verdict": "wrong",
+   "reason": "states the stale value"
+  },
+  {
+   "arm": "flat",
+   "unit": "meme-nofiller__sw_049|sw_049/after1|end",
+   "set": "target",
+   "task": "Cas",
+   "query": "What authentication method do we use?",
+   "answer": "SAML 2.0 SSO — this is determined by our auth provider (we use Phalanx Gate); if we switch providers, this would change.",
+   "gold": [
+    "session cookie + csrf"
+   ],
+   "verdict": "wrong",
+   "reason": "states the stale value"
+  },
+  {
+   "arm": "flat",
+   "unit": "meme-nofiller__sw_050|sw_050/after1|end",
+   "set": "target",
+   "task": "Cas",
+   "query": "What's our staging URL?",
+   "answer": "dev.orinthal.dev/aurora",
+   "gold": [
+    "sandbox.thandrel.io/aurora"
+   ],
+   "verdict": "wrong",
+   "reason": "states the stale value"
+  },
+  {
+   "arm": "flat",
+   "unit": "meme-nofiller__sw_050|sw_050/after2|end",
+   "set": "target",
+   "task": "Cas",
+   "query": "What's the deploy command?",
+   "answer": "korinth release --canary",
+   "gold": [
+    "narvex deploy --env prod"
+   ],
+   "verdict": "wrong",
+   "reason": "states the stale value"
+  },
+  {
+   "arm": "oracle",
+   "unit": "meme-nofiller__pl_009|pl_009/after1|end",
+   "set": "target",
+   "task": "Cas",
+   "query": "What dietary restrictions do I have?",
+   "answer": "low-sodium",
+   "gold": [
+    "no alcohol"
+   ],
+   "verdict": "wrong",
+   "reason": "states the stale value"
+  },
+  {
+   "arm": "oracle",
+   "unit": "meme-nofiller__pl_009|pl_009/before1|3",
+   "set": "control",
+   "task": "Cas",
+   "query": "Where do I work out?",
+   "answer": "Crysthene Pool",
+   "gold": [
+    "zorathel peak gym"
+   ],
+   "verdict": "wrong",
+   "reason": "states another value"
+  },
+  {
+   "arm": "oracle",
+   "unit": "meme-nofiller__pl_010|pl_010/before1|3",
+   "set": "control",
+   "task": "Abs",
+   "query": "Who do I live with?",
+   "answer": "a roommate",
+   "gold": [
+    "with roommate"
+   ],
+   "verdict": "correct",
+   "reason": "states the gold value in other words"
+  },
+  {
+   "arm": "oracle",
+   "unit": "meme-nofiller__pl_011|pl_011/before1|3",
+   "set": "control",
+   "task": "Cas",
+   "query": "Where do I work out?",
+   "answer": "Pyravar CrossFit",
+   "gold": [],
+   "verdict": "wrong",
+   "reason": "MEME's expected answer is 'none'"
+  },
+  {
+   "arm": "oracle",
+   "unit": "meme-nofiller__pl_012|pl_012/after1|end",
+   "set": "target",
+   "task": "Cas",
+   "query": "Who do I live with?",
+   "answer": "their partner",
+   "gold": [
+    "with partner"
+   ],
+   "verdict": "correct",
+   "reason": "states the gold value in other words"
+  },
+  {
+   "arm": "oracle",
+   "unit": "meme-nofiller__pl_013|pl_013/after2|end",
+   "set": "target",
+   "task": "Cas",
+   "query": "How long is my commute?",
+   "answer": "about 40 min",
+   "gold": [
+    "10 min"
+   ],
+   "verdict": "wrong",
+   "reason": "states the stale value"
+  },
+  {
+   "arm": "oracle",
+   "unit": "meme-nofiller__pl_013|pl_013/before4|3",
+   "set": "control",
+   "task": "Del",
+   "query": "What's my sleep schedule?",
+   "answer": "I usually sleep from 10pm to 6am.",
+   "gold": [
+    "10pm-6am"
+   ],
+   "verdict": "correct",
+   "reason": "states the gold value in other words"
+  },
+  {
+   "arm": "oracle",
+   "unit": "meme-nofiller__pl_014|pl_014/after2|end",
+   "set": "target",
+   "task": "Cas",
+   "query": "Where do I work out?",
+   "answer": "Pyravar CrossFit",
+   "gold": [
+    "kaelstrom fitness"
+   ],
+   "verdict": "wrong",
+   "reason": "states the stale value"
+  },
+  {
+   "arm": "oracle",
+   "unit": "meme-nofiller__pl_014|pl_014/before3|3",
+   "set": "control",
+   "task": "Del",
+   "query": "What insurance do I have?",
+   "answer": "a dental and vision bundle for insurance",
+   "gold": [
+    "dental + vision bundle"
+   ],
+   "verdict": "correct",
+   "reason": "states the gold value in other words"
+  },
+  {
+   "arm": "oracle",
+   "unit": "meme-nofiller__pl_015|pl_015/before0|3",
+   "set": "control",
+   "task": "Cas",
+   "query": "Who do I live with?",
+   "answer": "You live with your parents.",
+   "gold": [
+    "with parents"
+   ],
+   "verdict": "correct",
+   "reason": "states the gold value in other words"
+  },
+  {
+   "arm": "oracle",
+   "unit": "meme-nofiller__pl_019|pl_019/before2|3",
+   "set": "control",
+   "task": "Del",
+   "query": "What's my regular social meetup?",
+   "answer": "pickup basketball on Saturdays",
+   "gold": [
+    "pickup basketball saturdays"
+   ],
+   "verdict": "correct",
+   "reason": "states the gold value in other words"
+  },
+  {
+   "arm": "oracle",
+   "unit": "meme-nofiller__pl_023|pl_023/before1|3",
+   "set": "control",
+   "task": "Cas",
+   "query": "Where do I work out?",
+   "answer": "home gym",
+   "gold": [
+    "kaelstrom fitness"
+   ],
+   "verdict": "wrong",
+   "reason": "states another value"
+  },
+  {
+   "arm": "oracle",
+   "unit": "meme-nofiller__pl_029|pl_029/before2|3",
+   "set": "control",
+   "task": "Del",
+   "query": "What's my sleep schedule?",
+   "answer": "I usually sleep from 11pm to 7am.",
+   "gold": [
+    "11pm-7am"
+   ],
+   "verdict": "correct",
+   "reason": "states the gold value in other words"
+  },
+  {
+   "arm": "oracle",
+   "unit": "meme-nofiller__pl_030|pl_030/before4|3",
+   "set": "control",
+   "task": "Del",
+   "query": "What's my current financial goal?",
+   "answer": "paying off my student loans",
+   "gold": [
+    "paying off student loans"
+   ],
+   "verdict": "correct",
+   "reason": "states the gold value in other words"
+  },
+  {
+   "arm": "oracle",
+   "unit": "meme-nofiller__pl_031|pl_031/before1|3",
+   "set": "control",
+   "task": "Cas",
+   "query": "Where do I work out?",
+   "answer": "home gym",
+   "gold": [
+    "pyravar crossfit"
+   ],
+   "verdict": "wrong",
+   "reason": "states another value"
+  },
+  {
+   "arm": "oracle",
+   "unit": "meme-nofiller__pl_032|pl_032/after1|end",
+   "set": "target",
+   "task": "Cas",
+   "query": "What family event do I have coming up?",
+   "answer": "We have baby shower coming up",
+   "gold": [
+    "parent's birthday"
+   ],
+   "verdict": "wrong",
+   "reason": "states the stale value"
+  },
+  {
+   "arm": "oracle",
+   "unit": "meme-nofiller__pl_034|pl_034/before1|3",
+   "set": "control",
+   "task": "Cas",
+   "query": "Where do I work out?",
+   "answer": "Pyravar CrossFit",
+   "gold": [
+    "kaelstrom fitness"
+   ],
+   "verdict": "wrong",
+   "reason": "states another value"
+  },
+  {
+   "arm": "oracle",
+   "unit": "meme-nofiller__pl_039|pl_039/after1|end",
+   "set": "target",
+   "task": "Cas",
+   "query": "What am I currently learning?",
+   "answer": "online bootcamp (coding)",
+   "gold": [
+    "japanese"
+   ],
+   "verdict": "wrong",
+   "reason": "states another value"
+  },
+  {
+   "arm": "oracle",
+   "unit": "meme-nofiller__pl_040|pl_040/before1|3",
+   "set": "control",
+   "task": "Cas",
+   "query": "Where do I work out?",
+   "answer": "Pyravar CrossFit",
+   "gold": [],
+   "verdict": "wrong",
+   "reason": "MEME's expected answer is 'none'"
+  },
+  {
+   "arm": "oracle",
+   "unit": "meme-nofiller__pl_041|pl_041/after2|end",
+   "set": "target",
+   "task": "Cas",
+   "query": "Where do I work out?",
+   "answer": "Zorathel Peak Gym",
+   "gold": [
+    "velthari studio"
+   ],
+   "verdict": "wrong",
+   "reason": "states the stale value"
+  },
+  {
+   "arm": "oracle",
+   "unit": "meme-nofiller__pl_044|pl_044/before3|3",
+   "set": "control",
+   "task": "Del",
+   "query": "What's my regular social meetup?",
+   "answer": "game night with my neighbors",
+   "gold": [
+    "game night with neighbors"
+   ],
+   "verdict": "correct",
+   "reason": "states the gold value in other words"
+  },
+  {
+   "arm": "oracle",
+   "unit": "meme-nofiller__pl_046|pl_046/after2|end",
+   "set": "target",
+   "task": "Cas",
+   "query": "Where do I work out?",
+   "answer": "Pyravar CrossFit",
+   "gold": [
+    "crysthene pool"
+   ],
+   "verdict": "wrong",
+   "reason": "states the stale value"
+  },
+  {
+   "arm": "oracle",
+   "unit": "meme-nofiller__pl_047|pl_047/before3|3",
+   "set": "control",
+   "task": "Abs",
+   "query": "How do I get to work?",
+   "answer": "You currently drive a Xylorim Scooter.",
+   "gold": [
+    "bike"
+   ],
+   "verdict": "wrong",
+   "reason": "states another value"
+  },
+  {
+   "arm": "oracle",
+   "unit": "meme-nofiller__pl_047|pl_047/before4|3",
+   "set": "control",
+   "task": "Del",
+   "query": "What's my regular social meetup?",
+   "answer": "pickup basketball on Saturdays",
+   "gold": [
+    "pickup basketball saturdays"
+   ],
+   "verdict": "correct",
+   "reason": "states the gold value in other words"
+  },
+  {
+   "arm": "oracle",
+   "unit": "meme-nofiller__pl_048|pl_048/after2|end",
+   "set": "target",
+   "task": "Cas",
+   "query": "Where do I work out?",
+   "answer": "Velthari Studio",
+   "gold": [
+    "kaelstrom fitness"
+   ],
+   "verdict": "wrong",
+   "reason": "states the stale value"
+  },
+  {
+   "arm": "oracle",
+   "unit": "meme-nofiller__sw_005|sw_005/before4|3",
+   "set": "control",
+   "task": "Del",
+   "query": "When's our team meeting?",
+   "answer": "The team meeting is every Thursday at 2pm.",
+   "gold": [
+    "every thursday 2pm"
+   ],
+   "verdict": "correct",
+   "reason": "states the gold value in other words"
+  },
+  {
+   "arm": "oracle",
+   "unit": "meme-nofiller__sw_009|sw_009/before4|3",
+   "set": "control",
+   "task": "Del",
+   "query": "Where's the changelog?",
+   "answer": "CHANGELOG.md in the repo root",
+   "gold": [
+    "changelog.md in repo root"
+   ],
+   "verdict": "correct",
+   "reason": "states the gold value in other words"
+  },
+  {
+   "arm": "oracle",
+   "unit": "meme-nofiller__sw_015|sw_015/after2|end",
+   "set": "target",
+   "task": "Cas",
+   "query": "What's the deploy command?",
+   "answer": "narvex deploy --env prod",
+   "gold": [
+    "thandrel ship --channel beta"
+   ],
+   "verdict": "wrong",
+   "reason": "states the stale value"
+  },
+  {
+   "arm": "oracle",
+   "unit": "meme-nofiller__sw_018|sw_018/before3|3",
+   "set": "control",
+   "task": "Del",
+   "query": "How often do we release?",
+   "answer": "The team releases biweekly on Friday afternoons.",
+   "gold": [
+    "biweekly friday afternoon"
+   ],
+   "verdict": "correct",
+   "reason": "states the gold value in other words"
+  },
+  {
+   "arm": "oracle",
+   "unit": "meme-nofiller__sw_022|sw_022/before3|3",
+   "set": "control",
+   "task": "Del",
+   "query": "How often do we release?",
+   "answer": "The team releases continuously on merge. This means that as soon as code is merged, it's automatically deployed.",
+   "gold": [
+    "continuous deploy on merge"
+   ],
+   "verdict": "correct",
+   "reason": "states the gold value in other words"
+  },
+  {
+   "arm": "oracle",
+   "unit": "meme-nofiller__sw_034|sw_034/before4|3",
+   "set": "control",
+   "task": "Del",
+   "query": "What's our backup schedule?",
+   "answer": "Database backups run every 12 hours with a 7-day retention policy.",
+   "gold": [
+    "every 12 hours with 7-day retention"
+   ],
+   "verdict": "correct",
+   "reason": "states the gold value in other words"
+  },
+  {
+   "arm": "oracle",
+   "unit": "meme-nofiller__sw_038|sw_038/before0|3",
+   "set": "control",
+   "task": "Cas",
+   "query": "What's our project structure?",
+   "answer": "Our project follows a modular structure with /modules and /shared.",
+   "gold": [
+    "modular with /modules and /shared"
+   ],
+   "verdict": "correct",
+   "reason": "states the gold value in other words"
+  },
+  {
+   "arm": "oracle",
+   "unit": "meme-nofiller__sw_049|sw_049/after2|end",
+   "set": "target",
+   "task": "Cas",
+   "query": "What's the auth middleware config?",
+   "answer": "zenithos-csrf-guard v1.1",
+   "gold": [
+    "zenthos-csrf-guard v1.1"
+   ],
+   "verdict": "wrong",
+   "reason": "misspells the invented name (the cards spell it Zenthos)"
+  }
+ ],
+ "judged": "2026-11-10, by the agent that ran the test, before the comparison was printed"
+}

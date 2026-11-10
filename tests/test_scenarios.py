@@ -414,8 +414,14 @@ class Scenario10PackValidateMountRead(WorkspaceTestCase):
         self.assertIn("[[db/conn]]", exported)
         self.assertTrue(self.ws.validate(self.tmp / "db.slice")["ok"])
 
-        self.ws.mount(self.tmp / "db.slice", alias="@db", precedence=40, role="curated")
+        # The overlay drifts after the export: its db/conn is no longer the packed copy, so mounting keeps it
+        # (shadowing @db/db/conn for unqualified reads) and retires only the unchanged db/pool.
         self.ws.write("db/conn", op="replace", summary="Connection settings v2 (overlay drifted).")
+        mounted = self.ws.mount(self.tmp / "db.slice", alias="@db", precedence=40, role="curated")
+        self.assertEqual(mounted["retired_overlay_cards"], ["@overlay/db/pool"])
+        self.assertEqual(mounted["shadowing_overlay_cards"],
+                         [{"address": "@overlay/db/conn", "reason": "differs from @db/db/conn"}])
+        self.assertEqual(self.ws.read("db/conn")["address"], "@overlay/db/conn")
         res = self.ws.read("@db/db/pool")
         self.assertEqual([b["address"] for b in res["baselines"]], ["@db/db/conn"])
         self.assertIn("v1", res["baselines"][0]["summary"])
