@@ -21,8 +21,10 @@ decision ledger, section 3.)
 4. **What goes wrong is mostly links and unflagged premises:** links to cards named after an old value, old
    per-value cards left active, raw rounds never superseded, and premise changes written in prose. After scoring,
    the engine and its guidance were changed to address all but the raw rounds (unmeasured).
-5. **No reader model has answered a question yet.** Every comparison with flat history is at the level of the
-   retrieved page and the workspace; answer accuracy, and any dense raw-history RAG baseline, are not run.
+5. **Answers, from the comparison reader so far.** Reading the same pages, the local Qwen answers
+   0.76 of the after-change questions correctly from `oracle`'s memory and 0.48 from `flat`'s
+   (+0.283, interval 0.222 to 0.341), with no cost before the change. The pre-registered lines are read
+   on Argon, after the weekly Gemini reset; no dense raw-history RAG baseline has been run.
 
 ## The problem
 
@@ -156,16 +158,24 @@ same MEME questions (pooled, v3; MemoryAgentBench in the last column):
 
 These say what a reader would be handed, not what it would answer.
 
-### Reader QA: not run
+### Reader QA: the comparison reader so far (Qwen); the lines wait for Argon
 
-No reader model has answered a question from any arm's memory, so there is no answer-accuracy comparison with
-flat history, and no dense raw-history RAG arm has been built. Both were left out on purpose: the specification
-makes answer accuracy optional, after tier 1, and keeps it out of G1-G5 because a second model adds its own
-variance (agent_test.md section 9). Running it needs, frozen before the first call: a reader model and a fixed
-answer-from-memory prompt; each benchmark's own grader or judge prompt, recorded verbatim; the arms (`flat`,
-`oracle`, the agent cells, and a dense raw-history RAG arm with an embedding model and a reranker, which can live
-in `evals/` but not in the standard-library engine); and the questions (tier 1's 1,136 plus MemoryAgentBench
-32k's 66 per arm).
+Pre-registered and frozen in PLAN.md section 11 (`results/freeze_reader.json`). A reader gets the full top-10 cards
+`search()` returns (dates and lineage notes included) and answers in a fixed JSON form, graded without an LLM;
+answers the value rule rejects are judged by hand before anything is printed. The lines R1-R3 are read on Argon
+after the weekly Gemini reset. The local Qwen has read `flat` and `oracle` as a comparison reader, with no line
+([results/reader_qa_qwen.md](results/reader_qa_qwen.md)):
+
+| 95 MEME episodes, 378 questions per set | `flat` | `oracle` | `oracle` − `flat` |
+| --- | --- | --- | --- |
+| Targets (Cascade, Absence, Deletion after the change) | 0.479 | 0.762 | **0.283 [0.222, 0.341]** |
+| Controls (the same questions before it) | 0.966 | 0.974 | 0.008 [0.000, 0.018] |
+
+The gain is in Absence (hop 1: 81/95 against 29/95) and Cascade hop 1 (76/95 against 44/95); Cascade hop 2 gains
+less (32/63 against 24/63), and Deletion goes the other way (77/95 against 83/95): `flat` keeps the user's "please
+forget" turn, which the reader honours, while `oracle` has deleted the topic and Qwen sometimes answers from an
+unrelated card instead of saying it doesn't know. No dense raw-history RAG arm has been run (the local server offers
+no embeddings).
 
 ### Reading cost and retrieval: what the comparison has to account for
 
@@ -254,7 +264,7 @@ from") or as a search alias. Every dependent in Qwen's audited passes that still
 - **MEME only** for tier 1, MemoryAgentBench for the confirmatory run; LongMemEval (tier 2) is not run.
 - **One run per cell**, except the variance repeats; two Gemini models from one provider and one local model.
   The CLI adds its own framing around the system prompt and tool declarations, which isn't visible to us.
-- **No answers, no dense baseline** (above).
+- **Answers so far from the comparison reader only**; the lines wait for Argon. No dense baseline (above).
 - **Same author.** The runner, scorer, matchers, audits and this report were written by the agent that ran the
   test. The lines were kept at the specification's values, and the audit rule was applied as written.
 

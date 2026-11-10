@@ -1,0 +1,75 @@
+{
+ "readers": {
+  "qwen": {
+   "records": 1512,
+   "handcheck": {
+    "cases": 135,
+    "pending": 0
+   },
+   "accuracy": {
+    "flat control": {
+     "mean": 0.9656,
+     "low": 0.9471,
+     "high": 0.9841,
+     "n": 378
+    },
+    "flat target": {
+     "mean": 0.4788,
+     "low": 0.4286,
+     "high": 0.5265,
+     "n": 378
+    },
+    "oracle control": {
+     "mean": 0.9735,
+     "low": 0.955,
+     "high": 0.9894,
+     "n": 378
+    },
+    "oracle target": {
+     "mean": 0.7619,
+     "low": 0.7196,
+     "high": 0.8042,
+     "n": 378
+    }
+   },
+   "by_task": {
+    "flat control Abs hop 1": "95/95",
+    "flat control Abs hop 2": "28/30",
+    "flat control Cas hop 1": "94/95",
+    "flat control Cas hop 2": "53/63",
+    "flat control Del": "95/95",
+    "flat target Abs hop 1": "29/95",
+    "flat target Abs hop 2": "1/30",
+    "flat target Cas hop 1": "44/95",
+    "flat target Cas hop 2": "24/63",
+    "flat target Del": "83/95",
+    "oracle control Abs hop 1": "95/95",
+    "oracle control Abs hop 2": "28/30",
+    "oracle control Cas hop 1": "95/95",
+    "oracle control Cas hop 2": "55/63",
+    "oracle control Del": "95/95",
+    "oracle target Abs hop 1": "81/95",
+    "oracle target Abs hop 2": "22/30",
+    "oracle target Cas hop 1": "76/95",
+    "oracle target Cas hop 2": "32/63",
+    "oracle target Del": "77/95"
+   },
+   "comparison": {
+    "target": {
+     "mean": 0.2831,
+     "low": 0.2222,
+     "high": 0.3413,
+     "n": 378,
+     "unpaired": 0
+    },
+    "control": {
+     "mean": 0.0079,
+     "low": 0.0,
+     "high": 0.0185,
+     "n": 378,
+     "unpaired": 0
+    }
+   }
+  }
+ }
+}

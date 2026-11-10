@@ -269,8 +269,10 @@ model) and [`evals/agent`](evals/agent/REPORT.md) (LLM agents writing memory thr
   MemoryAgentBench 32k confirmatory run confirmed all four pre-registered lines.
 - **Weaker models write weaker lineage.** A local 3-bit Qwen retired 0.392-0.566 of stale facts (Argon
   0.730-0.922) and forgot 0.315-0.609 of what it was asked to (Argon 0.946-0.989).
-- **These are page-level results.** The harness judges what `search()` hands a reader; no reader model has
-  answered the questions yet, so there is no answer-accuracy comparison with flat history or raw-history RAG.
+- **The page turns into answers.** Reading the same top-10 pages, a local 3-bit Qwen answered 0.76 of MEME's
+  after-change questions (Cascade, Absence, Deletion) correctly from memory with lineage and 0.48 from timestamped
+  raw chunks, with no cost before the change (pre-registered comparison reader; the lines are read on Argon after
+  the weekly Gemini reset). No dense raw-history RAG baseline has been run.
 
 The usual alternative is RAG over the raw history: keep every turn, retrieve with dense embeddings and a
 reranker. Three boundaries for reading these numbers against it (details in
