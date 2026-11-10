@@ -3,6 +3,7 @@
 All nine primitives are methods on :class:`Workspace`:
 
 * Group A (online, also exposed over MCP): ``manifest``, ``search``, ``read``, ``write``
+  (plus ``boot``: the always-loaded cards, which ``manifest`` also returns)
 * Group B (slice management):              ``mount`` / ``unmount``, ``validate``, ``pack``
 * Group C (transactional sandbox):         ``diff``, ``apply`` / ``discard``
 
@@ -20,7 +21,7 @@ from contextlib import contextmanager
 from pathlib import Path
 from typing import Any, Iterator, Sequence
 
-from . import packer, query, staging as staging_mod, validation, writer
+from . import boot as boot_mod, packer, query, staging as staging_mod, validation, writer
 from .addressing import alias_from_name, normalize_alias
 from .config import (
     MOUNTS_FILE,
@@ -172,8 +173,12 @@ class Workspace:
     # Group A: online read/write
     # ------------------------------------------------------------------
     def manifest(self, limit: int = 20, offset: int = 0, max_folders_per_mount: int = 10,
-                 include_overview: bool = False) -> dict[str, Any]:
-        return query.manifest(self, limit, offset, max_folders_per_mount, include_overview)
+                 include_overview: bool = False, include_always: bool = True) -> dict[str, Any]:
+        return query.manifest(self, limit, offset, max_folders_per_mount, include_overview, include_always)
+
+    def boot(self) -> dict[str, Any]:
+        """The always-loaded cards (``load = "always"``), resolved and composed, for a session's start."""
+        return boot_mod.boot(self)
 
     def search(self, query_text: str, source: str | Sequence[str] | None = None,
                tags: str | Sequence[str] | None = None, k: int = 10, offset: int = 0,
@@ -188,8 +193,10 @@ class Workspace:
     def write(self, id: str, op: str = "create", content: Any = None, summary: str | None = None,
               title: str | None = None, tags: Sequence[str] | None = None, aliases: Sequence[str] | None = None,
               extends: Sequence[str] | None = None, supersedes: Sequence[str] | None = None,
-              stage: bool = False, if_match: str | None = None) -> dict[str, Any]:
-        return writer.write(self, id, op, content, summary, title, tags, aliases, extends, supersedes, stage, if_match)
+              stage: bool | None = None, if_match: str | None = None, load: str | None = None) -> dict[str, Any]:
+        """``stage=None`` stages changes to the always-loaded context for approval (see ``boot``)."""
+        return writer.write(self, id, op, content, summary, title, tags, aliases, extends, supersedes, stage,
+                            if_match, load)
 
     # ------------------------------------------------------------------
     # Group B: slice management, linting & packaging
@@ -262,6 +269,10 @@ class Workspace:
                 result["missing_dependencies"] = missing
             if sm.errors:
                 result["manifest_errors"] = sm.errors
+            always = [c for c in boot_mod.snapshot(self, self.table())["cards"]
+                      if c["mount"] == alias or c.get("redirected_from", "").startswith(alias + "/")]
+            if always:
+                result["always_loaded"] = always
             return result
 
     def unmount(self, alias: str) -> dict[str, Any]:

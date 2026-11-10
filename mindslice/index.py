@@ -27,7 +27,7 @@ from .config import OVERVIEW_PATH, Mount, MountTable
 from .fsutil import iter_markdown
 from .lexical import QueryPlan, analyze_query, analyzer_signature, fold, index_text
 
-SCHEMA_VERSION = "1"  # table layout; text-analysis and parsing changes are tracked by index_signature()
+SCHEMA_VERSION = "2"  # table layout ("2": cards.load); text-analysis and parsing changes are tracked by index_signature()
 BM25_WEIGHTS = (10.0, 5.0, 3.0, 2.0, 1.0)  # title, aliases, tags, summary, body
 TOKENIZER = "porter unicode61 remove_diacritics 2"
 LINK_KINDS = ("extends", "supersedes", "wikilink")
@@ -46,6 +46,7 @@ CREATE TABLE IF NOT EXISTS cards(
     summary TEXT NOT NULL, preview TEXT NOT NULL,
     sha256 TEXT NOT NULL, mtime_ns INTEGER NOT NULL, size INTEGER NOT NULL,
     lines INTEGER NOT NULL, is_overview INTEGER NOT NULL, has_frontmatter INTEGER NOT NULL,
+    load TEXT NOT NULL DEFAULT 'as-needed',
     errors TEXT NOT NULL, warnings TEXT NOT NULL,
     UNIQUE(mount, path)
 );
@@ -346,8 +347,8 @@ class Index:
         lines = text.count("\n") + (0 if text.endswith("\n") or not text else 1)
         cur = self.conn.execute(
             """INSERT INTO cards(mount, path, title, aliases, tags, extends, supersedes, summary, preview,
-                   sha256, mtime_ns, size, lines, is_overview, has_frontmatter, errors, warnings)
-               VALUES(?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)""",
+                   sha256, mtime_ns, size, lines, is_overview, has_frontmatter, load, errors, warnings)
+               VALUES(?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)""",
             (
                 mount,
                 path,
@@ -364,6 +365,7 @@ class Index:
                 lines,
                 1 if path == OVERVIEW_PATH else 0,
                 FRONTMATTER_CODES.get(parsed.frontmatter_format, 0),
+                parsed.load,
                 json.dumps(parsed.errors, ensure_ascii=False),
                 json.dumps(parsed.warnings, ensure_ascii=False),
             ),
@@ -438,6 +440,13 @@ class Index:
             args.append(mount)
         sql += " ORDER BY m.precedence DESC, c.mount, c.path"
         return self.conn.execute(sql, args).fetchall()
+
+    def always_cards(self) -> list[sqlite3.Row]:
+        """Cards with ``load = "always"``, base layers first (precedence ascending), then mount, path."""
+        return self.conn.execute(
+            """SELECT c.*, m.precedence, m.role FROM cards c JOIN mounts m ON m.alias = c.mount
+               WHERE c.load = 'always' ORDER BY m.precedence, c.mount, c.path"""
+        ).fetchall()
 
     def all_cards(self, mount: str | None = None) -> list[sqlite3.Row]:
         sql = "SELECT c.*, m.precedence, m.role FROM cards c JOIN mounts m ON m.alias = c.mount"

@@ -135,6 +135,7 @@ All backend services must raise typed domain exceptions inherited from `AppError
    * **`aliases`**: Synonyms or shorthand names used for lexical matching and `[[wikilink]]` resolution.
    * **`tags`**: Categorical labels for faceted filtering across slices.
    * **`extends` / `supersedes` *(Optional)***: Explicit lineage pointers to target cards.
+   * **`load` *(Optional)***: `"as-needed"` (default; the line is omitted) or `"always"`. An always-loaded card holds session-level context (agent persona, reply language, standing instructions) and is read into every session at start without a query (Section 4.3). Any other value is a `validate()` error and counts as the default.
 2. **Address Scope Rules Inside Cards (`@alias/path` vs. Slice-Relative `path`)**:
    * References in `extends`, `supersedes`, and inline `[[wikilinks]]` support two forms:
      * **Namespace-Qualified (`@project/api/auth-flow`)**: Binds explicitly to the card in mount `@project`.
@@ -192,19 +193,27 @@ What does it mean to accept a `supersedes` edge? By default, writing a card to `
 2. **Implicit Cross-Slice Contradictions (Co-Hits Without Lineage)**:
    * Co-matching cards without `extends` or `supersedes` links are **never silently filtered**. All matches are returned in `score` order stamped with `(@alias, role, precedence, mtime)`.
 
+### 4.3 Always-Loaded Cards (`load = "always"`)
+Some memory is not retrieved but always in effect. A card with `load = "always"` belongs to the **boot set**, which every session receives at start whatever its first query is. In every other respect it is an ordinary card: indexed, searchable, readable, subject to lineage, and packed like any other.
+
+1. **Resolution**: The boot set is each always-loaded card resolved as `read()` resolves it with the default trust policy: a superseded card forwards to its terminal replacement (`redirected_from`), and its `extends` baselines and extensions are composed in. Cards are ordered by mount `precedence` ascending (base layers first, overlay refinements last); an entry whose every card is already shown (e.g. an always-loaded extension of an always-loaded baseline) is not repeated. Its **footprint** is every card the resolution visited.
+2. **Delivery**: `boot()` (CLI `mindslice boot`, rendered as Markdown for a system prompt) returns the set; `manifest()` includes it as `always_loaded` on its first page; `mount()` reports the always-loaded cards the new slice brings. The MCP server appends the rendered set to its `initialize` instructions and remembers what it delivered: when the set changes mid-session (a mount, an approved change), the next tool result carries `always_loaded_update` (`cards` added or changed, `removed` addresses), once.
+3. **Approval-Gated Writes**: Because the boot set shapes every session, `write(stage=None)` (the default) stages a change for the user's approval when the card is or would become always-loaded, belongs to the footprint, or extends or supersedes a footprint card. The staged entry and the result carry `requires_approval` (the reason); `diff()` shows it, and `boot()` / `manifest()` list `awaiting_approval`. `apply()` is the approval. Writes outside the boot context keep going straight to `overlay/`. `stage=True` / `stage=False` force either path at the Python API and CLI, where the caller is the approver; over MCP an agent's `stage=false` is ignored, and `apply()` is not an agent tool.
+
 ---
 
 ## 5. External Interface (9 Orthogonal Primitives)
 MindSlice exposes **9 orthogonal primitives** across three groups. All 9 are available via Python and CLI; **Group A** forms the **4-tool MCP Server** exposed to runtime agents.
 
 ### Group A: Online Read/Write (Exposed to Agents / MCP)
-1. **`manifest(limit=20, offset=0, max_folders_per_mount=10, include_overview=False)`**:
-   * Acquires `LOCK_SH` (replaying any interrupted journal and syncing `(mtime_ns, size)` changes under `LOCK_EX` if needed) and returns the paginated mount table, `role` tags, card counts, 160-char descriptions, and bounded top-level folder lists.
+1. **`manifest(limit=20, offset=0, max_folders_per_mount=10, include_overview=False, include_always=True)`**:
+   * Acquires `LOCK_SH` (replaying any interrupted journal and syncing `(mtime_ns, size)` changes under `LOCK_EX` if needed) and returns the paginated mount table, `role` tags, card counts, 160-char descriptions, and bounded top-level folder lists, plus (first page only) the always-loaded cards (`always_loaded`, Section 4.3; also available alone as `boot()`).
 2. **`search(query, source=None, tags=None, k=10, offset=0, max_neighbors=3, follow_supersedes=True)`**:
    * Runs an FTS5 query and returns up to `k` Card Previews (`address`, `role`, `precedence`, `coverage`, `score`, `title`, `tags`, 240-char `summary`, up to `max_neighbors` 1-hop `[[wikilinks]]`, `matched_via_superseded` / `superseded_by` status, `bypassed_replacements` for redirected hits, and the same `baseline_superseded_by` / `missing_baselines` notices as `read()`), plus `total_matches`, `truncated`, `next_offset` and `unmatched_terms`.
 3. **`read(address, follow_supersedes=True, max_backlinks=10, backlinks_offset=0, max_extensions=5, extensions_offset=0)`**:
    * Resolves `address` via Section 4.2, returns the full card (plus composed baseline/extensions, `sha256` revision token, outbound `[[wikilinks]]`, paginated `backlinks`, and any `unrebased_extensions` / `bypassed_replacements` / `baseline_superseded_by` / `missing_baselines` notices), and updates ephemeral `read_count` / `last_read_at` in `.cache/index.sqlite`.
-4. **`write(id, op="create" | "replace" | "append" | "delete", content=None, summary=None, title=None, tags=None, aliases=None, extends=None, supersedes=None, stage=False, if_match=None)`**:
+4. **`write(id, op="create" | "replace" | "append" | "delete", content=None, summary=None, title=None, tags=None, aliases=None, extends=None, supersedes=None, stage=None, if_match=None, load=None)`**:
+   * `load="always"` / `"as-needed"` sets or clears the card's `load` field. `stage=None` stages changes to the always-loaded context for approval and writes everything else to `overlay/` (Section 4.3).
    * Acquires `LOCK_EX` on `.cache/workspace.lock`, validates that no lineage cycle is introduced, verifies TOML frontmatter round-trip parsing, and mutates `<id>.md` in `overlay/` (or in `staging/` when `stage=True`):
      * **`op="create"`**: Creates a new card. Fails with `AlreadyExistsError` if the target already exists with different content; succeeds idempotently if byte-identical.
      * **`op="replace"`**: Replaces frontmatter, summary, and/or body. Accepts `if_match="<sha256>"` to reject updates if the target card changed since it was read.

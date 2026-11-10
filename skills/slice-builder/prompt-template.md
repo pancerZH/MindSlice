@@ -43,6 +43,8 @@ Constraints:
 - `extends`: cards this one refines, adds exceptions or if-then rules to, or depends on as a premise.
   `supersedes`: cards this one replaces (usually empty in a new slice).
 - Frontmatter is TOML: only strings and lists of strings.
+- Add `load = "always"` (after `title`) only to the few short cards every session must read at start
+  without a query: a persona, a reply language, standing instructions. Leave it out everywhere else.
 - `[[links]]` without an `@alias/` prefix refer to cards in this same slice; every link must resolve.
 - Capture what is durable and non-obvious (conventions, decisions and their rationale, invariants,
   procedures, pitfalls). Skip what the code makes self-evident.

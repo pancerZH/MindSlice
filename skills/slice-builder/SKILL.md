@@ -56,6 +56,12 @@ Rules:
    inside the same slice* - never into other mounts. Use `[[@persona/tone]]` to reach across slices
    and declare that slice in `slice.toml` `dependencies`.
 7. Never put secrets, tokens, machine-specific absolute paths or session noise in cards.
+8. **`load = "always"`** (optional, after `title`) marks a card every session reads at start, with
+   no query: an agent persona, the user's reply language, standing instructions. Use it sparingly
+   (it costs context in every session) and keep such cards short. Everything else is the default,
+   `load = "as-needed"`: found by search. Changes that touch an always-loaded card (editing,
+   deleting, extending or superseding it, or marking a card always) are staged for the user's
+   approval by default; tell the user, who approves with `mindslice apply`.
 
 ## Aliases: the words someone will search with
 
@@ -128,6 +134,7 @@ Pick the right operation:
 | Rewrite an overlay card you just read | `--op replace --if-match <sha256 from read>` |
 | A request to forget, or a card that should never have been written | `--op delete` |
 | The response lists `affected_backlinks` / `affected_extensions` | Update or rebase each one now (below) |
+| A lasting preference about how the agent behaves (language, tone, persona) | `create` with `--load always` (staged for approval) |
 
 Prefer `append` over creating near-duplicates; `search` first to find the right card. Give new
 cards aliases too (`--alias`, repeatable), following the rules above.

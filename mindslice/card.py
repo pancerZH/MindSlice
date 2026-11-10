@@ -8,6 +8,7 @@ A card is a Markdown file with optional ``+++``-fenced TOML frontmatter::
     tags = [...]
     extends = []
     supersedes = []
+    load = "always"     # optional; default "as-needed"
     +++
 
     One or two sentence summary paragraph.
@@ -43,8 +44,13 @@ from .errors import FrontmatterError
 
 FENCE = "+++"
 YAML_FENCE = "---"
-KNOWN_FIELDS = ("title", "aliases", "tags", "extends", "supersedes")
+KNOWN_FIELDS = ("title", "aliases", "tags", "extends", "supersedes", "load")
 LIST_FIELDS = ("aliases", "tags", "extends", "supersedes")
+# ``load = "always"``: the card is read into every session at start (persona, language, standing
+# instructions), not only when a query hits it. ``"as-needed"`` (the default) is an ordinary card.
+LOAD_ALWAYS = "always"
+LOAD_AS_NEEDED = "as-needed"
+LOAD_VALUES = (LOAD_ALWAYS, LOAD_AS_NEEDED)
 SUMMARY_PREVIEW_CHARS = 240
 MAX_CARD_LINES = 50
 PARSER_VERSION = "2"  # in the index signature: "2" reads YAML frontmatter and plain-Markdown lead paragraphs
@@ -129,6 +135,11 @@ class ParsedCard:
     @property
     def supersedes(self) -> list[str]:
         return self.list_field("supersedes")
+
+    @property
+    def load(self) -> str:
+        """``"always"`` or ``"as-needed"``; an invalid value counts as the default (validate() reports it)."""
+        return LOAD_ALWAYS if self.frontmatter.get("load") == LOAD_ALWAYS else LOAD_AS_NEEDED
 
     def wikilink_targets(self) -> list[str]:
         seen: dict[str, None] = {}
@@ -421,6 +432,9 @@ def schema_errors(frontmatter: dict[str, Any]) -> list[str]:
                 errs.append("frontmatter field 'title' must be a string")
             continue
         errs.append(f"frontmatter field {key!r} must be a string or a list of strings (got {type(value).__name__})")
+    if "load" in frontmatter and frontmatter["load"] not in LOAD_VALUES:
+        errs.append(f"frontmatter field 'load' must be {' or '.join(repr(v) for v in LOAD_VALUES)} "
+                    f"(got {frontmatter['load']!r})")
     return errs
 
 
@@ -433,6 +447,8 @@ def ordered_frontmatter(fields: dict[str, Any]) -> dict[str, Any]:
     """Canonical key order: known fields first (always present), then extras in original order."""
     out: dict[str, Any] = {}
     out["title"] = fields.get("title") or ""
+    if fields.get("load") is not None:  # written only when set, so ordinary cards keep their frontmatter
+        out["load"] = fields["load"]
     for name in LIST_FIELDS:
         value = fields.get(name) or []
         if isinstance(value, str):

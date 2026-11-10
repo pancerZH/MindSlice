@@ -6,7 +6,7 @@ import json
 from typing import TYPE_CHECKING, Any, Iterable, Sequence
 
 from .addressing import format_address, normalize_alias, parse_address
-from .card import SUMMARY_PREVIEW_CHARS, parse_card, truncate
+from .card import KNOWN_FIELDS, LOAD_ALWAYS, SUMMARY_PREVIEW_CHARS, parse_card, truncate
 from .config import DESCRIPTION_CHARS, OVERVIEW_PATH, MountTable, load_slice_manifest
 from .errors import InvalidAddressError, NotFoundError
 from .lineage import FollowSpec, LineageView, TrustPolicy
@@ -56,7 +56,11 @@ def manifest(
     offset: int = 0,
     max_folders_per_mount: int = 10,
     include_overview: bool = False,
+    include_always: bool = True,
 ) -> dict[str, Any]:
+    """Mount map; on the first page (``offset=0``) also the always-loaded cards (``always_loaded``)."""
+    from .boot import snapshot  # boot builds on this module
+
     _nonneg(limit=limit, offset=offset, max_folders_per_mount=max_folders_per_mount)
     with ws._reading() as table:
         idx = ws.index
@@ -122,6 +126,12 @@ def manifest(
         pending = len(ws.staging.entries())
         if pending:
             result["staging"] = {"pending": pending}
+        if include_always and offset == 0:
+            boot = snapshot(ws, table)
+            if boot["cards"]:
+                result["always_loaded"] = boot["cards"]
+            if boot.get("pending_approval"):
+                result["staging"]["awaiting_approval"] = boot["pending_approval"]
         return result
 
 
@@ -251,11 +261,13 @@ class _Ctx:
             "mtime_ns": row["mtime_ns"],
             "lines": text.count("\n") + (0 if text.endswith("\n") or not text else 1),
         }
+        if parsed.load == LOAD_ALWAYS:
+            payload["load"] = LOAD_ALWAYS
         for kind in _LINEAGE_KINDS:
             targets = self.lineage_targets(address, kind)
             if targets:
                 payload[kind] = targets
-        extra = {k: v for k, v in parsed.frontmatter.items() if k not in ("title", "aliases", "tags", "extends", "supersedes")}
+        extra = {k: v for k, v in parsed.frontmatter.items() if k not in KNOWN_FIELDS}
         if extra:
             payload["meta"] = extra
         unresolved = self.unresolved_refs(address)
@@ -358,6 +370,8 @@ def _preview(ctx: _Ctx, address: str, group: dict[str, Any], max_neighbors: int)
     }
     if cut:
         out["summary_truncated"] = True
+    if row["load"] == LOAD_ALWAYS:
+        out["load"] = LOAD_ALWAYS
     out.update(ctx.status(address))
     fwd = ctx.lv.forward(address)
     if fwd.redirected:
@@ -482,78 +496,91 @@ def read(
     )
     with ws._reading() as table:
         ctx = _Ctx(ws, table, follow_supersedes)
-        idx = ctx.idx
-        selected, shadows = _select(ctx, address)
+        return resolve(ctx, address, max_backlinks, backlinks_offset, max_extensions, extensions_offset)
 
-        # Step 2: transitive supersession forwarding (filtered by trust policy).
-        fwd = ctx.lv.forward(selected)
-        node = fwd.node
-        result = ctx.card_payload(node)
-        result["requested"] = address
-        result.update(ctx.status(node))
-        if fwd.redirected:
-            result["redirected_from"] = selected
-            result["lineage_path"] = fwd.path
-            bypassed = ctx.bypassed_replacements(selected)
-            if bypassed:
-                result["bypassed_replacements"] = bypassed
-        if shadows:
-            result["shadows"] = shadows
 
-        # Extensions of superseded nodes are never silently rebased onto the replacement.
-        if fwd.redirected:
-            unrebased = []
-            for old in sorted(fwd.superseded):
-                for r in idx.inbound("extends", *_split(old)):
-                    ext = format_address(r["src_mount"], r["src_path"])
-                    if ext == node or node in ctx.lineage_targets(ext, "extends"):
-                        continue
-                    unrebased.append({"address": ext, "extends": old})
-            if unrebased:
-                result["unrebased_extensions"] = unrebased
+def resolve(
+    ctx: _Ctx,
+    address: str,
+    max_backlinks: int = 10,
+    backlinks_offset: int = 0,
+    max_extensions: int = 5,
+    extensions_offset: int = 0,
+    bump_telemetry: bool = True,
+) -> dict[str, Any]:
+    """The body of ``read()`` for a caller that already holds the workspace lock."""
+    idx = ctx.idx
+    selected, shadows = _select(ctx, address)
 
-        # Step 3: extension composition.
-        baselines, missing = _baseline_closure(ctx, node)
-        if baselines:
-            composed = []
-            replaced: list[str] = []
-            for base in baselines:
-                payload = ctx.card_payload(base)
-                direct = ctx.lv.all_superseders(base)
-                if direct:
-                    payload["superseded_by"] = direct
-                    replaced += [r for r in direct if r not in replaced]
-                composed.append(payload)
-            result["baselines"] = composed
-            if replaced:
-                result["baseline_superseded_by"] = replaced
-        if missing:
-            result["missing_baselines"] = missing
+    # Step 2: transitive supersession forwarding (filtered by trust policy).
+    fwd = ctx.lv.forward(selected)
+    node = fwd.node
+    result = ctx.card_payload(node)
+    result["requested"] = address
+    result.update(ctx.status(node))
+    if fwd.redirected:
+        result["redirected_from"] = selected
+        result["lineage_path"] = fwd.path
+        bypassed = ctx.bypassed_replacements(selected)
+        if bypassed:
+            result["bypassed_replacements"] = bypassed
+    if shadows:
+        result["shadows"] = shadows
 
-        ext_rows = idx.inbound("extends", *_split(node), recency=True)
-        if ext_rows:
-            page = ext_rows[extensions_offset : extensions_offset + max_extensions]
-            result["extensions"] = [ctx.card_payload(format_address(r["src_mount"], r["src_path"])) for r in page]
-            result["total_extensions"] = len(ext_rows)
-            result["extensions_next_offset"] = _page(len(ext_rows), extensions_offset, max_extensions)
+    # Extensions of superseded nodes are never silently rebased onto the replacement.
+    if fwd.redirected:
+        unrebased = []
+        for old in sorted(fwd.superseded):
+            for r in idx.inbound("extends", *_split(old)):
+                ext = format_address(r["src_mount"], r["src_path"])
+                if ext == node or node in ctx.lineage_targets(ext, "extends"):
+                    continue
+                unrebased.append({"address": ext, "extends": old})
+        if unrebased:
+            result["unrebased_extensions"] = unrebased
 
-        # Outbound wikilinks + paginated backlinks.
-        links = [
-            {"ref": l["raw"], "address": format_address(l["dst_mount"], l["dst_path"]) if l["resolved"] else None}
-            for l in ctx.outbound(node)
-            if l["kind"] == "wikilink"
-        ]
-        if links:
-            result["links"] = links
-        back_rows = idx.inbound("wikilink", *_split(node))
-        result["backlinks"] = [
-            {"address": a, "title": (ctx.row(a)["title"] if ctx.row(a) is not None else None)}
-            for a in (format_address(r["src_mount"], r["src_path"]) for r in back_rows[backlinks_offset : backlinks_offset + max_backlinks])
-        ]
-        result["total_backlinks"] = len(back_rows)
-        result["backlinks_next_offset"] = _page(len(back_rows), backlinks_offset, max_backlinks)
+    # Step 3: extension composition.
+    baselines, missing = _baseline_closure(ctx, node)
+    if baselines:
+        composed = []
+        replaced: list[str] = []
+        for base in baselines:
+            payload = ctx.card_payload(base)
+            direct = ctx.lv.all_superseders(base)
+            if direct:
+                payload["superseded_by"] = direct
+                replaced += [r for r in direct if r not in replaced]
+            composed.append(payload)
+        result["baselines"] = composed
+        if replaced:
+            result["baseline_superseded_by"] = replaced
+    if missing:
+        result["missing_baselines"] = missing
 
-        telemetry = idx.bump_read(result["mount"], result["path"])
-        if telemetry is not None:
-            result["read_count"], result["last_read_at"] = telemetry
-        return result
+    ext_rows = idx.inbound("extends", *_split(node), recency=True)
+    if ext_rows:
+        page = ext_rows[extensions_offset : extensions_offset + max_extensions]
+        result["extensions"] = [ctx.card_payload(format_address(r["src_mount"], r["src_path"])) for r in page]
+        result["total_extensions"] = len(ext_rows)
+        result["extensions_next_offset"] = _page(len(ext_rows), extensions_offset, max_extensions)
+
+    # Outbound wikilinks + paginated backlinks.
+    links = [
+        {"ref": l["raw"], "address": format_address(l["dst_mount"], l["dst_path"]) if l["resolved"] else None}
+        for l in ctx.outbound(node)
+        if l["kind"] == "wikilink"
+    ]
+    if links:
+        result["links"] = links
+    back_rows = idx.inbound("wikilink", *_split(node))
+    result["backlinks"] = [
+        {"address": a, "title": (ctx.row(a)["title"] if ctx.row(a) is not None else None)}
+        for a in (format_address(r["src_mount"], r["src_path"]) for r in back_rows[backlinks_offset : backlinks_offset + max_backlinks])
+    ]
+    result["total_backlinks"] = len(back_rows)
+    result["backlinks_next_offset"] = _page(len(back_rows), backlinks_offset, max_backlinks)
+
+    telemetry = idx.bump_read(result["mount"], result["path"]) if bump_telemetry else None
+    if telemetry is not None:
+        result["read_count"], result["last_read_at"] = telemetry
+    return result

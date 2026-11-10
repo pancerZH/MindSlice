@@ -13,6 +13,8 @@ See [`MindSlice_design.md`](MindSlice_design.md) for the full design.
   (only best-effort `read_count` / `last_read_at` telemetry is lost).
 - **Read-only base slices + writable `overlay/`**, with explicit `extends` / `supersedes` lineage.
 - **Three-stage retrieval funnel**: `manifest()` -> `search()` -> `read()`, with hard output bounds.
+- **Always-loaded cards** (`load = "always"`): persona, language and standing instructions reach
+  every session at start, with no query; changes to them wait for the user's approval.
 - **4-tool MCP server** (`manifest`, `search`, `read`, `write`) for agents.
 - **Mount any folder of Markdown as is**: plain notes and legacy `---` YAML frontmatter are indexed without
   conversion; `+++` TOML cards are the native format.
@@ -105,6 +107,9 @@ is read as a flat subset: `title`, `aliases`, `tags`, `extends`, `supersedes` an
 (`@notes/2024-01-01 (draft) & notes`), while new card ids stay link-safe. `write()` keeps a YAML block verbatim
 on body edits and writes `+++` TOML when it changes the card's fields; `validate()` notes each such card's format.
 
+Add `load = "always"` to a card that every session should read at start (see
+[Always-loaded cards](#always-loaded-cards)). The default, `load = "as-needed"`, needs no line.
+
 Address forms: `@alias/path` targets one mount. A bare `path` passed **to the API** resolves to
 the highest-precedence mount; written **inside a card**, it resolves only within that card's own slice.
 
@@ -115,7 +120,8 @@ the highest-precedence mount; written **inside a card**, it resolves only within
 | A (MCP) | `manifest(limit=20, offset=0, max_folders_per_mount=10, include_overview=False)` | mounts, roles, counts, 160-char descriptions, bounded folder lists |
 | A (MCP) | `search(query, source=None, tags=None, k=10, offset=0, max_neighbors=3, follow_supersedes=True)` | `score = -bm25(10,5,3,2,1) > 0`; supersession redirect; 240-char summaries |
 | A (MCP) | `read(address, follow_supersedes=True, max_backlinks=10, backlinks_offset=0, max_extensions=5, extensions_offset=0)` | forwarding, extends composition, shadows, backlinks, `sha256` |
-| A (MCP) | `write(id, op="create"\|"replace"\|"append"\|"delete", content, summary, title, tags, aliases, extends, supersedes, stage=False, if_match=None)` | overlay only; cycle checks; verified TOML round-trip; `affected_backlinks` / `affected_extensions` when it supersedes or deletes |
+| A (MCP) | `write(id, op="create"\|"replace"\|"append"\|"delete", content, summary, title, tags, aliases, extends, supersedes, stage=None, if_match=None, load=None)` | overlay only; cycle checks; verified TOML round-trip; `affected_backlinks` / `affected_extensions` when it supersedes or deletes; changes to always-loaded cards are staged |
+| A | `boot()` | the always-loaded cards, resolved and composed (also in `manifest()`; `mindslice boot` prints Markdown) |
 | B | `mount(path, alias, precedence, role, retire_overlay=True)` / `unmount(alias)` | updates `mounts.toml` and the index; retires overlay copies the slice holds unchanged |
 | B | `validate(slice_path=None, rebuild_index=False)` | lints from disk; rebuild re-hashes everything |
 | B | `pack(output_path, prefix=None, tags=None, include_deps=False)` | deterministic dir / `.zip` / `.tar.gz` export |
@@ -151,6 +157,44 @@ It is a query of the index (plus staged changes for `stage=True`), recomputed fr
 so a retry reports the same; the engine never edits those cards. Updating them is the agent's job, in the same
 session, and is easier when cards are named by durable slot (`team/lead`), not by value
 (`team/lead-sarah-chen`): a link to a slot can stay, a link to a value-named card keeps stating the old value.
+
+## Always-loaded cards
+
+Some memory is not looked up but always in effect: who the agent is, which language the user wants,
+rules for every reply. Mark such a card with `load = "always"`:
+
+```markdown
++++
+title = "Agent persona: Mira"
+load = "always"
++++
+
+You are Mira, a concise, friendly pair programmer.
+
+- Answer in short paragraphs; prefer showing code over describing it.
+```
+
+Every session then starts with it, whether or not a query would have found it:
+
+- **MCP**: the cards are appended to the server's `initialize` instructions (which clients put in
+  the system prompt) and listed in `manifest()` as `always_loaded`. If the set changes mid-session
+  (a slice is mounted, the user approves a change), the next tool result carries an
+  `always_loaded_update` with the new or changed cards.
+- **Anything else**: `mindslice boot` prints them as Markdown, ready for a system prompt
+  (`claude --append-system-prompt "$(mindslice boot)"`, or paste into any chat). `boot()` in Python.
+- **`mount()`** lists the always-loaded cards the new slice brings.
+
+The set is each always-loaded card resolved the way `read()` resolves it: a card superseded in
+`@overlay` gives way to its replacement, and extensions are composed in. Otherwise these cards behave
+like any other: searchable, readable, packable.
+
+Because they shape every session, changes to them wait for the user. `write()` stages a change to the
+always-loaded context by default (`stage=None`) and says why in `requires_approval`: creating or
+marking a card always-loaded, editing or deleting one, or extending or superseding one (or a baseline
+composed into one). The user reviews with `mindslice diff` and approves with `mindslice apply` (or
+drops it with `mindslice discard`); `boot()` and `manifest()` list what is `awaiting_approval`. Over
+MCP the agent cannot opt out (`stage=false` is ignored for these cards) and has no `apply` tool. At the
+Python API or the CLI, `stage=False` / `--no-stage` writes directly: there the caller is the approver.
 
 ## MCP server
 

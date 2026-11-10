@@ -8,6 +8,8 @@ from typing import TYPE_CHECKING, Any, Iterable, Sequence
 from .addressing import MountCatalog, format_address, normalize_alias, normalize_path, resolve_ref
 from .card import (
     LIST_FIELDS,
+    LOAD_ALWAYS,
+    LOAD_VALUES,
     ParsedCard,
     append_statements,
     compose_after,
@@ -102,6 +104,14 @@ def _union(existing: Iterable[str], extra: Iterable[str]) -> list[str]:
     return out
 
 
+def _set_load(fields: dict[str, Any], load: str | None) -> None:
+    """``load="always"`` writes the field; ``"as-needed"`` (the default) removes it."""
+    if load == LOAD_ALWAYS:
+        fields["load"] = LOAD_ALWAYS
+    elif load is not None:
+        fields.pop("load", None)
+
+
 def build_text(
     op: str,
     path: str,
@@ -114,6 +124,7 @@ def build_text(
     aliases: list[str] | None,
     extends: list[str] | None,
     supersedes: list[str] | None,
+    load: str | None = None,
 ) -> tuple[str | None, dict[str, Any]]:
     """Compute the new card text for ``op`` (None for delete); returns ``(text, info)``."""
     info: dict[str, Any] = {}
@@ -123,6 +134,7 @@ def build_text(
     if op == "create":
         fields: dict[str, Any] = {"title": title.strip() if title else humanize(path)}
         fields.update({k: v or [] for k, v in lists.items()})
+        _set_load(fields, load)
         return render_card(fields, summary, _body_text(content)), info
     if op == "delete":
         return None, info
@@ -131,20 +143,21 @@ def build_text(
     if op == "replace":
         given = {k: v for k, v in lists.items() if v is not None}
         new_fields: dict[str, Any] | None = None
-        if title is not None or given:
+        if title is not None or given or load is not None:
             new_fields = dict(parsed.frontmatter) if not parsed.errors else {}
             if title is not None:
                 new_fields["title"] = title.strip()
             elif not parsed.title:
                 new_fields["title"] = parsed.display_title(path)
             new_fields.update(given)
+            _set_load(new_fields, load)
         after = None
         body = _body_text(content)
         if summary is not None or body is not None:
             after = compose_after(parsed.summary if summary is None else summary, parsed.body if body is None else body)
         return reassemble(parsed, current, new_fields, after), info
     if op == "append":
-        if content is None and not any(v for v in lists.values()) and title is None and summary is None:
+        if content is None and not any(v for v in lists.values()) and title is None and summary is None and load is None:
             raise ValueError("append needs content (bullet statements) or list fields to merge")
         blocks = statement_blocks(content) if content is not None else []
         new_after, added = append_statements(parsed.after, blocks)
@@ -154,7 +167,7 @@ def build_text(
             _, body = split_summary(new_after)
             new_after = compose_after(summary, body)
         new_fields = None
-        if title is not None or any(v for v in lists.values()):
+        if title is not None or any(v for v in lists.values()) or load is not None:
             new_fields = dict(parsed.frontmatter) if not parsed.errors else {}
             if title is not None:
                 new_fields["title"] = title.strip()
@@ -163,6 +176,7 @@ def build_text(
             for name, extra in lists.items():
                 if extra:
                     new_fields[name] = _union(parsed.list_field(name), extra)
+            _set_load(new_fields, load)
             if new_fields == parsed.frontmatter:
                 new_fields = None
         changed_after = new_after if new_after != parsed.after else None
@@ -286,11 +300,18 @@ def write(
     aliases: Sequence[str] | None = None,
     extends: Sequence[str] | None = None,
     supersedes: Sequence[str] | None = None,
-    stage: bool = False,
+    stage: bool | None = None,
     if_match: str | None = None,
+    load: str | None = None,
 ) -> dict[str, Any]:
+    """``stage=None`` (the default) stages a change to the always-loaded context for the user's
+    approval and writes anything else straight to ``overlay/``; ``True`` / ``False`` force either."""
+    from .boot import protection_reason  # boot imports query, which imports this module
+
     if op not in OPS:
         raise ValueError(f"unknown op {op!r} (expected one of {', '.join(OPS)})")
+    if load is not None and load not in LOAD_VALUES:
+        raise ValueError(f"load must be {' or '.join(repr(v) for v in LOAD_VALUES)} (got {load!r})")
     path = overlay_card_path(ws, id, strict=op == "create")
     tags_l = _as_list("tags", tags)
     aliases_l = _as_list("aliases", aliases)
@@ -300,6 +321,13 @@ def write(
         overlay = table.overlay
         address = format_address(overlay.alias, path)
         staging = ws.staging
+        approval = None  # why this change needs the user's approval (it touches the always-loaded context)
+        if stage is not False:
+            texts = [read_card_file(overlay.root / f"{path}.md")[0], staging.prospective_state(path, overlay.root)[0]]
+            lineage = [("extends", r) for r in extends_l or []] + [("supersedes", r) for r in supersedes_l or []]
+            approval = protection_reason(ws, table, path, texts, load, lineage)
+            if stage is None:
+                stage = approval is not None
         if stage:
             current, current_sha = staging.prospective_state(path, overlay.root)
         else:
@@ -324,7 +352,7 @@ def write(
         if op == "create" and current is not None:
             new_text, _ = build_text(
                 op, path, None, content=content, summary=summary, title=title, tags=tags_l,
-                aliases=aliases_l, extends=extends_l, supersedes=supersedes_l,
+                aliases=aliases_l, extends=extends_l, supersedes=supersedes_l, load=load,
             )
             if new_text == normalize_newlines(current):
                 result["sha256"] = current_sha
@@ -343,7 +371,7 @@ def write(
 
         new_text, info = build_text(
             op, path, current, content=content, summary=summary, title=title, tags=tags_l,
-            aliases=aliases_l, extends=extends_l, supersedes=supersedes_l,
+            aliases=aliases_l, extends=extends_l, supersedes=supersedes_l, load=load,
         )
         result.update(info)
         parsed_new: ParsedCard | None = None
@@ -368,9 +396,16 @@ def write(
         impact = write_impact(ws, table, path, None, stage=stage, deleting=True) if new_text is None else None
         if stage:
             if new_text is None:
-                staging.stage_delete(path, overlay.root)
+                staging.stage_delete(path, overlay.root, requires_approval=approval)
             else:
-                staging.stage_write(path, new_text, overlay.root, op)
+                staging.stage_write(path, new_text, overlay.root, op, requires_approval=approval)
+            if approval:
+                result["requires_approval"] = approval
+                result["warnings"].append(
+                    f"Staged, not applied, because {approval}. Always-loaded cards shape every session, so the user "
+                    "approves changes to them: tell the user, who can review it with `mindslice diff` and approve it "
+                    "with `mindslice apply` (or drop it with `mindslice discard`)."
+                )
         else:
             file = overlay.root / f"{path}.md"
             if new_text is None:

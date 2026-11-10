@@ -10,6 +10,7 @@ from pathlib import Path
 from typing import Any, Sequence
 
 from . import __version__
+from .boot import render_markdown as render_boot
 from .errors import ApplyConflictError, MindSliceError
 from .workspace import Workspace
 
@@ -105,6 +106,10 @@ def build_parser() -> argparse.ArgumentParser:
     s.add_argument("--offset", type=int, default=0)
     s.add_argument("--max-folders", type=int, default=10, dest="max_folders_per_mount")
     s.add_argument("--include-overview", action="store_true")
+    s.add_argument("--no-always", action="store_false", dest="include_always", help="omit the always-loaded cards")
+
+    s = sub.add_parser("boot", help="print the always-loaded cards (load = \"always\") as Markdown for a system prompt")
+    s.add_argument("--json", action="store_true", help="JSON instead of Markdown")
 
     s = sub.add_parser("search", help="associative BM25 search returning card previews")
     s.add_argument("query")
@@ -135,7 +140,11 @@ def build_parser() -> argparse.ArgumentParser:
     s.add_argument("--alias", action="append", dest="aliases")
     s.add_argument("--extends", action="append")
     s.add_argument("--supersedes", action="append")
-    s.add_argument("--stage", action="store_true", help="write to staging/ instead of overlay/")
+    s.add_argument("--load", choices=("always", "as-needed"),
+                   help="always = loaded into every session without a query (persona, language, standing instructions)")
+    s.add_argument("--stage", action="store_true", default=None,
+                   help="write to staging/ instead of overlay/ (default: only changes to always-loaded cards are staged)")
+    s.add_argument("--no-stage", action="store_false", dest="stage", help="write to overlay/ even if always-loaded")
     s.add_argument("--if-match", help="sha256 the target must currently have")
 
     s = sub.add_parser("mount", help="mount a read-only slice directory")
@@ -215,7 +224,17 @@ def main(argv: Sequence[str] | None = None) -> int:
 def _dispatch(ws: Workspace, args: argparse.Namespace, compact: bool) -> int:
     cmd = args.command
     if cmd == "manifest":
-        _emit(ws.manifest(args.limit, args.offset, args.max_folders_per_mount, args.include_overview), compact)
+        _emit(ws.manifest(args.limit, args.offset, args.max_folders_per_mount, args.include_overview,
+                          args.include_always), compact)
+    elif cmd == "boot":
+        result = ws.boot()
+        if args.json:
+            _emit(result, compact)
+        else:
+            sys.stdout.write(render_boot(result["cards"]))
+            for item in result.get("pending_approval", []):
+                sys.stderr.write(f"awaiting approval: @overlay/{item['id']} ({item['reason']}); "
+                                 "review with `mindslice diff`, approve with `mindslice apply`\n")
     elif cmd == "search":
         _emit(ws.search(args.query, args.source, args.tags, args.k, args.offset, args.max_neighbors, _follow(args.follow)), compact)
     elif cmd == "read":
@@ -227,7 +246,7 @@ def _dispatch(ws: Workspace, args: argparse.Namespace, compact: bool) -> int:
             _emit(result, compact)
     elif cmd == "write":
         _emit(ws.write(args.id, args.op, _content(args), args.summary, args.title, args.tags, args.aliases,
-                       args.extends, args.supersedes, args.stage, args.if_match), compact)
+                       args.extends, args.supersedes, args.stage, args.if_match, args.load), compact)
     elif cmd == "mount":
         _emit(ws.mount(_cwd_path(args.path), args.alias, args.precedence, args.role,
                        retire_overlay=not args.keep_overlay), compact)

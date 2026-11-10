@@ -5,6 +5,12 @@ standard library. Tools: ``manifest``, ``search``, ``read``, ``write``.
 
 Run with ``mindslice -w <workspace> mcp`` (add ``--stage-writes`` to force all
 agent writes into ``staging/`` for human review via ``diff``/``apply``).
+
+Always-loaded cards (``load = "always"``) reach the agent without a query: rendered into the
+``initialize`` instructions, listed by ``manifest``, and, when the set changes mid-session (a slice
+mounted, a staged change approved), attached once to the next tool result as
+``always_loaded_update``. Agent writes that touch them are always staged for the user's approval:
+the agent cannot opt out with ``stage=false``, and ``apply`` is not an agent tool.
 """
 
 from __future__ import annotations
@@ -15,6 +21,7 @@ import sys
 from typing import IO, Any
 
 from . import __version__
+from .boot import fingerprint, render_markdown
 from .errors import InvalidArgumentsError, MindSliceError
 from .workspace import Workspace
 
@@ -37,7 +44,8 @@ TOOLS: list[dict[str, Any]] = [
         "name": "manifest",
         "description": (
             "Boot context: list mounted memory slices (alias, role, precedence, card counts, 160-char description, "
-            "top-level folders). Call this first to learn what memory exists."
+            "top-level folders), plus always_loaded: the full always-loaded cards (persona, language, standing "
+            "instructions) that apply to the whole session. Call this first to learn what memory exists."
         ),
         "inputSchema": {
             "type": "object",
@@ -46,6 +54,7 @@ TOOLS: list[dict[str, Any]] = [
                 "offset": _int(0, "pagination offset"),
                 "max_folders_per_mount": _int(10, "top-level folders listed per mount"),
                 "include_overview": {"type": "boolean", "default": False, "description": "inline each slice's overview.md"},
+                "include_always": {"type": "boolean", "default": True, "description": "include always_loaded cards (first page only)"},
             },
             "additionalProperties": False,
         },
@@ -122,7 +131,9 @@ TOOLS: list[dict[str, Any]] = [
             "a card that still states the old value as current or links to a card named after it; rebase an "
             "extension that still holds (replace with extends naming the replacement), else supersede or delete "
             "it. A link to a slot can stay (read() follows supersedes). read_only items are in base slices: "
-            "supersede one only if it states the old value as current."
+            "supersede one only if it states the old value as current. load=\"always\" makes a card load into "
+            "every session (persona, reply language, standing instructions); any change to the always-loaded context is staged for the user's approval "
+            "(requires_approval in the result): tell the user, who approves it with `mindslice apply`."
         ),
         "inputSchema": {
             "type": "object",
@@ -138,7 +149,10 @@ TOOLS: list[dict[str, Any]] = [
                 "aliases": {"type": "array", "items": {"type": "string"}, "description": "3-8 search synonyms of 1-4 words: other phrasings, the asker's words, abbreviations, former names, other-language terms (weighted just below the title; also [[alias]] link targets)"},
                 "extends": {"type": "array", "items": {"type": "string"}, "description": "baselines this card refines, adds exceptions or if-then rules to, or depends on as a premise (@alias/path); flagged if one is later superseded or deleted"},
                 "supersedes": {"type": "array", "items": {"type": "string"}, "description": "outdated cards this one replaces (@alias/path); their search hits forward here"},
-                "stage": {"type": "boolean", "default": False},
+                "stage": {"type": "boolean", "description": "true buffers the change in staging/ for human review; "
+                          "changes to always-loaded cards are staged whatever you pass"},
+                "load": {"type": "string", "enum": ["always", "as-needed"], "description": "\"always\": loaded into "
+                         "every session without a query (persona, language, standing instructions); default \"as-needed\""},
                 "if_match": {"type": "string", "description": "sha256 from read(); rejects the write if the card changed"},
             },
             "required": ["id"],
@@ -156,7 +170,11 @@ INSTRUCTIONS = (
     "card by the durable topic or slot it fills (team/lead, subscriptions/streaming), never by the value in it "
     "(team/lead-sarah-chen, subscriptions/xelvoria). When a write supersedes or deletes a card, its response lists "
     "affected_backlinks and affected_extensions, the cards that still link to or extend it: update or rebase each "
-    "of them in the same session."
+    "of them in the same session. "
+    "Cards marked load=\"always\" are standing context for every session (below, and in manifest's always_loaded; "
+    "a tool result's always_loaded_update brings changes to them). When the user states a lasting preference about "
+    "how you should behave (reply language, tone, persona), record it with load=\"always\"; such writes are staged "
+    "until the user approves them, so tell the user."
 )
 
 
@@ -165,6 +183,47 @@ class MCPServer:
         self.ws = ws
         self.stage_writes = stage_writes
         self.protocol_version = PROTOCOL_VERSIONS[0]
+        # Fingerprints of the always-loaded cards the agent has been given (None: none delivered yet).
+        self._boot_seen: dict[str, str] | None = None
+
+    # -- always-loaded cards ----------------------------------------------
+    def _boot_cards(self) -> list[dict[str, Any]]:
+        return self.ws.boot()["cards"]
+
+    def _mark_seen(self, cards: list[dict[str, Any]]) -> None:
+        self._boot_seen = {c["address"]: fingerprint(c) for c in cards}
+
+    def instructions(self) -> str:
+        """Server instructions with the always-loaded cards appended (clients put them in the system prompt)."""
+        try:
+            cards = self._boot_cards()
+        except MindSliceError:
+            return INSTRUCTIONS
+        self._mark_seen(cards)
+        text = render_markdown(cards)
+        return INSTRUCTIONS + ("\n\n" + text if text else "")
+
+    def boot_update(self) -> dict[str, Any] | None:
+        """Always-loaded cards added or changed since the agent last saw the set (and those removed)."""
+        try:
+            cards = self._boot_cards()
+        except MindSliceError:
+            return None
+        seen = self._boot_seen or {}
+        current = {c["address"]: fingerprint(c) for c in cards}
+        if current == seen:
+            self._boot_seen = current
+            return None
+        self._boot_seen = current
+        update: dict[str, Any] = {
+            "note": "The always-loaded memory changed (a slice was mounted or the user approved a change). "
+                    "These cards apply to the rest of the session.",
+            "cards": [c for c in cards if seen.get(c["address"]) != current[c["address"]]],
+        }
+        removed = [a for a in seen if a not in current]
+        if removed:
+            update["removed"] = removed
+        return update
 
     # -- tool execution ---------------------------------------------------
     def call_tool(self, name: str, arguments: dict[str, Any]) -> dict[str, Any]:
@@ -178,6 +237,8 @@ class MCPServer:
         if name == "write":
             if self.stage_writes:
                 args["stage"] = True
+            elif args.get("stage") is False:
+                del args["stage"]  # the default: direct, except changes to always-loaded cards (staged for approval)
             return self.ws.write(args.pop("id"), **args)
         raise KeyError(name)
 
@@ -197,7 +258,7 @@ class MCPServer:
                     "protocolVersion": self.protocol_version,
                     "capabilities": {"tools": {"listChanged": False}},
                     "serverInfo": {"name": "mindslice", "version": __version__},
-                    "instructions": INSTRUCTIONS,
+                    "instructions": self.instructions(),
                 }
             elif method == "ping":
                 result = {}
@@ -223,6 +284,13 @@ class MCPServer:
         try:
             check_arguments(name, {} if arguments is None else arguments)
             payload = self.call_tool(name, arguments or {})
+            args = arguments or {}
+            if name == "manifest" and args.get("offset", 0) == 0 and args.get("include_always", True):
+                self._mark_seen(payload.get("always_loaded", []))
+            else:
+                update = self.boot_update()
+                if update:
+                    payload["always_loaded_update"] = update
         except MindSliceError as exc:
             return _tool_result(exc.to_dict(), is_error=True)
         except (TypeError, ValueError, KeyError) as exc:  # raised below the arguments check: still the caller's input

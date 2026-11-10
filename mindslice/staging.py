@@ -129,7 +129,7 @@ class StagingArea:
         return overrides
 
     # -- staged mutations -------------------------------------------------
-    def stage_write(self, path: str, text: str, overlay_root: Path, op: str) -> None:
+    def stage_write(self, path: str, text: str, overlay_root: Path, op: str, requires_approval: str | None = None) -> None:
         manifest = self.load_manifest()
         entry = manifest.get(path)
         if entry is None:
@@ -138,11 +138,13 @@ class StagingArea:
         entry["op"] = "write"
         entry["history"] = list(entry.get("history") or []) + [op]
         entry["updated_at"] = _now()
+        if requires_approval:
+            entry["requires_approval"] = requires_approval
         manifest[path] = entry
         self.save_manifest(manifest)  # manifest first: preserves base_sha256 if we crash mid-way
         atomic_write_text(self.file(path), text)
 
-    def stage_delete(self, path: str, overlay_root: Path) -> bool:
+    def stage_delete(self, path: str, overlay_root: Path, requires_approval: str | None = None) -> bool:
         manifest = self.load_manifest()
         entry = manifest.get(path)
         staged = self.file(path)
@@ -150,6 +152,8 @@ class StagingArea:
             _, overlay_sha = read_card_file(overlay_root / f"{path}.md")
             if overlay_sha is not None:
                 manifest[path] = {"op": "delete", "base_sha256": overlay_sha, "history": ["delete"], "updated_at": _now()}
+                if requires_approval:
+                    manifest[path]["requires_approval"] = requires_approval
                 self.save_manifest(manifest)
                 self._drop_file(staged)
                 return True
@@ -165,6 +169,8 @@ class StagingArea:
         entry["op"] = "delete"
         entry["history"] = list(entry.get("history") or []) + ["delete"]
         entry["updated_at"] = _now()
+        if requires_approval:
+            entry["requires_approval"] = requires_approval
         self.save_manifest(manifest)
         self._drop_file(staged)
         return True
@@ -254,6 +260,8 @@ def _diff_staging(ws: "Workspace", table: "MountTable") -> dict[str, Any]:
         }
         if entry.get("orphan"):
             item["orphan"] = True
+        if entry.get("requires_approval"):
+            item["requires_approval"] = entry["requires_approval"]
         items.append(item)
     return {
         "scope": "staging",
