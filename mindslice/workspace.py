@@ -4,7 +4,8 @@ All nine primitives are methods on :class:`Workspace`:
 
 * Group A (online, also exposed over MCP): ``manifest``, ``search``, ``read``, ``write``
   (plus ``boot``: the always-loaded cards, which ``manifest`` also returns)
-* Group B (slice management):              ``mount`` / ``unmount``, ``validate``, ``pack``
+* Group B (slice management):              ``mount`` / ``unmount``, ``validate``, ``pack`` (and ``bake``:
+  a new version of a mounted slice, with overlay cards baked in, mounted in the old one's place)
 * Group C (transactional sandbox):         ``diff``, ``apply`` / ``discard``
 
 Every operation runs under ``.cache/workspace.lock`` (``LOCK_SH`` for reads,
@@ -21,7 +22,7 @@ from contextlib import contextmanager
 from pathlib import Path
 from typing import Any, Iterator, Sequence
 
-from . import boot as boot_mod, packer, query, staging as staging_mod, validation, writer
+from . import bake as bake_mod, boot as boot_mod, packer, query, staging as staging_mod, validation, writer
 from .addressing import alias_from_name, normalize_alias
 from .config import (
     MOUNTS_FILE,
@@ -289,6 +290,14 @@ class Workspace:
 
     def validate(self, slice_path: str | os.PathLike[str] | None = None, rebuild_index: bool = False) -> dict[str, Any]:
         return validation.validate(self, slice_path, rebuild_index)
+
+    def bake(self, alias: str, output_path: str | os.PathLike[str] | None = None, prefix: str | None = None,
+             tags: str | Sequence[str] | None = None, include_deps: bool = False, dry_run: bool = False) -> dict[str, Any]:
+        """Bake ``@overlay`` cards into a new version of the mounted slice ``alias`` and mount it in its place.
+
+        The old folder is left untouched (and unmounted); ``output_path`` defaults to ``slices/<name>.slice``.
+        """
+        return bake_mod.bake(self, alias, output_path, prefix, tags, include_deps, dry_run)
 
     def pack(self, output_path: str | os.PathLike[str], prefix: str | None = None,
              tags: str | Sequence[str] | None = None, include_deps: bool = False, **kwargs: Any) -> dict[str, Any]:

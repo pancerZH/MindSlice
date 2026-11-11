@@ -74,6 +74,12 @@ class UnresolvedExportDependencyError(MindSliceError):
     code = "unresolved_export_dependency"
 
 
+class BakeConflictError(MindSliceError):
+    """Raised by ``bake()`` before writing anything, when a card can't move into the slice as it is."""
+
+    code = "bake_conflict"
+
+
 class InvalidArgumentsError(MindSliceError, ValueError):
     """A tool call's arguments don't fit the tool: a required one is missing, or one isn't in its schema."""
 

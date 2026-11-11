@@ -91,6 +91,73 @@ def export_text(text: str, parsed: ParsedCard, overlay_alias: str, cats: dict[st
     return rewrite_refs(text, parsed, rewrite)
 
 
+def overlay_cards(ws: "Workspace", table) -> dict[str, tuple[str, ParsedCard]]:
+    """Every ``@overlay`` card from disk (``{path: (text, parsed)}``), skipping mounts nested inside it."""
+    overlay = table.overlay
+    nested = tuple(o.root for o in table.all() if o.alias != overlay.alias and overlay.root in o.root.parents)
+    cards: dict[str, tuple[str, ParsedCard]] = {}
+    for rel, _ in iter_markdown(overlay.root, exclude=tuple(ws._exclude()) + nested):
+        text, _ = read_card_file(overlay.root / f"{rel}.md")
+        if text is not None:
+            cards[rel] = (text, parse_card(text))
+    return cards
+
+
+def dependency_closure(
+    cards: dict[str, tuple[str, ParsedCard]],
+    selected: Sequence[str],
+    overlay_alias: str,
+    cats: dict[str, MountCatalog],
+    include_deps: bool,
+) -> tuple[set[str], list[str], set[str], list[str]]:
+    """``(included, pulled, external_mounts, warnings)`` for exporting ``selected`` overlay cards.
+
+    A reference to an overlay card outside the selection raises ``UnresolvedExportDependencyError``,
+    unless ``include_deps`` pulls it in (transitively; ``pulled`` lists those).
+    """
+    included = set(selected)
+    pulled: list[str] = []
+    missing: list[dict[str, str]] = []
+    warnings: list[str] = []
+    external: set[str] = set()
+    queue = list(selected)
+    while queue:
+        path = queue.pop(0)
+        parsed = cards[path][1]
+        refs = [(k, r) for k in ("extends", "supersedes") for r in parsed.list_field(k)]
+        refs += [("wikilink", r) for r in parsed.wikilink_targets()]
+        for kind, raw in refs:
+            res = resolve_ref(raw, overlay_alias, cats)
+            if res.mount is None:
+                warnings.append(f"{path}: {kind} reference {raw!r} is not a valid address; copied verbatim")
+                continue
+            if res.mount != overlay_alias:
+                external.add(res.mount)
+                if not res.resolved:
+                    warnings.append(f"{path}: {kind} reference {raw!r} does not resolve in {res.mount}")
+                continue
+            if not res.resolved or res.path not in cards:
+                warnings.append(f"{path}: {kind} reference {raw!r} does not resolve in {overlay_alias}; copied verbatim")
+                continue
+            if res.path in included:
+                continue
+            if include_deps:
+                included.add(res.path)
+                pulled.append(res.path)
+                queue.append(res.path)
+            else:
+                missing.append({"source": format_address(overlay_alias, path), "field": kind, "ref": raw,
+                                "target": format_address(overlay_alias, res.path)})
+    if missing:
+        targets = sorted({m["target"] for m in missing})
+        raise UnresolvedExportDependencyError(
+            f"export references {len(targets)} excluded {overlay_alias} card(s): {', '.join(targets)} "
+            "(pass include_deps=True to pull them in)",
+            missing=missing,
+        )
+    return included, pulled, external, warnings
+
+
 def pack(
     ws: "Workspace",
     output_path: str | Path,
@@ -113,12 +180,7 @@ def pack(
     with ws._reading() as table:
         overlay = table.overlay
         cats = ws.index.catalogs()
-        nested = tuple(o.root for o in table.all() if o.alias != overlay.alias and overlay.root in o.root.parents)
-        cards: dict[str, tuple[str, ParsedCard]] = {}
-        for rel, _ in iter_markdown(overlay.root, exclude=tuple(ws._exclude()) + nested):
-            text, _ = read_card_file(overlay.root / f"{rel}.md")
-            if text is not None:
-                cards[rel] = (text, parse_card(text))
+        cards = overlay_cards(ws, table)
 
     def selected_by_filter(path: str, parsed: ParsedCard) -> bool:
         if path == OVERVIEW_PATH and (prefix or tag_set):
@@ -131,46 +193,7 @@ def pack(
     if not selected:
         raise NotFoundError(f"no {overlay.alias} cards match prefix={prefix!r} tags={sorted(tag_set)}")
 
-    included = set(selected)
-    pulled: list[str] = []
-    missing: list[dict[str, str]] = []
-    warnings: list[str] = []
-    external: set[str] = set()
-    queue = list(selected)
-    while queue:
-        path = queue.pop(0)
-        parsed = cards[path][1]
-        refs = [(k, r) for k in ("extends", "supersedes") for r in parsed.list_field(k)]
-        refs += [("wikilink", r) for r in parsed.wikilink_targets()]
-        for kind, raw in refs:
-            res = resolve_ref(raw, overlay.alias, cats)
-            if res.mount is None:
-                warnings.append(f"{path}: {kind} reference {raw!r} is not a valid address; copied verbatim")
-                continue
-            if res.mount != overlay.alias:
-                external.add(res.mount)
-                if not res.resolved:
-                    warnings.append(f"{path}: {kind} reference {raw!r} does not resolve in {res.mount}")
-                continue
-            if not res.resolved or res.path not in cards:
-                warnings.append(f"{path}: {kind} reference {raw!r} does not resolve in {overlay.alias}; copied verbatim")
-                continue
-            if res.path in included:
-                continue
-            if include_deps:
-                included.add(res.path)
-                pulled.append(res.path)
-                queue.append(res.path)
-            else:
-                missing.append({"source": format_address(overlay.alias, path), "field": kind, "ref": raw,
-                                "target": format_address(overlay.alias, res.path)})
-    if missing:
-        targets = sorted({m["target"] for m in missing})
-        raise UnresolvedExportDependencyError(
-            f"export references {len(targets)} excluded {overlay.alias} card(s): {', '.join(targets)} "
-            "(pass include_deps=True to pull them in)",
-            missing=missing,
-        )
+    included, pulled, external, warnings = dependency_closure(cards, selected, overlay.alias, cats, include_deps)
 
     files: dict[str, str] = {}
     for path in sorted(included):
@@ -283,6 +306,22 @@ def retire_packed_copies(ws: "Workspace", table, alias: str) -> dict[str, Any]:
             kept.append({"address": address, "reason": f"differs from {format_address(alias, path)}"})
             continue
         retired.append(path)
+    return retire_overlay_paths(ws, table, alias, retired, kept, cats)
+
+
+def retire_overlay_paths(ws: "Workspace", table, alias: str, retired: list[str], kept: list[dict[str, str]],
+                         cats: dict[str, MountCatalog]) -> dict[str, Any]:
+    """Remove the ``@overlay`` cards at ``retired`` paths, now held by slice ``alias`` at the same paths.
+
+    References to them from overlay cards that stay are rewritten to ``@alias/<path>``; a card that a
+    staged card references is kept instead (rewriting the overlay file would conflict) and added to
+    ``kept``. Runs under the caller's ``LOCK_EX``; the caller syncs the index afterwards.
+    """
+    overlay = table.overlay
+    idx = ws.index
+    staged = set(ws.staging.entries())
+    retired = list(retired)
+    kept = list(kept)
 
     def referrers(path: str) -> list[tuple[str, str, str]]:
         out = []

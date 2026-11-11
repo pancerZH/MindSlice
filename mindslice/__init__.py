@@ -13,6 +13,7 @@ is a disposable acceleration cache. Standard library only (Python 3.12+).
 from .errors import (
     AlreadyExistsError,
     ApplyConflictError,
+    BakeConflictError,
     FrontmatterError,
     InvalidAddressError,
     LineageCycleError,
@@ -34,6 +35,7 @@ __all__ = [
     "MindSliceError",
     "AlreadyExistsError",
     "ApplyConflictError",
+    "BakeConflictError",
     "FrontmatterError",
     "InvalidAddressError",
     "LineageCycleError",

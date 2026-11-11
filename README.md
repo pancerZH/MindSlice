@@ -8,8 +8,9 @@ Everything lives in ordinary folders of Markdown files: open them in any editor,
 up and send it to a friend.
 
 - **Your notes stay yours.** Point MindSlice at a folder you already have (Obsidian notes, a docs folder, a
-  team handbook) and the agent can search it right away, with no conversion. MindSlice never changes that
-  folder: what the agent learns goes into a separate folder of its own.
+  team handbook) and the agent can search it right away, with no conversion. What the agent learns goes into a
+  separate folder of its own, and MindSlice never edits your folders: when you want to keep the agent's notes,
+  it builds a new version next to them.
 - **Some memory is always on.** Mark a note `load = "always"` (a persona, the language you want replies in,
   rules for every answer) and the agent reads it at the start of every conversation. The agent can't change
   these notes by itself: each change waits for your approval.
@@ -69,6 +70,26 @@ If the app can't find the command, use the full path that `which mindslice` prin
 Then just talk to your agent. Tell it "Remember that I use uv, not pip", and in a later conversation ask "How
 do I install packages in my projects?"
 
+#### With a local model (Strata)
+
+MindSlice doesn't care which model the agent runs on, so a model you serve yourself works too. With
+Strata serving a local model (for example Qwen):
+
+1. Start the model server: `strata launch`.
+2. Point your app at it, for example Claude Code: `strata connect claude-code --write`. Strata can also set up
+   opencode, Codex and others (run `strata connect` to list them). Add `--check` to confirm that the model
+   can make tool calls, since that is how the agent reaches its memory.
+3. Add MindSlice to that app as shown above (for Claude Code, the same `claude mcp add` command).
+
+Small local models follow MindSlice's instructions less reliably than large hosted ones. To keep everything
+they write under your review, add `--stage-writes` when you connect MindSlice:
+
+```bash
+claude mcp add mindslice -- mindslice -w ~/mindslice mcp --stage-writes
+```
+
+Every change the agent makes then waits for you in step 5.
+
 ### 3. Add notes you already have
 
 ```bash
@@ -111,14 +132,37 @@ mindslice discard         # or throw them away
 Everything else the agent writes is saved directly as Markdown in `~/mindslice/overlay/`. You can open, edit or
 delete any file there, and MindSlice picks up your changes automatically.
 
-### 6. Share a slice
+### 6. Turn what the agent learned into slices
+
+Over time the agent's notes pile up in `~/mindslice/overlay/`. Every so often, move the good ones into slices.
+
+**Start a new slice** from the agent's notes on one topic:
 
 ```bash
-mindslice pack ~/shared/python-tips.slice --prefix python/
+mindslice pack ~/mindslice/slices/python-tips.slice --prefix python/   # copies the notes under python/
+mindslice mount ~/mindslice/slices/python-tips.slice                   # and moves them: the copies leave overlay/
 ```
 
-This copies the agent's notes under `python/` into a standalone folder. Share it however you like (Git, a zip
-file); whoever receives it runs `mindslice mount python-tips.slice`.
+**Add to a slice you already have.** Say you mounted a team handbook as `@handbook`, and the agent has since
+corrected some of its notes and added to others. Bake those changes into a new version of the handbook:
+
+```bash
+mindslice bake @handbook --dry-run   # see which notes would move, and where the new version goes
+mindslice bake @handbook             # build it, and mount it as @handbook in place of the old one
+```
+
+The new version is a copy of the handbook with the agent's notes added, in `~/mindslice/slices/` (or wherever
+`--output` says). Your original folder is left exactly as it was, just no longer mounted: to go back, mount it
+again. By default, bake takes the agent's notes that build on that slice; `--prefix python/` picks notes by
+folder instead.
+
+A slice is just a folder of Markdown files, so you can also write one by hand and mount it, or let an agent with
+the [slice-builder skill](skills/slice-builder/SKILL.md) build one from your project's docs.
+
+### 7. Share a slice
+
+Share a slice folder however you like (Git, a zip file). Whoever receives it runs
+`mindslice mount python-tips.slice`.
 
 ### Going further
 

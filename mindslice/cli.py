@@ -1,4 +1,4 @@
-"""``mindslice`` command-line interface (all 9 primitives + ``init`` + ``mcp``)."""
+"""``mindslice`` command-line interface (all 9 primitives + ``boot``, ``bake``, ``init`` and ``mcp``)."""
 
 from __future__ import annotations
 
@@ -172,6 +172,16 @@ def build_parser() -> argparse.ArgumentParser:
     s.add_argument("--slice-version", default="0.1.0")
     s.add_argument("--alias")
 
+    s = sub.add_parser("bake", help="bake overlay cards into a new version of a mounted slice and mount it instead")
+    s.add_argument("alias", help="the mounted slice to bake into, e.g. @persona")
+    s.add_argument("--output", help="where the new slice goes (default: slices/<name>.slice, or <name>-2.slice ...); "
+                   "the old folder is left as it was")
+    s.add_argument("--prefix", help="bake the overlay cards under this path (default: the ones that extend, "
+                   "supersede or share a path with the slice's cards)")
+    s.add_argument("--tag", action="append", dest="tags", help="bake the overlay cards with this tag (repeatable)")
+    s.add_argument("--include-deps", action="store_true", help="also bake overlay cards the selection references")
+    s.add_argument("--dry-run", action="store_true", help="show what would move, write nothing")
+
     s = sub.add_parser("diff", help="show staged changes (or overlay overrides)")
     s.add_argument("--scope", choices=("staging", "overlay"), default="staging")
     s.add_argument("--patch", action="store_true", help="print a unified diff instead of JSON")
@@ -259,6 +269,9 @@ def _dispatch(ws: Workspace, args: argparse.Namespace, compact: bool) -> int:
     elif cmd == "pack":
         _emit(ws.pack(_cwd_path(args.output), args.prefix, args.tags, args.include_deps, name=args.name,
                       description=args.description, version=args.slice_version, alias=args.alias), compact)
+    elif cmd == "bake":
+        _emit(ws.bake(args.alias, _cwd_path(args.output) if args.output else None, args.prefix, args.tags,
+                      args.include_deps, args.dry_run), compact)
     elif cmd == "diff":
         result = ws.diff(args.scope)
         if args.patch:

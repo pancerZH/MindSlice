@@ -189,3 +189,11 @@ the cards you did find, before concluding the memory has nothing.
    that stay (`[[team/lead]]` -> `[[@team/team/lead]]`). The result lists `retired_overlay_cards`,
    `rebased_references`, `shadowing_overlay_cards` (copies kept: edited since the pack, or staged) and
    `broken_references` (from read-only slices). `--keep-overlay` keeps every copy.
+
+**Into a slice that is already mounted**, skip steps 4-6: `mindslice bake @team --dry-run` shows which
+overlay cards would move (by default the ones that extend or supersede a card of `@team`, or share a
+path with one; `--prefix` / `--tag` choose others) and where the new version goes. `mindslice bake @team`
+then builds that version (a copy of the slice plus those cards, `--output` to choose its path), mounts it
+as `@team` in place of the old folder, which it leaves untouched, and retires the overlay copies. Bake
+refuses an overlay card that extends the slice card at its own path (merge the two into one card first,
+step 2) and a card with a staged change. Check the result's `validation` before publishing the new folder.

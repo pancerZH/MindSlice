@@ -114,7 +114,7 @@ Add `load = "always"` to a card that every session should read at start (see
 Address forms: `@alias/path` targets one mount. A bare `path` passed **to the API** resolves to
 the highest-precedence mount; written **inside a card**, it resolves only within that card's own slice.
 
-## The 9 primitives
+## The primitives
 
 | Group | Primitive | Notes |
 | :-- | :-- | :-- |
@@ -126,6 +126,7 @@ the highest-precedence mount; written **inside a card**, it resolves only within
 | B | `mount(path, alias, precedence, role, retire_overlay=True)` / `unmount(alias)` | updates `mounts.toml` and the index; retires overlay copies the slice holds unchanged |
 | B | `validate(slice_path=None, rebuild_index=False)` | lints from disk; rebuild re-hashes everything |
 | B | `pack(output_path, prefix=None, tags=None, include_deps=False)` | deterministic dir / `.zip` / `.tar.gz` export |
+| B | `bake(alias, output_path=None, prefix=None, tags=None, include_deps=False, dry_run=False)` | a new version of a mounted slice with overlay cards baked in, mounted in its place; the old folder is untouched |
 | C | `diff(scope="staging"\|"overlay")` | structured summary + unified diffs |
 | C | `apply()` / `discard()` | precondition-checked, journaled, crash-recoverable |
 
@@ -283,7 +284,22 @@ exported) are removed from `@overlay`, so they can't shadow the slice or turn it
 replacements, and links to them from overlay cards that stay are rewritten (`[[db/pool]]` ->
 `[[@db/db/pool]]`). `mount()` reports `retired_overlay_cards` and `rebased_references`, keeps and lists as
 `shadowing_overlay_cards` the copies edited since the pack or with a staged change, and lists references from
-read-only slices it can't rewrite as `broken_references`. `retire_overlay=False` (`--keep-overlay`) keeps them all. [`prompt-template.md`](../skills/slice-builder/prompt-template.md) is the same
+read-only slices it can't rewrite as `broken_references`. `retire_overlay=False` (`--keep-overlay`) keeps them all.
+
+To add to a slice that is already mounted, `bake(alias)` (`mindslice bake @alias`) builds its next version:
+a copy of the slice's folder (`.git` excluded) plus the overlay cards, at `output_path` (default
+`<workspace>/slices/<name>.slice`, or `<name>-2.slice`, `-3` ... when taken). The new folder takes over the
+mount with the same alias, precedence and role, so every `@alias/...` reference keeps resolving; the overlay
+copies are retired as on `mount()`; and the old folder is left exactly as it was, no longer mounted (mount it
+again to go back). A `slice.toml` version of the form `1.2.3` becomes `1.2.4`. Without
+`prefix` / `tags` it takes the overlay cards that build on the slice (they extend or supersede one of its
+cards, or sit at the same path as one); `include_deps` pulls in overlay cards they reference, as for
+`pack()`. In the baked cards, references to the slice and to each other become slice-relative, references
+to other mounts stay qualified and are added to `slice.toml` `dependencies`. A card that supersedes or
+shadows the slice card at its own path replaces that file; one that *extends* it there would lose the
+baseline, so bake refuses it (`bake_conflict`) until the two are merged into one card, and it also refuses
+cards with a staged change. Nothing is written in either case, and `dry_run` (`--dry-run`) only reports the
+plan, including the output path. [`prompt-template.md`](../skills/slice-builder/prompt-template.md) is the same
 guidance as a portable prompt.
 
 ## Notes on interpretation
