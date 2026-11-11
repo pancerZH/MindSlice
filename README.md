@@ -36,10 +36,22 @@ What you can use it for:
 ```bash
 git clone https://github.com/pancerZH/MindSlice.git
 cd MindSlice
-pip install -e .
+pipx install -e .
 ```
 
-This installs the `mindslice` command.
+This installs the `mindslice` command. If you don't have pipx yet, install it first (on Debian or Ubuntu:
+`sudo apt install pipx && pipx ensurepath`, then open a new terminal).
+
+Without pipx, use a virtual environment instead:
+
+```bash
+python3 -m venv .venv
+.venv/bin/pip install -e .
+export PATH="$PWD/.venv/bin:$PATH"   # add this line to ~/.bashrc to keep it in new terminals
+```
+
+A plain `pip install` fails on many Linux systems (`externally-managed-environment`), because they keep
+the system Python for the system's own packages.
 
 ### 1. Create your memory
 
