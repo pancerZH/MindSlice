@@ -42,9 +42,12 @@ Clone https://github.com/pancerZH/MindSlice.git (or use this repo if already clo
 
 Following [`skills/mindslice-setup/SKILL.md`](skills/mindslice-setup/SKILL.md), the agent will:
 
-1. Install `mindslice` and register its MCP server **plus** automatic session-start loading for your specific harness (such as a `SessionStart` hook when the client lazy-loads MCP instructions), so you don't have to paste a startup prompt into every chat.
-2. Ask how you want to start: **connect an existing MindSlice workspace or `.slice`**, **mount existing Markdown notes / distill project docs**, or **start from scratch** by answering 2–3 plain-language questions about your communication preferences, tools and projects.
+1. Install `mindslice` and confirm **where to store your memory workspace** (default `~/mindslice`), **what to name the MCP instance** (default `mindslice`, or e.g. `mindslice-work` / `mindslice-rpg` if you keep separate memories), and **how you want to seed it**: connect an existing workspace/`.slice`, mount existing Markdown notes / distill project docs, or start from scratch with 2–3 plain-language questions.
+2. Register the MCP server **plus** automatic session-start loading for your specific harness (such as a `SessionStart` hook when the client lazy-loads MCP instructions), so you don't have to paste a startup prompt into every chat.
 3. Create and validate your initial cards so your next session starts with your memory ready.
+
+To disconnect or uninstall later, paste:
+`Read skills/mindslice-setup/uninstall.md in the MindSlice repo and revert my MindSlice setup` (the agent will ask whether to keep or delete your memory workspace folder).
 
 ---
 
@@ -322,8 +325,9 @@ Share a slice folder however you like (Git, a zip file). Whoever receives it run
 
 - [Reference](docs/reference.md): the note format, every command and option, the MCP tools, and how search and
   replacement work.
-- [The mindslice-setup skill](skills/mindslice-setup/SKILL.md): lets an agent install MindSlice, configure MCP
-  and session-start loading for its own harness, and walk you through seeding initial memory.
+- [The mindslice-setup skill](skills/mindslice-setup/SKILL.md) (and [uninstall guide](skills/mindslice-setup/uninstall.md)):
+  lets an agent install MindSlice, configure MCP and session-start loading for its own harness, walk you through
+  seeding initial memory, or cleanly revert settings later.
 - [The slice-builder skill](skills/slice-builder/SKILL.md): lets an agent turn project docs into a
   well-organized slice and keep it tidy.
 - [Evaluations](docs/evaluations.md): benchmark results, and where MindSlice stops.

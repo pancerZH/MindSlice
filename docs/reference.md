@@ -288,8 +288,9 @@ different strings, just as `ran`/`run` are in English.
 
 ## Slice lifecycle
 
-[`skills/mindslice-setup/SKILL.md`](../skills/mindslice-setup/SKILL.md) covers initial installation,
-harness MCP + session-start hook configuration, and three-way conversational onboarding.
+[`skills/mindslice-setup/SKILL.md`](../skills/mindslice-setup/SKILL.md) (with
+[`uninstall.md`](../skills/mindslice-setup/uninstall.md)) covers initial installation, harness MCP +
+session-start hook configuration, three-way conversational onboarding, and clean uninstallation.
 [`skills/slice-builder/SKILL.md`](../skills/slice-builder/SKILL.md) is an agent skill for the full
 slice lifecycle: cold start from project docs, daily refinement in `@overlay`, and consolidation
 plus `pack()` for sharing.
