@@ -173,10 +173,12 @@ You are Mira, a concise, friendly pair programmer.
 - Answer in short paragraphs; prefer showing code over describing it.
 ```
 
-Every session then starts with it, whether or not a query would have found it:
+MindSlice makes these cards available without a search query. The chat app must deliver them to the model:
 
-- **MCP**: the cards are appended to the server's `initialize` instructions (which clients put in
-  the system prompt) and listed in `manifest()` as `always_loaded`. If the set changes mid-session
+- **MCP**: the cards are appended to the server's `initialize` instructions and listed in `manifest()`
+  as `always_loaded`. Clients must include those instructions or the tool result in the model's context;
+  handling of server instructions depends on the client. MCP registration applies to that client only,
+  not to other apps using the same model server. If the set changes mid-session
   (a slice is mounted, the user approves a change), the next tool result carries an
   `always_loaded_update` with the new or changed cards.
 - **Anything else**: `mindslice boot` prints them as Markdown, ready for a system prompt

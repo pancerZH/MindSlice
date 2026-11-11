@@ -12,7 +12,8 @@ up and send it to a friend.
   separate folder of its own, and MindSlice never edits your folders: when you want to keep the agent's notes,
   it builds a new version next to them.
 - **Some memory is always on.** Mark a note `load = "always"` (a persona, the language you want replies in,
-  rules for every answer) and the agent reads it at the start of every conversation. The agent can't change
+  rules for every answer) and MindSlice supplies it as startup context to your connected agent. The chat app
+  must pass that context to the model (see step 4). The agent can't change
   these notes by itself: each change waits for your approval.
 - **Old facts step aside.** When something changes, the agent records the new fact as replacing the old one,
   so the next search finds the current answer first.
@@ -82,7 +83,7 @@ If the app can't find the command, use the full path that `which mindslice` prin
 Then just talk to your agent. Tell it "Remember that I use uv, not pip", and in a later conversation ask "How
 do I install packages in my projects?"
 
-#### With a local model (Strata)
+#### With a local model through an agent app (Strata)
 
 MindSlice doesn't care which model the agent runs on, so a model you serve yourself works too. With
 Strata serving a local model (for example Qwen):
@@ -101,6 +102,64 @@ claude mcp add mindslice -- mindslice -w ~/mindslice mcp --stage-writes
 ```
 
 Every change the agent makes then waits for you in step 5.
+
+**Chat in the app you connected.** `claude mcp add` connects MindSlice to Claude Code only. Strata's web
+chat has its own MCP configuration (below), even when both apps use the same Qwen model.
+`--stage-writes` controls review of memory writes; it does not connect other apps or control loading of
+existing notes.
+
+#### With Strata's web chat
+
+Strata supports this directly; see its [Tools from MCP servers guide](https://github.com/Niko1221/Strata/blob/main/docs/DETAILS.md#tools-from-mcp-servers).
+The steps below were verified with Strata Terminal 0.1.58 and its Qwen web chat on Linux.
+
+**1. Find the model configuration.** For a source installation, use `strata-<model>.json`. For an
+installed Terminal launch, look at `source_config` in the matching profile under
+`~/.config/strata/profiles/`. For example, a `launch-iq3_s-256k` profile points to
+`~/.local/state/strata/launch/iq3_s-256k.json`.
+
+Terminal 0.1.58 can regenerate that launch file from the installed model configuration. Add the MCP
+entry to both the current launch file and its base model file (for example,
+`~/.local/share/strata/install/strata-iq3_s.json`) so a future `strata launch` keeps it. Paths and model
+names depend on your installation. Back up each file before editing it.
+
+**2. Add MindSlice.** Merge this block into those JSON files, keeping the existing settings and any
+other MCP servers. Replace `command` with the full path printed by `which mindslice`, and replace the
+workspace path with the folder you initialized in step 1 above. Use absolute paths in the JSON:
+
+```json
+{
+  "mcp_servers": {
+    "mindslice": {
+      "command": "/home/you/.local/bin/mindslice",
+      "args": ["-w", "/home/you/mindslice", "mcp", "--stage-writes"]
+    }
+  }
+}
+```
+
+**3. Restart and check the connection.** Stop the running Strata server, then start it with your usual
+launch command. Refresh the web page and enable **Use tools from MCP servers** in chat settings.
+In **Monitor**, MindSlice should be connected with four tools: `manifest`, `search`, `read`, and `write`.
+Editing a configuration file or refreshing the page alone does not reload the server's MCP configuration.
+
+**4. Load your preferences.** Strata 0.1.58's MCP client loads tools but does not forward MCP
+`initialize.instructions` to the model. Begin each new chat with:
+
+> Call `mindslice__manifest` first and follow the preferences in `always_loaded` for this conversation.
+
+Confirm that an actual tool call appears in the chat and its result includes your notes. This retrieves
+the current notes; `load = "always"` alone cannot make an app inject them automatically. The model can
+then use MindSlice's search, read and write tools, with writes staged for review in step 5 below.
+
+**If the model says the tool is unavailable:** check **Monitor** first. Strata's `/mcp` endpoint also
+reports the loaded servers and tool count; `{"servers": [], "tools": 0}` means the running server has no
+MCP tools configured. Check the active model's configuration and restart Strata. If MindSlice is listed
+but failed to start, check the server log and the command/workspace paths. If it is connected with four
+tools, refresh the page, enable the MCP toggle and retry in a new chat.
+
+If the tool works but your note is missing, run `mindslice -w /your/workspace boot` and check that the
+same workspace path is configured above. Save the note as a `.md` file under its `overlay/` directory.
 
 ### 3. Add notes you already have
 
@@ -124,9 +183,24 @@ load = "always"
 Reply in Simplified Chinese, keep answers short, and show code instead of describing it.
 ```
 
-The agent now reads this note at the start of every conversation. To see what it will read, run
-`mindslice boot`. That command also works without MCP: start Claude Code with
-`claude --append-system-prompt "$(mindslice boot)"`, or paste its output into any chat.
+Check that MindSlice finds the note in the workspace you connected:
+
+```bash
+mindslice -w ~/mindslice boot
+```
+
+The output should contain your note. Save it as a `.md` file under that workspace's `overlay/` directory;
+if your workspace is elsewhere, use that path in both the MCP configuration and the command above.
+
+Over MCP, MindSlice includes these notes in its startup instructions and in the `manifest` tool result.
+The app must pass the instructions or tool result to the model; registering an MCP server alone does not
+guarantee that every app does this. Start a new session in the connected app after setup. If the note is
+missing from the model's context, ask the agent to call MindSlice's `manifest` tool and read `always_loaded`.
+
+Without MCP, start Claude Code with
+`claude --append-system-prompt "$(mindslice -w ~/mindslice boot)"`, or copy the boot output into your web
+chat's system prompt if it has one, or into the first message of a new conversation. This supplies the
+notes for that conversation only; it does not enable memory search, saving, or automatic updates.
 
 You can also just tell the agent "From now on, always answer in Chinese". The agent can then save a note like
 this one, but the note waits for your approval (next step).
