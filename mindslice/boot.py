@@ -80,6 +80,13 @@ def pending_approval(ws: "Workspace") -> list[dict[str, Any]]:
     return out
 
 
+def is_empty_workspace(ws: "Workspace", table: "MountTable") -> bool:
+    """True when only ``@overlay`` is mounted, no cards are indexed, and nothing is staged."""
+    if len(table.all()) > 1 or ws.staging.entries():
+        return False
+    return ws.index.conn.execute("SELECT 1 FROM cards LIMIT 1").fetchone() is None
+
+
 def snapshot(ws: "Workspace", table: "MountTable") -> dict[str, Any]:
     """The boot set for a caller that already holds the workspace lock."""
     entries, _ = collect(query._Ctx(ws, table, True))
@@ -87,6 +94,8 @@ def snapshot(ws: "Workspace", table: "MountTable") -> dict[str, Any]:
     pending = pending_approval(ws)
     if pending:
         out["pending_approval"] = pending
+    if not entries and is_empty_workspace(ws, table):
+        out["empty_workspace"] = True
     return out
 
 
@@ -160,4 +169,14 @@ def protection_reason(
     return None
 
 
-__all__ = ["boot", "snapshot", "collect", "render_markdown", "protection_reason", "pending_approval", "fingerprint", "HEADER"]
+__all__ = [
+    "boot",
+    "snapshot",
+    "collect",
+    "is_empty_workspace",
+    "render_markdown",
+    "protection_reason",
+    "pending_approval",
+    "fingerprint",
+    "HEADER",
+]

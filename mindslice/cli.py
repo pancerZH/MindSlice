@@ -110,6 +110,8 @@ def build_parser() -> argparse.ArgumentParser:
 
     s = sub.add_parser("boot", help="print the always-loaded cards (load = \"always\") as Markdown for a system prompt")
     s.add_argument("--json", action="store_true", help="JSON instead of Markdown")
+    s.add_argument("--mcp-instructions", action="store_true",
+                   help="include MCP server instructions and empty-workspace hint (for session-start hooks)")
 
     s = sub.add_parser("search", help="associative BM25 search returning card previews")
     s.add_argument("query")
@@ -239,9 +241,19 @@ def _dispatch(ws: Workspace, args: argparse.Namespace, compact: bool) -> int:
     elif cmd == "boot":
         result = ws.boot()
         if args.json:
+            if args.mcp_instructions:
+                from .mcp_server import format_instructions
+
+                result = dict(result, instructions=format_instructions(result))
             _emit(result, compact)
         else:
-            sys.stdout.write(render_boot(result["cards"]))
+            if args.mcp_instructions:
+                from .mcp_server import format_instructions
+
+                text = format_instructions(result)
+                sys.stdout.write(text if text.endswith("\n") else text + "\n")
+            else:
+                sys.stdout.write(render_boot(result["cards"]))
             for item in result.get("pending_approval", []):
                 sys.stderr.write(f"awaiting approval: @overlay/{item['id']} ({item['reason']}); "
                                  "review with `mindslice diff`, approve with `mindslice apply`\n")

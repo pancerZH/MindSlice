@@ -122,7 +122,7 @@ the highest-precedence mount; written **inside a card**, it resolves only within
 | A (MCP) | `search(query, source=None, tags=None, k=10, offset=0, max_neighbors=3, follow_supersedes=True)` | `score = -bm25(10,5,3,2,1) > 0`; supersession redirect; 240-char summaries |
 | A (MCP) | `read(address, follow_supersedes=True, max_backlinks=10, backlinks_offset=0, max_extensions=5, extensions_offset=0)` | forwarding, extends composition, shadows, backlinks, `sha256` |
 | A (MCP) | `write(id, op="create"\|"replace"\|"append"\|"delete", content, summary, title, tags, aliases, extends, supersedes, stage=None, if_match=None, load=None)` | overlay only; cycle checks; verified TOML round-trip; `affected_backlinks` / `affected_extensions` when it supersedes or deletes; changes to always-loaded cards are staged |
-| A | `boot()` | the always-loaded cards, resolved and composed (also in `manifest()`; `mindslice boot` prints Markdown) |
+| A | `boot()` | the always-loaded cards, resolved and composed (also in `manifest()`; `mindslice boot` prints Markdown; `--mcp-instructions` includes MCP server instructions and the empty-workspace hint) |
 | B | `mount(path, alias, precedence, role, retire_overlay=True)` / `unmount(alias)` | updates `mounts.toml` and the index; retires overlay copies the slice holds unchanged |
 | B | `validate(slice_path=None, rebuild_index=False)` | lints from disk; rebuild re-hashes everything |
 | B | `pack(output_path, prefix=None, tags=None, include_deps=False)` | deterministic dir / `.zip` / `.tar.gz` export |
@@ -183,9 +183,15 @@ MindSlice makes these cards available without a search query. The chat app must 
 - **MCP**: the cards are appended to the server's `initialize` instructions and listed in `manifest()`
   as `always_loaded`. Clients must include those instructions or the tool result in the model's context;
   handling of server instructions depends on the client. MCP registration applies to that client only,
-  not to other apps using the same model server. If the set changes mid-session
-  (a slice is mounted, the user approves a change), the next tool result carries an
+  not to other apps using the same model server. When a harness lazy-loads or drops `initialize`
+  instructions, wire `mindslice -w /path/to/workspace boot --mcp-instructions` into its session-start
+  hook (see [`skills/mindslice-setup/SKILL.md`](../skills/mindslice-setup/SKILL.md)). If the set changes
+  mid-session (a slice is mounted, the user approves a change), the next tool result carries an
   `always_loaded_update` with the new or changed cards.
+- **Empty workspace onboarding**: when only `@overlay` is mounted, no cards are indexed, and nothing is
+  staged (`boot()` sets `empty_workspace: true`), MCP `initialize` instructions (and `mindslice boot
+  --mcp-instructions`) append an `# Empty memory workspace` cold-start hint, and `manifest()` includes
+  `onboarding_hint`. Both disappear as soon as the first card is written, staged, or mounted.
 - **Anything else**: `mindslice boot` prints them as Markdown, ready for a system prompt
   (`claude --append-system-prompt "$(mindslice boot)"`, or paste into any chat). `boot()` in Python.
 - **`mount()`** lists the always-loaded cards the new slice brings.
@@ -282,8 +288,10 @@ different strings, just as `ran`/`run` are in English.
 
 ## Slice lifecycle
 
+[`skills/mindslice-setup/SKILL.md`](../skills/mindslice-setup/SKILL.md) covers initial installation,
+harness MCP + session-start hook configuration, and three-way conversational onboarding.
 [`skills/slice-builder/SKILL.md`](../skills/slice-builder/SKILL.md) is an agent skill for the full
-lifecycle. It covers cold start from project docs, daily refinement in `@overlay`, and consolidation
+slice lifecycle: cold start from project docs, daily refinement in `@overlay`, and consolidation
 plus `pack()` for sharing.
 
 Mounting a packed slice finishes the move: overlay cards the slice holds unchanged (exactly what `pack()`

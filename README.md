@@ -13,7 +13,7 @@ up and send it to a friend.
   it builds a new version next to them.
 - **Some memory is always on.** Mark a note `load = "always"` (a persona, the language you want replies in,
   rules for every answer) and MindSlice supplies it as startup context to your connected agent. The chat app
-  must pass that context to the model (see step 4). The agent can't change
+  must pass that context to the model (see step 2 and step 3). The agent can't change
   these notes by itself: each change waits for your approval.
 - **Old facts step aside.** When something changes, the agent records the new fact as replacing the old one,
   so the next search finds the current answer first.
@@ -32,7 +32,27 @@ What you can use it for:
 
 ## How to use
 
-### Install
+### Quick start: let your agent set it up
+
+Paste this into your coding agent (Claude Code, Antigravity, Cursor, Codex, or any agent with terminal access):
+
+```text
+Clone https://github.com/pancerZH/MindSlice.git (or use this repo if already cloned), read skills/mindslice-setup/SKILL.md, install MindSlice, connect it to this agent with automatic session-start loading, and walk me through seeding my initial memory.
+```
+
+Following [`skills/mindslice-setup/SKILL.md`](skills/mindslice-setup/SKILL.md), the agent will:
+
+1. Install `mindslice` and register its MCP server **plus** automatic session-start loading for your specific harness (such as a `SessionStart` hook when the client lazy-loads MCP instructions), so you don't have to paste a startup prompt into every chat.
+2. Ask how you want to start: **connect an existing MindSlice workspace or `.slice`**, **mount existing Markdown notes / distill project docs**, or **start from scratch** by answering 2–3 plain-language questions about your communication preferences, tools and projects.
+3. Create and validate your initial cards so your next session starts with your memory ready.
+
+---
+
+### Manual setup
+
+If you prefer to run the commands yourself (or are connecting a web chat UI without shell access):
+
+#### Install
 
 ```bash
 git clone https://github.com/pancerZH/MindSlice.git
@@ -54,36 +74,85 @@ export PATH="$PWD/.venv/bin:$PATH"   # add this line to ~/.bashrc to keep it in 
 A plain `pip install` fails on many Linux systems (`externally-managed-environment`), because they keep
 the system Python for the system's own packages.
 
-### 1. Create your memory
+#### 1. Create or import your memory
+
+Initialize a workspace folder (or reuse one you already have):
 
 ```bash
 mindslice init ~/mindslice
 export MINDSLICE_WORKSPACE=~/mindslice   # tells the commands below where your memory is
 ```
 
-Your memory is now the folder `~/mindslice`. What the agent learns goes into `~/mindslice/overlay/`, one
-Markdown file per topic.
+Your memory is now `~/mindslice`. What the agent learns goes into `~/mindslice/overlay/`, one Markdown file per
+topic. From here there are three ways to seed it:
 
-### 2. Connect your agent
+- **Mount notes you already have.** Point MindSlice at any folder of Markdown files (Obsidian notes, a team
+  handbook, a `docs/` folder); it indexes them as they are and never edits them:
+  ```bash
+  mindslice mount ~/notes   # mounted read-only as @notes; mount as many folders as you like
+  ```
+  To distill a codebase's `README.md`, `CLAUDE.md` and `docs/` into a structured slice instead, point an agent
+  at the [slice-builder skill](skills/slice-builder/SKILL.md).
+- **Mount a shared `.slice`.** If someone sent you a slice folder, run `mindslice mount path/to/topic.slice`.
+- **Start from scratch, in conversation.** Leave `~/mindslice` empty and connect your agent (step 2). When a
+  workspace has no cards or mounted slices yet, MindSlice includes a cold-start onboarding prompt in its MCP
+  startup instructions (and in `manifest()`), so you can greet your agent and describe your reply preferences,
+  preferred tools, and current projects in plain words — the agent formats and writes the cards for you, and the
+  onboarding prompt disappears once your first card is saved.
 
-For Claude Code:
+#### 2. Connect your agent
+
+**Claude Code** (forwards MindSlice's startup instructions and always-loaded notes automatically):
 
 ```bash
-claude mcp add mindslice -- mindslice -w ~/mindslice mcp
+claude mcp add --scope user mindslice -- mindslice -w ~/mindslice mcp
 ```
 
-For other apps that support MCP, add this to their MCP settings (with your own path):
+**Google Antigravity (`agy` CLI / IDE)** — add MindSlice to `~/.gemini/config/mcp_config.json` (use absolute
+paths; run `which mindslice` for the binary path):
 
 ```json
-{"mcpServers": {"mindslice": {"command": "mindslice", "args": ["-w", "/home/you/mindslice", "mcp"]}}}
+{
+  "mcpServers": {
+    "mindslice": {
+      "command": "/home/you/.local/bin/mindslice",
+      "args": ["-w", "/home/you/mindslice", "mcp"]
+    }
+  }
+}
 ```
 
-If the app can't find the command, use the full path that `which mindslice` prints.
+Because Antigravity lazy-loads MCP server instructions on demand, add a `SessionStart` hook in
+`~/.gemini/config/hooks.json` so every new session receives MindSlice's instructions and `load = "always"` notes
+automatically without typing a manual startup prompt:
+
+```json
+{
+  "mindslice-boot": {
+    "SessionStart": [
+      {
+        "type": "command",
+        "command": "python3 -c 'import json, subprocess; out = subprocess.run([\"/home/you/.local/bin/mindslice\", \"-w\", \"/home/you/mindslice\", \"boot\", \"--mcp-instructions\"], capture_output=True, text=True).stdout.strip(); print(json.dumps({\"injectSteps\": [{\"systemMessage\": {\"systemMessage\": out}}]} if out else {}))'"
+      }
+    ]
+  }
+}
+```
+
+**Other apps that support MCP** — add this to their MCP settings (with absolute paths):
+
+```json
+{"mcpServers": {"mindslice": {"command": "/home/you/.local/bin/mindslice", "args": ["-w", "/home/you/mindslice", "mcp"]}}}
+```
+
+If your app does not automatically inject MCP `initialize.instructions` into the model's context, wire
+`mindslice -w /home/you/mindslice boot --mcp-instructions` into its startup hook / system prompt, or add a one-line
+global rule instructing the agent to call MindSlice's `manifest` tool at session start.
 
 Then just talk to your agent. Tell it "Remember that I use uv, not pip", and in a later conversation ask "How
 do I install packages in my projects?"
 
-#### With a local model through an agent app (Strata)
+##### With a local model through an agent app (Strata)
 
 MindSlice doesn't care which model the agent runs on, so a model you serve yourself works too. With
 Strata serving a local model (for example Qwen):
@@ -101,14 +170,14 @@ they write under your review, add `--stage-writes` when you connect MindSlice:
 claude mcp add mindslice -- mindslice -w ~/mindslice mcp --stage-writes
 ```
 
-Every change the agent makes then waits for you in step 5.
+Every change the agent makes then waits for you in step 4.
 
 **Chat in the app you connected.** `claude mcp add` connects MindSlice to Claude Code only. Strata's web
 chat has its own MCP configuration (below), even when both apps use the same Qwen model.
 `--stage-writes` controls review of memory writes; it does not connect other apps or control loading of
 existing notes.
 
-#### With Strata's web chat
+##### With Strata's web chat
 
 Strata supports this directly; see its [Tools from MCP servers guide](https://github.com/Niko1221/Strata/blob/main/docs/DETAILS.md#tools-from-mcp-servers).
 The steps below were verified with Strata Terminal 0.1.58 and its Qwen web chat on Linux.
@@ -150,7 +219,7 @@ Editing a configuration file or refreshing the page alone does not reload the se
 
 Confirm that an actual tool call appears in the chat and its result includes your notes. This retrieves
 the current notes; `load = "always"` alone cannot make an app inject them automatically. The model can
-then use MindSlice's search, read and write tools, with writes staged for review in step 5 below.
+then use MindSlice's search, read and write tools, with writes staged for review in step 4 below.
 
 **If the model says the tool is unavailable:** check **Monitor** first. Strata's `/mcp` endpoint also
 reports the loaded servers and tool count; `{"servers": [], "tools": 0}` means the running server has no
@@ -161,19 +230,14 @@ tools, refresh the page, enable the MCP toggle and retry in a new chat.
 If the tool works but your note is missing, run `mindslice -w /your/workspace boot` and check that the
 same workspace path is configured above. The note must be a `.md` file in `overlay/` or a mounted slice.
 
-### 3. Add notes you already have
+#### 3. Tell the agent what it should always know
 
-```bash
-mindslice mount ~/notes
-```
+You don't have to write standing notes by hand: just tell your connected agent *"From now on, reply in Simplified
+Chinese, keep answers short, and show code instead of describing it."* The agent saves a `load = "always"` card
+for your approval (step 4).
 
-Any folder of Markdown files works as it is, and MindSlice only reads it. Each mounted folder gets a short name
-(here `@notes`). Mount as many folders as you like.
-
-### 4. Tell the agent what it should always know
-
-Always-loaded notes can live in `overlay/` or **any mounted slice**. For a quick start, create
-`~/mindslice/overlay/about-me.md`:
+Because everything is plain Markdown, you can also create or edit standing notes yourself in `overlay/` or **any
+mounted slice** — for example `~/mindslice/overlay/about-me.md`:
 
 ```markdown
 +++
@@ -184,17 +248,14 @@ load = "always"
 Reply in Simplified Chinese, keep answers short, and show code instead of describing it.
 ```
 
-Check that MindSlice finds the note in the workspace you connected:
+Check what MindSlice supplies at session start:
 
 ```bash
-mindslice -w ~/mindslice boot
+mindslice -w ~/mindslice boot                     # just the always-loaded cards, as Markdown
+mindslice -w ~/mindslice boot --mcp-instructions  # full MCP startup instructions + always-loaded cards
 ```
 
-The output should contain your note. If your workspace is elsewhere, use that path in both the MCP
-configuration and the command above.
-
-To keep your preferences in a reusable slice instead, create a folder and save the same note as
-`~/mindslice/slices/persona.slice/about-me.md`:
+To keep your preferences in a reusable slice instead, save the note under a slice folder and **mount it once**:
 
 ```bash
 mkdir -p ~/mindslice/slices/persona.slice
@@ -203,28 +264,18 @@ mindslice -w ~/mindslice mount ~/mindslice/slices/persona.slice --alias persona
 mindslice -w ~/mindslice boot
 ```
 
-Putting a folder under `slices/` does not activate it: **mount it once** to include its cards. A slice
-can also live elsewhere on disk, and a plain folder of Markdown files needs no special manifest.
-If relocating an existing note, remove its old overlay copy after confirming the mounted copy appears
-in `boot`, so the same instructions are not loaded twice. Agent writes still go to `overlay/`; mounted
-slices are read-only to the agent.
+Putting a folder under `slices/` does not activate it until mounted. A slice can also live elsewhere on disk, and
+a plain folder of Markdown files needs no special manifest. If relocating an existing note, remove its old overlay
+copy after confirming the mounted copy appears in `boot`, so the same instructions are not loaded twice. Agent
+writes still go to `overlay/`; mounted slices are read-only to the agent.
 
-Over MCP, MindSlice includes these notes in its startup instructions and in the `manifest` tool result.
-The app must pass the instructions or tool result to the model; registering an MCP server alone does not
-guarantee that every app does this. Start a new session in the connected app after setup. If the note is
-missing from the model's context, ask the agent to call MindSlice's `manifest` tool and read `always_loaded`.
+Without MCP, start Claude Code with `claude --append-system-prompt "$(mindslice -w ~/mindslice boot)"`, or copy
+the `boot` output into your web chat's system prompt or Saved Info. That supplies standing notes for the chat,
+without live search or write-back.
 
-Without MCP, start Claude Code with
-`claude --append-system-prompt "$(mindslice -w ~/mindslice boot)"`, or copy the boot output into your web
-chat's system prompt if it has one, or into the first message of a new conversation. This supplies the
-notes for that conversation only; it does not enable memory search, saving, or automatic updates.
+#### 4. Review what the agent wants to change
 
-You can also just tell the agent "From now on, always answer in Chinese". The agent can then save a note like
-this one, but the note waits for your approval (next step).
-
-### 5. Review what the agent wants to change
-
-Changes to always-on notes wait in a review area until you decide:
+Changes to always-on notes (and all writes when `--stage-writes` is enabled) wait in a review area until you decide:
 
 ```bash
 mindslice diff --patch    # see the proposed changes
@@ -235,7 +286,7 @@ mindslice discard         # or throw them away
 Everything else the agent writes is saved directly as Markdown in `~/mindslice/overlay/`. You can open, edit or
 delete any file there, and MindSlice picks up your changes automatically.
 
-### 6. Turn what the agent learned into slices
+#### 5. Turn what the agent learned into slices
 
 Over time the agent's notes pile up in `~/mindslice/overlay/`. Every so often, move the good ones into slices.
 
@@ -262,7 +313,7 @@ folder instead.
 A slice is just a folder of Markdown files, so you can also write one by hand and mount it, or let an agent with
 the [slice-builder skill](skills/slice-builder/SKILL.md) build one from your project's docs.
 
-### 7. Share a slice
+#### 6. Share a slice
 
 Share a slice folder however you like (Git, a zip file). Whoever receives it runs
 `mindslice mount python-tips.slice`.
@@ -271,6 +322,8 @@ Share a slice folder however you like (Git, a zip file). Whoever receives it run
 
 - [Reference](docs/reference.md): the note format, every command and option, the MCP tools, and how search and
   replacement work.
+- [The mindslice-setup skill](skills/mindslice-setup/SKILL.md): lets an agent install MindSlice, configure MCP
+  and session-start loading for its own harness, and walk you through seeding initial memory.
 - [The slice-builder skill](skills/slice-builder/SKILL.md): lets an agent turn project docs into a
   well-organized slice and keep it tidy.
 - [Evaluations](docs/evaluations.md): benchmark results, and where MindSlice stops.

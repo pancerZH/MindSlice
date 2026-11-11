@@ -177,6 +177,27 @@ INSTRUCTIONS = (
     "until the user approves them, so tell the user."
 )
 
+EMPTY_WORKSPACE_HINT = (
+    "# Empty memory workspace\n\n"
+    "This MindSlice workspace has no cards or mounted slices yet. If the user is greeting you, testing memory, or "
+    "asking how to get started, let them know MindSlice is connected and invite them to seed it in plain language: "
+    "(1) how they want you to reply (language, tone, standing rules — record with load=\"always\" and remind them to "
+    "approve with `mindslice apply`), (2) their tools, conventions or active projects (record as focused topic cards "
+    "in @overlay), or (3) an existing Markdown notes/docs folder or `.slice` to mount via `mindslice mount` (or "
+    "distill with the slice-builder skill if you have shell access). If the user is asking a concrete task instead, "
+    "handle the task first and record durable preferences or lessons along the way."
+)
+
+
+def format_instructions(snap: dict[str, Any]) -> str:
+    """Render MCP server instructions from a ``boot()`` snapshot."""
+    text = render_markdown(snap["cards"])
+    if text:
+        return INSTRUCTIONS + "\n\n" + text
+    if snap.get("empty_workspace"):
+        return INSTRUCTIONS + "\n\n" + EMPTY_WORKSPACE_HINT + "\n"
+    return INSTRUCTIONS
+
 
 class MCPServer:
     def __init__(self, ws: Workspace, stage_writes: bool = False) -> None:
@@ -194,14 +215,13 @@ class MCPServer:
         self._boot_seen = {c["address"]: fingerprint(c) for c in cards}
 
     def instructions(self) -> str:
-        """Server instructions with the always-loaded cards appended (clients put them in the system prompt)."""
+        """Server instructions with always-loaded cards (or a cold-start hint when empty) appended."""
         try:
-            cards = self._boot_cards()
+            snap = self.ws.boot()
         except MindSliceError:
             return INSTRUCTIONS
-        self._mark_seen(cards)
-        text = render_markdown(cards)
-        return INSTRUCTIONS + ("\n\n" + text if text else "")
+        self._mark_seen(snap["cards"])
+        return format_instructions(snap)
 
     def boot_update(self) -> dict[str, Any] | None:
         """Always-loaded cards added or changed since the agent last saw the set (and those removed)."""

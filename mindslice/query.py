@@ -132,6 +132,13 @@ def manifest(
                 result["always_loaded"] = boot["cards"]
             if boot.get("pending_approval"):
                 result["staging"]["awaiting_approval"] = boot["pending_approval"]
+            if boot.get("empty_workspace"):
+                result["onboarding_hint"] = (
+                    "Workspace is empty (no cards or mounted slices). If the user is greeting you, testing memory, or "
+                    "asking how to start, invite them to share their reply preferences (write with load='always'), "
+                    "preferred tools and project conventions (write into @overlay), or an existing notes/docs folder "
+                    "to mount. Otherwise answer their request first and record durable preferences along the way."
+                )
         return result
 
 

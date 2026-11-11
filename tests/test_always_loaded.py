@@ -6,7 +6,7 @@ import json
 
 from mindslice import FrontmatterError
 from mindslice.card import parse_card
-from mindslice.mcp_server import MCPServer
+from mindslice.mcp_server import EMPTY_WORKSPACE_HINT, INSTRUCTIONS, MCPServer
 
 from .helpers import WorkspaceTestCase, card_text
 from .test_interfaces import run_cli
@@ -187,3 +187,63 @@ class MCPAlwaysLoadedTests(AlwaysLoadedCase):
             "name": "write", "arguments": {"id": "emoji", "summary": "May use emoji.", "extends": ["@persona/tone"]}}})
         payload = json.loads(res["result"]["content"][0]["text"])
         self.assertIn("extends @persona/tone", payload["requires_approval"])
+
+
+class OnboardingTests(WorkspaceTestCase):
+    """Empty workspaces surface a cold-start onboarding hint until a card is written, staged, or mounted."""
+
+    def test_empty_workspace_surfaces_onboarding_and_retires_once_seeded(self):
+        boot = self.ws.boot()
+        self.assertEqual(boot["cards"], [])
+        self.assertTrue(boot["empty_workspace"])
+
+        manifest = self.ws.manifest()
+        self.assertIn("onboarding_hint", manifest)
+        self.assertNotIn("onboarding_hint", self.ws.manifest(include_always=False))
+
+        server = MCPServer(self.ws)
+        init = server.handle({"jsonrpc": "2.0", "id": 0, "method": "initialize", "params": {}})
+        instructions = init["result"]["instructions"]
+        self.assertTrue(instructions.startswith(INSTRUCTIONS))
+        self.assertIn(EMPTY_WORKSPACE_HINT, instructions)
+
+        # Plain `mindslice boot` stays empty when there are no always-loaded cards;
+        # `--mcp-instructions` emits the full MCP startup prompt for session-start hooks.
+        code, plain_out, _ = run_cli("-w", str(self.root), "boot")
+        self.assertEqual((code, plain_out), (0, ""))
+        code, hook_out, _ = run_cli("-w", str(self.root), "boot", "--mcp-instructions")
+        self.assertEqual(code, 0)
+        self.assertIn(INSTRUCTIONS, hook_out)
+        self.assertIn("# Empty memory workspace", hook_out)
+
+        # Writing a single ordinary card retires the empty-workspace hint (zero extra tokens).
+        self.ws.write("tooling/python", summary="Use uv for Python dependencies.")
+        self.assertNotIn("empty_workspace", self.ws.boot())
+        self.assertNotIn("onboarding_hint", self.ws.manifest())
+        self.assertEqual(MCPServer(self.ws).instructions(), INSTRUCTIONS)
+        self.ws.write("tooling/python", op="delete")
+        self.assertTrue(self.ws.boot()["empty_workspace"])
+
+        # Staging an always-loaded card also retires the empty-workspace hint immediately.
+        self.ws.write("prefs/lang", summary="Reply in Simplified Chinese.", load="always")
+        self.assertNotIn("empty_workspace", self.ws.boot())
+        self.assertNotIn("onboarding_hint", self.ws.manifest())
+        self.assertEqual(MCPServer(self.ws).instructions(), INSTRUCTIONS)
+
+        # Once approved, `--mcp-instructions` combines MCP instructions with Always-loaded memory.
+        self.ws.apply()
+        code, hook_out, _ = run_cli("-w", str(self.root), "boot", "--mcp-instructions")
+        self.assertEqual(code, 0)
+        self.assertIn(INSTRUCTIONS, hook_out)
+        self.assertIn("# Always-loaded memory", hook_out)
+        self.assertIn("Reply in Simplified Chinese.", hook_out)
+        code, json_out, _ = run_cli("-w", str(self.root), "boot", "--json", "--mcp-instructions")
+        self.assertEqual(code, 0)
+        self.assertIn("# Always-loaded memory", json.loads(json_out)["instructions"])
+
+    def test_mounted_slice_retires_empty_workspace_hint(self):
+        root = self.make_slice("empty_notes", {}, alias="@notes")
+        self.ws.mount(root, alias="@notes", precedence=20)
+        self.assertNotIn("empty_workspace", self.ws.boot())
+        self.assertNotIn("onboarding_hint", self.ws.manifest())
+        self.assertEqual(MCPServer(self.ws).instructions(), INSTRUCTIONS)
