@@ -61,6 +61,9 @@ workspace/
 │   ├── .apply_journal.json     # Present only during an in-flight apply() batch
 │   └── api/
 │       └── rate-limit-draft.md
+├── .history/                   # Durable, engine-owned change metadata (not exported)
+│   ├── changes.jsonl           # proposed/applied/discarded/baked events and reasons
+│   └── .pending.json           # In-flight file + history transaction recovery
 └── .cache/                     # Disposable local state
     ├── index.sqlite            # Stdlib sqlite3 index, graph & best-effort telemetry
     └── workspace.lock          # Reader/writer lockfile (fcntl.flock LOCK_SH / LOCK_EX)
@@ -212,7 +215,8 @@ MindSlice exposes **9 orthogonal primitives** across three groups. All 9 are ava
    * Runs an FTS5 query and returns up to `k` Card Previews (`address`, `role`, `precedence`, `coverage`, `score`, `title`, `tags`, 240-char `summary`, up to `max_neighbors` 1-hop `[[wikilinks]]`, `matched_via_superseded` / `superseded_by` status, `bypassed_replacements` for redirected hits, and the same `baseline_superseded_by` / `missing_baselines` notices as `read()`), plus `total_matches`, `truncated`, `next_offset` and `unmatched_terms`.
 3. **`read(address, follow_supersedes=True, max_backlinks=10, backlinks_offset=0, max_extensions=5, extensions_offset=0)`**:
    * Resolves `address` via Section 4.2, returns the full card (plus composed baseline/extensions, `sha256` revision token, outbound `[[wikilinks]]`, paginated `backlinks`, and any `unrebased_extensions` / `bypassed_replacements` / `baseline_superseded_by` / `missing_baselines` notices), and updates ephemeral `read_count` / `last_read_at` in `.cache/index.sqlite`.
-4. **`write(id, op="create" | "replace" | "append" | "delete", content=None, summary=None, title=None, tags=None, aliases=None, extends=None, supersedes=None, stage=None, if_match=None, load=None)`**:
+4. **`write(id, op="create" | "replace" | "append" | "delete", content=None, summary=None, title=None, tags=None, aliases=None, extends=None, supersedes=None, stage=None, if_match=None, load=None, reason=None)`**:
+   * `reason` explains the change; optional for compatibility, nonempty when supplied. Agents are instructed to provide it. The engine owns `.history/changes.jsonl`; callers never write the log or choose its IDs/timestamps. Effective writes record `proposed` (staging) or `applied` (direct), including change ID, operation, reason and before/after hashes. No-op retries add nothing. Apply/discard link back to proposal IDs; bake records included IDs, hashes, alias, version and absolute output paths. Reasons survive staging cleanup, bake and index rebuild, appear in `status`/`diff`, and never enter card metadata, search or slice exports. External edits break reason ancestry when hashes no longer match. This JSONL metadata history is not a content rollback store or a SQLite database.
    * `load="always"` / `"as-needed"` sets or clears the card's `load` field. `stage=None` stages changes to the always-loaded context for approval and writes everything else to `overlay/` (Section 4.3).
    * Acquires `LOCK_EX` on `.cache/workspace.lock`, validates that no lineage cycle is introduced, verifies TOML frontmatter round-trip parsing, and mutates `<id>.md` in `overlay/` (or in `staging/` when `stage=True`):
      * **`op="create"`**: Creates a new card. Fails with `AlreadyExistsError` if the target already exists with different content; succeeds idempotently if byte-identical.
@@ -254,19 +258,20 @@ MindSlice exposes **9 orthogonal primitives** across three groups. All 9 are ava
 
 ### Group C: Transactional Sandbox Operations (`staging/`)
 8. **`diff(scope="staging" | "overlay")`**:
-   * CLI `diff` renders the unified patch by default, with conflicts on stderr; `diff --json` retains the structured report. There is no `--patch` flag.
+   * CLI `diff` renders the unified patch by default, with change reasons and conflicts on stderr; `diff --json` retains the structured report, including `change_ids` and `changes`. There is no `--patch` flag.
    * Acquires `LOCK_SH` and returns a structured summary and unified diff of pending changes in `staging/` (checking `staging/.manifest.json` `base_sha256` preconditions against current `overlay/` files) or active overrides in `overlay/`.
 9. **`apply()` / `discard()`**:
    * **`apply()`**: Acquires `LOCK_EX` on `.cache/workspace.lock`:
      1. **Precondition & Graph Verification**: Verifies every entry in `staging/.manifest.json` against `overlay/` (`current_sha256 == base_sha256`, or file must be absent when `base_sha256 is null`) and checks the combined graph for cycles. Aborts cleanly with a conflict report before touching `overlay/` if any check fails.
      2. **Ordered Journaled Promotion**:
         a. Writes and `fsync`s `staging/.apply_journal.json`.
-        b. Moves staged `.md` files into `overlay/` and unlinks tombstoned `overlay/` files (tolerating already-moved or already-unlinked files during crash replay). During replay, an action whose `overlay/` target changed since it was journaled is skipped, never forced: its staged file or tombstone stays in `staging/`.
+        b. Moves staged `.md` files into `overlay/` and unlinks tombstoned `overlay/` files (tolerating already-moved or already-unlinked files during crash replay), then appends/fsyncs each successful action's journaled history events, deduplicating by event ID. During replay, an action whose unrecorded `overlay/` target changed since it was journaled is skipped, never forced: its staged file or tombstone stays in `staging/`.
         c. Synchronizes `.cache/index.sqlite` in a single SQLite transaction.
         d. Removes `staging/.manifest.json` (and any empty `staging/` subdirectories), keeping only the entries of skipped actions with their original `base_sha256`, so `diff()` reports the conflict against the version the change was based on.
         e. **Removes `staging/.apply_journal.json` strictly last.**
         Because `.apply_journal.json` is removed only after `.manifest.json` and SQLite are finalized, any crash prior to step (e) leaves the recovery marker intact for the next reader or writer to finish idempotently under `LOCK_EX`.
-   * **`discard()`**: Acquires `LOCK_EX` and clears `staging/` and `staging/.manifest.json`.
+   * **`discard()`**: Acquires `LOCK_EX` and clears `staging/` and `staging/.manifest.json`, retaining proposal reasons in history and appending linked `discarded` events.
+   * Direct writes, staging edits, discard and bake's mount/overlay updates use `.history/.pending.json` to durably record intended file mutations and events before execution. Recovery checks hashes, replays file actions, deduplicates appended events and removes the journal last. Changed files or missing/changed baked output stop recovery with `history_error` and preserve both files and journal. Only a torn final JSONL line is repaired; malformed complete records fail closed. History survives cache deletion and is backed up with workspace data.
 
 ---
 

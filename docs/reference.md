@@ -37,7 +37,8 @@ mindslice mount ~/notes                  # any Markdown folder, no conversion (a
 # Agents record what they learn into @overlay
 mindslice write api/jwt-ttl --title "JWT TTL" \
   --summary "Sessions moved to signed JWTs with a 30 minute TTL." \
-  --content "- The JWT TTL is 30 minutes." --supersedes @project/api/auth-flow
+  --content "- The JWT TTL is 30 minutes." --supersedes @project/api/auth-flow \
+  --reason "The auth migration replaced the previous session scheme."
 
 mindslice manifest                       # boot context
 mindslice search "token expiration"      # hits on the old card redirect to the replacement
@@ -55,7 +56,7 @@ with Workspace("my-workspace") as ws:
     hits = ws.search("uv dependencies", k=5)
     card = ws.read(hits["results"][0]["address"])
     ws.write("user-preferences/tooling", op="append", content="- Pin Python with `uv python pin`.",
-             if_match=card["sha256"])
+             if_match=card["sha256"], reason="The project now pins its Python version with uv.")
 ```
 
 Every primitive is a `Workspace` method and a CLI subcommand (`mindslice <cmd> --help`).
@@ -71,6 +72,9 @@ workspace/
 ├── staging/           # prospective final state for overlay/ (never indexed until apply())
 │   ├── .manifest.json       # base_sha256 preconditions + delete tombstones
 │   └── .apply_journal.json  # exists only while an apply() batch is in flight
+├── .history/          # durable, engine-owned change metadata; not a cache
+│   ├── changes.jsonl  # proposals, applied/discarded changes and baked versions
+│   └── .pending.json  # exists only during a recoverable history/content transaction
 └── .cache/            # disposable: index.sqlite + workspace.lock
 ```
 
@@ -121,7 +125,7 @@ the highest-precedence mount; written **inside a card**, it resolves only within
 | A (MCP) | `manifest(limit=20, offset=0, max_folders_per_mount=10, include_overview=False, include_always=True)` | mounts, roles, counts, 160-char descriptions, bounded folder lists, always-loaded cards |
 | A (MCP) | `search(query, source=None, tags=None, k=10, offset=0, max_neighbors=3, follow_supersedes=True)` | `score = -bm25(10,5,3,2,1) > 0`; supersession redirect; 240-char summaries |
 | A (MCP) | `read(address, follow_supersedes=True, max_backlinks=10, backlinks_offset=0, max_extensions=5, extensions_offset=0)` | forwarding, extends composition, shadows, backlinks, `sha256` |
-| A (MCP) | `write(id, op="create"\|"replace"\|"append"\|"delete", content, summary, title, tags, aliases, extends, supersedes, stage=None, if_match=None, load=None)` | overlay only; cycle checks; verified TOML round-trip; `affected_backlinks` / `affected_extensions` when it supersedes or deletes; changes to always-loaded cards are staged |
+| A (MCP) | `write(id, op="create"\|"replace"\|"append"\|"delete", content, summary, title, tags, aliases, extends, supersedes, stage=None, if_match=None, load=None, reason=None)` | overlay only; cycle checks; verified TOML round-trip; `affected_backlinks` / `affected_extensions` when it supersedes or deletes; changes to always-loaded cards are staged |
 | A | `boot()` | resolved always-loaded cards; CLI `boot` emits the full startup payload, `--cards-only` emits card content |
 | B | `mount(path, alias, precedence, role, retire_overlay=True)` / `unmount(alias)` | updates `mounts.toml` and the index; retires overlay copies the slice holds unchanged |
 | B | `status()` | all mounts, pending review files and conflicts, dirty slices and unassigned overlay cards |
@@ -142,7 +146,7 @@ External edits to mounted files are indexed normally but are not tracked as dirt
 `status --json` returns the same overview as structured data, without card bodies or patches.
 
 `mindslice diff` prints a unified patch of staging changes. `--scope overlay` compares applied overlay
-cards with their baselines. `diff --json` returns the structured report; conflicts in text mode are
+cards with their baselines. `diff --json` returns the structured report; reasons and conflicts in text mode are
 reported on stderr. The redundant `--patch` flag is removed. `apply` approves staged changes and
 `discard` drops them. `unmount alias` removes a mount while preserving its directory; the writable
 overlay cannot be unmounted.
@@ -315,17 +319,59 @@ Lexical search is not morphological. Korean or Japanese inflections that change 
 syllables (`이끌었다` vs `이끈다`) and Simplified/Traditional variants (`认证` vs `認證`) are
 different strings, just as `ran`/`run` are in English.
 
+## Change reasons and history
+
+`write(..., reason="...")` (CLI `--reason`) explains why a card is created, replaced, appended to
+or deleted. It is optional for compatibility; when supplied it must be a nonempty string. MCP
+instructions ask agents to supply it. Only the engine writes `.history/changes.jsonl`: callers
+provide the reason, never IDs, timestamps or log entries. Reasons are not card frontmatter or
+`slice.toml` fields, are not searched, and are not included in baked directories or archives.
+
+Each effective write returns a `change_id`. Its JSONL event records `schema_version`, `event_id`,
+UTC `timestamp`, `change_id`, `address`, `op`, `reason`, and before/after SHA-256 hashes (null for
+an absent file). No-op retries produce no new event. Writes without a reason still produce a
+record, with `reason: null`. The lifecycle is:
+
+| Operation | Event |
+| :-- | :-- |
+| Write directly to overlay | `applied` |
+| Write to staging | `proposed`; manifest retains its `change_id` |
+| Apply staging | `applied`, linked to the original proposal IDs |
+| Discard staging, or delete a staged-only creation | `discarded`, linked to the proposal IDs |
+| Bake | `baked`, with included change IDs, card hashes, alias, version, absolute `path`, `output` and `previous_path` |
+
+Pending cards do not participate in live reads/search until applied. Their proposals still exist
+in history, including after discard. Multiple edits preserve multiple reasons; applying does not
+invent a new reason. `diff()` and `status()` attach `change_ids` and `changes` to relevant cards;
+text status displays reasons and text diff sends them to stderr, keeping stdout a unified patch.
+Reasons for applied overlay content are matched by hash; external edits break the recorded chain
+instead of inheriting an unrelated reason. Editor writes and hand-authored staging files have no
+agent-supplied reason; applying a legacy/manual staged entry records an applied change without one.
+Engine reference rewrites during retirement also receive their own applied records and reasons.
+
+History stays in the workspace after bake and cache rebuilds. Back up `.history/` with the workspace;
+it cannot be reconstructed from current Markdown. There is no SQLite history database. The JSONL
+file records metadata, not old card bodies, so it is not a content rollback store.
+
 ## Concurrency & durability
 
 - Reads take `LOCK_SH` and writes take `LOCK_EX` (`fcntl.flock`) on `.cache/workspace.lock`.
 - Before every operation, the engine re-indexes files whose `(mtime_ns, size)` changed. That covers
   editor saves, creations, renames and deletions. It also finishes any interrupted `apply()` it finds
-  (`staging/.apply_journal.json`), upgrading to `LOCK_EX` only when needed. An edit that keeps both
+  (`staging/.apply_journal.json`) or history transaction (`.history/.pending.json`), upgrading to
+  `LOCK_EX` only when needed. An edit that keeps both
   mtime and size identical is invisible to this cheap check; `validate(rebuild_index=True)` catches it.
 - File writes are atomic (temp file, `fsync`, `os.replace`). `apply()` removes the journal last, so a
   crash at any point is finished idempotently by the next reader or writer. Recovery never overwrites
   or deletes an `overlay/` file edited since the crash: that change stays staged, with its original
   base, and `diff()` shows the conflict.
+- History writes share the workspace lock. Direct writes, staging edits, discard and bake's mount/
+  overlay updates first save a recovery journal, then change files and append/fsync events. Apply
+  carries its events in the existing apply journal. Recovery deduplicates by event ID, repairs an
+  interrupted final JSONL line and removes the journal last. A history transaction with externally
+  changed files (or missing/changed baked output) stops with `history_error`, preserving the files
+  and journal for inspection. Complete malformed log records also stop writes. The temporary
+  recovery journal can contain intended file contents; the permanent JSONL log contains metadata.
 
 ## Slice lifecycle
 

@@ -111,14 +111,18 @@ def load_mounts(workspace: Path) -> MountTable:
     return MountTable(overlay, mounts)
 
 
-def save_mounts(workspace: Path, table: MountTable) -> str:
-    from .fsutil import atomic_write_text  # local import to avoid a cycle
-
-    text = tomlfmt.dumps_document(
+def dump_mounts(table: MountTable) -> str:
+    return tomlfmt.dumps_document(
         tables={"overlay": table.overlay.to_toml()},
         array_tables={"mounts": [m.to_toml() for m in table.mounts]},
         header=_MOUNTS_HEADER,
     )
+
+
+def save_mounts(workspace: Path, table: MountTable) -> str:
+    from .fsutil import atomic_write_text
+
+    text = dump_mounts(table)
     atomic_write_text(workspace / MOUNTS_FILE, text)
     return text
 

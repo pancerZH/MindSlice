@@ -17,7 +17,8 @@ from typing import TYPE_CHECKING, Any, Callable, Sequence
 from .addressing import MountCatalog, format_address, resolve_ref, rewrite_wikilinks
 from .card import ParsedCard, normalize_newlines, parse_card
 from .errors import UnresolvedExportDependencyError
-from .fsutil import atomic_write_text, iter_markdown, prune_empty_dirs, unlink_if_exists
+from .fsutil import iter_markdown
+from .history import change, event, file_action
 from .writer import read_card_file, reassemble
 
 if TYPE_CHECKING:  # pragma: no cover
@@ -164,13 +165,17 @@ def retire_copies(ws: "Workspace", table, alias: str) -> dict[str, Any]:
 
 
 def retire_overlay_paths(ws: "Workspace", table, alias: str, retired: list[str], kept: list[dict[str, str]],
-                         cats: dict[str, MountCatalog]) -> dict[str, Any]:
+                         cats: dict[str, MountCatalog], *, actions: list | None = None,
+                         events: list | None = None) -> dict[str, Any]:
     """Remove the ``@overlay`` cards at ``retired`` paths, now held by slice ``alias`` at the same paths.
 
     References to them from overlay cards that stay are rewritten to ``@alias/<path>``; a card that a
     staged card references is kept instead (rewriting the overlay file would conflict) and added to
     ``kept``. Runs under the caller's ``LOCK_EX``; the caller syncs the index afterwards.
     """
+    own_transaction = actions is None
+    actions = [] if actions is None else actions
+    events = [] if events is None else events
     overlay = table.overlay
     idx = ws.index
     staged = set(ws.staging.entries())
@@ -230,12 +235,15 @@ def retire_overlay_paths(ws: "Workspace", table, alias: str, retired: list[str],
             continue
         new_text = rewrite_refs(text, parsed, mapper)
         if new_text != normalize_newlines(text):
-            atomic_write_text(overlay.root / f"{src_path}.md", new_text)
+            action = file_action(overlay.root / f"{src_path}.md", new_text)
+            actions.append(action)
+            events.append(change("applied", address=address, op="rebase", origin="engine",
+                                 reason=f"Rebase references to cards moved into {alias}",
+                                 before_sha256=action["before_sha256"], after_sha256=action["after_sha256"]))
             rebased += changes
     for path in retired:
         file = overlay.root / f"{path}.md"
-        unlink_if_exists(file)
-        prune_empty_dirs(overlay.root, file.parent)
+        actions.append(file_action(file, None, overlay.root))
     out: dict[str, Any] = {}
     if retired:
         out["retired_overlay_cards"] = [format_address(overlay.alias, p) for p in retired]
@@ -245,5 +253,9 @@ def retire_overlay_paths(ws: "Workspace", table, alias: str, retired: list[str],
         out["rebased_references"] = rebased
     if broken:
         out["broken_references"] = sorted(broken, key=lambda b: (b["address"], b["kind"], b["ref"]))
+    if own_transaction and (actions or events):
+        events.append(event("retired", alias=alias, path=str(table.get(alias).root),
+                            retired_overlay_cards=out.get("retired_overlay_cards", [])))
+        ws.history.transact(actions, events)
     return out
 

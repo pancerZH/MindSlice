@@ -122,6 +122,12 @@ Navigate progressively: `manifest` (what exists) -> `search "<terms>"` (previews
 (full card, composed with extensions and replacements). Base slices are read-only; every runtime
 write lands in `@overlay` (or `staging/` with `--stage` for human review).
 
+Supply `reason` with each `write` (CLI `--reason`): briefly state the evidence, correction or
+decision that motivates the change. The engine records it in `.history/changes.jsonl` and links
+it through review and bake. Never write or edit `.history/` yourself, and do not put this change
+metadata into card frontmatter. Review reasons with `status` or `diff --json`; text `diff` sends
+them to stderr beside the patch on stdout.
+
 Pick the right operation:
 
 | Situation | Operation |

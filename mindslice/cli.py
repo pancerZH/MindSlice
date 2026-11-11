@@ -142,6 +142,7 @@ def build_parser() -> argparse.ArgumentParser:
     s.add_argument("--content", help="body text (append: bullet statements)")
     s.add_argument("--content-file", help="read content from file ('-' = stdin)")
     s.add_argument("--summary")
+    s.add_argument("--reason", help="why this change is needed; stored in engine history, not in the card")
     s.add_argument("--title")
     s.add_argument("--tag", action="append", dest="tags")
     s.add_argument("--alias", action="append", dest="aliases")
@@ -275,7 +276,7 @@ def _dispatch(ws: Workspace, args: argparse.Namespace, compact: bool) -> int:
             extends = [cli_reference(ws, ref, source=table.overlay.alias) for ref in args.extends] if args.extends else None
             supersedes = [cli_reference(ws, ref, source=table.overlay.alias) for ref in args.supersedes] if args.supersedes else None
             _emit(ws.write(args.id, args.op, content, args.summary, args.title, args.tags, args.aliases,
-                           extends, supersedes, args.stage, args.if_match, args.load), compact)
+                           extends, supersedes, args.stage, args.if_match, args.load, args.reason), compact)
     elif cmd == "mount":
         _emit(ws.mount(_cwd_path(args.path), args.alias, args.precedence, args.role,
                        retire_overlay=not args.keep_overlay), compact)
@@ -296,6 +297,9 @@ def _dispatch(ws: Workspace, args: argparse.Namespace, compact: bool) -> int:
         else:
             sys.stdout.write("".join(item["diff"] for item in result["items"]))
             for item in result["items"]:
+                for change in item.get("changes", []):
+                    if change.get("reason"):
+                        sys.stderr.write(f"reason: {item['address']} ({change['op']}): {change['reason']}\n")
                 if item.get("conflict"):
                     sys.stderr.write(f"conflict: {item['address']}: {item['conflict']}\n")
     elif cmd == "apply":

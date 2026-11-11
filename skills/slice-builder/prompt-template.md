@@ -70,3 +70,8 @@ Also write:
 3. Write the cards, `overview.md` and `slice.toml`.
 4. Run `mindslice validate {{name}}.slice` (if available) and fix all errors.
 5. Report the card list and any knowledge you were unsure about.
+
+When refining an existing workspace through MindSlice's `write` API, supply a `reason` explaining
+the evidence or decision behind each change (CLI `--reason`). The engine maintains the history;
+never write `.history/` yourself or add the change reason to card frontmatter. This workspace
+history is separate from the slice you are authoring and must not be copied into the output.

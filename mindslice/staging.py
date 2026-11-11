@@ -20,7 +20,8 @@ from typing import TYPE_CHECKING, Any
 from .addressing import format_address
 from .card import ParsedCard, parse_card
 from .errors import ApplyConflictError, LineageCycleError
-from .fsutil import atomic_write_text, clear_directory, durable_move, fsync_dir, iter_markdown, prune_empty_dirs, unlink_if_exists
+from .fsutil import atomic_write_text, durable_move, fsync_dir, iter_markdown, prune_empty_dirs, unlink_if_exists
+from .history import change, file_action, transitions
 from .writer import check_cycles, read_card_file
 
 if TYPE_CHECKING:  # pragma: no cover
@@ -89,12 +90,17 @@ class StagingArea:
         entries = data.get("entries", {}) if isinstance(data, dict) else {}
         return {k: dict(v) for k, v in entries.items() if isinstance(v, dict)}
 
+    def manifest_text(self, entries: dict[str, dict[str, Any]]) -> str | None:
+        if not entries:
+            return None
+        payload = {"version": 1, "entries": dict(sorted(entries.items()))}
+        return json.dumps(payload, indent=2, ensure_ascii=False) + "\n"
+
     def save_manifest(self, entries: dict[str, dict[str, Any]]) -> None:
         if not entries:
             unlink_if_exists(self.manifest_path)
             return
-        payload = {"version": 1, "entries": dict(sorted(entries.items()))}
-        atomic_write_text(self.manifest_path, json.dumps(payload, indent=2, ensure_ascii=False) + "\n")
+        atomic_write_text(self.manifest_path, self.manifest_text(entries))
 
     def staged_files(self) -> dict[str, Path]:
         return {rel: self.file(rel) for rel, _ in iter_markdown(self.root)}
@@ -129,7 +135,19 @@ class StagingArea:
         return overrides
 
     # -- staged mutations -------------------------------------------------
-    def stage_write(self, path: str, text: str, overlay_root: Path, op: str, requires_approval: str | None = None) -> None:
+    def _mutate(self, path, manifest, text, audit=None, events=None):
+        if audit is None:
+            self.save_manifest(manifest)
+            if text is None:
+                self._drop_file(self.file(path))
+            else:
+                atomic_write_text(self.file(path), text)
+        else:
+            audit.transact([file_action(self.manifest_path, self.manifest_text(manifest)),
+                            file_action(self.file(path), text, self.root)], events or [])
+
+    def stage_write(self, path: str, text: str, overlay_root: Path, op: str, requires_approval: str | None = None,
+                    *, audit=None, event=None) -> None:
         manifest = self.load_manifest()
         entry = manifest.get(path)
         if entry is None:
@@ -140,39 +158,38 @@ class StagingArea:
         entry["updated_at"] = _now()
         if requires_approval:
             entry["requires_approval"] = requires_approval
+        if event:
+            entry["change_ids"] = list(entry.get("change_ids", [])) + [event["change_id"]]
         manifest[path] = entry
-        self.save_manifest(manifest)  # manifest first: preserves base_sha256 if we crash mid-way
-        atomic_write_text(self.file(path), text)
+        self._mutate(path, manifest, text, audit, [event] if event else [])
 
-    def stage_delete(self, path: str, overlay_root: Path, requires_approval: str | None = None) -> bool:
+    def stage_delete(self, path: str, overlay_root: Path, requires_approval: str | None = None,
+                     *, audit=None, event=None) -> bool:
         manifest = self.load_manifest()
         entry = manifest.get(path)
-        staged = self.file(path)
         if entry is None:
-            _, overlay_sha = read_card_file(overlay_root / f"{path}.md")
-            if overlay_sha is not None:
-                manifest[path] = {"op": "delete", "base_sha256": overlay_sha, "history": ["delete"], "updated_at": _now()}
-                if requires_approval:
-                    manifest[path]["requires_approval"] = requires_approval
-                self.save_manifest(manifest)
-                self._drop_file(staged)
-                return True
-            return self._drop_file(staged)
+            _, base = read_card_file(overlay_root / f"{path}.md")
+            entry = {"op": "write", "base_sha256": base, "history": []}
+        events = [event] if event else []
+        ids = list(entry.get("change_ids", []))
+        if event:
+            ids.append(event["change_id"])
         if entry.get("base_sha256") is None:
-            # Existed only in staging: forget it entirely.
-            del manifest[path]
-            self.save_manifest(manifest)
-            self._drop_file(staged)
-            return True
-        if entry.get("op") == "delete":
-            return self._drop_file(staged)
-        entry["op"] = "delete"
-        entry["history"] = list(entry.get("history") or []) + ["delete"]
-        entry["updated_at"] = _now()
-        if requires_approval:
-            entry["requires_approval"] = requires_approval
-        self.save_manifest(manifest)
-        self._drop_file(staged)
+            # Cancel the entire proposed revision chain, including this delete request.
+            manifest.pop(path, None)
+            events += transitions("discarded", ids, cause="staged_create_deleted")
+        else:
+            if entry.get("op") == "delete":
+                return self._drop_file(self.file(path))
+            entry["op"] = "delete"
+            entry["history"] = list(entry.get("history") or []) + ["delete"]
+            entry["updated_at"] = _now()
+            if requires_approval:
+                entry["requires_approval"] = requires_approval
+            if ids:
+                entry["change_ids"] = ids
+            manifest[path] = entry
+        self._mutate(path, manifest, None, audit, events)
         return True
 
     def _drop_file(self, file: Path) -> bool:
@@ -233,6 +250,7 @@ def _diff_staging(ws: "Workspace", table: "MountTable") -> dict[str, Any]:
     overlay = table.overlay
     items = []
     counts = {"create": 0, "modify": 0, "delete": 0, "conflicts": 0}
+    history_details = ws.history.details()
     for path, entry in ws.staging.entries().items():
         address = format_address(overlay.alias, path)
         current_text, current_sha = read_card_file(overlay.root / f"{path}.md")
@@ -258,6 +276,9 @@ def _diff_staging(ws: "Workspace", table: "MountTable") -> dict[str, Any]:
             "conflict": conflict,
             "diff": unified(current_text, staged_text, f"a/{address}.md", f"b/{address}.md"),
         }
+        if entry.get("change_ids"):
+            item["change_ids"] = entry["change_ids"]
+            item["changes"] = ws.history.descriptions(entry["change_ids"], records=history_details)
         if entry.get("orphan"):
             item["orphan"] = True
         if entry.get("requires_approval"):
@@ -277,6 +298,8 @@ def _diff_overlay(ws: "Workspace", table: "MountTable") -> dict[str, Any]:
     overlay = table.overlay
     items = []
     counts = {"new": 0, "shadow": 0, "extends": 0, "supersedes": 0, "unrebased": 0}
+    history_details = ws.history.details()
+    active = ws.history.applied()
     for row in idx.all_cards(overlay.alias):
         path = row["path"]
         address = format_address(overlay.alias, path)
@@ -321,6 +344,11 @@ def _diff_overlay(ws: "Workspace", table: "MountTable") -> dict[str, Any]:
             "shadows": shadows,
             "sha256": row["sha256"],
         }
+        tip, ids = active.get(address, (None, []))
+        changes = ws.history.descriptions(ids, records=history_details) if tip == row["sha256"] else []
+        if changes:
+            item["changes"] = changes
+            item["change_ids"] = [c["change_id"] for c in changes]
         if broken:
             item["unresolved"] = broken
         unrebased = []
@@ -388,6 +416,13 @@ def apply(ws: "Workspace") -> dict[str, Any]:
             raise ApplyConflictError(
                 f"apply aborted before touching overlay: {len(conflicts)} conflict(s)", conflicts=conflicts
             )
+        for action in actions:
+            action["entry"] = entries[action["id"]]
+            ids = action["entry"].get("change_ids", [])
+            fields = {"address": format_address(overlay.alias, action["id"]), "op": action["op"],
+                      "before_sha256": action.get("base_sha256"), "after_sha256": action.get("sha256"),
+                      "origin": "apply"}
+            action["history_events"] = transitions("applied", ids, **fields) if ids else [change("applied", reason=None, **fields)]
         journal = {"version": 1, "started_at": _now(), "overlay_root": str(overlay.root), "actions": actions}
         staging.write_journal(journal)
         return replay(ws, table, journal)
@@ -405,19 +440,46 @@ def replay(ws: "Workspace", table: "MountTable", journal: dict[str, Any]) -> dic
     alias = table.overlay.alias
     report: dict[str, Any] = {"applied": 0, "created": [], "modified": [], "deleted": [], "skipped": []}
     skipped: list[dict[str, Any]] = []
+    updated = False
+    entries = staging.load_manifest()
+    for action in journal.get("actions", []):
+        if "history_events" not in action:
+            action["entry"] = entries.get(action["id"], {})
+            fields = {"address": format_address(alias, action["id"]), "op": action["op"],
+                      "before_sha256": action.get("base_sha256"), "after_sha256": action.get("sha256"), "origin": "apply"}
+            ids = action["entry"].get("change_ids", [])
+            action["history_events"] = transitions("applied", ids, **fields) if ids else [change("applied", reason=None, **fields)]
+            updated = True
+    if updated:
+        staging.write_journal(journal)
+    recorded = {e["event_id"] for e in ws.history.events()}
     for action in journal.get("actions", []):
         path = action["id"]
         address = format_address(alias, path)
         dst = overlay_root / f"{path}.md"
+        completed = all(e["event_id"] in recorded for e in action["history_events"])
+        if completed:
+            key = "deleted" if action["op"] == "delete" else ("created" if action.get("change") == "create" else "modified")
+            report[key].append(address)
+            report["applied"] += 1
+            continue
         if action["op"] == "move":
             src = staging.file(path)
             if src.is_file():
                 _, dst_sha = read_card_file(dst)
-                if dst_sha is not None and dst_sha not in (action.get("base_sha256"), action.get("sha256")):
+                if dst_sha not in (action.get("base_sha256"), action.get("sha256")):
                     report["skipped"].append({"address": address, "reason": "overlay changed during recovery; staged file kept"})
                     skipped.append(action)
                     continue
+                if read_card_file(src)[1] != action.get("sha256"):
+                    report["skipped"].append({"address": address, "reason": "staged file changed during recovery; kept"})
+                    skipped.append(action)
+                    continue
                 durable_move(src, dst)
+            elif read_card_file(dst)[1] != action.get("sha256"):
+                report["skipped"].append({"address": address, "reason": "applied content missing or changed; history not confirmed"})
+                skipped.append(action)
+                continue
             report["created" if action.get("change") == "create" else "modified"].append(address)
         elif action["op"] == "delete":
             _, dst_sha = read_card_file(dst)
@@ -429,6 +491,7 @@ def replay(ws: "Workspace", table: "MountTable", journal: dict[str, Any]) -> dic
                 unlink_if_exists(dst)
                 prune_empty_dirs(overlay_root, dst.parent)
             report["deleted"].append(address)
+        ws.history.append(action["history_events"])
         report["applied"] += 1
     ws._sync(table)  # (c) one SQLite transaction
     staging.save_manifest(_skipped_entries(staging.load_manifest(), skipped))  # (d) removed when nothing was skipped
@@ -441,8 +504,8 @@ def _skipped_entries(manifest: dict[str, dict[str, Any]], skipped: list[dict[str
     """Manifest entries to keep for skipped actions; rebuilt from the journal if an earlier pass removed them."""
     kept: dict[str, dict[str, Any]] = {}
     for action in skipped:
-        entry = manifest.get(action["id"])
-        if entry is None:
+        entry = manifest.get(action["id"]) or action.get("entry")
+        if not entry:
             entry = {"op": "delete" if action["op"] == "delete" else "write",
                      "base_sha256": action.get("base_sha256"), "history": [], "updated_at": _now()}
         kept[action["id"]] = entry
@@ -452,5 +515,13 @@ def _skipped_entries(manifest: dict[str, dict[str, Any]], skipped: list[dict[str
 def discard(ws: "Workspace") -> dict[str, Any]:
     with ws._writing():
         entries = ws.staging.entries()
-        clear_directory(ws.staging.root)
+        events = []
+        for path, entry in entries.items():
+            ids = entry.get("change_ids", [])
+            fields = {"address": format_address(ws.table().overlay.alias, path), "cause": "discard"}
+            events += transitions("discarded", ids, **fields) if ids else [change("discarded", **fields)]
+        actions = [file_action(p, None, ws.staging.root) for p in sorted(ws.staging.root.rglob("*")) if p.is_file()]
+        if actions or events:
+            ws.history.transact(actions, events)
+        ws.staging.remove_empty_subdirs()
         return {"discarded": len(entries), "ids": list(entries)}

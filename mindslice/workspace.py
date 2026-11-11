@@ -42,6 +42,7 @@ from .config import (
     save_mounts,
 )
 from .errors import MountError, NotFoundError, WorkspaceNotFoundError
+from .history import ChangeHistory
 from .index import FRONTMATTER_CODES, Index, SyncStats
 from .lineage import FollowSpec
 from .locking import WorkspaceLock
@@ -63,6 +64,7 @@ class Workspace:
             self._bootstrap()
         self.cache_dir = self.root / CACHE_DIR
         self.staging = StagingArea(self.root / STAGING_DIR)
+        self.history = ChangeHistory(self.root / ".history")
         self.lock = WorkspaceLock(self.cache_dir / LOCK_FILE, timeout=lock_timeout)
         self._index: Index | None = None
         self._table: MountTable | None = None
@@ -133,7 +135,7 @@ class Workspace:
         return self._table
 
     def _exclude(self) -> list[Path]:
-        return [self.staging.root, self.cache_dir]
+        return [self.staging.root, self.cache_dir, self.history.root]
 
     def _sync(self, table: MountTable | None = None, verify: bool = False) -> SyncStats:
         stats = self.index.sync(table or self.table(), self._exclude(), verify=verify)
@@ -141,6 +143,9 @@ class Workspace:
         return stats
 
     def _recover(self, table: MountTable) -> None:
+        if self.history.recover():
+            self.last_recovery = {"recovered": True, "history": True}
+            table = self._reload_table()
         journal = self.staging.read_journal()
         if journal is None:
             return
@@ -153,7 +158,7 @@ class Workspace:
         self.last_recovery = report
 
     def _needs_maintenance(self, table: MountTable) -> bool:
-        return self.staging.has_journal() or self.index.is_stale(table, self._exclude())
+        return self.history.has_journal() or self.staging.has_journal() or self.index.is_stale(table, self._exclude())
 
     @contextmanager
     def _reading(self) -> Iterator[MountTable]:
@@ -166,6 +171,7 @@ class Workspace:
         with self.lock.exclusive():
             table = self._reload_table()
             self._recover(table)
+            table = self._reload_table()
             self._sync(table)
             yield table
 
@@ -174,6 +180,7 @@ class Workspace:
         with self.lock.exclusive():
             table = self._reload_table()
             self._recover(table)
+            table = self._reload_table()
             if sync:
                 self._sync(table)
             yield table
@@ -202,10 +209,10 @@ class Workspace:
     def write(self, id: str, op: str = "create", content: Any = None, summary: str | None = None,
               title: str | None = None, tags: Sequence[str] | None = None, aliases: Sequence[str] | None = None,
               extends: Sequence[str] | None = None, supersedes: Sequence[str] | None = None,
-              stage: bool | None = None, if_match: str | None = None, load: str | None = None) -> dict[str, Any]:
+              stage: bool | None = None, if_match: str | None = None, load: str | None = None, reason: str | None = None) -> dict[str, Any]:
         """``stage=None`` stages changes to the always-loaded context for approval (see ``boot``)."""
         return writer.write(self, id, op, content, summary, title, tags, aliases, extends, supersedes, stage,
-                            if_match, load)
+                            if_match, load, reason)
 
     # ------------------------------------------------------------------
     # Group B: slice management, linting & packaging
@@ -250,7 +257,8 @@ class Workspace:
             for m in table.all():
                 if m.root == target:
                     raise MountError(f"{target} is already mounted as {m.alias}", alias=m.alias)
-            if target in (self.staging.root, self.cache_dir) or self.cache_dir in target.parents:
+            if target in (self.staging.root, self.cache_dir, self.history.root) or any(
+                    root in target.parents for root in (self.cache_dir, self.history.root)):
                 raise MountError("cannot mount MindSlice internal directories")
             new = Mount(alias, portable_path(self.root, target), precedence, role.strip(), "slice", target)
             new_table = MountTable(table.overlay, [*table.mounts, new])

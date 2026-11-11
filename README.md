@@ -291,6 +291,14 @@ mindslice discard         # or throw them away
 shows the applied overlay changes against mounted slices. In `status`, a dirty slice has related
 overlay cards waiting to be baked; this does not track external edits to the slice's own files.
 
+Agents supply a `reason` with `write` to explain each change; the CLI accepts `--reason "..."`.
+`status` shows these reasons, and `diff` prints them on stderr alongside the patch on stdout
+(`--json` includes structured `changes`). The engine keeps the record in `.history/changes.jsonl`,
+including proposals, accepted writes, discarded proposals and baked versions. Pending cards stay
+out of search and reads until applied, but their reasons survive discard and bake. The log is
+workspace history, separate from card content and excluded from exported slices. Keep `.history/`
+when backing up the workspace; unlike `.cache/`, it cannot be rebuilt from the cards.
+
 To stop using a slice, run `mindslice unmount persona` (or `unmount @persona`). Its directory is
 preserved. Mount aliases accept either form in `mount --alias`, `unmount`, `bake`, and `search --source`;
 output consistently uses `@alias`.

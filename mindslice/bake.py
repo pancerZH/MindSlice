@@ -41,6 +41,7 @@ from .archive import archive_format, write_archive
 from .card import normalize_newlines, parse_card, truncate
 from .config import (
     DESCRIPTION_CHARS,
+    MOUNTS_FILE,
     OVERVIEW_PATH,
     SLICE_FILE,
     Mount,
@@ -49,10 +50,11 @@ from .config import (
     dump_slice_manifest,
     load_slice_manifest,
     portable_path,
-    save_mounts,
+    dump_mounts,
 )
 from .errors import AlreadyExistsError, BakeConflictError, InvalidAddressError, InvalidArgumentsError, MountError, NotFoundError
 from .fsutil import fsync_dir
+from .history import event, file_action, file_sha
 from .lexical import fold
 from .slice_transfer import dependency_closure, export_text, overlay_cards, retire_overlay_paths, rewrite_refs
 from .validation import validate_slice_dir
@@ -195,7 +197,7 @@ def bake(
             raise AlreadyExistsError(f"{output} already exists and is not empty", path=str(output))
         for destination in {output, requested}:
             resolved = destination.resolve()
-            for root in (ws.staging.root, ws.cache_dir):
+            for root in (ws.staging.root, ws.cache_dir, ws.history.root):
                 if resolved == root.resolve() or root.resolve() in resolved.parents:
                     raise MountError("cannot bake into MindSlice internal directories", output=str(destination))
             for existing in table.all():
@@ -235,7 +237,7 @@ def bake(
         try:
             tree = tmp_root / output.name
             if mount:
-                shutil.copytree(mount.root, tree, symlinks=False, ignore=shutil.ignore_patterns(".git"))
+                shutil.copytree(mount.root, tree, symlinks=False, ignore=shutil.ignore_patterns(".git", ".history"))
             else:
                 tree.mkdir()
             for path, text in files.items():
@@ -260,11 +262,29 @@ def bake(
         new_mount = Mount(alias, portable_path(ws.root, output), mount.precedence if mount else 50,
                           mount.role if mount else "baseline", "slice", output)
         mounts = [new_mount if m.alias == alias else m for m in table.mounts] if mount else [*table.mounts, new_mount]
-        save_mounts(ws.root, MountTable(overlay, mounts))
+        actions = [file_action(ws.root / MOUNTS_FILE, dump_mounts(MountTable(overlay, mounts)))]
+        events = []
+        retired = retire_overlay_paths(ws, table, alias, sorted(included), [], cats, actions=actions, events=events)
+        active = ws.history.applied()
+        baked_cards = []
+        for path in sorted(included):
+            source = format_address(overlay.alias, path)
+            before = file_sha(overlay.root / f"{path}.md")
+            tip, ids = active.get(source, (None, []))
+            baked_cards.append({"source": source, "target": format_address(alias, path),
+                                "before_sha256": before, "after_sha256": file_sha(output / f"{path}.md"),
+                                "change_ids": ids if tip == before else []})
+        baked = event("baked", alias=alias, path=str(output), output=str(requested),
+                      previous_path=str(mount.root) if mount else None, version=new_version, cards=baked_cards,
+                      change_ids=list(dict.fromkeys(id for card in baked_cards for id in card["change_ids"])),
+                      retired_overlay_cards=retired.get("retired_overlay_cards", []))
+        events.append(baked)
+        guards = [{"path": str(p), "sha256": file_sha(p)} for p in sorted(output.rglob("*")) if p.is_file()]
+        ws.history.transact(actions, events, guards=guards)
         table = ws._reload_table()
         ws._sync(table)
-        result.update(retire_overlay_paths(ws, table, alias, sorted(included), [], cats))
-        ws._sync(table)
+        result.update(retired)
+        result["history_event_id"] = baked["event_id"]
         result["validation"] = {"ok": validation["ok"], "errors": validation["errors"],
                                 "warnings": len(validation["warnings"])}
         return result

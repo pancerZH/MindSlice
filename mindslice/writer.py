@@ -26,11 +26,12 @@ from .errors import (
     FrontmatterError,
     InvalidAddressError,
     LineageCycleError,
+    InvalidArgumentsError,
     NotFoundError,
     PreconditionFailedError,
     ReadOnlyMountError,
 )
-from .fsutil import atomic_write_text, prune_empty_dirs, unlink_if_exists
+from .history import change, file_action
 from .impact import inbound_impact, supersede_targets
 from .lineage import cycle_through
 
@@ -303,11 +304,16 @@ def write(
     stage: bool | None = None,
     if_match: str | None = None,
     load: str | None = None,
+    reason: str | None = None,
 ) -> dict[str, Any]:
     """``stage=None`` (the default) stages a change to the always-loaded context for the user's
     approval and writes anything else straight to ``overlay/``; ``True`` / ``False`` force either."""
     from .boot import protection_reason  # boot imports query, which imports this module
 
+    if reason is not None:
+        if not isinstance(reason, str) or not reason.strip():
+            raise InvalidArgumentsError("reason must be a non-empty string when supplied")
+        reason = reason.strip()
     if op not in OPS:
         raise ValueError(f"unknown op {op!r} (expected one of {', '.join(OPS)})")
     if load is not None and load not in LOAD_VALUES:
@@ -341,6 +347,8 @@ def write(
             "previous_sha256": current_sha,
             "warnings": [],
         }
+        if reason is not None:
+            result["reason"] = reason
         if if_match is not None and if_match != current_sha:
             raise PreconditionFailedError(
                 f"{address} changed since it was read (if_match={if_match[:12]}…, current="
@@ -366,7 +374,7 @@ def write(
             result["warnings"].append(f"{address} does not exist; nothing to delete")
             result.update(write_impact(ws, table, path, None, stage=stage, deleting=True, dangling=not stage))
             if stage:
-                staging.stage_delete(path, overlay.root)  # clears stale entries, if any
+                staging.stage_delete(path, overlay.root, audit=ws.history)  # clears stale entries, if any
             return result
 
         new_text, info = build_text(
@@ -394,11 +402,16 @@ def write(
 
         # A delete's impact is read before the card goes (its inbound references still resolve).
         impact = write_impact(ws, table, path, None, stage=stage, deleting=True) if new_text is None else None
+        change_event = change("proposed" if stage else "applied", address=address, op=op,
+                              reason=reason, before_sha256=current_sha,
+                              after_sha256=sha256_bytes(new_text.encode("utf-8")) if new_text is not None else None,
+                              origin="write")
+        result["change_id"] = change_event["change_id"]
         if stage:
             if new_text is None:
-                staging.stage_delete(path, overlay.root, requires_approval=approval)
+                staging.stage_delete(path, overlay.root, requires_approval=approval, audit=ws.history, event=change_event)
             else:
-                staging.stage_write(path, new_text, overlay.root, op, requires_approval=approval)
+                staging.stage_write(path, new_text, overlay.root, op, requires_approval=approval, audit=ws.history, event=change_event)
             if approval:
                 result["requires_approval"] = approval
                 result["warnings"].append(
@@ -408,11 +421,7 @@ def write(
                 )
         else:
             file = overlay.root / f"{path}.md"
-            if new_text is None:
-                unlink_if_exists(file)
-                prune_empty_dirs(overlay.root, file.parent)
-            else:
-                atomic_write_text(file, new_text)
+            ws.history.transact([file_action(file, new_text, overlay.root)], [change_event])
             ws._sync(table)
         result["changed"] = True
         result["sha256"] = sha256_bytes(new_text.encode("utf-8")) if new_text is not None else None

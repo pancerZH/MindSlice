@@ -14,7 +14,7 @@ if TYPE_CHECKING:  # pragma: no cover
 def status(ws: "Workspace") -> dict[str, Any]:
     with ws._reading() as table:
         staged = _diff_staging(ws, table)
-        pending = [{k: item[k] for k in ("address", "change", "conflict", "requires_approval", "orphan") if k in item}
+        pending = [{k: item[k] for k in ("address", "change", "conflict", "requires_approval", "orphan", "changes", "change_ids") if k in item}
                    for item in staged["items"]]
         changes = {m.alias: [] for m in table.mounts}
         unassigned = []
@@ -27,7 +27,7 @@ def status(ws: "Workspace") -> dict[str, Any]:
                     alias = target.partition("/")[0]
                     if alias in changes:
                         relations.setdefault(alias, set()).add(kind)
-            entry = {k: item[k] for k in ("address", "kind", "unresolved", "unrebased") if k in item}
+            entry = {k: item[k] for k in ("address", "kind", "unresolved", "unrebased", "changes", "change_ids") if k in item}
             if not relations:
                 unassigned.append(entry)
             for alias, kinds in relations.items():
@@ -72,6 +72,9 @@ def render_status(result: dict[str, Any]) -> str:
               f"{counts['conflicts']} conflicts"]
     for item in pending["files"]:
         lines.append(f"  {item['change']}  {item['address']}")
+        for change in item.get("changes", []):
+            if change.get("reason"):
+                lines.append(f"    reason ({change['op']}): {change['reason']}")
         if item.get("requires_approval"):
             lines.append(f"    awaiting approval: {item['requires_approval']}")
         if item["conflict"]:
@@ -83,9 +86,16 @@ def render_status(result: dict[str, Any]) -> str:
                      f"({counts['extends']} extends, {counts['supersedes']} supersedes, {counts['shadow']} shadows)")
         for card in item["cards"]:
             lines.append(f"    {card['address']} ({', '.join(card['kinds'])})")
+            for change in card.get("changes", []):
+                if change.get("reason"):
+                    lines.append(f"      reason ({change['op']}): {change['reason']}")
     new = result["unassigned_overlay_cards"]
     lines += ["", f"Unassigned overlay cards ({len(new)}):"]
-    lines += [f"  {card['address']}" for card in new]
+    for card in new:
+        lines.append(f"  {card['address']}")
+        for change in card.get("changes", []):
+            if change.get("reason"):
+                lines.append(f"    reason ({change['op']}): {change['reason']}")
     if pending["files"]:
         lines += ["", "Review with `mindslice diff`; accept with `mindslice apply` or drop with `mindslice discard`."]
     if result["clean"]:

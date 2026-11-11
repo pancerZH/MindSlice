@@ -153,6 +153,7 @@ TOOLS: list[dict[str, Any]] = [
                           "changes to always-loaded cards are staged whatever you pass"},
                 "load": {"type": "string", "enum": ["always", "as-needed"], "description": "\"always\": loaded into "
                          "every session without a query (persona, language, standing instructions); default \"as-needed\""},
+                "reason": {"type": "string", "minLength": 1, "description": "Why this change is needed, including the user correction or source when available. Supply this on writes; the engine records history. Never edit .history directly."},
                 "if_match": {"type": "string", "description": "sha256 from read(); rejects the write if the card changed"},
             },
             "required": ["id"],
@@ -164,6 +165,8 @@ TOOLS: list[dict[str, Any]] = [
 INSTRUCTIONS = (
     "MindSlice is your long-term memory. Start with manifest() to see the mounted slices, use search() to find "
     "relevant cards, and read() an address for full content (it composes extensions and follows replacements). "
+    "Supply reason with write() to explain the user correction or evidence for the change. The engine owns "
+    ".history/changes.jsonl; never write that log yourself. "
     "Record durable learnings, user corrections and debugging lessons with write() into @overlay: prefer append "
     "to grow an existing card, extends when a card refines, adds an exception or if-then rule to, or depends on "
     "another, supersedes to replace an outdated card (not delete), and delete only to forget on request. Name a "

@@ -92,3 +92,7 @@ class InvalidArgumentsError(MindSliceError, ValueError):
 
 class LockTimeoutError(MindSliceError, TimeoutError):
     code = "lock_timeout"
+
+
+class HistoryError(MindSliceError):
+    code = "history_error"
