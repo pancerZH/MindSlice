@@ -159,6 +159,11 @@ session, and is easier when cards are named by durable slot (`team/lead`), not b
 
 ## Always-loaded cards
 
+`load = "always"` works in the overlay and in every mounted slice. The overlay location is not required.
+Folders under the workspace's `slices/` directory are not automatically mounted: register each with
+`mindslice mount /path/to/slice`. The folder may live anywhere on disk. `boot()` and `manifest()` collect
+the always-loaded cards from all registered mounts.
+
 Some memory is not looked up but always in effect: who the agent is, which language the user wants,
 rules for every reply. Mark such a card with `load = "always"`:
 

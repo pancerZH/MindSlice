@@ -159,7 +159,7 @@ but failed to start, check the server log and the command/workspace paths. If it
 tools, refresh the page, enable the MCP toggle and retry in a new chat.
 
 If the tool works but your note is missing, run `mindslice -w /your/workspace boot` and check that the
-same workspace path is configured above. Save the note as a `.md` file under its `overlay/` directory.
+same workspace path is configured above. The note must be a `.md` file in `overlay/` or a mounted slice.
 
 ### 3. Add notes you already have
 
@@ -172,7 +172,8 @@ Any folder of Markdown files works as it is, and MindSlice only reads it. Each m
 
 ### 4. Tell the agent what it should always know
 
-Create a file `~/mindslice/overlay/about-me.md`:
+Always-loaded notes can live in `overlay/` or **any mounted slice**. For a quick start, create
+`~/mindslice/overlay/about-me.md`:
 
 ```markdown
 +++
@@ -189,8 +190,24 @@ Check that MindSlice finds the note in the workspace you connected:
 mindslice -w ~/mindslice boot
 ```
 
-The output should contain your note. Save it as a `.md` file under that workspace's `overlay/` directory;
-if your workspace is elsewhere, use that path in both the MCP configuration and the command above.
+The output should contain your note. If your workspace is elsewhere, use that path in both the MCP
+configuration and the command above.
+
+To keep your preferences in a reusable slice instead, create a folder and save the same note as
+`~/mindslice/slices/persona.slice/about-me.md`:
+
+```bash
+mkdir -p ~/mindslice/slices/persona.slice
+# Save about-me.md in that folder, then mount it:
+mindslice -w ~/mindslice mount ~/mindslice/slices/persona.slice --alias persona
+mindslice -w ~/mindslice boot
+```
+
+Putting a folder under `slices/` does not activate it: **mount it once** to include its cards. A slice
+can also live elsewhere on disk, and a plain folder of Markdown files needs no special manifest.
+If relocating an existing note, remove its old overlay copy after confirming the mounted copy appears
+in `boot`, so the same instructions are not loaded twice. Agent writes still go to `overlay/`; mounted
+slices are read-only to the agent.
 
 Over MCP, MindSlice includes these notes in its startup instructions and in the `manifest` tool result.
 The app must pass the instructions or tool result to the model; registering an MCP server alone does not
