@@ -1,14 +1,14 @@
-"""``bake()``: a new version of a mounted slice, with ``@overlay`` cards baked in.
+"""``bake()``: create or update a slice and mount it under the requested alias.
 
-``pack()`` exports overlay cards into a slice of their own. ``bake(alias)`` builds the next version of
-a slice that is already mounted: a copy of its folder (``.git`` excluded) plus the overlay cards, at a
-new path. The new folder then takes over the mount (same alias, precedence and role, so every
+A new alias requires an explicit ``prefix`` selecting overlay cards. ``bake(alias)`` without a
+prefix builds the next version of a mounted slice: a copy of its folder (``.git`` excluded) plus the
+overlay cards, at a new path. The new folder then takes over the mount (same alias, precedence and role, so every
 ``@alias/...`` reference keeps resolving), the overlay copies are retired, and the old folder is left
 exactly as it was: no longer mounted, and a way back (``mount`` it again). It is a curation step for
 the slice's owner (CLI and Python, never an agent tool).
 
-Which cards: with ``prefix`` / ``tags``, the overlay cards they select (as for ``pack()``); without,
-the overlay cards that belong to the slice: those that extend or supersede one of its cards, or sit
+Which cards: with ``prefix`` / ``tags``, the overlay cards they select; without, the overlay cards
+that belong to the slice: those that extend or supersede one of its cards, or sit
 at the same path as one. ``include_deps`` pulls in overlay cards the selection references.
 
 How each card is written into the new slice:
@@ -37,8 +37,10 @@ from pathlib import Path
 from typing import TYPE_CHECKING, Any, Sequence
 
 from .addressing import format_address, normalize_alias, resolve_ref
-from .card import normalize_newlines, parse_card
+from .archive import archive_format, write_archive
+from .card import normalize_newlines, parse_card, truncate
 from .config import (
+    DESCRIPTION_CHARS,
     OVERVIEW_PATH,
     SLICE_FILE,
     Mount,
@@ -49,10 +51,10 @@ from .config import (
     portable_path,
     save_mounts,
 )
-from .errors import AlreadyExistsError, BakeConflictError, InvalidAddressError, MountError, NotFoundError
+from .errors import AlreadyExistsError, BakeConflictError, InvalidAddressError, InvalidArgumentsError, MountError, NotFoundError
 from .fsutil import fsync_dir
 from .lexical import fold
-from .packer import dependency_closure, overlay_cards, retire_overlay_paths, rewrite_refs
+from .slice_transfer import dependency_closure, export_text, overlay_cards, retire_overlay_paths, rewrite_refs
 from .validation import validate_slice_dir
 from .writer import reassemble
 
@@ -68,14 +70,15 @@ def bump_version(version: str) -> str:
     return f"{m.group(1)}.{m.group(2)}.{int(m.group(3)) + 1}" if m else version
 
 
-def default_output(ws: "Workspace", mount: Mount) -> Path:
+def default_output(ws: "Workspace", alias: str, mount: Mount | None) -> Path:
     """``<workspace>/slices/<name>.slice``, or the first free ``<name>-N.slice``."""
-    stem = re.sub(r"-\d+$", "", mount.root.name.removesuffix(".slice")) or "slice"
+    stem = re.sub(r"-\d+$", "", mount.root.name.removesuffix(".slice")) if mount else alias.lstrip("@")
+    stem = stem or "slice"
     slices = ws.root / "slices"
     n = 1
     while True:
         candidate = slices / (f"{stem}.slice" if n == 1 else f"{stem}-{n}.slice")
-        if candidate != mount.root and not candidate.exists():
+        if (mount is None or candidate != mount.root) and not candidate.exists():
             return candidate
         n += 1
 
@@ -88,6 +91,10 @@ def bake(
     tags: str | Sequence[str] | None = None,
     include_deps: bool = False,
     dry_run: bool = False,
+    *,
+    name: str | None = None,
+    description: str | None = None,
+    version: str | None = None,
 ) -> dict[str, Any]:
     alias = normalize_alias(alias)
     tag_set = {fold(t) for t in ([tags] if isinstance(tags, str) else (tags or [])) if fold(t)}
@@ -96,11 +103,12 @@ def bake(
     with ws._writing() as table:
         mount = table.get(alias)
         overlay = table.overlay
-        if mount is None:
-            raise NotFoundError(f"{alias} is not mounted", alias=alias)
-        if mount.alias == overlay.alias:
-            raise MountError(f"bake moves {overlay.alias} cards into a mounted slice; name the slice, not {alias}")
-        if not mount.root.is_dir():
+        if mount is None and prefix is None:
+            raise InvalidArgumentsError(f"--prefix is required to create {alias}; use prefix='' to select all overlay cards",
+                                        alias=alias)
+        if alias == overlay.alias:
+            raise MountError(f"bake moves {overlay.alias} cards into a slice; name the slice, not {alias}")
+        if mount and not mount.root.is_dir():
             raise MountError(f"{alias}: {mount.root} is not a directory", alias=alias)
         idx = ws.index
         cats = idx.catalogs()
@@ -112,21 +120,22 @@ def bake(
             return res.path if res.resolved and res.mount == alias else None
 
         def selected(path: str, parsed) -> bool:
-            if path == OVERVIEW_PATH:
+            if path == OVERVIEW_PATH and (mount or prefix or tag_set):
                 return False
-            if prefix or tag_set:
+            if prefix is not None or tag_set or mount is None:
                 return (not prefix or path.startswith(prefix)) and tag_set <= {fold(t) for t in parsed.tags}
             return path in slice_paths or any(targets_slice(r) for r in parsed.extends + parsed.supersedes)
 
         chosen = sorted(p for p, (_, parsed) in cards.items() if selected(p, parsed))
         if not chosen:
-            how = f"prefix={prefix!r} tags={sorted(tag_set)}" if (prefix or tag_set) else (
+            how = f"prefix={prefix!r} tags={sorted(tag_set)}" if (prefix is not None or tag_set) else (
                 f"none extends, supersedes or shares a path with a card in {alias}; pass prefix or tags to choose")
             raise NotFoundError(f"no {overlay.alias} cards to bake into {alias} ({how})", alias=alias)
         included, pulled, external, warnings = dependency_closure(cards, chosen, overlay.alias, cats, include_deps)
         external.discard(alias)
 
-        staged = sorted(p for p in included if p in ws.staging.entries())
+        staged_paths = ws.staging.entries()
+        staged = sorted(p for p in included if p in staged_paths)
         conflicts = [{"address": format_address(overlay.alias, p), "reason": "staged change pending (apply or discard it first)"}
                      for p in staged]
         for path in sorted(included):
@@ -152,7 +161,7 @@ def bake(
         replaced: list[str] = []
         for path in sorted(included):
             text, parsed = cards[path]
-            new_text = rewrite_refs(text, parsed, mapper)
+            new_text = rewrite_refs(text, parsed, mapper) if mount else export_text(text, parsed, overlay.alias, cats)
             new_parsed = parse_card(new_text)
             if path in new_parsed.supersedes:  # it replaces the file it superseded; a self-reference would be a cycle
                 fields = dict(new_parsed.frontmatter)
@@ -161,7 +170,9 @@ def bake(
             files[path] = normalize_newlines(new_text)
             (replaced if path in slice_paths else created).append(format_address(alias, path))
 
-        sm = load_slice_manifest(mount.root)
+        sm = load_slice_manifest(mount.root) if mount else SliceManifest(
+            name=alias.lstrip("@"), version="0.1.0", alias=alias,
+            description=f"Baked from {overlay.alias} (prefix={prefix})", present=True)
         declared = set()
         for dep in sm.dependencies:
             try:
@@ -169,18 +180,44 @@ def bake(
             except InvalidAddressError:
                 pass
         added_deps = sorted(external - declared)
-        output = default_output(ws, mount) if output_path is None else Path(output_path).expanduser().absolute()
-        output = Path(os.path.abspath(output))
-        if output == mount.root or mount.root in output.parents:
+        requested = default_output(ws, alias, mount) if output_path is None else Path(output_path).expanduser().absolute()
+        requested = Path(os.path.abspath(requested))
+        fmt = archive_format(requested)
+        output = requested if fmt == "directory" else default_output(ws, alias, mount)
+        if fmt != "directory" and output in requested.parents:
+            raise MountError("the archive cannot go inside the slice directory being created", output=str(requested))
+        if fmt != "directory" and requested.exists():
+            raise AlreadyExistsError(f"{requested} already exists", path=str(requested))
+        if mount and (output == mount.root or mount.root in output.parents):
             raise MountError(f"the new slice can't go inside {alias}'s own folder ({mount.root}); pass another output",
                              alias=alias, output=str(output))
         if output.exists() and (not output.is_dir() or any(output.iterdir())):
             raise AlreadyExistsError(f"{output} already exists and is not empty", path=str(output))
-        new_version = bump_version(sm.version) if sm.version else ""
+        for destination in {output, requested}:
+            resolved = destination.resolve()
+            for root in (ws.staging.root, ws.cache_dir):
+                if resolved == root.resolve() or root.resolve() in resolved.parents:
+                    raise MountError("cannot bake into MindSlice internal directories", output=str(destination))
+            for existing in table.all():
+                if resolved == existing.root.resolve() or existing.root.resolve() in resolved.parents:
+                    raise MountError(f"cannot bake inside mounted {existing.alias}'s folder", output=str(destination))
+        new_version = version if version is not None else (bump_version(sm.version) if mount else sm.version)
+        if name is not None:
+            sm.name = name
+        elif not sm.present:
+            sm.name = mount.root.name.removesuffix(".slice")
+        if description is not None or mount is None:
+            sm.description, _ = truncate(" ".join((description if description is not None else sm.description).split()),
+                                         DESCRIPTION_CHARS)
         result: dict[str, Any] = {
             "alias": alias,
-            "output": str(output),
-            "previous_path": str(mount.root),
+            "output": str(requested),
+            "path": str(output),
+            "previous_path": str(mount.root) if mount else None,
+            "format": fmt,
+            "name": sm.name,
+            "cards": sorted(included),
+            "dependencies": sorted(declared | external),
             "dry_run": dry_run,
             "created": created,
             "replaced": replaced,
@@ -197,17 +234,20 @@ def bake(
         tmp_root = Path(tempfile.mkdtemp(prefix=f".{output.name}.", dir=output.parent))
         try:
             tree = tmp_root / output.name
-            shutil.copytree(mount.root, tree, symlinks=True, ignore=shutil.ignore_patterns(".git"))
+            if mount:
+                shutil.copytree(mount.root, tree, symlinks=False, ignore=shutil.ignore_patterns(".git"))
+            else:
+                tree.mkdir()
             for path, text in files.items():
                 dest = tree / f"{path}.md"
                 dest.parent.mkdir(parents=True, exist_ok=True)
                 dest.write_bytes(text.encode("utf-8"))
-            if added_deps or new_version != sm.version:
-                if not sm.present:
-                    sm = SliceManifest(name=mount.root.name.removesuffix(".slice"), present=True)
-                sm.dependencies = list(sm.dependencies) + added_deps
-                sm.version = new_version
-                (tree / SLICE_FILE).write_bytes(dump_slice_manifest(sm).encode("utf-8"))
+            sm.alias = alias
+            sm.dependencies = list(sm.dependencies) + added_deps
+            sm.version = new_version
+            (tree / SLICE_FILE).write_bytes(dump_slice_manifest(sm).encode("utf-8"))
+            if fmt != "directory":
+                write_archive(tree, requested, fmt)
             if output.exists():
                 output.rmdir()  # an empty directory (checked above)
             os.replace(tree, output)
@@ -217,8 +257,10 @@ def bake(
         validation = validate_slice_dir(output, ws)
 
         # The new folder takes over the mount: same alias, precedence and role; the old folder is untouched.
-        new_mount = Mount(alias, portable_path(ws.root, output), mount.precedence, mount.role, "slice", output)
-        save_mounts(ws.root, MountTable(overlay, [new_mount if m.alias == alias else m for m in table.mounts]))
+        new_mount = Mount(alias, portable_path(ws.root, output), mount.precedence if mount else 50,
+                          mount.role if mount else "baseline", "slice", output)
+        mounts = [new_mount if m.alias == alias else m for m in table.mounts] if mount else [*table.mounts, new_mount]
+        save_mounts(ws.root, MountTable(overlay, mounts))
         table = ws._reload_table()
         ws._sync(table)
         result.update(retire_overlay_paths(ws, table, alias, sorted(included), [], cats))

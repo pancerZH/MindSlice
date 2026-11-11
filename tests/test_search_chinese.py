@@ -172,11 +172,12 @@ class ChineseWorkflowTests(WorkspaceTestCase):
         self.ws.apply()
         self.assertEqual(self.addresses(self.ws.search("暂存")), ["@overlay/草稿"])
 
-    def test_pack_chinese_paths(self):
+    def test_bake_chinese_paths(self):
         self.ws.write("笔记/甲", title="甲", summary="见 [[笔记/乙]]。")
         self.ws.write("笔记/乙", title="乙", summary="乙的内容。")
-        res = self.ws.pack(self.tmp / "notes.zip", prefix="笔记/")
+        res = self.ws.bake("@notes", self.tmp / "notes.zip", prefix="笔记/")
         self.assertEqual(res["cards"], ["笔记/乙", "笔记/甲"])
         self.assertTrue(res["validation"]["ok"])
         with zipfile.ZipFile(self.tmp / "notes.zip") as zf:
             self.assertIn("notes.slice/笔记/甲.md", zf.namelist())
+        self.assertEqual(self.ws.read("@notes/笔记/甲")["links"][0]["address"], "@notes/笔记/乙")

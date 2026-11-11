@@ -66,11 +66,11 @@ class CLITests(WorkspaceTestCase):
 
         code, out, _ = run_cli("-w", w, "validate")
         self.assertEqual(code, 0, out)
-        code, out, _ = run_cli("-w", w, "pack", str(self.tmp / "out.slice"), "--prefix", "api/")
+        code, out, _ = run_cli("-w", w, "bake", "@out", "--output", str(self.tmp / "out.slice"), "--prefix", "api/")
         self.assertEqual(json.loads(out)["dependencies"], ["@kb"])
 
         code, out, _ = run_cli("-w", w, "manifest")
-        self.assertEqual([m["alias"] for m in json.loads(out)["mounts"]], ["@overlay", "@kb"])
+        self.assertEqual([m["alias"] for m in json.loads(out)["mounts"]], ["@overlay", "@kb", "@out"])
 
     def test_markdown_read_notes_bypassed_replacements(self):
         self.mount_slice("kb", {"a": card_text("A", "Old rule."), "b": card_text("B", "New rule.", supersedes=["a"])},

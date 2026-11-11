@@ -1,4 +1,4 @@
-"""write() semantics, freshness detection, manifest/search bounds, validate, pack, diff/apply, locking."""
+"""write() semantics, freshness detection, manifest/search bounds, validate, bake, diff/apply, locking."""
 
 from __future__ import annotations
 
@@ -7,11 +7,9 @@ import json
 import os
 import subprocess
 import sys
-import tarfile
 import time
 import tomllib
 import unittest
-import zipfile
 from contextlib import contextmanager
 from pathlib import Path
 
@@ -284,7 +282,7 @@ class ValidateTests(WorkspaceTestCase):
         self.assertIn("staging_conflict", codes)
 
 
-class PackTests(WorkspaceTestCase):
+class BakeExportTests(WorkspaceTestCase):
     def setUp(self):
         super().setUp()
         self.project({"api/auth": card_text("Auth", "Auth.")})
@@ -294,7 +292,7 @@ class PackTests(WorkspaceTestCase):
         self.ws.write("other", summary="Not exported.")
 
     def test_external_refs_become_dependencies(self):
-        res = self.ws.pack(self.tmp / "team.slice", prefix="team/")
+        res = self.ws.bake("@team", self.tmp / "team.slice", prefix="team/")
         self.assertEqual(res["dependencies"], ["@project"])
         sm = tomllib.loads((self.tmp / "team.slice/slice.toml").read_text())
         self.assertEqual(sm["dependencies"], ["@project"])
@@ -302,33 +300,29 @@ class PackTests(WorkspaceTestCase):
         self.assertTrue(res["validation"]["ok"], res["validation"])
 
     def test_tag_filter(self):
-        res = self.ws.pack(self.tmp / "export.slice", tags=["export"])
+        res = self.ws.bake("@export", self.tmp / "export.slice", prefix="", tags=["export"])
         self.assertEqual(res["cards"], ["team/b"])
 
-    def test_archives_are_deterministic(self):
-        def digest(p):
-            return hashlib.sha256(p.read_bytes()).hexdigest()
-
-        # The archive's root folder derives from the file name, so compare same-named outputs.
-        for name in ("a.zip", "a.tar.gz"):
-            self.ws.pack(self.tmp / name, prefix="team/")
-            self.ws.pack(self.tmp / "again" / name, prefix="team/")
-            self.assertEqual(digest(self.tmp / name), digest(self.tmp / "again" / name), name)
-        with zipfile.ZipFile(self.tmp / "a.zip") as zf:
-            self.assertIn("a.slice/team/a.md", zf.namelist())
-            self.assertIn("a.slice/slice.toml", zf.namelist())
-        with tarfile.open(self.tmp / "a.tar.gz") as tf:
-            self.assertIn("a.slice/team/b.md", tf.getnames())
+    def test_relocation_preserves_baseline_and_updates_mount(self):
+        first = self.ws.bake("@team", self.tmp / "team.slice", prefix="team/")
+        self.ws.write("team/new", summary="New team note.")
+        second = self.ws.bake("@team", self.tmp / "next.slice", prefix="team/")
+        self.assertEqual(second["previous_path"], first["output"])
+        self.assertEqual(self.ws.table().get("@team").root, self.tmp / "next.slice")
+        self.assertTrue((self.tmp / "next.slice/team/a.md").is_file())
+        self.assertTrue((self.tmp / "next.slice/team/new.md").is_file())
+        self.assertFalse((self.tmp / "team.slice/team/new.md").exists())
+        self.assertEqual(self.ws.read("@team/team/new")["summary"], "New team note.")
 
     def test_refuses_to_overwrite(self):
         (self.tmp / "out.slice").mkdir()
         (self.tmp / "out.slice/keep.txt").write_text("x")
         with self.assertRaises(AlreadyExistsError):
-            self.ws.pack(self.tmp / "out.slice", prefix="team/")
+            self.ws.bake("@out", self.tmp / "out.slice", prefix="team/")
 
     def test_nothing_selected(self):
         with self.assertRaises(NotFoundError):
-            self.ws.pack(self.tmp / "none.slice", prefix="nope/")
+            self.ws.bake("@none", self.tmp / "none.slice", prefix="nope/")
 
 
 class StagingTests(WorkspaceTestCase):
@@ -681,20 +675,21 @@ finally:
                 else:
                     self.assertFalse(file.exists())
 
-    def test_pack_with_open_source_and_existing_open_output(self):
+    def test_bake_with_open_source_and_existing_open_output(self):
         self.ws.write("held", summary="Exportable capybara.")
+        output = self.tmp / "held.slice"
         with self.held_by_process(self.overlay_file("held")):
-            for name in ("held.slice", "held.zip", "held.tar.gz"):
-                with self.subTest(name=name):
-                    output = self.tmp / name
-                    self.assertTrue(self.ws.pack(output)["validation"]["ok"])
-                    held = output / "held.md" if output.is_dir() else output
-                    original = held.read_bytes()
-                    with self.held_by_process(held):
-                        with self.assertRaises(AlreadyExistsError):
-                            self.ws.pack(output)
-                        self.assertEqual(held.read_bytes(), original)
-                    self.assertEqual(list(output.parent.glob(f".{name}.*")), [])
+            result = self.ws.bake("@held", output, prefix="", dry_run=True)
+            self.assertEqual(result["cards"], ["held"])
+        self.assertTrue(self.ws.bake("@held", output, prefix="")["validation"]["ok"])
+        held = output / "held.md"
+        original = held.read_bytes()
+        self.ws.write("held", summary="Updated capybara.")
+        with self.held_by_process(held):
+            with self.assertRaises(AlreadyExistsError):
+                self.ws.bake("@another", output, prefix="")
+            self.assertEqual(held.read_bytes(), original)
+        self.assertEqual(list(output.parent.glob(".held.slice.*")), [])
 
 
 class LockTests(WorkspaceTestCase):

@@ -155,7 +155,7 @@ def build_parser() -> argparse.ArgumentParser:
     s.add_argument("--precedence", type=int, default=50)
     s.add_argument("--role", default="baseline")
     s.add_argument("--keep-overlay", action="store_true",
-                   help="keep @overlay copies of this slice's cards (by default, unchanged packed copies are retired)")
+                   help="keep @overlay copies of this slice's cards (by default, unchanged exported copies are retired)")
 
     s = sub.add_parser("unmount", help="remove a mount")
     s.add_argument("alias")
@@ -164,25 +164,18 @@ def build_parser() -> argparse.ArgumentParser:
     s.add_argument("slice_path", nargs="?")
     s.add_argument("--rebuild-index", action="store_true", help="rebuild .cache/index.sqlite with full sha256 verification")
 
-    s = sub.add_parser("pack", help="export overlay cards into a standalone .slice (dir, .zip, .tar.gz)")
-    s.add_argument("output")
-    s.add_argument("--prefix")
-    s.add_argument("--tag", action="append", dest="tags")
-    s.add_argument("--include-deps", action="store_true")
-    s.add_argument("--name")
-    s.add_argument("--description")
-    s.add_argument("--slice-version", default="0.1.0")
-    s.add_argument("--alias")
-
-    s = sub.add_parser("bake", help="bake overlay cards into a new version of a mounted slice and mount it instead")
-    s.add_argument("alias", help="the mounted slice to bake into, e.g. @persona")
-    s.add_argument("--output", help="where the new slice goes (default: slices/<name>.slice, or <name>-2.slice ...); "
-                   "the old folder is left as it was")
-    s.add_argument("--prefix", help="bake the overlay cards under this path (default: the ones that extend, "
-                   "supersede or share a path with the slice's cards)")
+    s = sub.add_parser("bake", help="create or update a slice from overlay cards and mount it")
+    s.add_argument("alias", help="the alias to create or update, e.g. @persona")
+    s.add_argument("--output", help="slice directory or .zip/.tar.gz archive (default directory: "
+                   "slices/<name>.slice, or <name>-2.slice ...); the old folder is left as it was")
+    s.add_argument("--prefix", help="select overlay cards under this path; required for a new alias "
+                   "(default for an existing alias: cards that extend, supersede or share a path with its cards)")
     s.add_argument("--tag", action="append", dest="tags", help="bake the overlay cards with this tag (repeatable)")
     s.add_argument("--include-deps", action="store_true", help="also bake overlay cards the selection references")
     s.add_argument("--dry-run", action="store_true", help="show what would move, write nothing")
+    s.add_argument("--name", help="slice name")
+    s.add_argument("--description", help="slice description")
+    s.add_argument("--slice-version", help="version (default: 0.1.0 for a new slice, patch bump for an update)")
 
     s = sub.add_parser("diff", help="show staged changes (or overlay overrides)")
     s.add_argument("--scope", choices=("staging", "overlay"), default="staging")
@@ -278,12 +271,10 @@ def _dispatch(ws: Workspace, args: argparse.Namespace, compact: bool) -> int:
         result = ws.validate(_cwd_path(args.slice_path) if args.slice_path else None, args.rebuild_index)
         _emit(result, compact)
         return 0 if result["ok"] else 1
-    elif cmd == "pack":
-        _emit(ws.pack(_cwd_path(args.output), args.prefix, args.tags, args.include_deps, name=args.name,
-                      description=args.description, version=args.slice_version, alias=args.alias), compact)
     elif cmd == "bake":
         _emit(ws.bake(args.alias, _cwd_path(args.output) if args.output else None, args.prefix, args.tags,
-                      args.include_deps, args.dry_run), compact)
+                      args.include_deps, args.dry_run, name=args.name, description=args.description,
+                      version=args.slice_version), compact)
     elif cmd == "diff":
         result = ws.diff(args.scope)
         if args.patch:

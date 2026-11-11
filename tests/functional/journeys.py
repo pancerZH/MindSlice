@@ -8,6 +8,7 @@ from pathlib import Path
 from typing import Any
 
 from mindslice import ApplyConflictError, Workspace
+from mindslice.archive import write_archive
 
 from .fixtures import SERVICES, empty_workspace, few_slices_workspace, many_slices_workspace
 from .harness import Agent, Human, Journey, JourneyFailure, JourneyRun, Session, addresses, expect, expect_eq
@@ -125,23 +126,21 @@ def _a_finale(run: JourneyRun) -> None:
     expect_eq(kinds, {"user-preferences/code-style": "new", "user-preferences/tooling": "new", "项目/认证": "new"},
               "overlay review before baking")
     # Bake the preferences into a curated slice and retire the overlay copies.
-    baked = run.human("pack preferences", lambda: ws.pack(ws.root / "slices" / "prefs.slice", prefix="user-preferences/"))
+    baked = run.human("bake preferences", lambda: ws.bake("@prefs", ws.root / "slices" / "prefs.slice", prefix="user-preferences/"))
     expect_eq(baked["cards"], ["user-preferences/code-style", "user-preferences/tooling"], "baked cards")
     expect_eq(baked["dependencies"], [], "self-contained slice")
     expect(baked["validation"]["ok"], f"baked slice validates: {baked['validation']}")
-    mounted = run.human("mount prefs", lambda: ws.mount(ws.root / "slices" / "prefs.slice", alias="@prefs", precedence=60,
-                                                        role="curated"))
-    expect_eq(mounted.get("retired_overlay_cards"), [f"@overlay/{c}" for c in baked["cards"]],
-              "mounting the baked slice retires its overlay copies")
+    expect_eq(baked.get("retired_overlay_cards"), [f"@overlay/{c}" for c in baked["cards"]],
+              "baking retires the overlay copies")
     expect_eq(addresses(ws.search("uv")), ["@prefs/user-preferences/tooling"], "recall now served by the baked slice")
     links = ws.read("@prefs/user-preferences/code-style")["links"]
     expect_eq(links, [{"ref": "user-preferences/tooling", "address": "@prefs/user-preferences/tooling"}],
               "links resolve inside the baked slice")
     recalls(ws, "Python 3.12", "3.12")
     # Export what is left in the overlay as a portable archive.
-    export = run.human("export overlay", lambda: ws.pack(run.root.parent / "exports" / "overlay.zip"))
+    export = run.human("export overlay", lambda: ws.bake("@notes", run.root.parent / "exports" / "overlay.zip", prefix=""))
     expect_eq(export["cards"], ["项目/认证"], "remaining overlay export")
-    expect_eq([m["alias"] for m in ws.manifest()["mounts"]], ["@overlay", "@prefs"], "final mounts")
+    expect_eq([m["alias"] for m in ws.manifest()["mounts"]], ["@overlay", "@notes", "@prefs"], "final mounts")
 
 
 def cold_start() -> Journey:
@@ -268,14 +267,12 @@ def _b_finale(run: JourneyRun) -> None:
     kinds = {i["id"]: i["kind"] for i in ws.diff("overlay")["items"]}
     expect_eq(kinds, {"api/admin-tokens": "extends", "api/jwt-ttl": "supersedes", "deploy/checklist": "new",
                       "deploy/rollback-approval": "extends", "值班/告警-更新": "supersedes"}, "overlay before baking")
-    baked = run.human("pack api", lambda: ws.pack(ws.root / "slices" / "api-v2.slice", prefix="api/"))
+    baked = run.human("bake api", lambda: ws.bake("@api-v2", ws.root / "slices" / "api-v2.slice", prefix="api/"))
     expect_eq(baked["cards"], ["api/admin-tokens", "api/jwt-ttl"], "baked API cards")
     expect_eq(baked["dependencies"], ["@project"], "external lineage kept qualified")
     expect(baked["validation"]["ok"], f"baked slice validates: {baked['validation']}")
-    mounted = run.human("mount api-v2", lambda: ws.mount(ws.root / "slices" / "api-v2.slice", alias="@api-v2",
-                                                         precedence=60, role="curated"))
-    expect_eq(mounted.get("retired_overlay_cards"), [f"@overlay/{c}" for c in baked["cards"]],
-              "mounting the baked slice retires its overlay copies")
+    expect_eq(baked.get("retired_overlay_cards"), [f"@overlay/{c}" for c in baked["cards"]],
+              "baking retires the overlay copies")
     res = ws.search("token expiration")
     expect_eq(result_for(res, "@api-v2/api/jwt-ttl").get("matched_via_superseded"), ["@project/api/auth-flow"],
               "supersession survives baking")
@@ -284,9 +281,9 @@ def _b_finale(run: JourneyRun) -> None:
     expect_eq([b["address"] for b in ws.read("@api-v2/api/admin-tokens")["baselines"]], ["@api-v2/api/jwt-ttl"],
               "slice-relative extends resolves inside the baked slice")
     exports = run.root.parent / "exports"
-    first = run.human("export 值班", lambda: ws.pack(exports / "zh-updates.tar.gz", prefix="值班/"))
+    first = run.human("export 值班", lambda: ws.bake("@zh-updates", exports / "zh-updates.tar.gz", prefix="值班/"))
     expect_eq(first["dependencies"], ["@zh"], "Chinese export depends on @zh")
-    run.human("export 值班 again", lambda: ws.pack(exports / "again" / "zh-updates.tar.gz", prefix="值班/"))
+    run.human("export 值班 again", lambda: write_archive(Path(first["path"]), exports / "again" / "zh-updates.tar.gz", "tar.gz"))
     expect_eq(sha256_file(exports / "zh-updates.tar.gz"), sha256_file(exports / "again" / "zh-updates.tar.gz"),
               "exports are byte-for-byte deterministic")
     recalls(ws, "make test", "make test")
@@ -404,27 +401,28 @@ def _c_after_unmount(a: Agent) -> None:
 def _c_finale(run: JourneyRun) -> None:
     ws = run.ws
     exports = run.root.parent / "exports"
-    first = run.human("export incidents", lambda: ws.pack(exports / "incidents.tar.gz", prefix="incidents/"))
+    first = run.human("export incidents", lambda: ws.bake("@incidents", exports / "incidents.tar.gz", prefix="incidents/"))
     expect_eq(first["dependencies"], ["@svc-03", "@svc-07"], "both referenced slices become dependencies")
     expect(any("@svc-07" in w for w in first["warnings"]), "the unresolved reference is reported")
-    run.human("export incidents again", lambda: ws.pack(exports / "again" / "incidents.tar.gz", prefix="incidents/"))
+    run.human("export incidents again", lambda: write_archive(Path(first["path"]), exports / "again" / "incidents.tar.gz", "tar.gz"))
     expect_eq(sha256_file(exports / "incidents.tar.gz"), sha256_file(exports / "again" / "incidents.tar.gz"),
               "exports are byte-for-byte deterministic")
 
     def extract() -> list[str]:
         with tarfile.open(exports / "incidents.tar.gz") as tar:
-            tar.extractall(ws.root / "slices", filter="data")
+            tar.extractall(exports / "extracted", filter="data")
             return sorted(tar.getnames())
 
     names = run.human("extract archive", extract)
     expect_eq(names, ["incidents.slice", "incidents.slice/incidents", "incidents.slice/incidents/2026-11-06.md",
                       "incidents.slice/slice.toml"], "archive layout")
-    report = run.human("validate extracted slice", lambda: ws.validate(ws.root / "slices" / "incidents.slice"))
+    report = run.human("validate extracted slice", lambda: ws.validate(exports / "extracted" / "incidents.slice"))
     expect(report["ok"], f"extracted slice validates: {report['errors']}")
-    mounted = run.human("mount incidents", lambda: ws.mount(ws.root / "slices" / "incidents.slice", alias="@incidents",
+    run.human("unmount original incidents", lambda: ws.unmount("@incidents"))
+    run.human("mount incidents", lambda: ws.mount(exports / "extracted" / "incidents.slice", alias="@incidents",
                                                             precedence=50, role="curated"))
-    expect_eq(mounted.get("retired_overlay_cards"), ["@overlay/incidents/2026-11-06"],
-              "the overlay copy is retired when the exported slice is mounted")
+    expect_eq(first.get("retired_overlay_cards"), ["@overlay/incidents/2026-11-06"],
+              "the overlay copy is retired when the slice is baked")
     card = ws.read("incidents/2026-11-06")
     expect_eq((card["address"], card.get("shadows")), ("@incidents/incidents/2026-11-06", None),
               "the imported slice is no longer shadowed by the overlay copy")

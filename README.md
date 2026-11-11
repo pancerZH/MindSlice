@@ -296,9 +296,11 @@ Over time the agent's notes pile up in `~/mindslice/overlay/`. Every so often, m
 **Start a new slice** from the agent's notes on one topic:
 
 ```bash
-mindslice pack ~/mindslice/slices/python-tips.slice --prefix python/   # copies the notes under python/
-mindslice mount ~/mindslice/slices/python-tips.slice                   # and moves them: the copies leave overlay/
+mindslice bake @python-tips --prefix python/   # creates and mounts the slice, retiring the overlay copies
 ```
+
+`--prefix` selects overlay card paths and is required when the alias is new. Use `--output` to choose
+the output directory. An explicit `--prefix ''` selects all overlay cards.
 
 **Add to a slice you already have.** Say you mounted a team handbook as `@handbook`, and the agent has since
 corrected some of its notes and added to others. Bake those changes into a new version of the handbook:
@@ -311,7 +313,8 @@ mindslice bake @handbook             # build it, and mount it as @handbook in pl
 The new version is a copy of the handbook with the agent's notes added, in `~/mindslice/slices/` (or wherever
 `--output` says). Your original folder is left exactly as it was, just no longer mounted: to go back, mount it
 again. By default, bake takes the agent's notes that build on that slice; `--prefix python/` picks notes by
-folder instead.
+folder instead. For example, `mindslice bake @handbook --prefix python/ --output ./handbook-next.slice`
+keeps the alias and mount settings while switching to the new directory.
 
 A slice is just a folder of Markdown files, so you can also write one by hand and mount it, or let an agent with
 the [slice-builder skill](skills/slice-builder/SKILL.md) build one from your project's docs.
@@ -319,7 +322,8 @@ the [slice-builder skill](skills/slice-builder/SKILL.md) build one from your pro
 #### 6. Share a slice
 
 Share a slice folder however you like (Git, a zip file). Whoever receives it runs
-`mindslice mount python-tips.slice`.
+`mindslice mount python-tips.slice`. Baking also supports `--output python-tips.zip` or `.tar.gz`: it
+writes the archive and mounts a directory under `~/mindslice/slices/`. The result reports both paths.
 
 ### Going further
 

@@ -346,7 +346,7 @@ class Scenario08StagedCreateVsExternalCreation(WorkspaceTestCase):
         self.assertEqual(sha256_bytes(external.read_bytes()), h2)
 
 
-class Scenario09FilteredPackExcludedReference(WorkspaceTestCase):
+class Scenario09FilteredBakeExcludedReference(WorkspaceTestCase):
     def setUp(self):
         super().setUp()
         self.ws.write("shared/prefs", summary="Shared team preferences.", content="- Prefer small PRs.")
@@ -354,7 +354,7 @@ class Scenario09FilteredPackExcludedReference(WorkspaceTestCase):
 
     def test_rejects_without_include_deps(self):
         with self.assertRaises(UnresolvedExportDependencyError) as ctx:
-            self.ws.pack(self.tmp / "team.slice", prefix="team/")
+            self.ws.bake("@team", self.tmp / "team.slice", prefix="team/")
         missing = ctx.exception.details["missing"]
         self.assertEqual({m["target"] for m in missing}, {"@overlay/shared/prefs"})
         self.assertFalse((self.tmp / "team.slice").exists())
@@ -362,10 +362,10 @@ class Scenario09FilteredPackExcludedReference(WorkspaceTestCase):
     def test_qualified_overlay_reference_also_rejected(self):
         self.ws.write("team/profile", op="replace", extends=["@overlay/shared/prefs"])
         with self.assertRaises(UnresolvedExportDependencyError):
-            self.ws.pack(self.tmp / "team.slice", prefix="team/")
+            self.ws.bake("@team", self.tmp / "team.slice", prefix="team/")
 
     def test_include_deps_pulls_transitive_cards(self):
-        res = self.ws.pack(self.tmp / "team.slice", prefix="team/", include_deps=True)
+        res = self.ws.bake("@team", self.tmp / "team.slice", prefix="team/", include_deps=True)
         self.assertEqual(res["cards"], ["shared/prefs", "team/profile"])
         self.assertEqual(res["included_dependencies"], ["shared/prefs"])
         self.assertTrue((self.tmp / "team.slice/shared/prefs.md").exists())
@@ -385,7 +385,7 @@ class Scenario09bTransitiveAliasedDependencies(WorkspaceTestCase):
 
     def test_pulls_chain_rewrites_alias_link_and_validates(self):
         out = self.tmp / "team.slice"
-        res = self.ws.pack(out, prefix="team/", include_deps=True)
+        res = self.ws.bake("@team", out, prefix="team/", include_deps=True)
         self.assertEqual(res["cards"], ["common/base", "common/mid", "team/entry"])
         self.assertEqual(res["included_dependencies"], ["common/mid", "common/base"])
         self.assertEqual(res["dependencies"], ["@project"])
@@ -402,25 +402,21 @@ class Scenario09bTransitiveAliasedDependencies(WorkspaceTestCase):
         self.assertEqual((check["errors"], check["warnings"]), ([], []))
 
 
-class Scenario10PackValidateMountRead(WorkspaceTestCase):
+class Scenario10BakeValidateRead(WorkspaceTestCase):
     def test_slice_relative_scope_after_mount(self):
         self.ws.write("db/conn", summary="Connection settings v1.", content="- Pool size 10.")
         self.ws.write("db/pool", summary="Pool tuning.", content="- See [[@overlay/db/conn]].",
                       extends=["@overlay/db/conn"])
-        res = self.ws.pack(self.tmp / "db.slice", prefix="db/")
+        res = self.ws.bake("@db", self.tmp / "db.slice", prefix="db/")
         self.assertEqual(res["dependencies"], [])
         exported = (self.tmp / "db.slice/db/pool.md").read_text()
         self.assertIn('extends = ["db/conn"]', exported)
         self.assertIn("[[db/conn]]", exported)
         self.assertTrue(self.ws.validate(self.tmp / "db.slice")["ok"])
 
-        # The overlay drifts after the export: its db/conn is no longer the packed copy, so mounting keeps it
-        # (shadowing @db/db/conn for unqualified reads) and retires only the unchanged db/pool.
-        self.ws.write("db/conn", op="replace", summary="Connection settings v2 (overlay drifted).")
-        mounted = self.ws.mount(self.tmp / "db.slice", alias="@db", precedence=40, role="curated")
-        self.assertEqual(mounted["retired_overlay_cards"], ["@overlay/db/pool"])
-        self.assertEqual(mounted["shadowing_overlay_cards"],
-                         [{"address": "@overlay/db/conn", "reason": "differs from @db/db/conn"}])
+        # Later overlay changes cannot hijack the baked slice's relative references.
+        self.ws.write("db/conn", summary="Connection settings v2 (overlay drifted).")
+        self.assertEqual(res["retired_overlay_cards"], ["@overlay/db/conn", "@overlay/db/pool"])
         self.assertEqual(self.ws.read("db/conn")["address"], "@overlay/db/conn")
         res = self.ws.read("@db/db/pool")
         self.assertEqual([b["address"] for b in res["baselines"]], ["@db/db/conn"])

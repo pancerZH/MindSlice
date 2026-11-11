@@ -4,8 +4,7 @@ All nine primitives are methods on :class:`Workspace`:
 
 * Group A (online, also exposed over MCP): ``manifest``, ``search``, ``read``, ``write``
   (plus ``boot``: the always-loaded cards, which ``manifest`` also returns)
-* Group B (slice management):              ``mount`` / ``unmount``, ``validate``, ``pack`` (and ``bake``:
-  a new version of a mounted slice, with overlay cards baked in, mounted in the old one's place)
+* Group B (slice management):              ``mount`` / ``unmount``, ``validate``, ``bake``
 * Group C (transactional sandbox):         ``diff``, ``apply`` / ``discard``
 
 Every operation runs under ``.cache/workspace.lock`` (``LOCK_SH`` for reads,
@@ -22,7 +21,7 @@ from contextlib import contextmanager
 from pathlib import Path
 from typing import Any, Iterator, Sequence
 
-from . import bake as bake_mod, boot as boot_mod, packer, query, staging as staging_mod, validation, writer
+from . import bake as bake_mod, boot as boot_mod, query, slice_transfer, staging as staging_mod, validation, writer
 from .addressing import alias_from_name, normalize_alias
 from .config import (
     MOUNTS_FILE,
@@ -213,9 +212,9 @@ class Workspace:
         are indexed without conversion, and without ``alias`` or a ``slice.toml`` alias the directory
         name becomes one (``My Notes`` -> ``@My-Notes``).
 
-        ``retire_overlay`` (default): ``@overlay`` cards this slice holds unchanged, as ``pack()``
-        exported them, are removed from the overlay so they don't shadow it, and references to them
-        from the overlay cards that stay are rewritten to the slice (``packer.retire_packed_copies``).
+        ``retire_overlay`` (default): overlay cards this slice holds unchanged after reference
+        rewriting are removed so they don't shadow it. References from the overlay cards that stay
+        are rewritten to the slice (``slice_transfer.retire_copies``).
         """
         target = Path(path).expanduser()
         if not target.is_absolute():
@@ -245,7 +244,7 @@ class Workspace:
             save_mounts(self.root, new_table)
             table = self._reload_table()
             stats = self._sync(table)
-            retired = packer.retire_packed_copies(self, table, alias) if retire_overlay else {}
+            retired = slice_transfer.retire_copies(self, table, alias) if retire_overlay else {}
             if retired:
                 self._sync(table)
             mounted = {m.alias for m in new_table.all()}
@@ -292,16 +291,16 @@ class Workspace:
         return validation.validate(self, slice_path, rebuild_index)
 
     def bake(self, alias: str, output_path: str | os.PathLike[str] | None = None, prefix: str | None = None,
-             tags: str | Sequence[str] | None = None, include_deps: bool = False, dry_run: bool = False) -> dict[str, Any]:
-        """Bake ``@overlay`` cards into a new version of the mounted slice ``alias`` and mount it in its place.
+             tags: str | Sequence[str] | None = None, include_deps: bool = False, dry_run: bool = False,
+             *, name: str | None = None, description: str | None = None, version: str | None = None) -> dict[str, Any]:
+        """Create or update ``alias`` from overlay cards and mount the resulting directory.
+
+        A new alias requires ``prefix`` (an empty string explicitly selects all overlay cards).
 
         The old folder is left untouched (and unmounted); ``output_path`` defaults to ``slices/<name>.slice``.
         """
-        return bake_mod.bake(self, alias, output_path, prefix, tags, include_deps, dry_run)
-
-    def pack(self, output_path: str | os.PathLike[str], prefix: str | None = None,
-             tags: str | Sequence[str] | None = None, include_deps: bool = False, **kwargs: Any) -> dict[str, Any]:
-        return packer.pack(self, output_path, prefix, tags, include_deps, **kwargs)
+        return bake_mod.bake(self, alias, output_path, prefix, tags, include_deps, dry_run,
+                             name=name, description=description, version=version)
 
     # ------------------------------------------------------------------
     # Group C: transactional sandbox

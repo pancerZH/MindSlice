@@ -1,4 +1,4 @@
-"""Lifecycle ergonomics: write() impact reports, zero-conversion mounts, and retiring packed overlay copies."""
+"""Lifecycle ergonomics: write() impact reports, zero-conversion mounts, and retiring imported overlay copies."""
 
 from __future__ import annotations
 
@@ -189,8 +189,8 @@ class ZeroConversionMountTests(WorkspaceTestCase):
         self.assertEqual(self.ws.search("legacy")["results"][0]["title"], "Legacy")
 
 
-class RetirePackedCopiesTests(WorkspaceTestCase):
-    """Mounting a packed slice removes the overlay copies that would shadow it."""
+class RetireImportedCopiesTests(WorkspaceTestCase):
+    """Mounting an imported slice removes the overlay copies that would shadow it."""
 
     def setUp(self) -> None:
         super().setUp()
@@ -200,10 +200,14 @@ class RetirePackedCopiesTests(WorkspaceTestCase):
         self.ws.write("api/edge", summary="Edge cases.", content="- See [[api/jwt-ttl]].", extends=["api/jwt-ttl"])
         self.ws.write("notes/todo", summary="Todo.", content="- Check [[api/jwt-ttl]] and [[@overlay/api/edge]].",
                       extends=["@overlay/api/jwt-ttl"])
-        self.packed = self.ws.pack(self.tmp / "api.slice", prefix="api/")
+        # Model an imported slice containing the same cards as the overlay.
+        self.imported = self.make_slice("api", {
+            "api/jwt-ttl": self.overlay_file("api/jwt-ttl").read_text(),
+            "api/edge": self.overlay_file("api/edge").read_text(),
+        }, alias="@api", dependencies=["@project"])
 
     def test_mount_retires_copies_and_rebases_references(self):
-        res = self.ws.mount(self.tmp / "api.slice", alias="@api", precedence=60, role="curated")
+        res = self.ws.mount(self.imported, alias="@api", precedence=60, role="curated")
         self.assertEqual(res["retired_overlay_cards"], ["@overlay/api/edge", "@overlay/api/jwt-ttl"])
         self.assertNotIn("shadowing_overlay_cards", res)
         self.assertFalse(self.overlay_file("api/jwt-ttl").exists())
@@ -223,7 +227,7 @@ class RetirePackedCopiesTests(WorkspaceTestCase):
     def test_edited_and_staged_copies_are_kept(self):
         self.ws.write("api/edge", op="append", content="- A new edge case.")
         self.ws.write("notes/todo", op="append", content="- [[api/jwt-ttl]] again", stage=True)
-        res = self.ws.mount(self.tmp / "api.slice", alias="@api", precedence=60, role="curated")
+        res = self.ws.mount(self.imported, alias="@api", precedence=60, role="curated")
         self.assertEqual(res["shadowing_overlay_cards"], [
             {"address": "@overlay/api/edge", "reason": "differs from @api/api/edge"},
             {"address": "@overlay/api/jwt-ttl", "reason": "referenced by staged @overlay/notes/todo"},
@@ -233,11 +237,11 @@ class RetirePackedCopiesTests(WorkspaceTestCase):
 
     def test_references_from_read_only_slices_are_reported(self):
         self.mount_slice("watcher", {"w": card_text("Watcher", "Watches [[@overlay/api/jwt-ttl]].")}, "@watcher", 10, "baseline")
-        res = self.ws.mount(self.tmp / "api.slice", alias="@api", precedence=60, role="curated")
+        res = self.ws.mount(self.imported, alias="@api", precedence=60, role="curated")
         self.assertEqual(res["broken_references"], [{"address": "@watcher/w", "kind": "wikilink", "ref": "@overlay/api/jwt-ttl"}])
 
     def test_keep_overlay_opts_out(self):
-        code, out, _ = run_cli("-w", str(self.root), "mount", str(self.tmp / "api.slice"), "--alias", "@api",
+        code, out, _ = run_cli("-w", str(self.root), "mount", str(self.imported), "--alias", "@api",
                                "--keep-overlay")
         self.assertEqual(code, 0, out)
         self.assertNotIn("retired_overlay_cards", json.loads(out))

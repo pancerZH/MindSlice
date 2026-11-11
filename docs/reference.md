@@ -125,8 +125,7 @@ the highest-precedence mount; written **inside a card**, it resolves only within
 | A | `boot()` | the always-loaded cards, resolved and composed (also in `manifest()`; `mindslice boot` prints Markdown; `--mcp-instructions` includes MCP server instructions and the empty-workspace hint) |
 | B | `mount(path, alias, precedence, role, retire_overlay=True)` / `unmount(alias)` | updates `mounts.toml` and the index; retires overlay copies the slice holds unchanged |
 | B | `validate(slice_path=None, rebuild_index=False)` | lints from disk; rebuild re-hashes everything |
-| B | `pack(output_path, prefix=None, tags=None, include_deps=False)` | deterministic dir / `.zip` / `.tar.gz` export |
-| B | `bake(alias, output_path=None, prefix=None, tags=None, include_deps=False, dry_run=False)` | a new version of a mounted slice with overlay cards baked in, mounted in its place; the old folder is untouched |
+| B | `bake(alias, output_path=None, prefix=None, tags=None, include_deps=False, dry_run=False)` | create or update and mount a slice; a new alias requires `prefix`; old folders stay untouched |
 | C | `diff(scope="staging"\|"overlay")` | structured summary + unified diffs |
 | C | `apply()` / `discard()` | precondition-checked, journaled, crash-recoverable |
 
@@ -293,30 +292,55 @@ different strings, just as `ran`/`run` are in English.
 session-start hook configuration, three-way conversational onboarding, and clean uninstallation.
 [`skills/slice-builder/SKILL.md`](../skills/slice-builder/SKILL.md) is an agent skill for the full
 slice lifecycle: cold start from project docs, daily refinement in `@overlay`, and consolidation
-plus `pack()` for sharing.
+plus `bake()` for creating, updating and sharing slices.
 
-Mounting a packed slice finishes the move: overlay cards the slice holds unchanged (exactly what `pack()`
-exported) are removed from `@overlay`, so they can't shadow the slice or turn its `supersedes` into competing
-replacements, and links to them from overlay cards that stay are rewritten (`[[db/pool]]` ->
-`[[@db/db/pool]]`). `mount()` reports `retired_overlay_cards` and `rebased_references`, keeps and lists as
-`shadowing_overlay_cards` the copies edited since the pack or with a staged change, and lists references from
-read-only slices it can't rewrite as `broken_references`. `retire_overlay=False` (`--keep-overlay`) keeps them all.
+Use `bake(alias)` (`mindslice bake @alias`) to create or update a slice. The separate `pack` command and
+Python method have been removed.
 
-To add to a slice that is already mounted, `bake(alias)` (`mindslice bake @alias`) builds its next version:
-a copy of the slice's folder (`.git` excluded) plus the overlay cards, at `output_path` (default
-`<workspace>/slices/<name>.slice`, or `<name>-2.slice`, `-3` ... when taken). The new folder takes over the
-mount with the same alias, precedence and role, so every `@alias/...` reference keeps resolving; the overlay
-copies are retired as on `mount()`; and the old folder is left exactly as it was, no longer mounted (mount it
-again to go back). A `slice.toml` version of the form `1.2.3` becomes `1.2.4`. Without
-`prefix` / `tags` it takes the overlay cards that build on the slice (they extend or supersede one of its
-cards, or sit at the same path as one); `include_deps` pulls in overlay cards they reference, as for
-`pack()`. In the baked cards, references to the slice and to each other become slice-relative, references
-to other mounts stay qualified and are added to `slice.toml` `dependencies`. A card that supersedes or
-shadows the slice card at its own path replaces that file; one that *extends* it there would lose the
-baseline, so bake refuses it (`bake_conflict`) until the two are merged into one card, and it also refuses
-cards with a staged change. Nothing is written in either case, and `dry_run` (`--dry-run`) only reports the
-plan, including the output path. [`prompt-template.md`](../skills/slice-builder/prompt-template.md) is the same
-guidance as a portable prompt.
+```bash
+mindslice bake @python --prefix python/               # create and mount a slice from matching overlay cards
+mindslice bake @python                               # update it from related overlay cards
+mindslice bake @python --prefix python/ --output ./python-next.slice
+mindslice bake @python --dry-run                      # inspect the plan without writing
+```
+
+For an alias that is not mounted, `prefix` (`--prefix`) is required, even when `tags` or `output_path`
+is supplied. It filters overlay card paths; it does not specify the output directory. An explicit
+empty prefix (`--prefix ''`, or `prefix=""` in Python) selects all overlay paths, with `tags` applied
+as an additional filter. A new slice starts at version `0.1.0`, precedence `50`, role `baseline`, and
+is mounted automatically. No separate `mount` step is needed.
+
+For an existing alias, the new slice contains a copy of its folder (`.git` excluded) plus the selected
+overlay cards. Without `prefix` / `tags`, it takes the overlay cards that extend or supersede one of
+the slice's cards or share a path with one. `--output` chooses another destination; otherwise the
+output is `<workspace>/slices/<name>.slice`, or `<name>-2.slice`, `-3` ... when taken (a new slice uses
+the alias as its name). The new folder takes over the mount in one atomic mount-table update, keeping
+the same alias, precedence and role. The old directory stays unchanged and is no longer mounted.
+A `slice.toml` version of the form `1.2.3` becomes `1.2.4`. Optional `name`, `description` and `version`
+keyword arguments (`--name`, `--description`, `--slice-version`) override the manifest metadata.
+
+`include_deps` (`--include-deps`) pulls in overlay cards referenced by the selection; without it,
+references to excluded overlay cards raise `unresolved_export_dependency`. References between baked
+cards become slice-relative; references to other mounts stay qualified and are recorded in
+`slice.toml` dependencies. When updating, references to the existing slice also become slice-relative.
+A card that supersedes or shadows the slice card at its own path replaces that file; one that extends
+it there would lose the baseline, so bake refuses it (`bake_conflict`) until the two are merged into
+one card. Selected cards with staged changes are also refused before writing.
+
+Baking retires the overlay copies and rewrites references to them in the overlay cards that stay
+(`[[python/style]]` -> `[[@python/python/style]]`). The result reports `retired_overlay_cards` and
+`rebased_references`; copies needed by staged cards are kept as `shadowing_overlay_cards`, and
+references from read-only mounts that cannot be rewritten are reported as `broken_references`.
+Mounting an imported slice also retires identical overlay copies, keeping edited or staged copies;
+`retire_overlay=False` (`--keep-overlay`) disables this retirement for `mount()`.
+
+For sharing, `--output python.zip`, `python.tar.gz` or `python.tgz` additionally writes a deterministic
+archive of the complete baked slice. The mountable directory is created under `<workspace>/slices/`;
+the result's `output` points to the archive and `path` to the mounted directory. Directory outputs use
+the same value for both. Existing non-empty directories and existing archive files are never overwritten.
+`dry_run` (`--dry-run`) reports the selected cards and destinations without creating either output,
+changing mounts or retiring overlay cards. [`prompt-template.md`](../skills/slice-builder/prompt-template.md)
+contains portable slice-authoring guidance.
 
 ## Notes on interpretation
 

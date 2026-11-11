@@ -1,6 +1,6 @@
 ---
 name: slice-builder
-description: Build, refine and consolidate MindSlice memory slices. Use when bootstrapping a .slice from project docs (README, CLAUDE.md, ADRs, runbooks, source), when recording durable learnings into @overlay, or when distilling overlay/ into a clean, shareable slice with pack().
+description: Build, refine and consolidate MindSlice memory slices. Use when bootstrapping a .slice from project docs (README, CLAUDE.md, ADRs, runbooks, source), when recording durable learnings into @overlay, or when distilling overlay/ into a clean, shareable slice with bake().
 ---
 
 # slice-builder
@@ -179,21 +179,22 @@ the cards you did find, before concluding the memory has nothing.
    delete unrebased extensions (`write E --op replace --extends <replacement>`). Use
    `--stage` + `mindslice diff` + `mindslice apply` when a human should review.
 3. **Scrub**: remove secrets, personal data, absolute paths, ephemeral session details.
-4. **Package**: `mindslice pack team.slice --prefix team/` (or `--tag ...`). References to
-   excluded overlay cards abort the export; add `--include-deps` to pull them in. Cross-slice
-   references become `dependencies`. Archives: `team.slice.tar.gz` / `team.zip` (deterministic).
-5. **Verify**: `mindslice validate team.slice`, then publish the directory as a Git repo or archive.
-6. **Mount it** (`mindslice mount team.slice --precedence 60 --role curated`) to serve it locally.
-   Mounting retires the `@overlay` copies the slice holds unchanged, so they don't shadow it or turn
-   its `supersedes` into competing replacements, and rewrites links to them from the overlay cards
-   that stay (`[[team/lead]]` -> `[[@team/team/lead]]`). The result lists `retired_overlay_cards`,
-   `rebased_references`, `shadowing_overlay_cards` (copies kept: edited since the pack, or staged) and
-   `broken_references` (from read-only slices). `--keep-overlay` keeps every copy.
+4. **Bake and mount**: `mindslice bake @team --prefix team/ --output team.slice` creates a new
+   slice and mounts it as `@team`. A new alias requires `--prefix`, which selects overlay card paths;
+   use `--prefix ''` to select all paths. `--tag ...` adds a tag filter. References to excluded overlay
+   cards abort the bake; add `--include-deps` to pull them in. Cross-slice references become dependencies.
+5. **Verify and share**: check the result's `validation`, or run `mindslice validate team.slice`, then
+   publish the directory as a Git repo or archive. `--output team.zip` / `team.tar.gz` produces a
+   deterministic archive and a mounted directory under the workspace's `slices/`; the result reports
+   the archive as `output` and the directory as `path`.
+6. **Review retirement**: bake removes the overlay copies and rewrites references from cards that stay
+   (`[[team/lead]]` -> `[[@team/team/lead]]`). Check `retired_overlay_cards`, `rebased_references`,
+   `shadowing_overlay_cards` (copies needed by staged cards) and `broken_references` (read-only slices).
 
-**Into a slice that is already mounted**, skip steps 4-6: `mindslice bake @team --dry-run` shows which
-overlay cards would move (by default the ones that extend or supersede a card of `@team`, or share a
-path with one; `--prefix` / `--tag` choose others) and where the new version goes. `mindslice bake @team`
-then builds that version (a copy of the slice plus those cards, `--output` to choose its path), mounts it
-as `@team` in place of the old folder, which it leaves untouched, and retires the overlay copies. Bake
-refuses an overlay card that extends the slice card at its own path (merge the two into one card first,
-step 2) and a card with a staged change. Check the result's `validation` before publishing the new folder.
+**For an existing mount**, `mindslice bake @team --dry-run` shows which overlay cards would move (by
+default the ones that extend or supersede a card of `@team`, or share a path with one) and where the
+new version goes. `mindslice bake @team` builds that version, switches the mount while preserving its
+alias, precedence and role, and retires the overlay copies. `--prefix` / `--tag` select other cards;
+`--output` chooses another destination. The old folder stays unchanged and is no longer mounted.
+Bake refuses an overlay card that extends the slice card at its own path (merge the two into one card
+first, step 2) and a selected card with a staged change. Check `validation` before publishing.
