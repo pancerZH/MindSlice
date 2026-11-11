@@ -170,7 +170,8 @@ the cards you did find, before concluding the memory has nothing.
 
 ## Stage 3 - Consolidate, scrub & share
 
-1. Review what accumulated: `mindslice diff --scope overlay` classifies every overlay card as
+1. Review what accumulated: `mindslice status` summarizes mounts, pending review and unbaked changes.
+   `mindslice diff --scope overlay --json` classifies every overlay card as
    `new`, `shadow` (same path as a base card, no lineage), `extends`, or `supersedes`, and lists
    **unrebased** extensions (an extension whose baseline was later superseded).
 2. **Semantic consolidation** (your job, not the engine's): for each extends/supersedes cluster,

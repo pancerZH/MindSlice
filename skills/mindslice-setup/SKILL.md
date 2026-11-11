@@ -47,11 +47,11 @@ Detect which agent harness you are running in (or ask if ambiguous). Always **me
 | Harness | MCP configuration | Automatic session-start loading (no manual greeting) |
 | :-- | :-- | :-- |
 | **Claude Code** | `claude mcp add --scope user <server_name> -- <mindslice_bin> -w <workspace> mcp` | Automatic: Claude Code forwards MCP `initialize.instructions` (which includes MindSlice's rules and `load = "always"` cards) into the session prompt. |
-| **Antigravity (`agy` CLI / IDE / App)** | Merge `mcpServers.<server_name>` (`command`: `<mindslice_bin>`, `args`: `["-w", "<workspace>", "mcp"]`) into `~/.gemini/config/mcp_config.json`. | Antigravity lazy-loads MCP `instructions.md`. Add a `<server_name>-boot` `SessionStart` hook in `~/.gemini/config/hooks.json` (template below) running `<mindslice_bin> -w <workspace> boot --mcp-instructions` so every new session receives MindSlice's instructions and `always_loaded` cards automatically. |
+| **Antigravity (`agy` CLI / IDE / App)** | Merge `mcpServers.<server_name>` (`command`: `<mindslice_bin>`, `args`: `["-w", "<workspace>", "mcp"]`) into `~/.gemini/config/mcp_config.json`. | Antigravity lazy-loads MCP `instructions.md`. Add a `<server_name>-boot` `SessionStart` hook in `~/.gemini/config/hooks.json` (template below) running `<mindslice_bin> -w <workspace> boot` so every new session receives MindSlice's instructions and `always_loaded` cards automatically. |
 | **Cursor** | Merge `mcpServers.<server_name>` into `~/.cursor/mcp.json` (global) or `.cursor/mcp.json` (project). | Add a short global Cursor Rule instructing the agent to call `<server_name>` `manifest()` on the first turn when standing preferences are not already in context. |
 | **OpenAI Codex CLI** | Add `[mcp_servers.<server_name>]` (`command = "<mindslice_bin>"`, `args = ["-w", "<workspace>", "mcp"]`) in `~/.codex/config.toml`. | If MCP instructions are not auto-inlined by the active Codex version, add a 2-line reminder in `~/.codex/AGENTS.md` to call `manifest()` at session start and record durable learnings with `write()`. |
-| **Strata (local models)** | For CLI apps via Strata, configure the app above and add `"--stage-writes"` for small local models. For Strata web chat, merge `mcp_servers.<server_name>` into both the active launch JSON (`~/.local/state/strata/launch/...`) and base model JSON (`~/.local/share/strata/install/...`), then restart Strata. | Strata 0.1.58 web chat does not forward `initialize.instructions`; if the web UI has a system prompt setting, paste `<mindslice_bin> -w <workspace> boot --mcp-instructions`, otherwise start new web chats by asking the model to call `<server_name>__manifest`. |
-| **Other MCP apps** | Merge `{"mcpServers": {"<server_name>": {"command": "<mindslice_bin>", "args": ["-w", "<workspace>", "mcp"]}}}` into the app's MCP config. | If the app forwards MCP `initialize.instructions`, nothing else is needed. Otherwise wire `<mindslice_bin> -w <workspace> boot --mcp-instructions` into its startup hook / system prompt, or add a global rule to call `manifest()` first. |
+| **Strata (local models)** | For CLI apps via Strata, configure the app above and add `"--stage-writes"` for small local models. For Strata web chat, merge `mcp_servers.<server_name>` into both the active launch JSON (`~/.local/state/strata/launch/...`) and base model JSON (`~/.local/share/strata/install/...`), then restart Strata. | Strata 0.1.58 web chat does not forward `initialize.instructions`; if the web UI has a system prompt setting, paste `<mindslice_bin> -w <workspace> boot`, otherwise start new web chats by asking the model to call `<server_name>__manifest`. |
+| **Other MCP apps** | Merge `{"mcpServers": {"<server_name>": {"command": "<mindslice_bin>", "args": ["-w", "<workspace>", "mcp"]}}}` into the app's MCP config. | If the app forwards MCP `initialize.instructions`, nothing else is needed. Otherwise wire `<mindslice_bin> -w <workspace> boot` into its startup hook / system prompt, or add a global rule to call `manifest()` first. |
 
 ### Antigravity `~/.gemini/config/hooks.json` template
 
@@ -63,7 +63,7 @@ Merge this top-level entry into `~/.gemini/config/hooks.json` (substituting `<se
     "SessionStart": [
       {
         "type": "command",
-        "command": "python3 -c 'import json, subprocess; out = subprocess.run([\"<mindslice_bin>\", \"-w\", \"<workspace>\", \"boot\", \"--mcp-instructions\"], capture_output=True, text=True).stdout.strip(); print(json.dumps({\"injectSteps\": [{\"systemMessage\": {\"systemMessage\": out}}]} if out else {}))'"
+        "command": "python3 -c 'import json, subprocess; out = subprocess.run([\"<mindslice_bin>\", \"-w\", \"<workspace>\", \"boot\"], capture_output=True, text=True).stdout.strip(); print(json.dumps({\"injectSteps\": [{\"systemMessage\": {\"systemMessage\": out}}]} if out else {}))'"
       }
     ]
   }
@@ -72,14 +72,19 @@ Merge this top-level entry into `~/.gemini/config/hooks.json` (substituting `<se
 
 ### Optional: `--stage-writes` for smaller local models
 
-When the user runs a small local model that follows tool instructions less reliably, append `"--stage-writes"` to the MCP `args` (`["-w", "<workspace>", "mcp", "--stage-writes"]`) so every runtime write lands in `staging/` for `mindslice diff --patch` / `mindslice apply`.
+When the user runs a small local model that follows tool instructions less reliably, append `"--stage-writes"` to the MCP `args` (`["-w", "<workspace>", "mcp", "--stage-writes"]`) so every runtime write lands in `staging/` for `mindslice diff` / `mindslice apply`.
 
 ## Step 4 - Verify and hand off
 
 1. Run `<mindslice_bin> -w <workspace> validate` and fix any validation errors.
-2. Run `<mindslice_bin> -w <workspace> boot --mcp-instructions` to verify that standing cards (or the empty-workspace onboarding prompt) render cleanly.
+2. Run `<mindslice_bin> -w <workspace> status` to check mounts and pending review. Run
+   `<mindslice_bin> -w <workspace> boot` to verify that standing cards (or the empty-workspace onboarding prompt) render cleanly.
 3. Tell the user:
    - Where their memory workspace lives on disk (`<workspace>/overlay/` for agent notes, `<workspace>/mounts.toml` for mounted slices).
    - How to start a fresh session in their app (e.g. `/new` in `agy` or Claude Code) so the new MCP server and startup hook take effect — **no manual startup command needed**.
-   - That future agent edits to `load = "always"` cards are staged for safety and approved with `mindslice -w <workspace> diff --patch` and `mindslice -w <workspace> apply`.
+   - That future agent edits to `load = "always"` cards are staged for safety and approved with `mindslice -w <workspace> diff` and `mindslice -w <workspace> apply`.
    - To disconnect or uninstall later, tell the agent to follow [`uninstall.md`](uninstall.md).
+
+For standing cards without tool instructions, use `boot --cards-only`. Startup hooks use plain `boot`;
+remove the former `--mcp-instructions` flag from existing hook commands when upgrading. Use `diff` for
+the patch view (`--patch` is removed), and `status --json` / `diff --json` for script-readable output.

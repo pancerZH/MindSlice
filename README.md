@@ -135,7 +135,7 @@ automatically without typing a manual startup prompt:
     "SessionStart": [
       {
         "type": "command",
-        "command": "python3 -c 'import json, subprocess; out = subprocess.run([\"/home/you/.local/bin/mindslice\", \"-w\", \"/home/you/mindslice\", \"boot\", \"--mcp-instructions\"], capture_output=True, text=True).stdout.strip(); print(json.dumps({\"injectSteps\": [{\"systemMessage\": {\"systemMessage\": out}}]} if out else {}))'"
+        "command": "python3 -c 'import json, subprocess; out = subprocess.run([\"/home/you/.local/bin/mindslice\", \"-w\", \"/home/you/mindslice\", \"boot\"], capture_output=True, text=True).stdout.strip(); print(json.dumps({\"injectSteps\": [{\"systemMessage\": {\"systemMessage\": out}}]} if out else {}))'"
       }
     ]
   }
@@ -149,7 +149,7 @@ automatically without typing a manual startup prompt:
 ```
 
 If your app does not automatically inject MCP `initialize.instructions` into the model's context, wire
-`mindslice -w /home/you/mindslice boot --mcp-instructions` into its startup hook / system prompt, or add a one-line
+`mindslice -w /home/you/mindslice boot` into its startup hook / system prompt, or add a one-line
 global rule instructing the agent to call MindSlice's `manifest` tool at session start.
 
 Then just talk to your agent. Tell it "Remember that I use uv, not pip", and in a later conversation ask "How
@@ -254,8 +254,8 @@ Reply in Simplified Chinese, keep answers short, and show code instead of descri
 Check what MindSlice supplies at session start:
 
 ```bash
-mindslice -w ~/mindslice boot                     # just the always-loaded cards, as Markdown
-mindslice -w ~/mindslice boot --mcp-instructions  # full MCP startup instructions + always-loaded cards
+mindslice -w ~/mindslice boot               # full session startup payload
+mindslice -w ~/mindslice boot --cards-only  # just standing card content, as Markdown
 ```
 
 To keep your preferences in a reusable slice instead, save the note under a slice folder and **mount it once**:
@@ -272,8 +272,8 @@ a plain folder of Markdown files needs no special manifest. If relocating an exi
 copy after confirming the mounted copy appears in `boot`, so the same instructions are not loaded twice. Agent
 writes still go to `overlay/`; mounted slices are read-only to the agent.
 
-Without MCP, start Claude Code with `claude --append-system-prompt "$(mindslice -w ~/mindslice boot)"`, or copy
-the `boot` output into your web chat's system prompt or Saved Info. That supplies standing notes for the chat,
+Without MCP, start Claude Code with `claude --append-system-prompt "$(mindslice -w ~/mindslice boot --cards-only)"`, or copy
+the `boot --cards-only` output into your web chat's system prompt or Saved Info. That supplies standing notes for the chat,
 without live search or write-back.
 
 #### 4. Review what the agent wants to change
@@ -281,10 +281,25 @@ without live search or write-back.
 Changes to always-on notes (and all writes when `--stage-writes` is enabled) wait in a review area until you decide:
 
 ```bash
-mindslice diff --patch    # see the proposed changes
+mindslice status          # mounts, pending review, and slices with unbaked overlay changes
+mindslice diff            # see the proposed changes as a patch
 mindslice apply           # accept them
 mindslice discard         # or throw them away
 ```
+
+`status --json` and `diff --json` provide structured output for scripts. `diff --scope overlay`
+shows the applied overlay changes against mounted slices. In `status`, a dirty slice has related
+overlay cards waiting to be baked; this does not track external edits to the slice's own files.
+
+To stop using a slice, run `mindslice unmount persona` (or `unmount @persona`). Its directory is
+preserved. Mount aliases accept either form in `mount --alias`, `unmount`, `bake`, and `search --source`;
+output consistently uses `@alias`.
+
+CLI references also accept `read persona/tone` when it uniquely identifies `@persona/tone`. If a
+relative card named `persona/tone` also exists in the workspace, use `read @persona/tone` for the mount
+or `read ./persona/tone` for the relative path. The same shorthand works in `write --extends` and
+`--supersedes`, where relative references are scoped to the overlay. Card aliases (`write --alias`)
+and links inside card content keep their existing meaning.
 
 Everything else the agent writes is saved directly as Markdown in `~/mindslice/overlay/`. You can open, edit or
 delete any file there, and MindSlice picks up your changes automatically.

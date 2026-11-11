@@ -1,4 +1,4 @@
-"""``mindslice`` command-line interface (all 9 primitives + ``boot``, ``bake``, ``init`` and ``mcp``)."""
+"""``mindslice`` command-line interface (memory primitives plus ``status``, ``boot``, ``init`` and ``mcp``)."""
 
 from __future__ import annotations
 
@@ -10,8 +10,11 @@ from pathlib import Path
 from typing import Any, Sequence
 
 from . import __version__
+from .addressing import normalize_alias
 from .boot import render_markdown as render_boot
+from .cli_addressing import reference as cli_reference
 from .errors import ApplyConflictError, MindSliceError
+from .status import render_status
 from .workspace import Workspace
 
 
@@ -101,21 +104,23 @@ def build_parser() -> argparse.ArgumentParser:
     s = sub.add_parser("init", help="create a workspace (mounts.toml, overlay/, staging/, slices/, .cache/)")
     s.add_argument("path", nargs="?", default=".")
 
-    s = sub.add_parser("manifest", help="boot context: paginated mount & folder map")
+    s = sub.add_parser("status", help="show mounts, pending review and unbaked overlay changes")
+    s.add_argument("--json", action="store_true", help="structured JSON instead of the workspace overview")
+
+    s = sub.add_parser("manifest", help="paginated mount and folder map for memory navigation")
     s.add_argument("--limit", type=int, default=20)
     s.add_argument("--offset", type=int, default=0)
     s.add_argument("--max-folders", type=int, default=10, dest="max_folders_per_mount")
     s.add_argument("--include-overview", action="store_true")
     s.add_argument("--no-always", action="store_false", dest="include_always", help="omit the always-loaded cards")
 
-    s = sub.add_parser("boot", help="print the always-loaded cards (load = \"always\") as Markdown for a system prompt")
+    s = sub.add_parser("boot", help="emit the session startup payload (instructions, standing cards and onboarding)")
     s.add_argument("--json", action="store_true", help="JSON instead of Markdown")
-    s.add_argument("--mcp-instructions", action="store_true",
-                   help="include MCP server instructions and empty-workspace hint (for session-start hooks)")
+    s.add_argument("--cards-only", action="store_true", help="only standing card content, without startup instructions")
 
     s = sub.add_parser("search", help="associative BM25 search returning card previews")
     s.add_argument("query")
-    s.add_argument("--source", action="append", help="restrict to mount alias (repeatable)")
+    s.add_argument("--source", action="append", type=normalize_alias, help="restrict to mount alias; @ optional (repeatable)")
     s.add_argument("--tag", action="append", dest="tags", help="require tag (repeatable, all must match)")
     s.add_argument("-k", type=int, default=10)
     s.add_argument("--offset", type=int, default=0)
@@ -123,7 +128,7 @@ def build_parser() -> argparse.ArgumentParser:
     s.add_argument("--follow", help="follow_supersedes: all (default) | none | comma-separated roles/@aliases")
 
     s = sub.add_parser("read", help="exact resolution of an address (with lineage composition)")
-    s.add_argument("address")
+    s.add_argument("address", help="@alias/path, unambiguous alias/path, or relative card path (./path forces relative)")
     s.add_argument("--follow", help="follow_supersedes: all (default) | none | comma-separated roles/@aliases")
     s.add_argument("--max-backlinks", type=int, default=10)
     s.add_argument("--backlinks-offset", type=int, default=0)
@@ -151,21 +156,21 @@ def build_parser() -> argparse.ArgumentParser:
 
     s = sub.add_parser("mount", help="mount a read-only slice directory")
     s.add_argument("path")
-    s.add_argument("--alias")
+    s.add_argument("--alias", type=normalize_alias, help="mount alias, with or without @")
     s.add_argument("--precedence", type=int, default=50)
     s.add_argument("--role", default="baseline")
     s.add_argument("--keep-overlay", action="store_true",
                    help="keep @overlay copies of this slice's cards (by default, unchanged exported copies are retired)")
 
     s = sub.add_parser("unmount", help="remove a mount")
-    s.add_argument("alias")
+    s.add_argument("alias", type=normalize_alias, help="mount alias, with or without @")
 
     s = sub.add_parser("validate", help="lint the workspace or a slice directory")
     s.add_argument("slice_path", nargs="?")
     s.add_argument("--rebuild-index", action="store_true", help="rebuild .cache/index.sqlite with full sha256 verification")
 
     s = sub.add_parser("bake", help="create or update a slice from overlay cards and mount it")
-    s.add_argument("alias", help="the alias to create or update, e.g. @persona")
+    s.add_argument("alias", type=normalize_alias, help="alias to create or update, with or without @")
     s.add_argument("--output", help="slice directory or .zip/.tar.gz archive (default directory: "
                    "slices/<name>.slice, or <name>-2.slice ...); the old folder is left as it was")
     s.add_argument("--prefix", help="select overlay cards under this path; required for a new alias "
@@ -179,7 +184,7 @@ def build_parser() -> argparse.ArgumentParser:
 
     s = sub.add_parser("diff", help="show staged changes (or overlay overrides)")
     s.add_argument("--scope", choices=("staging", "overlay"), default="staging")
-    s.add_argument("--patch", action="store_true", help="print a unified diff instead of JSON")
+    s.add_argument("--json", action="store_true", help="structured JSON instead of a unified diff")
 
     sub.add_parser("apply", help="promote staging/ into overlay/ (journaled, all-or-nothing)")
     sub.add_parser("discard", help="drop everything in staging/")
@@ -228,40 +233,49 @@ def main(argv: Sequence[str] | None = None) -> int:
 
 def _dispatch(ws: Workspace, args: argparse.Namespace, compact: bool) -> int:
     cmd = args.command
-    if cmd == "manifest":
+    if cmd == "status":
+        result = ws.status()
+        if args.json:
+            _emit(result, compact)
+        else:
+            sys.stdout.write(render_status(result))
+    elif cmd == "manifest":
         _emit(ws.manifest(args.limit, args.offset, args.max_folders_per_mount, args.include_overview,
                           args.include_always), compact)
     elif cmd == "boot":
+        from .mcp_server import format_instructions
+
         result = ws.boot()
         if args.json:
-            if args.mcp_instructions:
-                from .mcp_server import format_instructions
-
-                result = dict(result, instructions=format_instructions(result))
-            _emit(result, compact)
-        else:
-            if args.mcp_instructions:
-                from .mcp_server import format_instructions
-
-                text = format_instructions(result)
-                sys.stdout.write(text if text.endswith("\n") else text + "\n")
+            if args.cards_only:
+                _emit({"cards": result["cards"], "total": result["total"]}, compact)
             else:
-                sys.stdout.write(render_boot(result["cards"]))
-            for item in result.get("pending_approval", []):
-                sys.stderr.write(f"awaiting approval: @overlay/{item['id']} ({item['reason']}); "
-                                 "review with `mindslice diff`, approve with `mindslice apply`\n")
+                _emit(dict(result, instructions=format_instructions(result)), compact)
+        else:
+            text = render_boot(result["cards"], header="") if args.cards_only else format_instructions(result)
+            if text:
+                sys.stdout.write(text if text.endswith("\n") else text + "\n")
+        for item in result.get("pending_approval", []):
+            sys.stderr.write(f"awaiting approval: {ws.table().overlay.alias}/{item['id']} ({item['reason']}); "
+                             "review with `mindslice diff`, approve with `mindslice apply`\n")
     elif cmd == "search":
         _emit(ws.search(args.query, args.source, args.tags, args.k, args.offset, args.max_neighbors, _follow(args.follow)), compact)
     elif cmd == "read":
-        result = ws.read(args.address, _follow(args.follow), args.max_backlinks, args.backlinks_offset,
-                         args.max_extensions, args.extensions_offset)
+        with ws._reading():
+            address = cli_reference(ws, args.address)
+            result = ws.read(address, _follow(args.follow), args.max_backlinks, args.backlinks_offset,
+                             args.max_extensions, args.extensions_offset)
         if args.markdown:
             sys.stdout.write(render_markdown(result))
         else:
             _emit(result, compact)
     elif cmd == "write":
-        _emit(ws.write(args.id, args.op, _content(args), args.summary, args.title, args.tags, args.aliases,
-                       args.extends, args.supersedes, args.stage, args.if_match, args.load), compact)
+        content = _content(args)
+        with ws._writing() as table:
+            extends = [cli_reference(ws, ref, source=table.overlay.alias) for ref in args.extends] if args.extends else None
+            supersedes = [cli_reference(ws, ref, source=table.overlay.alias) for ref in args.supersedes] if args.supersedes else None
+            _emit(ws.write(args.id, args.op, content, args.summary, args.title, args.tags, args.aliases,
+                           extends, supersedes, args.stage, args.if_match, args.load), compact)
     elif cmd == "mount":
         _emit(ws.mount(_cwd_path(args.path), args.alias, args.precedence, args.role,
                        retire_overlay=not args.keep_overlay), compact)
@@ -277,10 +291,13 @@ def _dispatch(ws: Workspace, args: argparse.Namespace, compact: bool) -> int:
                       version=args.slice_version), compact)
     elif cmd == "diff":
         result = ws.diff(args.scope)
-        if args.patch:
-            sys.stdout.write("".join(item["diff"] for item in result["items"]))
-        else:
+        if args.json:
             _emit(result, compact)
+        else:
+            sys.stdout.write("".join(item["diff"] for item in result["items"]))
+            for item in result["items"]:
+                if item.get("conflict"):
+                    sys.stderr.write(f"conflict: {item['address']}: {item['conflict']}\n")
     elif cmd == "apply":
         _emit(ws.apply(), compact)
     elif cmd == "discard":

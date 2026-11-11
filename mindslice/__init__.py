@@ -12,6 +12,7 @@ is a disposable acceleration cache. Standard library only (Python 3.12+).
 
 from .errors import (
     AlreadyExistsError,
+    AmbiguousAddressError,
     ApplyConflictError,
     BakeConflictError,
     FrontmatterError,
@@ -35,6 +36,7 @@ __all__ = [
     "Workspace",
     "MindSliceError",
     "AlreadyExistsError",
+    "AmbiguousAddressError",
     "ApplyConflictError",
     "BakeConflictError",
     "FrontmatterError",

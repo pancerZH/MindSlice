@@ -93,7 +93,8 @@ class BootSetTests(AlwaysLoadedCase):
     def test_markdown_rendering(self):
         code, out, _ = run_cli("-w", str(self.root), "boot")
         self.assertEqual(code, 0)
-        self.assertTrue(out.startswith("# Always-loaded memory"))
+        self.assertTrue(out.startswith(INSTRUCTIONS))
+        self.assertIn("# Always-loaded memory", out)
         self.assertIn("## Persona: Mira (@persona/tone)", out)
         self.assertIn("- Answer briefly.", out)
         self.assertNotIn("Glossary", out)
@@ -207,11 +208,10 @@ class OnboardingTests(WorkspaceTestCase):
         self.assertTrue(instructions.startswith(INSTRUCTIONS))
         self.assertIn(EMPTY_WORKSPACE_HINT, instructions)
 
-        # Plain `mindslice boot` stays empty when there are no always-loaded cards;
-        # `--mcp-instructions` emits the full MCP startup prompt for session-start hooks.
-        code, plain_out, _ = run_cli("-w", str(self.root), "boot")
+        # Cards-only is empty; the default payload includes the startup and onboarding instructions.
+        code, plain_out, _ = run_cli("-w", str(self.root), "boot", "--cards-only")
         self.assertEqual((code, plain_out), (0, ""))
-        code, hook_out, _ = run_cli("-w", str(self.root), "boot", "--mcp-instructions")
+        code, hook_out, _ = run_cli("-w", str(self.root), "boot")
         self.assertEqual(code, 0)
         self.assertIn(INSTRUCTIONS, hook_out)
         self.assertIn("# Empty memory workspace", hook_out)
@@ -230,14 +230,14 @@ class OnboardingTests(WorkspaceTestCase):
         self.assertNotIn("onboarding_hint", self.ws.manifest())
         self.assertEqual(MCPServer(self.ws).instructions(), INSTRUCTIONS)
 
-        # Once approved, `--mcp-instructions` combines MCP instructions with Always-loaded memory.
+        # Once approved, `boot` combines MCP instructions with Always-loaded memory.
         self.ws.apply()
-        code, hook_out, _ = run_cli("-w", str(self.root), "boot", "--mcp-instructions")
+        code, hook_out, _ = run_cli("-w", str(self.root), "boot")
         self.assertEqual(code, 0)
         self.assertIn(INSTRUCTIONS, hook_out)
         self.assertIn("# Always-loaded memory", hook_out)
         self.assertIn("Reply in Simplified Chinese.", hook_out)
-        code, json_out, _ = run_cli("-w", str(self.root), "boot", "--json", "--mcp-instructions")
+        code, json_out, _ = run_cli("-w", str(self.root), "boot", "--json")
         self.assertEqual(code, 0)
         self.assertIn("# Always-loaded memory", json.loads(json_out)["instructions"])
 

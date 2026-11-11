@@ -34,6 +34,10 @@ class InvalidAddressError(MindSliceError, ValueError):
     code = "invalid_address"
 
 
+class AmbiguousAddressError(InvalidAddressError):
+    code = "ambiguous_address"
+
+
 class NotFoundError(MindSliceError, LookupError):
     code = "not_found"
 

@@ -4,7 +4,7 @@ All nine primitives are methods on :class:`Workspace`:
 
 * Group A (online, also exposed over MCP): ``manifest``, ``search``, ``read``, ``write``
   (plus ``boot``: the always-loaded cards, which ``manifest`` also returns)
-* Group B (slice management):              ``mount`` / ``unmount``, ``validate``, ``bake``
+* Group B (slice management):              ``mount`` / ``unmount``, ``validate``, ``bake`` (plus ``status``)
 * Group C (transactional sandbox):         ``diff``, ``apply`` / ``discard``
 
 Every operation runs under ``.cache/workspace.lock`` (``LOCK_SH`` for reads,
@@ -21,7 +21,16 @@ from contextlib import contextmanager
 from pathlib import Path
 from typing import Any, Iterator, Sequence
 
-from . import bake as bake_mod, boot as boot_mod, query, slice_transfer, staging as staging_mod, validation, writer
+from . import (
+    bake as bake_mod,
+    boot as boot_mod,
+    query,
+    slice_transfer,
+    staging as staging_mod,
+    status as status_mod,
+    validation,
+    writer,
+)
 from .addressing import alias_from_name, normalize_alias
 from .config import (
     MOUNTS_FILE,
@@ -201,6 +210,10 @@ class Workspace:
     # ------------------------------------------------------------------
     # Group B: slice management, linting & packaging
     # ------------------------------------------------------------------
+    def status(self) -> dict[str, Any]:
+        """Mounts, pending review and unbaked overlay changes, without card bodies."""
+        return status_mod.status(self)
+
     def mount(self, path: str | os.PathLike[str], alias: str | None = None, precedence: int = 50,
               role: str = "baseline", retire_overlay: bool = True) -> dict[str, Any]:
         """Mount a read-only slice directory.

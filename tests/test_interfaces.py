@@ -59,7 +59,7 @@ class CLITests(WorkspaceTestCase):
         self.assertEqual(json.loads(out)["address"], "@kb/api/auth")
 
         code, out, _ = run_cli("-w", w, "write", "draft", "--summary", "Staged draft.", "--stage")
-        code, out, _ = run_cli("-w", w, "diff", "--patch")
+        code, out, _ = run_cli("-w", w, "diff")
         self.assertIn("+Staged draft.", out)
         code, out, _ = run_cli("-w", w, "apply")
         self.assertEqual(json.loads(out)["created"], ["@overlay/draft"])

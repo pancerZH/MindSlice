@@ -122,12 +122,54 @@ the highest-precedence mount; written **inside a card**, it resolves only within
 | A (MCP) | `search(query, source=None, tags=None, k=10, offset=0, max_neighbors=3, follow_supersedes=True)` | `score = -bm25(10,5,3,2,1) > 0`; supersession redirect; 240-char summaries |
 | A (MCP) | `read(address, follow_supersedes=True, max_backlinks=10, backlinks_offset=0, max_extensions=5, extensions_offset=0)` | forwarding, extends composition, shadows, backlinks, `sha256` |
 | A (MCP) | `write(id, op="create"\|"replace"\|"append"\|"delete", content, summary, title, tags, aliases, extends, supersedes, stage=None, if_match=None, load=None)` | overlay only; cycle checks; verified TOML round-trip; `affected_backlinks` / `affected_extensions` when it supersedes or deletes; changes to always-loaded cards are staged |
-| A | `boot()` | the always-loaded cards, resolved and composed (also in `manifest()`; `mindslice boot` prints Markdown; `--mcp-instructions` includes MCP server instructions and the empty-workspace hint) |
+| A | `boot()` | resolved always-loaded cards; CLI `boot` emits the full startup payload, `--cards-only` emits card content |
 | B | `mount(path, alias, precedence, role, retire_overlay=True)` / `unmount(alias)` | updates `mounts.toml` and the index; retires overlay copies the slice holds unchanged |
+| B | `status()` | all mounts, pending review files and conflicts, dirty slices and unassigned overlay cards |
 | B | `validate(slice_path=None, rebuild_index=False)` | lints from disk; rebuild re-hashes everything |
 | B | `bake(alias, output_path=None, prefix=None, tags=None, include_deps=False, dry_run=False)` | create or update and mount a slice; a new alias requires `prefix`; old folders stay untouched |
 | C | `diff(scope="staging"\|"overlay")` | structured summary + unified diffs |
 | C | `apply()` / `discard()` | precondition-checked, journaled, crash-recoverable |
+
+### CLI overview and output modes
+
+`mindslice status` lists every mount (alias, directory, precedence, role and card count), pending
+review files (create/modify/delete, approval reasons and staging conflicts), dirty slices, and
+unassigned overlay cards. A **dirty slice** has applied overlay cards extending, superseding or
+shadowing its cards, ready for a future bake. A card related to several slices is counted under each;
+within one slice it is counted once in `total`, but may appear in several relation counts. Unassigned
+cards have no such relation to a mounted slice. Changes still in staging appear under pending review.
+External edits to mounted files are indexed normally but are not tracked as dirty against a baseline.
+`status --json` returns the same overview as structured data, without card bodies or patches.
+
+`mindslice diff` prints a unified patch of staging changes. `--scope overlay` compares applied overlay
+cards with their baselines. `diff --json` returns the structured report; conflicts in text mode are
+reported on stderr. The redundant `--patch` flag is removed. `apply` approves staged changes and
+`discard` drops them. `unmount alias` removes a mount while preserving its directory; the writable
+overlay cannot be unmounted.
+
+`mindslice boot` emits the session startup payload: usage instructions, resolved always-loaded cards,
+and the onboarding hint when the workspace is empty. `boot --cards-only` emits only the composed card
+content, with no instruction header or onboarding text; with no standing cards it emits nothing.
+`--json` controls format independently: full mode includes `instructions` and the boot snapshot;
+cards-only mode includes just `cards` and `total`. Approval reminders go to stderr in both formats.
+The former `--mcp-instructions` flag is removed; startup hooks should call plain `boot`.
+
+### CLI aliases and reference shorthand
+
+Mount alias arguments accept `alias` and `@alias`: `mount --alias`, `unmount`, `bake`, and
+`search --source` normalize them during CLI parsing. Output uses the canonical `@alias` form.
+Path arguments (`mount`'s directory, `--output`, `--prefix`, and `write`'s overlay card id) remain paths.
+
+In CLI `read`, `write --extends`, and `write --supersedes`, `alias/path` can abbreviate `@alias/path`
+when that target exists and no relative card matches. Read checks relative paths and card aliases
+across the workspace; write lineage checks them within the overlay. If both interpretations resolve,
+the CLI returns `ambiguous_address`, listing the candidates. Use `@alias/path` to choose the mount or
+`./alias/path` to force a relative reference. Unrelated files in the shell's current directory do not
+create a reference conflict. Explicit qualified addresses always select the named mount.
+
+This shorthand is confined to CLI reference arguments. `write --alias` still defines arbitrary card
+aliases; `--follow` still accepts roles or explicit `@aliases`. Markdown links, persisted relative
+lineage references, and Python/MCP addressing keep their original slice-relative rules.
 
 ### Lineage in one paragraph
 
@@ -183,16 +225,16 @@ MindSlice makes these cards available without a search query. The chat app must 
   as `always_loaded`. Clients must include those instructions or the tool result in the model's context;
   handling of server instructions depends on the client. MCP registration applies to that client only,
   not to other apps using the same model server. When a harness lazy-loads or drops `initialize`
-  instructions, wire `mindslice -w /path/to/workspace boot --mcp-instructions` into its session-start
+  instructions, wire `mindslice -w /path/to/workspace boot` into its session-start
   hook (see [`skills/mindslice-setup/SKILL.md`](../skills/mindslice-setup/SKILL.md)). If the set changes
   mid-session (a slice is mounted, the user approves a change), the next tool result carries an
   `always_loaded_update` with the new or changed cards.
 - **Empty workspace onboarding**: when only `@overlay` is mounted, no cards are indexed, and nothing is
-  staged (`boot()` sets `empty_workspace: true`), MCP `initialize` instructions (and `mindslice boot
-  --mcp-instructions`) append an `# Empty memory workspace` cold-start hint, and `manifest()` includes
-  `onboarding_hint`. Both disappear as soon as the first card is written, staged, or mounted.
-- **Anything else**: `mindslice boot` prints them as Markdown, ready for a system prompt
-  (`claude --append-system-prompt "$(mindslice boot)"`, or paste into any chat). `boot()` in Python.
+  staged (`boot()` sets `empty_workspace: true`), MCP `initialize` instructions and `mindslice boot`
+  append an `# Empty memory workspace` cold-start hint, and `manifest()` includes `onboarding_hint`. Both disappear as soon as the first card is written, staged, or mounted.
+- **Cards without tool instructions**: `mindslice boot --cards-only` prints only standing card content,
+  ready for a system prompt (`claude --append-system-prompt "$(mindslice boot --cards-only)"`, or paste
+  into any chat). `boot()` in Python continues to return the structured card snapshot.
 - **`mount()`** lists the always-loaded cards the new slice brings.
 
 The set is each always-loaded card resolved the way `read()` resolves it: a card superseded in

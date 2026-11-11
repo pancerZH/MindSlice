@@ -128,7 +128,8 @@ def render_markdown(cards: Iterable[dict[str, Any]], header: str = HEADER) -> st
             block(ext, "### Extension:")
     if not out:
         return ""
-    return header.rstrip() + "\n\n" + "\n".join(out).rstrip() + "\n"
+    prefix = header.rstrip() + "\n\n" if header.strip() else ""
+    return prefix + "\n".join(out).rstrip() + "\n"
 
 
 def protection_reason(
