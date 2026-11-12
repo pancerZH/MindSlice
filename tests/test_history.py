@@ -139,7 +139,7 @@ class HistoryTests(WorkspaceTestCase):
         self.assertEqual(self.events()[-1]["version"], "0.1.1")
 
     def test_cli_and_mcp_accept_only_reason_and_show_review_metadata(self):
-        code, out, err = run_cli("-w", str(self.root), "write", "note", "--summary", "Proposed text.",
+        code, out, err = run_cli("-w", str(self.root), "--json", "write", "note", "--summary", "Proposed text.",
                                 "--stage", "--reason", "User corrected the date.")
         self.assertEqual((code, err), (0, ""))
         id = json.loads(out)["change_id"]

@@ -155,10 +155,10 @@ class BakeTests(WorkspaceTestCase):
 
     def test_cli(self):
         self.ws.write("emoji", summary="Mira may use emoji.", extends=["@persona/tone"], stage=False)
-        code, out, _ = run_cli("-w", str(self.root), "bake", "@persona", "--dry-run")
+        code, out, _ = run_cli("-w", str(self.root), "--json", "bake", "@persona", "--dry-run")
         self.assertEqual((code, json.loads(out)["created"]), (0, ["@persona/emoji"]))
         out_dir = self.tmp / "elsewhere" / "persona-next.slice"
-        code, out, _ = run_cli("-w", str(self.root), "bake", "@persona", "--output", str(out_dir))
+        code, out, _ = run_cli("-w", str(self.root), "--json", "bake", "@persona", "--output", str(out_dir))
         res = json.loads(out)
         self.assertEqual((res["output"], res["retired_overlay_cards"]), (str(out_dir), ["@overlay/emoji"]))
         self.assertEqual(self.baked, out_dir)
@@ -177,7 +177,7 @@ class BakeCreationTests(WorkspaceTestCase):
                 self.ws.bake("@python", **options)
         self.assertIsNone(self.ws.table().get("@python"))
         self.assertTrue(self.overlay_file("python/style").exists())
-        code, _, err = run_cli("-w", str(self.root), "bake", "@python", "--tag", "python")
+        code, _, err = run_cli("-w", str(self.root), "--json", "bake", "@python", "--tag", "python")
         self.assertEqual(code, 1)
         self.assertEqual(json.loads(err)["code"], "invalid_arguments")
         self.assertIn("--prefix", json.loads(err)["message"])
@@ -236,7 +236,7 @@ class BakeCreationTests(WorkspaceTestCase):
 
     def test_cli_create_custom_directory_and_metadata(self):
         output = self.tmp / "custom.slice"
-        code, out, err = run_cli("-w", str(self.root), "bake", "@python", "--prefix", "python/", "--output", str(output),
+        code, out, err = run_cli("-w", str(self.root), "--json", "bake", "@python", "--prefix", "python/", "--output", str(output),
                                 "--name", "Python notes", "--description", "Team Python notes", "--slice-version", "2.0.0")
         self.assertEqual(code, 0, err)
         self.assertEqual(json.loads(out)["output"], str(output))

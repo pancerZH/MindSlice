@@ -16,6 +16,7 @@ from .cli_addressing import reference as cli_reference
 from ..errors import ApplyConflictError, MindSliceError
 from ..operations.status import render_status
 from ..workspace import Workspace
+from . import render
 
 
 def _follow(value: str | None) -> bool | list[str]:
@@ -34,6 +35,24 @@ def _emit(data: Any, compact: bool) -> None:
     sys.stdout.write(text + "\n")
 
 
+def _output(args: argparse.Namespace, data: Any, renderer: render.Renderer) -> None:
+    """Human-readable by default; the result dict as JSON with ``--json`` (or ``--compact``)."""
+    if args.json:
+        _emit(data, args.compact)
+        return
+    text = renderer(data)
+    if text:
+        sys.stdout.write(text if text.endswith("\n") else text + "\n")
+
+
+def _error(args: argparse.Namespace, error: dict[str, Any]) -> None:
+    """Errors go to stderr in both modes, with the same stable ``code``."""
+    if args.json:
+        sys.stderr.write(json.dumps(error, ensure_ascii=False) + "\n")
+    else:
+        sys.stderr.write(render.render_error(error))
+
+
 def _content(args: argparse.Namespace) -> str | None:
     if args.content is not None and args.content_file is not None:
         raise SystemExit("use either --content or --content-file, not both")
@@ -48,52 +67,15 @@ def _cwd_path(value: str) -> str:
     return str(Path(value).expanduser().absolute())
 
 
-def render_markdown(result: dict[str, Any]) -> str:
-    """Human-readable rendering of a ``read()`` result (composed view)."""
-    out: list[str] = []
-
-    def card(c: dict[str, Any], heading: str) -> None:
-        out.append(f"{heading} {c['title']}  ({c['address']}, role={c['role']}, precedence={c['precedence']})")
-        if c.get("summary"):
-            out.append("")
-            out.append(c["summary"])
-        if c.get("body", "").strip():
-            out.append("")
-            out.append(c["body"].rstrip())
-        out.append("")
-
-    notes = []
-    if result.get("redirected_from"):
-        notes.append("redirected from " + result["redirected_from"] + " via " + " -> ".join(result.get("lineage_path", [])))
-    for key in ("shadows", "superseded_by_untrusted", "baseline_superseded_by"):
-        if result.get(key):
-            notes.append(f"{key}: {', '.join(result[key])}")
-    if result.get("unrebased_extensions"):
-        notes.append("unrebased_extensions: " + ", ".join(
-            f"{u['address']} (extends {u['extends']})" for u in result["unrebased_extensions"]))
-    if result.get("bypassed_replacements"):
-        notes.append("bypassed_replacements: " + ", ".join(
-            f"{b['address']} (supersedes {b['supersedes']})" for b in result["bypassed_replacements"]))
-    if result.get("competing_replacements"):
-        notes.append("competing_replacements: " + ", ".join(c["address"] for c in result["competing_replacements"]))
-    for base in result.get("baselines", []):
-        card(base, "## Baseline:")
-    card(result, "#")
-    for ext in result.get("extensions", []):
-        card(ext, "## Extension:")
-    if notes:
-        out.append("---")
-        out.extend(f"> {n}" for n in notes)
-    out.append(f"<!-- status: {result.get('status')} sha256: {result.get('sha256')} -->")
-    return "\n".join(out).rstrip() + "\n"
-
-
 def build_parser() -> argparse.ArgumentParser:
     # Global options are accepted before or after the subcommand.
     common = argparse.ArgumentParser(add_help=False)
     common.add_argument("-w", "--workspace", default=argparse.SUPPRESS,
                         help="workspace root (default: $MINDSLICE_WORKSPACE or nearest dir with mounts.toml)")
-    common.add_argument("--compact", action="store_true", default=argparse.SUPPRESS, help="single-line JSON output")
+    common.add_argument("--json", action="store_true", default=argparse.SUPPRESS,
+                        help="structured JSON output instead of human-readable text (errors too, on stderr)")
+    common.add_argument("--compact", action="store_true", default=argparse.SUPPRESS,
+                        help="single-line JSON output (implies --json)")
     p = argparse.ArgumentParser(prog="mindslice", parents=[common],
                                 description="Layered, human-readable long-term memory for LLM agents.")
     p.add_argument("--version", action="version", version=f"mindslice {__version__}")
@@ -105,39 +87,32 @@ def build_parser() -> argparse.ArgumentParser:
     s.add_argument("path", nargs="?", default=".")
 
     s = sub.add_parser("doctor", help="check local workspace, startup payload and MCP; guide client verification")
-    s.add_argument("--json", action="store_true", help="structured diagnostic report")
 
     s = sub.add_parser("status", help="show mounts, pending review and unbaked overlay changes")
-    s.add_argument("--json", action="store_true", help="structured JSON instead of the workspace overview")
 
     s = sub.add_parser("history", help="inspect recorded reasons and lifecycle events (not old content snapshots)")
     s.add_argument("address", nargs="?", help="card address; omit for workspace history, including version switches")
     s.add_argument("--limit", type=int, default=20)
     s.add_argument("--offset", type=int, default=0)
-    s.add_argument("--json", action="store_true")
 
     s = sub.add_parser("explain", help="explain the sources, precedence and lineage of a read result")
     s.add_argument("address")
     s.add_argument("--follow", help="all | none | comma-separated roles/@aliases")
     s.add_argument("--max-extensions", type=int, default=5)
     s.add_argument("--extensions-offset", type=int, default=0)
-    s.add_argument("--json", action="store_true")
 
     s = sub.add_parser("rollback", help="preview and switch a mounted slice to an earlier directory; overlay stays")
     s.add_argument("alias", type=normalize_alias)
     s.add_argument("--to", dest="target", help="physical slice directory (default: recorded predecessor)")
     s.add_argument("--dry-run", action="store_true")
     s.add_argument("--yes", action="store_true", help="execute after reviewing the preview")
-    s.add_argument("--json", action="store_true")
 
     s = sub.add_parser("backup", help="create a verified portable directory snapshot, including external mounts")
     s.add_argument("output", help="new backup directory outside the workspace and mounted sources")
-    s.add_argument("--json", action="store_true")
 
     s = sub.add_parser("restore", help="verify a backup and restore into a new workspace directory")
     s.add_argument("source", help="backup directory")
     s.add_argument("--output", required=True, help="new workspace directory; never overwrites an existing directory")
-    s.add_argument("--json", action="store_true")
 
     s = sub.add_parser("manifest", help="paginated mount and folder map for memory navigation")
     s.add_argument("--limit", type=int, default=20)
@@ -147,7 +122,6 @@ def build_parser() -> argparse.ArgumentParser:
     s.add_argument("--no-always", action="store_false", dest="include_always", help="omit the always-loaded cards")
 
     s = sub.add_parser("boot", help="emit the session startup payload (instructions, standing cards and onboarding)")
-    s.add_argument("--json", action="store_true", help="JSON instead of Markdown")
     s.add_argument("--cards-only", action="store_true", help="only standing card content, without startup instructions")
 
     s = sub.add_parser("search", help="associative BM25 search returning card previews")
@@ -166,7 +140,7 @@ def build_parser() -> argparse.ArgumentParser:
     s.add_argument("--backlinks-offset", type=int, default=0)
     s.add_argument("--max-extensions", type=int, default=5)
     s.add_argument("--extensions-offset", type=int, default=0)
-    s.add_argument("--markdown", action="store_true", help="render the composed card as Markdown instead of JSON")
+    s.add_argument("--markdown", action="store_true", help=argparse.SUPPRESS)  # deprecated: now the default
 
     s = sub.add_parser("write", help="create/replace/append/delete a card in overlay/ (or staging/)")
     s.add_argument("id", help="overlay-relative card id, e.g. api/auth-edge-cases")
@@ -209,7 +183,6 @@ def build_parser() -> argparse.ArgumentParser:
     s.add_argument("--plan", help="reviewed JSON plan from bake --dry-run --json")
     s.add_argument("--fresh", action="store_true", help="ignore saved batch destination choices")
     s.add_argument("--yes", action="store_true", help="execute a resolved batch plan without interactive confirmation")
-    s.add_argument("--json", action="store_true", help="structured batch plan/receipt; never prompt")
     s.add_argument("--output", help="slice directory or .zip/.tar.gz archive (default directory: "
                    "slices/<name>.slice, or <name>-2.slice ...); the old folder is left as it was")
     s.add_argument("--prefix", help="select overlay cards under this path; required for a new named target "
@@ -223,7 +196,6 @@ def build_parser() -> argparse.ArgumentParser:
 
     s = sub.add_parser("diff", help="show staged changes (or overlay overrides)")
     s.add_argument("--scope", choices=("staging", "overlay"), default="staging")
-    s.add_argument("--json", action="store_true", help="structured JSON instead of a unified diff")
 
     for command, description in (
         ("apply", "accept selected staging cards (default: all), saved and active immediately"),
@@ -246,33 +218,25 @@ def _open(args: argparse.Namespace) -> Workspace:
 def main(argv: Sequence[str] | None = None) -> int:
     from .mcp_server import ensure_utf8_stdio
 
-    ensure_utf8_stdio()  # JSON output is UTF-8 (CJK-safe) regardless of the console locale
+    ensure_utf8_stdio()  # output is UTF-8 (CJK-safe) regardless of the console locale
     args = build_parser().parse_args(argv)
     args.workspace = getattr(args, "workspace", None)
-    args.compact = compact = getattr(args, "compact", False)
+    args.compact = getattr(args, "compact", False)
+    args.json = getattr(args, "json", False) or args.compact
     try:
         if args.command == "init":
             target = Path(args.workspace or args.path)
             with Workspace.init(target) as ws:
-                _emit({"workspace": str(ws.root), "mounts": str(ws.root / "mounts.toml")}, compact)
+                _output(args, {"workspace": str(ws.root), "mounts": str(ws.root / "mounts.toml")}, render.render_init)
             return 0
         if args.command == "restore":
-            result = Workspace.restore(args.source, args.output)
-            if args.json:
-                _emit(result, compact)
-            else:
-                sys.stdout.write(f"Restored workspace: {result['workspace']}\n{result['note']}\n")
-                for path in result["unavailable_versions"]:
-                    sys.stdout.write(f"Historical version unavailable in backup: {path}\n")
+            _output(args, Workspace.restore(args.source, args.output), _render_restore)
             return 0
         if args.command == "doctor":
-            from .doctor import diagnose, render
+            from .doctor import diagnose, render as render_doctor
 
             result = diagnose(args.workspace or os.environ.get("MINDSLICE_WORKSPACE"))
-            if args.json:
-                _emit(result, compact)
-            else:
-                sys.stdout.write(render(result))
+            _output(args, result, render_doctor)
             return 0 if result["ok"] else 1
         if args.command == "mcp":
             from .mcp_server import serve
@@ -281,53 +245,53 @@ def main(argv: Sequence[str] | None = None) -> int:
                 serve(ws, stage_writes=args.stage_writes)
             return 0
         with _open(args) as ws:
-            return _dispatch(ws, args, compact)
+            return _dispatch(ws, args)
     except ApplyConflictError as exc:
-        _emit(exc.to_dict(), compact)
+        _error(args, exc.to_dict())
         return 2
     except MindSliceError as exc:
-        sys.stderr.write(json.dumps(exc.to_dict(), ensure_ascii=False) + "\n")
+        _error(args, exc.to_dict())
         return 1
     except (ValueError, TypeError, OSError) as exc:
-        sys.stderr.write(json.dumps({"error": type(exc).__name__, "message": str(exc)}, ensure_ascii=False) + "\n")
+        _error(args, {"error": type(exc).__name__, "message": str(exc)})
         return 1
 
 
-def _dispatch(ws: Workspace, args: argparse.Namespace, compact: bool) -> int:
+def _render_restore(result: dict[str, Any]) -> str:
+    lines = [f"Restored workspace: {result['workspace']}", result["note"]]
+    lines += [f"Historical version unavailable in backup: {path}" for path in result["unavailable_versions"]]
+    return "\n".join(lines) + "\n"
+
+
+def _render_backup(result: dict[str, Any]) -> str:
+    lines = [f"Backup: {result['path']} ({result['files']} files)", result["note"]]
+    lines += [f"Historical version already missing: {path}" for path in result["unavailable_versions"]]
+    return "\n".join(lines) + "\n"
+
+
+def _dispatch(ws: Workspace, args: argparse.Namespace) -> int:
     cmd = args.command
+
+    def out(data: Any, renderer: render.Renderer) -> None:
+        _output(args, data, renderer)
+
     if cmd == "status":
-        result = ws.status()
-        if args.json:
-            _emit(result, compact)
-        else:
-            sys.stdout.write(render_status(result))
+        out(ws.status(), render_status)
     elif cmd in ("history", "explain"):
         from ..operations.audit import render_history, render_explain
         with ws._reading():
             address = cli_reference(ws, args.address) if args.address else None
             result = (ws.card_history(address, args.limit, args.offset) if cmd == "history" else
                       ws.explain(address, _follow(args.follow), args.max_extensions, args.extensions_offset))
-        if args.json:
-            _emit(result, compact)
-        else:
-            sys.stdout.write(render_history(result) if cmd == "history" else render_explain(result))
+        out(result, render_history if cmd == "history" else render_explain)
     elif cmd == "backup":
-        result = ws.backup(args.output)
-        if args.json:
-            _emit(result, compact)
-        else:
-            sys.stdout.write(f"Backup: {result['path']} ({result['files']} files)\n{result['note']}\n")
-            for path in result["unavailable_versions"]:
-                sys.stdout.write(f"Historical version already missing: {path}\n")
+        out(ws.backup(args.output), _render_backup)
     elif cmd == "rollback":
         from ..operations.recovery import render_rollback
         from ..errors import RecoveryError
         plan = ws.rollback(args.alias, args.target, dry_run=True)
         if args.dry_run:
-            if args.json:
-                _emit(plan, compact)
-            else:
-                sys.stdout.write(render_rollback(plan))
+            out(plan, render_rollback)
             return 0 if plan["ready"] else 1
         if not plan["ready"]:
             raise RecoveryError("rollback is blocked; inspect rollback --dry-run", plan=plan)
@@ -341,25 +305,22 @@ def _dispatch(ws: Workspace, args: argparse.Namespace, compact: bool) -> int:
             except KeyboardInterrupt:
                 answer = ""
             if answer not in ("yes", "y"):
-                _emit({"cancelled": True}, compact)
+                out({"cancelled": True}, render.render_cancelled)
                 return 0
         result = ws.rollback(args.alias, plan["path"], revision=plan["revision"])
-        if args.json:
-            _emit(result, compact)
-        else:
-            sys.stdout.write("Slice pointer switched.\n" + render_rollback(result))
+        out(result, lambda r: "Slice pointer switched.\n" + render_rollback(r))
     elif cmd == "manifest":
-        _emit(ws.manifest(args.limit, args.offset, args.max_folders_per_mount, args.include_overview,
-                          args.include_always), compact)
+        out(ws.manifest(args.limit, args.offset, args.max_folders_per_mount, args.include_overview,
+                        args.include_always), render.render_manifest)
     elif cmd == "boot":
         from .mcp_server import format_instructions
 
         result = ws.boot()
         if args.json:
             if args.cards_only:
-                _emit({"cards": result["cards"], "total": result["total"]}, compact)
+                _emit({"cards": result["cards"], "total": result["total"]}, args.compact)
             else:
-                _emit(dict(result, instructions=format_instructions(result)), compact)
+                _emit(dict(result, instructions=format_instructions(result)), args.compact)
         else:
             text = render_boot(result["cards"], header="") if args.cards_only else format_instructions(result)
             if text:
@@ -368,46 +329,45 @@ def _dispatch(ws: Workspace, args: argparse.Namespace, compact: bool) -> int:
             sys.stderr.write(f"awaiting approval: {ws.table().overlay.alias}/{item['id']} ({item['reason']}); "
                              "review with `mindslice diff`, approve with `mindslice apply`\n")
     elif cmd == "search":
-        _emit(ws.search(args.query, args.source, args.tags, args.k, args.offset, args.max_neighbors, _follow(args.follow)), compact)
+        out(ws.search(args.query, args.source, args.tags, args.k, args.offset, args.max_neighbors, _follow(args.follow)),
+            render.render_search)
     elif cmd == "read":
         with ws._reading():
             address = cli_reference(ws, args.address)
             result = ws.read(address, _follow(args.follow), args.max_backlinks, args.backlinks_offset,
                              args.max_extensions, args.extensions_offset)
-        if args.markdown:
-            sys.stdout.write(render_markdown(result))
-        else:
-            _emit(result, compact)
+        out(result, render.render_read)
     elif cmd == "write":
         content = _content(args)
         with ws._writing() as table:
             extends = [cli_reference(ws, ref, source=table.overlay.alias) for ref in args.extends] if args.extends else None
             supersedes = [cli_reference(ws, ref, source=table.overlay.alias) for ref in args.supersedes] if args.supersedes else None
-            _emit(ws.write(args.id, args.op, content, args.summary, args.title, args.tags, args.aliases,
-                           extends, supersedes, args.stage, args.if_match, args.load, args.reason), compact)
+            result = ws.write(args.id, args.op, content, args.summary, args.title, args.tags, args.aliases,
+                              extends, supersedes, args.stage, args.if_match, args.load, args.reason)
+        out(result, render.render_write)
     elif cmd == "mount":
-        _emit(ws.mount(_cwd_path(args.path), args.alias, args.precedence, args.role,
-                       retire_overlay=not args.keep_overlay), compact)
+        out(ws.mount(_cwd_path(args.path), args.alias, args.precedence, args.role,
+                     retire_overlay=not args.keep_overlay), render.render_mount)
     elif cmd == "unmount":
-        _emit(ws.unmount(args.alias), compact)
+        out(ws.unmount(args.alias), render.render_unmount)
     elif cmd == "validate":
         result = ws.validate(_cwd_path(args.slice_path) if args.slice_path else None, args.rebuild_index)
-        _emit(result, compact)
+        out(result, render.render_validate)
         return 0 if result["ok"] else 1
     elif cmd == "bake":
         if args.alias is None:
             from .bake_review import run
-            return run(ws, args, lambda result: _emit(result, compact))
+            return run(ws, args, out)
         if args.assign or args.defer or args.plan or args.fresh or args.yes:
             from ..errors import InvalidArgumentsError
             raise InvalidArgumentsError("batch review options cannot be combined with a target alias")
-        _emit(ws.bake(args.alias, _cwd_path(args.output) if args.output else None, args.prefix, args.tags,
-                      args.include_deps, args.dry_run, name=args.name, description=args.description,
-                      version=args.slice_version), compact)
+        out(ws.bake(args.alias, _cwd_path(args.output) if args.output else None, args.prefix, args.tags,
+                    args.include_deps, args.dry_run, name=args.name, description=args.description,
+                    version=args.slice_version), render.render_bake)
     elif cmd == "diff":
         result = ws.diff(args.scope)
         if args.json:
-            _emit(result, compact)
+            _emit(result, args.compact)
         else:
             sys.stdout.write("".join(item["diff"] for item in result["items"]))
             for item in result["items"]:
@@ -417,12 +377,12 @@ def _dispatch(ws: Workspace, args: argparse.Namespace, compact: bool) -> int:
                 if item.get("conflict"):
                     sys.stderr.write(f"conflict: {item['address']}: {item['conflict']}\n")
     elif cmd == "apply":
-        _emit(ws.apply(args.ids or None), compact)
+        out(ws.apply(args.ids or None), render.render_apply)
     elif cmd == "discard":
-        _emit(ws.discard(args.ids or None), compact)
+        out(ws.discard(args.ids or None), render.render_discard)
     elif cmd == "review":
         from .staging_review import run
-        _emit(run(ws, args.ids or None), compact)
+        out(run(ws, args.ids or None), render.render_review)
     else:  # pragma: no cover - argparse guards this
         raise SystemExit(f"unknown command {cmd}")
     return 0

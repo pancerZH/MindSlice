@@ -42,7 +42,7 @@ mindslice write api/jwt-ttl --title "JWT TTL" \
 
 mindslice manifest                       # boot context
 mindslice search "token expiration"      # hits on the old card redirect to the replacement
-mindslice read api/auth-flow --markdown  # composed view, with lineage notices
+mindslice read api/auth-flow             # composed view, with lineage notices
 ```
 
 Python:
@@ -60,7 +60,9 @@ with Workspace("my-workspace") as ws:
 ```
 
 Every primitive is a `Workspace` method and a CLI subcommand (`mindslice <cmd> --help`).
-Output is JSON (`--compact` for one line). Errors are JSON on stderr with a stable `code`.
+Every command prints human-readable text by default; add `--json` (before or after the subcommand)
+for the structured result, or `--compact` for single-line JSON. Errors go to stderr with a stable
+`code`: `error [code]: message` by default, a JSON object with `--json`.
 
 ## Workspace layout
 
@@ -143,8 +145,10 @@ the highest-precedence mount; written **inside a card**, it resolves only within
 
 ### CLI overview and output modes
 
+All commands print human-readable output by default, and `--json` is the only switch to structured
+output; whether stdout is a terminal never changes the format. Recovery commands include
 `history [CARD]`, `explain CARD`, `rollback ALIAS`, `backup DIRECTORY` and
-`restore BACKUP --output NEW_WORKSPACE` have human output by default and support `--json`.
+`restore BACKUP --output NEW_WORKSPACE`.
 Rollback supports `--to DIRECTORY`, `--dry-run` and `--yes`; it requires confirmation before
 changing a mount. Backup and restore require new destinations and never overwrite existing ones.
 The MCP server still exposes only its four online memory tools. See

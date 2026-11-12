@@ -241,7 +241,7 @@ class RetireImportedCopiesTests(WorkspaceTestCase):
         self.assertEqual(res["broken_references"], [{"address": "@watcher/w", "kind": "wikilink", "ref": "@overlay/api/jwt-ttl"}])
 
     def test_keep_overlay_opts_out(self):
-        code, out, _ = run_cli("-w", str(self.root), "mount", str(self.imported), "--alias", "@api",
+        code, out, _ = run_cli("-w", str(self.root), "--json", "mount", str(self.imported), "--alias", "@api",
                                "--keep-overlay")
         self.assertEqual(code, 0, out)
         self.assertNotIn("retired_overlay_cards", json.loads(out))

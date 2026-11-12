@@ -169,11 +169,11 @@ class SelectiveReviewTests(WorkspaceTestCase):
         self.assertEqual(result["discarded_ids"], ["b"])
         self.assertEqual(result["remaining"], 1)
         self.assertIn("Reason for a.", err.getvalue())
-        code, out, _ = run_cli("-w", str(self.root), "apply", "c")
+        code, out, _ = run_cli("-w", str(self.root), "--json", "apply", "c")
         self.assertEqual(code, 0)
         self.assertEqual(json.loads(out)["created"], ["@overlay/c"])
         self.stage("d")
-        code, out, _ = run_cli("-w", str(self.root), "discard", "@overlay/d")
+        code, out, _ = run_cli("-w", str(self.root), "--json", "discard", "@overlay/d")
         self.assertEqual(json.loads(out)["discarded"], 1)
 
     def test_cancel_and_eof_leave_all_choices_unexecuted(self):

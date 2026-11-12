@@ -38,11 +38,11 @@ class CLITests(WorkspaceTestCase):
     def test_end_to_end(self):
         w = str(self.root)
         slice_root = self.make_slice("kb", {"api/auth": card_text("Auth", "Token expiration is 15 minutes.")}, alias="@kb")
-        code, out, _ = run_cli("-w", w, "mount", str(slice_root), "--precedence", "50", "--role", "curated")
+        code, out, _ = run_cli("-w", w, "--json", "mount", str(slice_root), "--precedence", "50", "--role", "curated")
         self.assertEqual(code, 0, out)
         self.assertEqual(json.loads(out)["alias"], "@kb")
 
-        code, out, _ = run_cli("-w", w, "write", "api/jwt", "--summary", "JWT TTL is 30 minutes.",
+        code, out, _ = run_cli("-w", w, "--json", "write", "api/jwt", "--summary", "JWT TTL is 30 minutes.",
                                "--content-file", "-", "--supersedes", "@kb/api/auth", stdin="- Set TTL to 30m.\n")
         self.assertEqual(code, 0)
         self.assertTrue(json.loads(out)["changed"])
@@ -51,25 +51,25 @@ class CLITests(WorkspaceTestCase):
         self.assertEqual(json.loads(out)["results"][0]["matched_via_superseded"], ["@kb/api/auth"])
         self.assertEqual(out.count("\n"), 1)
 
-        code, out, _ = run_cli("-w", w, "read", "api/auth", "--markdown")
+        code, out, _ = run_cli("-w", w, "read", "api/auth")
         self.assertIn("# Jwt", out)
         self.assertIn("redirected from @kb/api/auth", out)
 
-        code, out, _ = run_cli("-w", w, "read", "api/auth", "--follow", "none")
+        code, out, _ = run_cli("-w", w, "--json", "read", "api/auth", "--follow", "none")
         self.assertEqual(json.loads(out)["address"], "@kb/api/auth")
 
         code, out, _ = run_cli("-w", w, "write", "draft", "--summary", "Staged draft.", "--stage")
         code, out, _ = run_cli("-w", w, "diff")
         self.assertIn("+Staged draft.", out)
-        code, out, _ = run_cli("-w", w, "apply")
+        code, out, _ = run_cli("-w", w, "--json", "apply")
         self.assertEqual(json.loads(out)["created"], ["@overlay/draft"])
 
         code, out, _ = run_cli("-w", w, "validate")
         self.assertEqual(code, 0, out)
-        code, out, _ = run_cli("-w", w, "bake", "@out", "--output", str(self.tmp / "out.slice"), "--prefix", "api/")
+        code, out, _ = run_cli("-w", w, "--json", "bake", "@out", "--output", str(self.tmp / "out.slice"), "--prefix", "api/")
         self.assertEqual(json.loads(out)["dependencies"], ["@kb"])
 
-        code, out, _ = run_cli("-w", w, "manifest")
+        code, out, _ = run_cli("-w", w, "--json", "manifest")
         self.assertEqual([m["alias"] for m in json.loads(out)["mounts"]], ["@overlay", "@kb", "@out"])
 
     def test_markdown_read_notes_bypassed_replacements(self):
@@ -81,10 +81,45 @@ class CLITests(WorkspaceTestCase):
         self.assertIn("# B", out)
         self.assertIn("> bypassed_replacements: @overlay/c (supersedes @kb/a)", out)
 
-    def test_errors_are_json_on_stderr(self):
-        code, _, err = run_cli("-w", str(self.root), "read", "nope")
-        self.assertEqual(code, 1)
+    def test_errors_go_to_stderr_in_both_formats(self):
+        code, out, err = run_cli("-w", str(self.root), "read", "nope")
+        self.assertEqual((code, out), (1, ""))
+        self.assertTrue(err.startswith("error [not_found]: "), err)
+        code, out, err = run_cli("-w", str(self.root), "read", "nope", "--json")
+        self.assertEqual((code, out), (1, ""))
         self.assertEqual(json.loads(err)["code"], "not_found")
+
+    def test_human_output_by_default_and_json_on_request(self):
+        w = str(self.root)
+        self.mount_slice("kb", {"api/auth": card_text("Auth", "Token expiration is 15 minutes.")}, "@kb", 50, "curated")
+        commands = [("write", "api/jwt", "--summary", "JWT TTL is 30 minutes.", "--supersedes", "@kb/api/auth"),
+                    ("search", "token expiration"), ("read", "api/jwt"), ("manifest",), ("validate",),
+                    ("write", "draft", "--summary", "Draft.", "--stage"), ("apply", "draft"), ("discard",),
+                    ("bake", "@out", "--prefix", "api/", "--dry-run"), ("unmount", "kb")]
+        human = {}
+        for args in commands:
+            with self.subTest(args=args):
+                code, out, err = run_cli("-w", w, *args)
+                self.assertEqual((code, err), (0, ""), out)
+                self.assertFalse(out.lstrip().startswith("{"), out)
+                human[args[0]] = human.get(args[0], "") + out
+        self.assertIn("Created @overlay/api/jwt", human["write"])
+        self.assertIn("Staged create: @overlay/draft", human["write"])
+        self.assertIn("1. @overlay/api/jwt — Jwt", human["search"])
+        self.assertIn("matched via superseded: @kb/api/auth", human["search"])
+        self.assertIn("sha256: " + self.ws.read("api/jwt")["sha256"], human["read"])
+        self.assertIn("@kb  1 cards", human["manifest"])
+        self.assertIn("OK: ", human["validate"])
+        self.assertIn("created: @overlay/draft", human["apply"])
+        self.assertIn("Nothing discarded.", human["discard"])
+        self.assertIn("Would create @out", human["bake"])
+        self.assertIn("Unmounted @kb", human["unmount"])
+        for flags in (("--json",), ("--compact",)):
+            with self.subTest(flags=flags):
+                code, out, _ = run_cli("-w", w, *flags, "search", "jwt")
+                self.assertEqual(json.loads(out)["query"], "jwt")
+        code, out, _ = run_cli("-w", w, "search", "jwt", "--compact")
+        self.assertEqual(out.count("\n"), 1)
 
     def test_init_and_discovery(self):
         target = self.tmp / "fresh"
@@ -226,7 +261,7 @@ class NonUtf8ConsoleTests(WorkspaceTestCase):
 
     def test_cli_and_mcp_emit_utf8(self):
         self.ws.write("auth", title="认证流程", summary="令牌过期时间为15分钟。")
-        proc = self.run_module("search", "过期")
+        proc = self.run_module("--json", "search", "过期")
         self.assertEqual(proc.returncode, 0, proc.stderr.decode("utf-8", "replace"))
         self.assertEqual(json.loads(proc.stdout.decode("utf-8"))["results"][0]["title"], "认证流程")
         request = {"jsonrpc": "2.0", "id": 1, "method": "tools/call",

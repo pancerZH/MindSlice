@@ -89,12 +89,12 @@ class StatusTests(WorkspaceTestCase):
         self.ws.bake("kb")
         self.assertTrue(self.ws.status()["clean"])
         root = self.ws.table().get("@kb").root
-        code, out, err = run_cli("-w", str(self.root), "unmount", "kb")
+        code, out, err = run_cli("-w", str(self.root), "unmount", "kb", "--json")
         self.assertEqual((code, err), (0, ""))
         self.assertEqual(json.loads(out)["alias"], "@kb")
         self.assertEqual([m["alias"] for m in self.ws.status()["mounts"]], ["@overlay"])
         self.assertTrue((root / "new.md").exists())
-        code, _, err = run_cli("-w", str(self.root), "unmount", "overlay")
+        code, _, err = run_cli("-w", str(self.root), "unmount", "overlay", "--json")
         self.assertEqual(code, 1)
         self.assertEqual(json.loads(err)["code"], "mount_error")
 
@@ -159,7 +159,7 @@ class CLIAddressTests(WorkspaceTestCase):
                          "@kb", 50, "curated")
 
     def cli(self, *args):
-        return run_cli("-w", str(self.root), *args)
+        return run_cli("-w", str(self.root), "--json", *args)
 
     def test_mount_alias_arguments_normalize_during_parsing(self):
         parser = build_parser()

@@ -1,4 +1,4 @@
-"""Human review for workspace bake; prompts go to stderr so JSON stdout stays machine-readable."""
+"""Human review for workspace bake; prompts go to stderr so stdout carries only the plan or receipt."""
 from __future__ import annotations
 
 import sys
@@ -33,6 +33,16 @@ def render_plan(plan, *, details=False):
         lines.append(f"Retain {item['address']}: {item['reason']}")
     for item in plan["blockers"]:
         lines.append(f"Blocked: {item.get('address', item.get('alias', 'workspace'))}: {item['reason']}")
+    return "\n".join(lines) + "\n"
+
+
+def render_receipt(result):
+    if result.get("cancelled"):
+        return f"Bake cancelled; destination choices saved in {result['plan_path']}\n"
+    lines = [f"Baked {len(result['baked'])} slice(s)"]
+    lines += [f"{item['alias']}  v{item['version']}  {item['path']}" for item in result["baked"]]
+    lines.append(f"Overlay: {len(result['remaining_overlay_cards'])} remaining cards. "
+                 f"Staging: {result['pending_review']} pending changes.")
     return "\n".join(lines) + "\n"
 
 
@@ -142,7 +152,8 @@ def review(ws, plan):
         return None
 
 
-def run(ws, args, emit):
+def run(ws, args, out):
+    """``out(result, renderer)`` prints human text, or JSON under ``--json``."""
     single_options = (args.output, args.prefix, args.tags, args.include_deps, args.name, args.description, args.slice_version)
     if any(x is not None and x is not False for x in single_options):
         raise InvalidArgumentsError("workspace bake uses --assign/--defer; output/filter/version options require bake @alias")
@@ -168,19 +179,17 @@ def run(ws, args, emit):
             choices[path] = None
     plan = ws.plan_bake(choices, resume=False)
     if args.dry_run:
-        if args.json or not sys.stdout.isatty():
-            emit(plan)
-        else:
-            sys.stdout.write(render_plan(plan, details=True))
+        out(plan, lambda p: render_plan(p, details=True))
         return 0
     bake_batch.save_plan(ws, plan)
     if not plan["cards"]:
-        emit({"baked": [], "remaining_overlay_cards": [], "pending_review": len(plan["pending_review"]), "dry_run": False})
+        out({"baked": [], "remaining_overlay_cards": [], "pending_review": len(plan["pending_review"]), "dry_run": False},
+            render_receipt)
         return 0
     if not args.yes and sys.stdin.isatty() and not args.json:
         plan = review(ws, plan)
         if plan is None:
-            emit({"cancelled": True, "plan_path": str(ws.root / bake_batch.PLAN_FILE)})
+            out({"cancelled": True, "plan_path": str(ws.root / bake_batch.PLAN_FILE)}, render_receipt)
             return 0
     elif not plan["ready"]:
         raise BakeConflictError("assign destinations or resolve blockers before baking", plan=plan,
@@ -188,13 +197,5 @@ def run(ws, args, emit):
     elif not args.yes:
         raise BakeConflictError("review required; run in a terminal or use --yes with a reviewed plan",
                                 code="bake_review_required", plan=plan)
-    result = ws.bake(plan=plan)
-    if args.json or not sys.stdout.isatty():
-        emit(result)
-    else:
-        sys.stdout.write(f"Baked {len(result['baked'])} slice(s)\n")
-        for item in result["baked"]:
-            sys.stdout.write(f"{item['alias']}  v{item['version']}  {item['path']}\n")
-        sys.stdout.write(f"Overlay: {len(result['remaining_overlay_cards'])} remaining cards. "
-                         f"Staging: {result['pending_review']} pending changes.\n")
+    out(ws.bake(plan=plan), render_receipt)
     return 0

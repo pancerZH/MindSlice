@@ -287,7 +287,7 @@ class BatchBakeCLITests(WorkspaceTestCase):
         self.assertEqual((code, err), (0,''))
         self.assertEqual(json.loads(out)['unassigned'], ['topic/a'])
         self.assertFalse((self.root/bake_batch.PLAN_FILE).exists())
-        code, out, err = self.cli('--yes')
+        code, out, err = self.cli('--yes', '--json')
         self.assertEqual(code, 1)
         self.assertEqual(json.loads(err)['code'], 'bake_conflict')
         self.assertFalse(out)
@@ -301,12 +301,12 @@ class BatchBakeCLITests(WorkspaceTestCase):
         plan_file = self.tmp/'plan.json'
         plan_file.write_text(out)
         self.ws.write('a', op='append', content='- New information.')
-        code, _, err = self.cli('--plan', str(plan_file), '--yes')
+        code, _, err = self.cli('--plan', str(plan_file), '--yes', '--json')
         self.assertEqual(code,1)
         self.assertIn('stale', json.loads(err)['message'])
         code, out, _ = self.cli('--assign', 'a=one', '--dry-run', '--json')
         plan_file.write_text(out)
-        code, out, err = self.cli('--plan', str(plan_file), '--yes')
+        code, out, err = self.cli('--plan', str(plan_file), '--yes', '--json')
         self.assertEqual((code,err),(0,''))
         self.assertEqual(len(json.loads(out)['baked']),1)
 
@@ -315,7 +315,7 @@ class BatchBakeCLITests(WorkspaceTestCase):
         code, _, err = self.cli('--assign', 'a=one', '--json')
         self.assertEqual(code, 1)
         self.assertIn('review required', json.loads(err)['message'])
-        code, out, err = self.cli('one', '--prefix', '')
+        code, out, err = self.cli('one', '--prefix', '', '--json')
         self.assertEqual((code,err),(0,''))
         self.assertEqual(json.loads(out)['alias'], '@one')
 
@@ -327,24 +327,25 @@ class BatchBakeCLITests(WorkspaceTestCase):
             code, out, err = self.cli()
         self.assertEqual(code,0,err)
         self.assertIn('User requested it.',err)
-        self.assertEqual(json.loads(out)['baked'][0]['alias'],'@new')
+        self.assertIn('Baked 1 slice(s)', out)
+        self.assertIn('@new  v0.1.0', out)
 
     def test_cancel_persists_group_choices_for_resume(self):
         self.ws.write('topic/a',summary='A.')
         with patch('sys.stdin.isatty',return_value=True), patch('mindslice.interfaces.bake_review._answer',side_effect=['new','cancel']):
             code,out,err=self.cli()
         self.assertEqual(code,0,err)
-        self.assertTrue(json.loads(out)['cancelled'])
+        self.assertIn('Bake cancelled', out)
         self.assertTrue(self.overlay_file('topic/a').exists())
         self.assertEqual(self.ws.plan_bake()['assignments'],{'topic/a':'@new'})
-        code,out,err=self.cli('--yes')
+        code,out,err=self.cli('--yes', '--json')
         self.assertEqual(code,0,err)
         self.assertEqual(len(json.loads(out)['baked']),1)
 
     def test_defer_and_invalid_selections(self):
         self.ws.write('a',summary='A.')
         self.ws.write('b',summary='B.')
-        code,out,err=self.cli('--assign','a=one','--defer','b','--yes')
+        code,out,err=self.cli('--assign','a=one','--defer','b','--yes','--json')
         self.assertEqual(code,0,err)
         self.assertEqual(json.loads(out)['remaining_overlay_cards'],['b'])
         for args in [('--assign','missing=new'),('--assign','b=overlay'),('--prefix',''),('one','--yes')]:
@@ -359,7 +360,7 @@ class BatchBakeCLITests(WorkspaceTestCase):
         plan_file = self.tmp/'plan.json'
         plan_file.write_text(out)
         Path(plan['slices'][0]['path']).mkdir()
-        code, _, err = self.cli('--plan', str(plan_file), '--yes')
+        code, _, err = self.cli('--plan', str(plan_file), '--yes', '--json')
         self.assertEqual(code, 1)
         self.assertIn('stale', json.loads(err)['message'])
         self.assertTrue(self.overlay_file('a').exists())
@@ -371,17 +372,17 @@ class BatchBakeCLITests(WorkspaceTestCase):
                 side_effect=['split', 'bad alias', 'one', 'two', 'edit', 'topic/b', 'one', 'bake']):
             code, out, err = self.cli()
         self.assertEqual(code, 0, err)
-        self.assertEqual(len(json.loads(out)['baked']), 1)
+        self.assertIn('Baked 1 slice(s)', out)
         self.ws.write('next', summary='Next.')
         with patch('sys.stdin.isatty', return_value=True), patch('mindslice.interfaces.bake_review._answer', side_effect=EOFError):
             code, out, err = self.cli()
         self.assertEqual(code, 0, err)
-        self.assertTrue(json.loads(out)['cancelled'])
+        self.assertIn('Bake cancelled', out)
 
     def test_invalid_plan_is_a_structured_error(self):
         plan = self.tmp/'invalid.json'
         plan.write_text('{"schema_version": 1, "assignments": {}, "cards": [null]}')
-        code, out, err = self.cli('--plan', str(plan), '--yes')
+        code, out, err = self.cli('--plan', str(plan), '--yes', '--json')
         self.assertEqual(code, 1)
         self.assertEqual(json.loads(err)['code'], 'invalid_arguments')
         self.assertEqual(out, '')
@@ -392,3 +393,7 @@ class BatchBakeCLITests(WorkspaceTestCase):
         text = render_plan(self.ws.plan_bake({'a':'one'}), details=True)
         self.assertIn('@overlay/a → @one', text)
         self.assertIn('User correction.', text)
+        # Format follows --json only, not whether stdout is a terminal (run_cli's stdout is not).
+        code, out, err = self.cli('--assign', 'a=one', '--dry-run')
+        self.assertEqual((code, err), (0, ''))
+        self.assertEqual(out, text)

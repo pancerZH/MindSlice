@@ -112,7 +112,8 @@ references can require keeping overlay copies. Successful baking need not mean a
    slice and mounts it as `@team`. A new alias requires `--prefix`, which selects overlay card paths;
    use `--prefix ''` to select all paths. `--tag ...` adds a tag filter. References to excluded overlay
    cards abort the bake; add `--include-deps` to pull them in. Cross-slice references become dependencies.
-5. **Verify and share**: check the result's `validation`, or run `mindslice validate team.slice`, then
+5. **Verify and share**: check the `validation:` line of the bake output (the `validation` field with
+   `--json`), or run `mindslice validate team.slice`, then
    report the artifact for sharing. Publish only when the user requested publication.
    `--output team.zip` / `team.tar.gz` produces a deterministic archive and a mounted directory under the workspace's `slices/`; the result reports
    the archive as `output` and the absolute mounted directory as `path`. Return these and
