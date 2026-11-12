@@ -1,0 +1,75 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="1280" height="720" viewBox="0 0 1280 720" role="img" aria-labelledby="title description">
+  <title id="title">MindSlice: isolated memory, controlled evolution</title>
+  <desc id="description">An agent reads live memory from a workspace containing independently mounted, read-only slices and its own writable overlay. Writes go directly to the overlay or through staging for approval; pending proposals are excluded from live memory. Bake creates new or updated slice versions from selected changes, preserving the original slices. Versions can be mounted and shared.</desc>
+  <defs>
+    <marker id="blue-arrow" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="8" markerHeight="8" orient="auto-start-reverse">
+      <path d="M 0 0 L 10 5 L 0 10 Z" fill="#3878f2"/>
+    </marker>
+    <marker id="orange-arrow" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="8" markerHeight="8" orient="auto-start-reverse">
+      <path d="M 0 0 L 10 5 L 0 10 Z" fill="#d97706"/>
+    </marker>
+    <marker id="green-arrow" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="8" markerHeight="8" orient="auto-start-reverse">
+      <path d="M 0 0 L 10 5 L 0 10 Z" fill="#438650"/>
+    </marker>
+  </defs>
+
+  <rect width="1280" height="720" rx="24" fill="#ffffff"/>
+  <g font-family="Arial, Helvetica, sans-serif">
+    <!-- The workspace boundary represents a view over mounted sources, not their physical location. -->
+    <rect x="36" y="180" width="880" height="450" rx="20" fill="#f8fafc" stroke="#253247" stroke-width="2.5" stroke-dasharray="10 8"/>
+    <rect x="60" y="158" width="300" height="44" rx="10" fill="#202c3e"/>
+    <text x="210" y="187" fill="#ffffff" font-size="23" font-weight="700" text-anchor="middle">MindSlice workspace</text>
+    <text x="70" y="674" fill="#202c3e" font-size="25" font-weight="700">Isolated by workspace.</text>
+    <text x="70" y="702" fill="#52627a" font-size="20">Reuse baselines. Keep changes separate.</text>
+
+    <!-- Reads see mounted slices and active overlay cards, never pending proposals. -->
+    <path d="M 380 180 V 70 H 410" fill="none" stroke="#3878f2" stroke-width="3.5" marker-end="url(#blue-arrow)"/>
+    <text x="364" y="113" fill="#2456c6" font-size="23" font-weight="700" text-anchor="end">read</text>
+    <text x="364" y="140" fill="#52627a" font-size="20" text-anchor="end">live memory</text>
+    <rect x="410" y="30" width="350" height="80" rx="18" fill="#eff6ff" stroke="#3878f2" stroke-width="3"/>
+    <text x="585" y="64" fill="#2456c6" font-size="27" font-weight="700" text-anchor="middle">AI agent</text>
+    <text x="585" y="92" fill="#52627a" font-size="20" text-anchor="middle">MCP · CLI · Python</text>
+
+    <!-- The write path branches before staging: direct writes are also supported. -->
+    <path d="M 620 110 V 270" fill="none" stroke="#d97706" stroke-width="3.5" marker-end="url(#orange-arrow)"/>
+    <text x="640" y="150" fill="#b45309" font-size="23" font-weight="700">write</text>
+    <path d="M 620 224 H 460 V 530 H 570" fill="none" stroke="#d97706" stroke-width="3.5" marker-end="url(#orange-arrow)"/>
+    <circle cx="620" cy="224" r="5" fill="#d97706"/>
+    <text x="447" y="393" fill="#b45309" font-size="20" text-anchor="end">direct</text>
+    <text x="640" y="248" fill="#b45309" font-size="20">review first</text>
+
+    <!-- Each baseline can be mounted or unmounted independently. -->
+    <text x="220" y="250" fill="#253247" font-size="23" font-weight="700" text-anchor="middle">Mount / unmount</text>
+    <rect x="70" y="270" width="300" height="140" rx="16" fill="#eff6ff" stroke="#7b9bc8" stroke-width="2.5"/>
+    <text x="220" y="312" fill="#202c3e" font-size="26" font-weight="700" text-anchor="middle">Project slice</text>
+    <text x="220" y="347" fill="#2456c6" font-size="22" text-anchor="middle">@project</text>
+    <text x="220" y="383" fill="#52627a" font-size="20" text-anchor="middle">Read-only baseline</text>
+    <rect x="70" y="430" width="300" height="140" rx="16" fill="#f5f3ff" stroke="#a28ac8" stroke-width="2.5"/>
+    <text x="220" y="472" fill="#202c3e" font-size="26" font-weight="700" text-anchor="middle">Shared slice</text>
+    <text x="220" y="507" fill="#7551ab" font-size="22" text-anchor="middle">@handbook</text>
+    <text x="220" y="543" fill="#52627a" font-size="20" text-anchor="middle">Read-only baseline</text>
+    <text x="220" y="605" fill="#52627a" font-size="20" text-anchor="middle">Independent, portable sources</text>
+
+    <!-- Staging remains outside live memory until the user approves. -->
+    <rect x="570" y="270" width="310" height="100" rx="16" fill="#fffbeb" stroke="#e6a23c" stroke-width="2.5" stroke-dasharray="7 5"/>
+    <text x="725" y="310" fill="#b45309" font-size="26" font-weight="700" text-anchor="middle">Staging</text>
+    <text x="725" y="344" fill="#88612b" font-size="20" text-anchor="middle">Pending · not yet active</text>
+    <path d="M 725 370 V 460" fill="none" stroke="#d97706" stroke-width="3.5" marker-end="url(#orange-arrow)"/>
+    <text x="743" y="420" fill="#b45309" font-size="21">approve</text>
+    <rect x="570" y="460" width="310" height="140" rx="16" fill="#fffbeb" stroke="#ee9b18" stroke-width="3"/>
+    <text x="725" y="501" fill="#b45309" font-size="26" font-weight="700" text-anchor="middle">Overlay</text>
+    <text x="725" y="536" fill="#b45309" font-size="22" text-anchor="middle">@overlay</text>
+    <text x="725" y="574" fill="#88612b" font-size="20" text-anchor="middle">Writable · active learning</text>
+
+    <!-- Bake creates versioned output; mounted baseline files stay unchanged. -->
+    <path d="M 880 530 H 1000" fill="none" stroke="#438650" stroke-width="3.5" marker-end="url(#green-arrow)"/>
+    <text x="940" y="511" fill="#367044" font-size="24" font-weight="700" text-anchor="middle">bake</text>
+    <rect x="1014" y="446" width="230" height="140" rx="16" fill="#eff7ef" stroke="#bad2b7" stroke-width="2"/>
+    <rect x="1000" y="460" width="230" height="140" rx="16" fill="#e3f0df" stroke="#82ac73" stroke-width="3"/>
+    <text x="1115" y="502" fill="#285d38" font-size="25" font-weight="700" text-anchor="middle">Slice versions</text>
+    <text x="1115" y="539" fill="#367044" font-size="20" text-anchor="middle">New or updated</text>
+    <text x="1115" y="575" fill="#367044" font-size="20" text-anchor="middle">Mount · reuse · share</text>
+    <text x="730" y="674" fill="#285d38" font-size="25" font-weight="700">Evolve through bake.</text>
+    <text x="730" y="702" fill="#52627a" font-size="20">New versions. Original slices preserved.</text>
+  </g>
+</svg>

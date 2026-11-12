@@ -6,6 +6,8 @@ Keep project knowledge, personal preferences and shared handbooks in plain Markd
 Mount what an agent needs, let it learn in its own workspace, and bake those learnings
 into reusable versions. Connect through MCP, the CLI or Python.
 
+![MindSlice architecture: isolated read-only slices and a writable overlay, optional staging for approval, and bake into new slice versions.](docs/assets/architecture.svg)
+
 ## Why MindSlice?
 
 **Isolation.** A *slice* is a folder of Markdown cards you can mount, unmount and share
