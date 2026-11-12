@@ -305,7 +305,7 @@ contains. An agent can then fix a typo or try another word instead of concluding
 It changes and reorders nothing.
 
 Lexical search finds a card only by words it contains, so synonyms belong in each card's `aliases`
-(indexed just below the title). The [`slice-builder`](../skills/slice-builder/SKILL.md) skill says what
+(indexed just below the title). The shared [card-format guide](../skills/slice-builder/references/card-format.md) says what
 they should cover.
 
 Why search works this way (aliases instead of spelling suggestions, BM25 order instead of coverage order) is in
@@ -378,9 +378,17 @@ file records metadata, not old card bodies, so it is not a content rollback stor
 [`skills/mindslice-setup/SKILL.md`](../skills/mindslice-setup/SKILL.md) (with
 [`uninstall.md`](../skills/mindslice-setup/uninstall.md)) covers initial installation, harness MCP +
 session-start hook configuration, three-way conversational onboarding, and clean uninstallation.
-[`skills/slice-builder/SKILL.md`](../skills/slice-builder/SKILL.md) is an agent skill for the full
-slice lifecycle: cold start from project docs, daily refinement in `@overlay`, and consolidation
-plus `bake()` for creating, updating and sharing slices.
+[`skills/slice-builder/SKILL.md`](../skills/slice-builder/SKILL.md) builds one or more initial slices from
+multiple source files or one large document. Source boundaries do not determine slice boundaries:
+one document can feed several slices, and several documents can feed one. It plans slices by
+independent mounting, reuse, sharing or versioning, then plans cards within each slice. Validation
+covers source evidence, per-slice structure, cross-slice dependencies and representative retrieval.
+Its [standalone prompt](../skills/slice-builder/prompt-template.md) provides the same workflow without
+skill support. A shared build ledger maps source units to slice/card addresses, stays outside all generated
+slices, and is separate from engine change history. Each slice has its own manifest, overview and
+unique alias; mount individual slice directories, not their parent output directory.
+[`skills/slice-maintainer/SKILL.md`](../skills/slice-maintainer/SKILL.md) covers existing memory updates,
+lineage repair and consolidation through `bake()`. Routine agent writes also receive MCP instructions.
 
 Use `bake(alias)` (`mindslice bake @alias`) to create or update a slice. The separate `pack` command and
 Python method have been removed.

@@ -94,8 +94,9 @@ topic. From here there are three ways to seed it:
   ```bash
   mindslice mount ~/notes   # mounted read-only as @notes; mount as many folders as you like
   ```
-  To distill a codebase's `README.md`, `CLAUDE.md` and `docs/` into a structured slice instead, point an agent
-  at the [slice-builder skill](skills/slice-builder/SKILL.md).
+  To distill multiple source files or a single long document into one or more structured slices, point an agent
+  at the [slice-builder skill](skills/slice-builder/SKILL.md), or use its standalone
+  [prompt template](skills/slice-builder/prompt-template.md).
 - **Mount a shared `.slice`.** If someone sent you a slice folder, run `mindslice mount path/to/topic.slice`.
 - **Start from scratch, in conversation.** Leave `~/mindslice` empty and connect your agent (step 2). When a
   workspace has no cards or mounted slices yet, MindSlice includes a cold-start onboarding prompt in its MCP
@@ -340,7 +341,9 @@ folder instead. For example, `mindslice bake @handbook --prefix python/ --output
 keeps the alias and mount settings while switching to the new directory.
 
 A slice is just a folder of Markdown files, so you can also write one by hand and mount it, or let an agent with
-the [slice-builder skill](skills/slice-builder/SKILL.md) build one from your project's docs.
+the [slice-builder skill](skills/slice-builder/SKILL.md) build one or more from source files or a long document.
+For consolidating existing overlay knowledge before bake, use
+[slice-maintainer](skills/slice-maintainer/SKILL.md).
 
 #### 6. Share a slice
 
@@ -355,8 +358,12 @@ writes the archive and mounts a directory under `~/mindslice/slices/`. The resul
 - [The mindslice-setup skill](skills/mindslice-setup/SKILL.md) (and [uninstall guide](skills/mindslice-setup/uninstall.md)):
   lets an agent install MindSlice, configure MCP and session-start loading for its own harness, walk you through
   seeding initial memory, or cleanly revert settings later.
-- [The slice-builder skill](skills/slice-builder/SKILL.md): lets an agent turn project docs into a
-  well-organized slice and keep it tidy.
+- [The slice-builder skill](skills/slice-builder/SKILL.md) (and standalone
+  [prompt template](skills/slice-builder/prompt-template.md)): builds one or more initial slices from
+  multiple files or one long document. Plans slice boundaries separately from source boundaries, with
+  source coverage, conflict handling, dependency validation and retrieval checks.
+- [The slice-maintainer skill](skills/slice-maintainer/SKILL.md): maintains existing memory, repairs
+  lineage and consolidates overlay knowledge into baked slice versions.
 - [Evaluations](docs/evaluations.md): benchmark results, and where MindSlice stops.
 - [Design](MindSlice_design.md): the full design.
 

@@ -295,16 +295,16 @@ Assuming `@overlay` (`precedence=100, role="runtime"`) and `@project` (`preceden
 ---
 
 ## 7. End-to-End Slice Lifecycle
-This repository also ships a zero-dependency `slice-builder` `SKILL.md` (plus an exportable prompt template) so any agent can drive semantic consolidation and slice authoring outside the core storage mechanism:
+This repository ships `slice-builder` for initialization (plus a self-contained prompt template) and `slice-maintainer` for existing-memory maintenance and consolidation. Semantic judgment stays outside the storage engine:
 
-1. **5-Minute Cold Start (Bootstrap from Raw Sources)**:
-   * A folder of existing Markdown notes can be mounted first as is (Section 3.2, zero-conversion fallback) and curated into cards later.
-   * Point an agent equipped with the `slice-builder` skill at existing project artifacts (`README.md`, `CLAUDE.md`, ADRs, runbooks, or source directories).
-   * The agent decomposes dense documentation into atomic memory cards with `+++` TOML frontmatter, generates `overview.md` and `slice.toml`, verifies structural integrity with `validate()`, and mounts the resulting `.slice/` via `mount()`.
+1. **Cold Start (Bootstrap from Raw Sources)**:
+   * A folder of existing Markdown notes can be mounted as is when the goal is searching originals (Section 3.2). A request to distill sources into cards follows the build workflow.
+   * Point an agent equipped with `slice-builder` at multiple source files or one large document to produce one or more slices. Source and slice boundaries are independent. It inventories sources, reads long files in bounded chunks, reconciles evidence, then plans slices by independent mounting/reuse/sharing/versioning and cards within each slice. A shared ledger outside all slices maps source units to slice/card addresses.
+   * Each slice receives focused cards with `+++` TOML frontmatter, its own `overview.md`, `slice.toml` and unique alias. The agent checks source coverage, claim fidelity, per-slice structure, declared dependencies and actual cross-slice references in a test workspace, plus retrieval per slice and across relevant slices. When the engine is unavailable it reports unrun checks. For workspace seeding, mount requested slice directories individually, not their parent collection directory.
 2. **Organic Daily Refining (Runtime Growth in `overlay/` & `staging/`)**:
    * During everyday tasks, base slices remain read-only while the agent navigates memory progressively via `manifest() -> search() -> read()`.
    * New insights, debugging lessons, and user corrections are recorded via `write(op="create" | "replace" | "append" | "delete")` into `overlay/` (or isolated in `staging/` for review via `diff()` and `apply()`).
-3. **Consolidate, Scrub & Share (Distill via `slice-builder` + `bake`)**:
-   * When `overlay/` accumulates valuable domain knowledge, the user or agent runs a consolidation pass using `diff("overlay")`, the `slice-builder` skill, and `bake()`:
-     * **Semantic Consolidation (via Agent Skill)**: Where `overlay/` contains `extends`, `supersedes`, or unrebased extensions, the `slice-builder` agent reads the cards and rewrites them into clean, self-contained cards—keeping semantic synthesis in the policy/skill layer rather than inside the storage engine.
+3. **Consolidate, Scrub & Share (Distill via `slice-maintainer` + `bake`)**:
+   * When `overlay/` accumulates valuable domain knowledge, the user or agent runs a consolidation pass using `diff("overlay")`, the `slice-maintainer` skill, and `bake()`:
+     * **Semantic Consolidation (via Agent Skill)**: Where `overlay/` contains `extends`, `supersedes`, or unrebased extensions, the `slice-maintainer` agent reads the cards and rewrites them into clean, self-contained cards—keeping semantic synthesis in the policy/skill layer rather than inside the storage engine.
      * **Scrub & Package**: Strip machine-specific paths, secrets, and ephemeral session noise, export with `bake("@topic", output_path, prefix="topic/")`, verify with `validate()`, and publish the `.slice/` directory as a Git repository or `.tar.gz`/`.zip` archive. Baking automatically mounts the slice and retires its overlay copies (Section 5, `bake()`).

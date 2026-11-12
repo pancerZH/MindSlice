@@ -29,7 +29,7 @@ Set up MindSlice end-to-end so the user never has to hand-edit MCP JSON, memoriz
 2. **Import existing Markdown notes or project docs**
    - Initialize the confirmed path if needed (`<mindslice_bin> init <workspace>`).
    - **Plain Markdown / Obsidian notes folder**: mount it directly (`<mindslice_bin> -w <workspace> mount <notes_dir>`). MindSlice indexes plain `.md` and YAML-frontmatter notes read-only with no conversion.
-   - **Project or worldbuilding docs (`README.md`, `CLAUDE.md`, `docs/`, ADRs, lore files)**: read [`../slice-builder/SKILL.md`](../slice-builder/SKILL.md), distill the durable knowledge into `<workspace>/slices/<topic>.slice/`, validate it, and mount it (`--precedence 50 --role curated`).
+   - **Source material (multiple project/lore files or one long handbook/specification)**: read [`../slice-builder/SKILL.md`](../slice-builder/SKILL.md), plan one or more outputs under `<workspace>/slices/<name>.slice/` by independent use rather than file boundaries. Track source coverage to slice/card addresses in a shared ledger outside all slices; validate each slice and their cross-slice dependencies, check retrieval, and mount the requested slices separately with unique aliases (`--precedence 50 --role curated`).
 3. **Start from scratch in plain language**
    - Initialize the confirmed path (`<mindslice_bin> init <workspace>`).
    - Ask 2-3 brief, concrete questions in plain language — no syntax required from the user:
