@@ -170,11 +170,17 @@ def build_parser() -> argparse.ArgumentParser:
     s.add_argument("slice_path", nargs="?")
     s.add_argument("--rebuild-index", action="store_true", help="rebuild .cache/index.sqlite with full sha256 verification")
 
-    s = sub.add_parser("bake", help="create or update a slice from overlay cards and mount it")
-    s.add_argument("alias", type=normalize_alias, help="alias to create or update, with or without @")
+    s = sub.add_parser("bake", help="review and bake the workspace, or create/update one named slice")
+    s.add_argument("alias", nargs="?", type=normalize_alias, help="optional target alias; omit for workspace review")
+    s.add_argument("--assign", action="append", help="batch destination: CARD_OR_FOLDER=ALIAS (repeatable)")
+    s.add_argument("--defer", action="append", help="batch cards to leave in overlay: ID, folder/ or *")
+    s.add_argument("--plan", help="reviewed JSON plan from bake --dry-run --json")
+    s.add_argument("--fresh", action="store_true", help="ignore saved batch destination choices")
+    s.add_argument("--yes", action="store_true", help="execute a resolved batch plan without interactive confirmation")
+    s.add_argument("--json", action="store_true", help="structured batch plan/receipt; never prompt")
     s.add_argument("--output", help="slice directory or .zip/.tar.gz archive (default directory: "
                    "slices/<name>.slice, or <name>-2.slice ...); the old folder is left as it was")
-    s.add_argument("--prefix", help="select overlay cards under this path; required for a new alias "
+    s.add_argument("--prefix", help="select overlay cards under this path; required for a new named target "
                    "(default for an existing alias: cards that extend, supersede or share a path with its cards)")
     s.add_argument("--tag", action="append", dest="tags", help="bake the overlay cards with this tag (repeatable)")
     s.add_argument("--include-deps", action="store_true", help="also bake overlay cards the selection references")
@@ -287,6 +293,12 @@ def _dispatch(ws: Workspace, args: argparse.Namespace, compact: bool) -> int:
         _emit(result, compact)
         return 0 if result["ok"] else 1
     elif cmd == "bake":
+        if args.alias is None:
+            from .bake_review import run
+            return run(ws, args, lambda result: _emit(result, compact))
+        if args.assign or args.defer or args.plan or args.fresh or args.yes:
+            from .errors import InvalidArgumentsError
+            raise InvalidArgumentsError("batch review options cannot be combined with a target alias")
         _emit(ws.bake(args.alias, _cwd_path(args.output) if args.output else None, args.prefix, args.tags,
                       args.include_deps, args.dry_run, name=args.name, description=args.description,
                       version=args.slice_version), compact)

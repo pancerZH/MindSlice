@@ -76,7 +76,27 @@ When a search comes back empty or weak, look at `unmatched_terms`: the query wor
 Rephrase those (fix a typo, try a synonym or the team's other language), or reuse the vocabulary of
 the cards you did find, before concluding the memory has nothing.
 
-## Consolidate and bake
+## Workspace bake review
+
+After consolidation, `mindslice bake` reviews all applied overlay cards, proposes unambiguous existing
+destinations and asks about unassigned groups. Choose an existing or new alias, split a group,
+inspect summaries/reasons/diffs, or defer cards. New cards can join existing slices. Confirm the full
+plan once; `bake --dry-run --json` previews it. Staging remains pending; a card with a pending edit
+must be deferred or reviewed through apply/discard first. `.bake-plan.json` saves choices for resume;
+`--fresh` ignores those choices. Do not write that file directly; use review or assignment options.
+
+For noninteractive work, use explicit selections such as `--assign 'research/=@research'` and
+`--defer 'scratch/'`, inspect `--dry-run --json`, then execute `--plan <reviewed.json> --yes --json`
+when baking is authorized. Never use `--yes` to bypass a requested human review. Plans become stale
+when inputs or output paths change. Resolve every destination/blocker before execution; a new slice
+needs no `--prefix` in this flow because its cards are explicitly assigned. Batch outputs are
+versioned directories; custom paths and archives use the named-slice flow below.
+
+Inspect every entry in `baked` and return its alias, version, absolute `path` and `previous_path`.
+Check `remaining_overlay_cards`, `retained_overlay_cards` and `pending_review`; staged/read-only
+references can require keeping overlay copies. Successful baking need not mean an empty overlay.
+
+## Consolidate and bake one named slice
 
 1. Review what accumulated: `mindslice status` summarizes mounts, pending review and unbaked changes.
    `mindslice diff --scope overlay --json` classifies every overlay card as

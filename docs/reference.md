@@ -67,6 +67,7 @@ Output is JSON (`--compact` for one line). Errors are JSON on stderr with a stab
 ```text
 workspace/
 ├── mounts.toml        # mount table: path, @alias, precedence, role
+├── .bake-plan.json    # saved workspace bake review; excluded from exports
 ├── slices/            # read-only base slices (*.slice/ directories)
 ├── overlay/           # the only runtime write target (@overlay, precedence 100, role "runtime")
 ├── staging/           # prospective final state for overlay/ (never indexed until apply())
@@ -130,7 +131,8 @@ the highest-precedence mount; written **inside a card**, it resolves only within
 | B | `mount(path, alias, precedence, role, retire_overlay=True)` / `unmount(alias)` | updates `mounts.toml` and the index; retires overlay copies the slice holds unchanged |
 | B | `status()` | all mounts, pending review files and conflicts, dirty slices and unassigned overlay cards |
 | B | `validate(slice_path=None, rebuild_index=False)` | lints from disk; rebuild re-hashes everything |
-| B | `bake(alias, output_path=None, prefix=None, tags=None, include_deps=False, dry_run=False)` | create or update and mount a slice; a new alias requires `prefix`; old folders stay untouched |
+| B | `bake(alias=None, output_path=None, prefix=None, tags=None, include_deps=False, dry_run=False, plan=None)` | omitted alias executes a workspace plan; named new targets require `prefix`; old folders stay untouched |
+| B | `plan_bake(assignments=None, resume=True)` | propose all overlay destinations; exact card IDs map to aliases or null (defer) |
 | C | `diff(scope="staging"\|"overlay")` | structured summary + unified diffs |
 | C | `apply()` / `discard()` | precondition-checked, journaled, crash-recoverable |
 
@@ -389,6 +391,80 @@ slices, and is separate from engine change history. Each slice has its own manif
 unique alias; mount individual slice directories, not their parent output directory.
 [`skills/slice-maintainer/SKILL.md`](../skills/slice-maintainer/SKILL.md) covers existing memory updates,
 lineage repair and consolidation through `bake()`. Routine agent writes also receive MCP instructions.
+
+### Workspace bake review
+
+Bare `mindslice bake` reviews all applied overlay cards. It proposes a destination when exactly one
+mounted slice is related through extends, supersedes or a shared card path. Multiple candidates
+remain unresolved; directory grouping helps review but never creates slice ownership by itself.
+All overlay cards, including an overlay `overview.md`, are accounted for. A staged-only card is not
+part of the input; an overlay card with a pending edit defaults to deferred. Explicitly assigning
+such a card blocks execution until it is applied, discarded or deferred again.
+
+In a terminal, unresolved cards are grouped by folder and candidate destinations. Enter an alias
+(with or without `@`) to use an existing slice or create a new one. `inspect` shows summaries,
+reasons and patches; `split` assigns cards individually; `defer` leaves them in overlay. The final
+review supports inspecting all changes, editing selections and one `Bake all` confirmation. Cancel,
+EOF or Ctrl-C during review preserve choices without creating versions. No lock is held at prompts.
+
+```bash
+mindslice bake
+mindslice bake --fresh                               # ignore saved choices
+mindslice bake --dry-run --json                      # full plan, no saved-plan/output writes
+mindslice bake --assign 'research/=@research' --defer 'scratch/' --dry-run --json > plan.json
+mindslice bake --plan plan.json --yes --json
+```
+
+`--assign SELECTOR=ALIAS` and `--defer SELECTOR` are repeatable. A selector is an exact overlay card
+ID, a directory prefix ending in `/`, or quoted `'*'` for all cards. Explicit card assignments allow
+new aliases without a redundant `--prefix`. Named-target options (`--output`, `--prefix`, `--tag`,
+`--include-deps`, `--name`, `--description`, `--slice-version`) remain available with `bake @alias`;
+workspace batches use default versioned directories under `slices/`, not archives.
+
+Choices are saved in `<workspace>/.bake-plan.json` during ordinary review, including cancellation
+or a noninteractive unresolved plan. Unchanged cards retain their choices across retries; a changed
+card is reviewed again. `--fresh` ignores that draft. The draft contains review metadata and patches,
+is excluded from bake exports, and is removed by a successful batch commit. `--dry-run` can read the
+draft but does not save one or publish outputs (normal recovery/index maintenance may still run).
+
+Noninteractive or `--json` execution never prompts. Unresolved destinations or validation blockers
+return a structured `bake_conflict` with the plan. A resolved noninteractive plan still requires
+`--yes`; this skips confirmation, never validation. Exported `--plan` inputs are bound to their
+workspace, content revision and planned output paths. Stale inputs fail before execution; regenerate
+a dry-run after edits. Plan files are review artifacts, not a way to override output paths.
+
+Before publishing, the engine validates the combined future references, dependency declarations,
+frontmatter and lineage graph. Cross-slice references between assigned cards are rewritten to their
+new aliases. A selected card referring to an unassigned/deferred overlay card blocks execution;
+assign its dependency too. Same-path extensions need content consolidation by the caller. The engine
+moves and rewrites references; it performs no semantic synthesis.
+
+All output trees are prepared first, then a single recoverable history transaction switches all
+mounts, retires overlay cards, rebases remaining references and appends each slice's baked event.
+Recoverable interruptions replay the transaction before another workspace operation. Preparation/
+publication errors before the transaction leave active mounts and overlay intact; an abrupt process
+exit before journaling can leave unmounted output directories. Previous slice directories stay
+unchanged. External edits are checked by content hash before commit and during recovery.
+
+Copies needed by staged drafts or unchanged read-only mounts stay in overlay and appear in
+`retained_overlay_cards` with reasons. Deferral and retention are both reflected in
+`remaining_overlay_cards`; baking successfully does not necessarily empty overlay. The receipt's
+`baked` list contains `alias`, `version`, absolute `path`/`output`, `previous_path`, card IDs,
+dependencies and `history_event_id`; `pending_review` reports the number of staged changes left.
+
+Python callers explicitly execute their reviewed plan (no terminal interaction):
+
+```python
+plan = ws.plan_bake({"research/evaluation": "@research", "scratch/note": None})
+# Inspect plan["slices"], plan["unassigned"], plan["blockers"], and plan["cards"].
+if plan["ready"]:
+    result = ws.bake(plan=plan)
+```
+
+`ws.bake(dry_run=True)` returns the current workspace plan. `ws.bake()` executes a fully resolved
+plan or raises on unresolved cards/blockers; Python invocation itself authorizes execution.
+
+### Bake one named slice
 
 Use `bake(alias)` (`mindslice bake @alias`) to create or update a slice. The separate `pack` command and
 Python method have been removed.

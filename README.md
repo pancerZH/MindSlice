@@ -317,13 +317,37 @@ delete any file there, and MindSlice picks up your changes automatically.
 
 Over time the agent's notes pile up in `~/mindslice/overlay/`. Every so often, move the good ones into slices.
 
-**Start a new slice** from the agent's notes on one topic:
+**Review everything together:**
+
+```bash
+mindslice bake                         # choose destinations, inspect changes, then confirm once
+mindslice bake --dry-run --json        # inspect the full plan without creating slices
+```
+
+Bake proposes existing slices where a card has one clear relationship. Unassigned or ambiguous
+cards are grouped for review: choose an existing alias, name a new slice, split the group, or leave
+it in overlay. A new card can join an existing slice. The final plan shows output paths, dependencies,
+remaining overlay cards and excluded staging changes. Saved choices resume on the next `bake`;
+`--fresh` starts a new review. Staged content is never approved automatically.
+
+For scripts, assign destinations explicitly and use `--yes` after reviewing the plan:
+
+```bash
+mindslice bake --assign 'research/=@research' --defer 'scratch/' --dry-run --json > bake-plan.json
+mindslice bake --plan bake-plan.json --yes --json
+```
+
+Every card needs a destination or an explicit deferral before execution. Input changes invalidate
+a reviewed plan. The receipt lists every new version's alias, physical path and previous path.
+
+**Target a single new slice** from the agent's notes on one topic:
 
 ```bash
 mindslice bake @python-tips --prefix python/   # creates and mounts the slice, retiring the overlay copies
 ```
 
-`--prefix` selects overlay card paths and is required when the alias is new. Use `--output` to choose
+`--prefix` selects overlay card paths and is required when a named target alias is new.
+Workspace review instead selects explicit cards for each destination, so it needs no `--prefix`. Use `--output` to choose
 the output directory. An explicit `--prefix ''` selects all overlay cards.
 
 **Add to a slice you already have.** Say you mounted a team handbook as `@handbook`, and the agent has since

@@ -145,7 +145,7 @@ def bake(
             if path in slice_paths and any(targets_slice(r) == path for r in parsed.extends):
                 conflicts.append({"address": format_address(overlay.alias, path),
                                   "reason": f"extends {format_address(alias, path)} at the same path; merge the two "
-                                            "into one card first (the slice-builder skill does this)"})
+                                            "into one card first (the slice-maintainer skill does this)"})
         if conflicts:
             raise BakeConflictError(f"bake into {alias} stopped before writing: {len(conflicts)} card(s) can't move as they are",
                                     conflicts=conflicts)
@@ -237,7 +237,7 @@ def bake(
         try:
             tree = tmp_root / output.name
             if mount:
-                shutil.copytree(mount.root, tree, symlinks=False, ignore=shutil.ignore_patterns(".git", ".history"))
+                shutil.copytree(mount.root, tree, symlinks=False, ignore=shutil.ignore_patterns(".git", ".history", ".bake-plan.json"))
             else:
                 tree.mkdir()
             for path, text in files.items():
