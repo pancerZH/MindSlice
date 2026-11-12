@@ -4,11 +4,11 @@ from __future__ import annotations
 
 from typing import TYPE_CHECKING, Any
 
-from .config import OVERVIEW_PATH
+from ..storage.config import OVERVIEW_PATH
 from .staging import _diff_overlay, _diff_staging
 
 if TYPE_CHECKING:  # pragma: no cover
-    from .workspace import Workspace
+    from ..workspace import Workspace
 
 
 def status(ws: "Workspace") -> dict[str, Any]:

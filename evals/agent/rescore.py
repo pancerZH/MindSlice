@@ -37,8 +37,8 @@ class Snapshot:
     """Card texts and lineage flags of a workspace at one point."""
 
     def __init__(self, ws, cache: dict) -> None:
-        from mindslice.card import parse_card
-        from mindslice.writer import read_card_file
+        from mindslice.model.card import parse_card
+        from mindslice.storage.card_io import read_card_file
 
         from .judge import Judge
 
@@ -66,7 +66,7 @@ def rescore_haystack(hdir: Path, out: Path, data: str | None) -> int:
     from evals.external.datasets import LOADERS
     from evals.external.harness import _apply_lineage
     from mindslice import Workspace
-    from mindslice.mcp_server import MCPServer
+    from mindslice.interfaces.mcp_server import MCPServer
 
     from .agents import SessionTask, make
     from .runner import HISTORY_ALIAS, HISTORY_ARMS, LINEAGE_ARMS, write_history

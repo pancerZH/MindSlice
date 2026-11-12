@@ -67,7 +67,7 @@ class PromptTests(unittest.TestCase):
         self.assertEqual(prompts.session_message(1, 5, "2023/03/01 (Wed) 09:00", "T"), "Session 1 of 5, 2023/03/01 (Wed) 09:00:\n\nT")
 
     def test_system_prompts(self):
-        from mindslice.mcp_server import INSTRUCTIONS
+        from mindslice.interfaces.mcp_server import INSTRUCTIONS
 
         self.assertEqual(prompts.system_prompt("agent-default"), INSTRUCTIONS + "\n\n" + prompts.TASK)
         self.assertTrue(prompts.system_prompt("agent-overlay").endswith(prompts.POLICY + "\n\n" + prompts.OVERLAY))

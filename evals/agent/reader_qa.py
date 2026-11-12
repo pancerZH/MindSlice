@@ -15,6 +15,8 @@ Answers go to ``$MINDSLICE_AGENT_RUNS/reader-qa/<reader>/`` (they hold dataset t
 
 from __future__ import annotations
 
+from evals.provenance import engine_digest
+
 import argparse
 import hashlib
 import json
@@ -121,7 +123,7 @@ def facts(root: Path) -> dict[str, Any]:
     return {
         "plan": "PLAN.md section 11",
         "harness_digest": _digest([HERE / "reader.py", HERE / "reader_qa.py"]),
-        "engine_digest": _digest(sorted(package.glob("*.py"))),
+        "engine_digest": engine_digest(package),
         "prompt_version": rd.PROMPT_VERSION,
         "system_prompt_sha256": hashlib.sha256(rd.SYSTEM.encode()).hexdigest(),
         "line_reader": LINE_READER,

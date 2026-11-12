@@ -18,7 +18,8 @@ classifiers = [
 ]
 
 [project.scripts]
-mindslice = "mindslice.cli:main"
+mindslice = "mindslice.interfaces.cli:main"
 
-[tool.setuptools]
-packages = ["mindslice"]
+[tool.setuptools.packages.find]
+include = ["mindslice", "mindslice.*"]
+namespaces = false

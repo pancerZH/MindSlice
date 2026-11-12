@@ -8,7 +8,7 @@ from pathlib import Path
 from typing import Iterable
 
 from mindslice import Workspace
-from mindslice import tomlfmt
+from mindslice.model import tomlfmt
 
 
 def card_text(

@@ -7,7 +7,7 @@ from dataclasses import dataclass, field
 from typing import Callable, Hashable, Iterable, Sequence, TypeVar
 
 from .addressing import format_address, normalize_alias
-from .errors import InvalidAddressError
+from ..errors import InvalidAddressError
 
 N = TypeVar("N", bound=Hashable)
 FollowSpec = bool | Sequence[str] | None

@@ -14,6 +14,8 @@ They hold dataset text and are never committed; ``results/`` gets the generated 
 
 from __future__ import annotations
 
+from evals.provenance import engine_digest
+
 import argparse
 import hashlib
 import json
@@ -463,7 +465,7 @@ def environment() -> dict[str, Any]:
     package = Path(mindslice.__file__).parent
     return {"mindslice": mindslice.__version__, "commit": git("rev-parse", "--short", "HEAD"),
             "engine_dirty": bool(git("status", "--porcelain", "--", str(package))),
-            "engine_digest": _digest(sorted(package.glob("*.py"))), "scorer_digest": scorer_digest(),
+            "engine_digest": engine_digest(package), "scorer_digest": scorer_digest(),
             "runner_digest": runner_digest(), "prompts": digests(), "python": sys.version.split()[0]}
 
 

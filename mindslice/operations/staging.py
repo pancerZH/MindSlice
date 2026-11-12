@@ -17,16 +17,17 @@ import time
 from pathlib import Path
 from typing import TYPE_CHECKING, Any
 
-from .addressing import format_address
-from .card import ParsedCard, parse_card
-from .errors import ApplyConflictError, LineageCycleError
-from .fsutil import atomic_write_text, durable_move, fsync_dir, iter_markdown, prune_empty_dirs, unlink_if_exists
-from .history import change, file_action, transitions
-from .writer import check_cycles, read_card_file
+from ..model.addressing import format_address
+from ..model.card import ParsedCard, parse_card
+from ..errors import ApplyConflictError, LineageCycleError
+from ..storage.fsutil import atomic_write_text, durable_move, fsync_dir, iter_markdown, prune_empty_dirs, unlink_if_exists
+from ..storage.history import change, file_action, transitions
+from .writer import check_cycles
+from ..storage.card_io import read_card_file
 
 if TYPE_CHECKING:  # pragma: no cover
-    from .config import MountTable
-    from .workspace import Workspace
+    from ..storage.config import MountTable
+    from ..workspace import Workspace
 
 MANIFEST_FILE = ".manifest.json"
 JOURNAL_FILE = ".apply_journal.json"

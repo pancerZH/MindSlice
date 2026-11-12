@@ -12,9 +12,9 @@ import unittest
 from pathlib import Path
 
 from mindslice import NotFoundError
-from mindslice.card import sha256_bytes
-from mindslice.cli import main
-from mindslice.mcp_server import TOOLS, MCPServer
+from mindslice.model.card import sha256_bytes
+from mindslice.interfaces.cli import main
+from mindslice.interfaces.mcp_server import TOOLS, MCPServer
 
 from .helpers import WorkspaceTestCase, card_text
 

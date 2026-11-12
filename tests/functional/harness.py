@@ -10,7 +10,7 @@ from pathlib import Path
 from typing import Any, Callable
 
 from mindslice import Workspace
-from mindslice.mcp_server import MCPServer
+from mindslice.interfaces.mcp_server import MCPServer
 
 # Fields whose values depend on wall-clock time, never on behavior.
 VOLATILE_KEYS = frozenset({"mtime_ns", "last_read_at", "updated_at", "started_at", "timestamp", "change_id", "change_ids", "event_id", "history_event_id"})

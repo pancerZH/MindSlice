@@ -5,8 +5,8 @@ from __future__ import annotations
 import json
 
 from mindslice import FrontmatterError
-from mindslice.card import parse_card
-from mindslice.mcp_server import EMPTY_WORKSPACE_HINT, INSTRUCTIONS, MCPServer
+from mindslice.model.card import parse_card
+from mindslice.interfaces.mcp_server import EMPTY_WORKSPACE_HINT, INSTRUCTIONS, MCPServer
 
 from .helpers import WorkspaceTestCase, card_text
 from .test_interfaces import run_cli

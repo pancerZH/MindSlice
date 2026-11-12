@@ -32,10 +32,10 @@ from typing import Iterator
 from unittest import mock
 
 from mindslice import Workspace
-from mindslice import index as index_module
-from mindslice import query as query_module
-from mindslice.index import Hit
-from mindslice.lexical import QueryPlan, QueryUnit, analyze_query
+from mindslice.retrieval import index as index_module
+from mindslice.retrieval import query as query_module
+from mindslice.retrieval.index import Hit
+from mindslice.retrieval.lexical import QueryPlan, QueryUnit, analyze_query
 
 from .dataset import ALIASED, DATA
 

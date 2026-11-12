@@ -20,7 +20,7 @@ from contextlib import contextmanager
 from pathlib import Path
 from typing import Iterator
 
-from .errors import LockTimeoutError
+from ..errors import LockTimeoutError
 
 try:  # POSIX
     import fcntl

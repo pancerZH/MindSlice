@@ -10,8 +10,8 @@ import tomllib
 import unittest
 
 from mindslice import ApplyConflictError, UnresolvedExportDependencyError, Workspace
-from mindslice.card import sha256_bytes
-from mindslice.staging import replay
+from mindslice.model.card import sha256_bytes
+from mindslice.operations.staging import replay
 
 from .helpers import WorkspaceTestCase, bump_mtime, card_text
 

@@ -20,10 +20,10 @@ import json
 import sys
 from typing import IO, Any
 
-from . import __version__
-from .boot import fingerprint, render_markdown
-from .errors import InvalidArgumentsError, MindSliceError
-from .workspace import Workspace
+from .. import __version__
+from ..operations.boot import fingerprint, render_markdown
+from ..errors import InvalidArgumentsError, MindSliceError
+from ..workspace import Workspace
 
 PROTOCOL_VERSIONS = ("2025-06-18", "2025-03-26", "2024-11-05")
 

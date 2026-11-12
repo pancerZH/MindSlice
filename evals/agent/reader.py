@@ -78,7 +78,7 @@ def replay_states(hdir: Path, data: str | None = None) -> Iterator[tuple[Any, An
     from evals.external.datasets import LOADERS
     from evals.external.harness import _apply_lineage
     from mindslice import Workspace
-    from mindslice.mcp_server import MCPServer
+    from mindslice.interfaces.mcp_server import MCPServer
 
     from .agents import SessionTask, make
     from .runner import HISTORY_ALIAS, HISTORY_ARMS, LINEAGE_ARMS, write_history

@@ -13,8 +13,8 @@ from datetime import datetime, timezone
 from pathlib import Path
 from typing import Any
 
-from .card import sha256_bytes
-from .errors import HistoryError
+from ..model.card import sha256_bytes
+from ..errors import HistoryError
 from .fsutil import atomic_write_text, fsync_dir, prune_empty_dirs, unlink_if_exists
 
 

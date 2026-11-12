@@ -5,15 +5,15 @@ from __future__ import annotations
 import json
 from typing import TYPE_CHECKING, Any, Iterable, Sequence
 
-from .addressing import format_address, normalize_alias, parse_address
-from .card import KNOWN_FIELDS, LOAD_ALWAYS, SUMMARY_PREVIEW_CHARS, parse_card, truncate
-from .config import DESCRIPTION_CHARS, OVERVIEW_PATH, MountTable, load_slice_manifest
-from .errors import InvalidAddressError, NotFoundError
-from .lineage import FollowSpec, LineageView, TrustPolicy
-from .writer import read_card_file
+from ..model.addressing import format_address, normalize_alias, parse_address
+from ..model.card import KNOWN_FIELDS, LOAD_ALWAYS, SUMMARY_PREVIEW_CHARS, parse_card, truncate
+from ..storage.config import DESCRIPTION_CHARS, OVERVIEW_PATH, MountTable, load_slice_manifest
+from ..errors import InvalidAddressError, NotFoundError
+from ..model.lineage import FollowSpec, LineageView, TrustPolicy
+from ..storage.card_io import read_card_file
 
 if TYPE_CHECKING:  # pragma: no cover
-    from .workspace import Workspace
+    from ..workspace import Workspace
 
 _LINEAGE_KINDS = ("extends", "supersedes")
 
@@ -59,7 +59,7 @@ def manifest(
     include_always: bool = True,
 ) -> dict[str, Any]:
     """Mount map; on the first page (``offset=0``) also the always-loaded cards (``always_loaded``)."""
-    from .boot import snapshot  # boot builds on this module
+    from ..operations.boot import snapshot  # boot builds on this module
 
     _nonneg(limit=limit, offset=offset, max_folders_per_mount=max_folders_per_mount)
     with ws._reading() as table:

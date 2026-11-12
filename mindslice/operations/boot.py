@@ -18,13 +18,13 @@ import hashlib
 import json
 from typing import TYPE_CHECKING, Any, Iterable
 
-from . import query
-from .addressing import format_address, resolve_ref
-from .card import LOAD_ALWAYS, parse_card
+from ..retrieval import query
+from ..model.addressing import format_address, resolve_ref
+from ..model.card import LOAD_ALWAYS, parse_card
 
 if TYPE_CHECKING:  # pragma: no cover
-    from .config import MountTable
-    from .workspace import Workspace
+    from ..storage.config import MountTable
+    from ..workspace import Workspace
 
 # Extensions composed into one boot card (read() pages them; the boot set shows them all up to this).
 MAX_EXTENSIONS = 50

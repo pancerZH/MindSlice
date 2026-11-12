@@ -26,7 +26,7 @@ from mindslice import (
     Workspace,
     WorkspaceNotFoundError,
 )
-from mindslice.locking import WorkspaceLock
+from mindslice.storage.locking import WorkspaceLock
 
 from .helpers import WorkspaceTestCase, bump_mtime, card_text
 
@@ -511,7 +511,8 @@ class WindowsCompatibilityTests(WorkspaceTestCase):
         self.ws.close()
         worker = """
 import os, sys
-from mindslice import Workspace, staging
+from mindslice import Workspace
+from mindslice.operations import staging
 move = staging.durable_move
 def crash_after_move(src, dst):
     move(src, dst)
@@ -550,7 +551,7 @@ class WindowsTests(WorkspaceTestCase):
         worker = """
 import sys
 from pathlib import Path
-from mindslice.locking import WorkspaceLock
+from mindslice.storage.locking import WorkspaceLock
 path, mode, ready = sys.argv[1:]
 lock = WorkspaceLock(Path(path), timeout=2)
 try:

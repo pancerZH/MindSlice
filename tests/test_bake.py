@@ -6,8 +6,8 @@ import json
 
 from mindslice import AlreadyExistsError, BakeConflictError, MountError, NotFoundError, UnresolvedExportDependencyError
 from mindslice.errors import InvalidArgumentsError
-from mindslice.card import parse_card
-from mindslice.config import load_slice_manifest
+from mindslice.model.card import parse_card
+from mindslice.storage.config import load_slice_manifest
 
 from .helpers import WorkspaceTestCase, card_text
 from .test_interfaces import run_cli
@@ -246,7 +246,7 @@ class BakeCreationTests(WorkspaceTestCase):
                          ("Python notes", "Team Python notes", "2.0.0"))
 
     def test_pack_is_no_longer_a_public_operation(self):
-        from mindslice.cli import build_parser
+        from mindslice.interfaces.cli import build_parser
 
         self.assertFalse(hasattr(self.ws, "pack"))
         self.assertNotIn("pack", build_parser()._subparsers._group_actions[0].choices)
@@ -265,7 +265,7 @@ class BakeCreationTests(WorkspaceTestCase):
         output = self.tmp / "new.slice"
         before = snapshot(self.root / "overlay")
         mounts = (self.root / "mounts.toml").read_bytes()
-        with patch("mindslice.bake.dump_slice_manifest", side_effect=OSError("write failed")):
+        with patch("mindslice.baking.bake.dump_slice_manifest", side_effect=OSError("write failed")):
             with self.assertRaisesRegex(OSError, "write failed"):
                 self.ws.bake("@python", output, prefix="python/")
         self.assertFalse(output.exists())
@@ -279,7 +279,7 @@ class BakeArchiveTests(WorkspaceTestCase):
         import tarfile
         import zipfile
         from pathlib import Path
-        from mindslice.archive import write_archive
+        from mindslice.baking.archive import write_archive
 
         for suffix, fmt in (("zip", "zip"), ("tar.gz", "tar.gz"), ("tgz", "tar.gz")):
             with self.subTest(suffix=suffix):
@@ -350,7 +350,7 @@ class BakeArchiveTests(WorkspaceTestCase):
 
         old = self.mount_slice("base", {"note": card_text("Note", "Baseline.")}, "@base", 70, "curated")
         self.ws.write("extra", summary="More advice.", extends=["@base/note"])
-        with patch("mindslice.bake.write_archive", side_effect=OSError("archive failed")):
+        with patch("mindslice.baking.bake.write_archive", side_effect=OSError("archive failed")):
             with self.assertRaisesRegex(OSError, "archive failed"):
                 self.ws.bake("@base", self.tmp / "base.zip")
         self.assertEqual(self.ws.table().get("@base").root, old)

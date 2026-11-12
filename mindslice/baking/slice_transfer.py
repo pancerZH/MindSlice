@@ -14,15 +14,16 @@ from __future__ import annotations
 
 from typing import TYPE_CHECKING, Any, Callable, Sequence
 
-from .addressing import MountCatalog, format_address, resolve_ref, rewrite_wikilinks
-from .card import ParsedCard, normalize_newlines, parse_card
-from .errors import UnresolvedExportDependencyError
-from .fsutil import iter_markdown
-from .history import change, event, file_action
-from .writer import read_card_file, reassemble
+from ..model.addressing import MountCatalog, format_address, resolve_ref, rewrite_wikilinks
+from ..model.card import ParsedCard, normalize_newlines, parse_card
+from ..errors import UnresolvedExportDependencyError
+from ..storage.fsutil import iter_markdown
+from ..storage.history import change, event, file_action
+from ..storage.card_io import read_card_file
+from ..model.card import reassemble
 
 if TYPE_CHECKING:  # pragma: no cover
-    from .workspace import Workspace
+    from ..workspace import Workspace
 
 
 def rewrite_refs(text: str, parsed: ParsedCard, mapper: Callable[[str], str]) -> str:

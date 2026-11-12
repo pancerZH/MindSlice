@@ -4,11 +4,11 @@ from __future__ import annotations
 
 from typing import TYPE_CHECKING
 
-from .addressing import format_address, normalize_alias, normalize_path, parse_address
-from .errors import AmbiguousAddressError, InvalidAddressError
+from ..model.addressing import format_address, normalize_alias, normalize_path, parse_address
+from ..errors import AmbiguousAddressError, InvalidAddressError
 
 if TYPE_CHECKING:  # pragma: no cover
-    from .workspace import Workspace
+    from ..workspace import Workspace
 
 
 def reference(ws: "Workspace", value: str, *, source: str | None = None) -> str:

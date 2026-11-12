@@ -6,7 +6,7 @@ from pathlib import Path
 from unittest.mock import patch
 
 from mindslice import BakeConflictError, Workspace
-from mindslice import bake_batch
+from mindslice.baking import bake_batch
 from .helpers import WorkspaceTestCase, card_text
 from .test_interfaces import run_cli
 
@@ -189,7 +189,7 @@ class BatchBakeTests(WorkspaceTestCase):
         plan = self.ws.plan_bake()
         self.assertEqual(len({s['path'] for s in plan['slices']}), 2)
         self.assertEqual(len(self.ws.bake(plan=plan)['baked']), 2)
-        from mindslice.config import load_slice_manifest
+        from mindslice.storage.config import load_slice_manifest
         self.assertEqual(load_slice_manifest(self.ws.table().get('@b').root).version, '0.1.0')
 
     def test_precommit_publication_failure_cleans_up_outputs(self):
@@ -204,7 +204,7 @@ class BatchBakeTests(WorkspaceTestCase):
             if len(calls) == 2:
                 raise OSError('publication failed')
             return real_rename(src, dst)
-        with patch('mindslice.bake_batch.os.rename', side_effect=fail_second):
+        with patch('mindslice.baking.bake_batch.os.rename', side_effect=fail_second):
             with self.assertRaises(OSError):
                 self.ws.bake(plan=plan)
         self.assertEqual((self.root/'mounts.toml').read_bytes(), mounts)
@@ -238,7 +238,7 @@ class BatchBakeTests(WorkspaceTestCase):
         def edit_during_publish(src, dst):
             rename(src, dst)
             self.overlay_file('a').write_text(card_text('A','Edited while baking.'))
-        with patch('mindslice.bake_batch.os.rename', side_effect=edit_during_publish):
+        with patch('mindslice.baking.bake_batch.os.rename', side_effect=edit_during_publish):
             with self.assertRaises(BakeConflictError):
                 self.ws.bake(plan=plan)
         self.assertIn('Edited while baking.', self.overlay_file('a').read_text())
@@ -272,7 +272,7 @@ class BatchBakeTests(WorkspaceTestCase):
             result = real(ws, table)
             self.overlay_file('a').write_text(card_text('A', 'Changed after read.'))
             return result
-        with patch('mindslice.bake_batch.overlay_cards', side_effect=read_then_edit):
+        with patch('mindslice.baking.bake_batch.overlay_cards', side_effect=read_then_edit):
             with self.assertRaises(BakeConflictError):
                 self.ws.plan_bake({'a':'one'}, resume=False)
 
@@ -322,7 +322,7 @@ class BatchBakeCLITests(WorkspaceTestCase):
     def test_interactive_group_assignment_inspection_and_confirmation(self):
         self.ws.write('topic/a', summary='A.', reason='User requested it.')
         self.ws.write('topic/b', summary='B.')
-        with patch('sys.stdin.isatty', return_value=True), patch('mindslice.bake_review._answer',
+        with patch('sys.stdin.isatty', return_value=True), patch('mindslice.interfaces.bake_review._answer',
                 side_effect=['inspect','new','inspect','bake all']):
             code, out, err = self.cli()
         self.assertEqual(code,0,err)
@@ -331,7 +331,7 @@ class BatchBakeCLITests(WorkspaceTestCase):
 
     def test_cancel_persists_group_choices_for_resume(self):
         self.ws.write('topic/a',summary='A.')
-        with patch('sys.stdin.isatty',return_value=True), patch('mindslice.bake_review._answer',side_effect=['new','cancel']):
+        with patch('sys.stdin.isatty',return_value=True), patch('mindslice.interfaces.bake_review._answer',side_effect=['new','cancel']):
             code,out,err=self.cli()
         self.assertEqual(code,0,err)
         self.assertTrue(json.loads(out)['cancelled'])
@@ -367,13 +367,13 @@ class BatchBakeCLITests(WorkspaceTestCase):
     def test_interactive_split_edit_and_eof(self):
         self.ws.write('topic/a', summary='A.')
         self.ws.write('topic/b', summary='B.')
-        with patch('sys.stdin.isatty', return_value=True), patch('mindslice.bake_review._answer',
+        with patch('sys.stdin.isatty', return_value=True), patch('mindslice.interfaces.bake_review._answer',
                 side_effect=['split', 'bad alias', 'one', 'two', 'edit', 'topic/b', 'one', 'bake']):
             code, out, err = self.cli()
         self.assertEqual(code, 0, err)
         self.assertEqual(len(json.loads(out)['baked']), 1)
         self.ws.write('next', summary='Next.')
-        with patch('sys.stdin.isatty', return_value=True), patch('mindslice.bake_review._answer', side_effect=EOFError):
+        with patch('sys.stdin.isatty', return_value=True), patch('mindslice.interfaces.bake_review._answer', side_effect=EOFError):
             code, out, err = self.cli()
         self.assertEqual(code, 0, err)
         self.assertTrue(json.loads(out)['cancelled'])
@@ -388,7 +388,7 @@ class BatchBakeCLITests(WorkspaceTestCase):
 
     def test_human_dry_run_shows_card_destinations_and_reasons(self):
         self.ws.write('a', summary='A.', reason='User correction.')
-        from mindslice.bake_review import render_plan
+        from mindslice.interfaces.bake_review import render_plan
         text = render_plan(self.ws.plan_bake({'a':'one'}), details=True)
         self.assertIn('@overlay/a → @one', text)
         self.assertIn('User correction.', text)

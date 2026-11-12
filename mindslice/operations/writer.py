@@ -5,23 +5,23 @@ from __future__ import annotations
 from collections import defaultdict
 from typing import TYPE_CHECKING, Any, Iterable, Sequence
 
-from .addressing import MountCatalog, format_address, normalize_alias, normalize_path, resolve_ref
-from .card import (
+from ..model.addressing import MountCatalog, format_address, normalize_alias, normalize_path, resolve_ref
+from ..model.card import (
     LIST_FIELDS,
     LOAD_ALWAYS,
     LOAD_VALUES,
     ParsedCard,
     append_statements,
     compose_after,
-    dump_frontmatter,
     normalize_newlines,
     parse_card,
     render_card,
+    reassemble,
     sha256_bytes,
     split_summary,
     statement_blocks,
 )
-from .errors import (
+from ..errors import (
     AlreadyExistsError,
     FrontmatterError,
     InvalidAddressError,
@@ -31,12 +31,13 @@ from .errors import (
     PreconditionFailedError,
     ReadOnlyMountError,
 )
-from .history import change, file_action
+from ..storage.history import change, file_action
+from ..storage.card_io import read_card_file
 from .impact import inbound_impact, supersede_targets
-from .lineage import cycle_through
+from ..model.lineage import cycle_through
 
 if TYPE_CHECKING:  # pragma: no cover
-    from .workspace import Workspace
+    from ..workspace import Workspace
 
 OPS = ("create", "replace", "append", "delete")
 
@@ -60,15 +61,6 @@ def overlay_card_path(ws: "Workspace", card_id: str, strict: bool = True) -> str
             )
         card_id = rest
     return normalize_path(card_id, strict=strict)
-
-
-def read_card_file(file) -> tuple[str | None, str | None]:
-    """Return ``(text, sha256_of_raw_bytes)`` or ``(None, None)`` when the file is absent."""
-    try:
-        data = file.read_bytes()
-    except (FileNotFoundError, IsADirectoryError, NotADirectoryError):
-        return None, None
-    return data.decode("utf-8", errors="replace"), sha256_bytes(data)
 
 
 def _as_list(name: str, value: Any) -> list[str] | None:
@@ -185,22 +177,6 @@ def build_text(
     raise ValueError(f"unknown op {op!r} (expected one of {', '.join(OPS)})")
 
 
-def reassemble(parsed: ParsedCard, original: str, fields: dict[str, Any] | None, after: str | None) -> str:
-    """Rebuild a card, keeping untouched regions (frontmatter text, body) verbatim."""
-    original = normalize_newlines(original)
-    if fields is None and after is None:
-        return original if original.endswith("\n") or not original else original + "\n"
-    new_after = (parsed.after if after is None else after).lstrip("\n")
-    if fields is None and parsed.raw_frontmatter is None:
-        text = new_after
-    elif fields is None and parsed.frontmatter_format == "yaml":
-        text = f"---\n{parsed.raw_frontmatter}---\n" + ("\n" + new_after if new_after else "")  # kept verbatim
-    else:
-        fm = parsed.raw_frontmatter if fields is None else dump_frontmatter(fields)
-        text = f"+++\n{fm}+++\n" + ("\n" + new_after if new_after else "")
-    return text if text.endswith("\n") or not text else text + "\n"
-
-
 # ---------------------------------------------------------------------------
 # Cycle checks over the prospective lineage graph
 # ---------------------------------------------------------------------------
@@ -308,7 +284,7 @@ def write(
 ) -> dict[str, Any]:
     """``stage=None`` (the default) stages a change to the always-loaded context for the user's
     approval and writes anything else straight to ``overlay/``; ``True`` / ``False`` force either."""
-    from .boot import protection_reason  # boot imports query, which imports this module
+    from .boot import protection_reason  # evaluate protection against the current workspace
 
     if reason is not None:
         if not isinstance(reason, str) or not reason.strip():
@@ -431,5 +407,5 @@ def write(
         return result
 
 
-__all__ = ["write", "write_impact", "build_text", "reassemble", "check_cycles", "prospective_successors", "OPS",
+__all__ = ["write", "write_impact", "build_text", "check_cycles", "prospective_successors", "OPS",
            "LIST_FIELDS"]

@@ -16,8 +16,8 @@ import re
 from dataclasses import dataclass, field
 from typing import Iterable
 
-from .errors import InvalidAddressError
-from .lexical import fold
+from ..errors import InvalidAddressError
+from .text import fold
 
 _ALIAS_RE = re.compile(r"^@[A-Za-z0-9][A-Za-z0-9_.-]*$")
 _SEGMENT_RE = re.compile(r"^[\w][\w .-]*$", re.UNICODE)

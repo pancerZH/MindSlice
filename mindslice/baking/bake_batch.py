@@ -14,20 +14,21 @@ from collections import defaultdict
 from pathlib import Path
 from typing import TYPE_CHECKING
 
-from .addressing import MountCatalog, format_address, normalize_alias, resolve_ref
+from ..model.addressing import MountCatalog, format_address, normalize_alias, resolve_ref
 from .bake import bump_version, default_output
-from .card import normalize_newlines, parse_card, sha256_bytes
-from .config import MOUNTS_FILE, SLICE_FILE, Mount, MountTable, SliceManifest, dump_mounts, dump_slice_manifest, load_slice_manifest, portable_path
-from .errors import BakeConflictError, InvalidArgumentsError
-from .fsutil import atomic_write_text, fsync_dir, iter_markdown
-from .history import change, event, file_action, file_sha
-from .lineage import strongly_connected_cycles
+from ..model.card import normalize_newlines, parse_card, sha256_bytes
+from ..storage.config import MOUNTS_FILE, SLICE_FILE, Mount, MountTable, SliceManifest, dump_mounts, dump_slice_manifest, load_slice_manifest, portable_path
+from ..errors import BakeConflictError, InvalidArgumentsError
+from ..storage.fsutil import atomic_write_text, fsync_dir, iter_markdown
+from ..storage.history import change, event, file_action, file_sha
+from ..model.lineage import strongly_connected_cycles
 from .slice_transfer import overlay_cards, rewrite_refs
-from .staging import _diff_overlay, _diff_staging
-from .writer import read_card_file, reassemble
+from ..operations.staging import _diff_overlay, _diff_staging
+from ..storage.card_io import read_card_file
+from ..model.card import reassemble
 
 if TYPE_CHECKING:
-    from .workspace import Workspace
+    from ..workspace import Workspace
 
 PLAN_FILE = ".bake-plan.json"
 

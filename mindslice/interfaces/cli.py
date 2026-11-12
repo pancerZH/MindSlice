@@ -9,13 +9,13 @@ import sys
 from pathlib import Path
 from typing import Any, Sequence
 
-from . import __version__
-from .addressing import normalize_alias
-from .boot import render_markdown as render_boot
+from .. import __version__
+from ..model.addressing import normalize_alias
+from ..operations.boot import render_markdown as render_boot
 from .cli_addressing import reference as cli_reference
-from .errors import ApplyConflictError, MindSliceError
-from .status import render_status
-from .workspace import Workspace
+from ..errors import ApplyConflictError, MindSliceError
+from ..operations.status import render_status
+from ..workspace import Workspace
 
 
 def _follow(value: str | None) -> bool | list[str]:
@@ -297,7 +297,7 @@ def _dispatch(ws: Workspace, args: argparse.Namespace, compact: bool) -> int:
             from .bake_review import run
             return run(ws, args, lambda result: _emit(result, compact))
         if args.assign or args.defer or args.plan or args.fresh or args.yes:
-            from .errors import InvalidArgumentsError
+            from ..errors import InvalidArgumentsError
             raise InvalidArgumentsError("batch review options cannot be combined with a target alias")
         _emit(ws.bake(args.alias, _cwd_path(args.output) if args.output else None, args.prefix, args.tags,
                       args.include_deps, args.dry_run, name=args.name, description=args.description,

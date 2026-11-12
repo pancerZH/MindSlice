@@ -5,9 +5,9 @@ import sys
 from collections import defaultdict
 from pathlib import Path
 
-from . import bake_batch
-from .addressing import normalize_alias
-from .errors import BakeConflictError, InvalidArgumentsError, MindSliceError
+from ..baking import bake_batch
+from ..model.addressing import normalize_alias
+from ..errors import BakeConflictError, InvalidArgumentsError, MindSliceError
 
 
 def render_plan(plan, *, details=False):

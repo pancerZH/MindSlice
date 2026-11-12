@@ -7,17 +7,17 @@ from dataclasses import dataclass
 from pathlib import Path
 from typing import TYPE_CHECKING, Any
 
-from .addressing import MountCatalog, format_address, normalize_alias, resolve_ref
-from .card import MAX_CARD_LINES, SUMMARY_PREVIEW_CHARS, ParsedCard, parse_card
-from .config import DESCRIPTION_CHARS, OVERVIEW_PATH, SliceManifest, load_slice_manifest
-from .errors import InvalidAddressError
-from .fsutil import iter_markdown
-from .lexical import fold
-from .lineage import strongly_connected_cycles
-from .writer import read_card_file
+from ..model.addressing import MountCatalog, format_address, normalize_alias, resolve_ref
+from ..model.card import MAX_CARD_LINES, SUMMARY_PREVIEW_CHARS, ParsedCard, parse_card
+from ..storage.config import DESCRIPTION_CHARS, OVERVIEW_PATH, SliceManifest, load_slice_manifest
+from ..errors import InvalidAddressError
+from ..storage.fsutil import iter_markdown
+from ..model.text import fold
+from ..model.lineage import strongly_connected_cycles
+from ..storage.card_io import read_card_file
 
 if TYPE_CHECKING:  # pragma: no cover
-    from .workspace import Workspace
+    from ..workspace import Workspace
 
 
 @dataclass

@@ -14,7 +14,7 @@ from pathlib import Path
 from typing import Any
 
 from mindslice import Workspace
-from mindslice.mcp_server import MCPServer
+from mindslice.interfaces.mcp_server import MCPServer
 
 CAP = 40
 CAP_MESSAGE = ("tool-call limit reached: at most {cap} tool calls per session. This session is over; "

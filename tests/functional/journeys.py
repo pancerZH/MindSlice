@@ -8,7 +8,7 @@ from pathlib import Path
 from typing import Any
 
 from mindslice import ApplyConflictError, Workspace
-from mindslice.archive import write_archive
+from mindslice.baking.archive import write_archive
 
 from .fixtures import SERVICES, empty_workspace, few_slices_workspace, many_slices_workspace
 from .harness import Agent, Human, Journey, JourneyFailure, JourneyRun, Session, addresses, expect, expect_eq

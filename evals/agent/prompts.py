@@ -9,7 +9,7 @@ from __future__ import annotations
 
 import hashlib
 
-from mindslice.mcp_server import INSTRUCTIONS
+from mindslice.interfaces.mcp_server import INSTRUCTIONS
 
 TASK = (
     "You are the long-term memory keeper for one user. You will be shown their conversations with an "

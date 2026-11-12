@@ -5,8 +5,8 @@ from __future__ import annotations
 import tomllib
 import unittest
 
-from mindslice import tomlfmt
-from mindslice.addressing import (
+from mindslice.model import tomlfmt
+from mindslice.model.addressing import (
     MountCatalog,
     alias_from_name,
     extract_wikilinks,
@@ -15,7 +15,7 @@ from mindslice.addressing import (
     resolve_ref,
     rewrite_wikilinks,
 )
-from mindslice.card import append_statements, parse_card, preview_text, split_lead, statement_blocks
+from mindslice.model.card import append_statements, parse_card, preview_text, split_lead, statement_blocks
 from mindslice.errors import FrontmatterError, InvalidAddressError
 
 from .helpers import card_text

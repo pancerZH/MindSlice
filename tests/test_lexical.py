@@ -1,4 +1,4 @@
-"""Unit tests for mindslice.lexical (text analysis feeding the FTS5 index).
+"""Unit tests for mindslice.retrieval.lexical (text analysis feeding the FTS5 index).
 
 Chinese and English are covered exhaustively; other unspaced scripts get compact checks.
 """
@@ -7,7 +7,7 @@ from __future__ import annotations
 
 import unittest
 
-from mindslice.lexical import analyze_query, analyzer_signature, fold, index_text, normalize
+from mindslice.retrieval.lexical import analyze_query, analyzer_signature, fold, index_text, normalize
 
 from .helpers import WorkspaceTestCase
 

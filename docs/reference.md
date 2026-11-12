@@ -544,6 +544,24 @@ The design leaves a few details open. These are the choices v1 makes:
 
 ## Development
 
+The public Python API is exported from `mindslice`; `workspace.py` is the facade used by
+the CLI and MCP server. Implementation modules are grouped by responsibility:
+
+| Package | Responsibility |
+| --- | --- |
+| `model` | Cards, addresses, lineage, text normalization and TOML formatting |
+| `storage` | Workspace configuration, file I/O, locking and change history |
+| `retrieval` | Indexing, lexical analysis and queries |
+| `operations` | Writing, staging, boot payloads, status, impact and validation |
+| `baking` | Single and batch baking, slice transfer and archives |
+| `interfaces` | CLI, interactive bake review and MCP |
+
+Shared card parsing and reconstruction belong in `model`; shared card-file reading belongs
+in `storage`, so readers do not depend on the writer. Subpackage initializers stay lightweight.
+Use `from mindslice import Workspace` for integrations; implementation imports use the
+subpackage paths (for example, `mindslice.interfaces.mcp_server`). The `mindslice` command
+and `python -m mindslice` use the same CLI entry point.
+
 ```bash
 python3 -m unittest discover -s tests -t .
 ```

@@ -18,7 +18,7 @@ import re
 import tomllib
 from typing import Any, Mapping
 
-from .errors import FrontmatterError
+from ..errors import FrontmatterError
 
 _BARE_KEY = re.compile(r"^[A-Za-z0-9_-]+$")
 _SHORT_ESCAPES = {

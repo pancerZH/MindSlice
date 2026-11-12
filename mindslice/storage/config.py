@@ -8,9 +8,9 @@ from dataclasses import dataclass, field
 from pathlib import Path
 from typing import Any
 
-from . import tomlfmt
-from .addressing import normalize_alias
-from .errors import MountError
+from ..model import tomlfmt
+from ..model.addressing import normalize_alias
+from ..errors import MountError
 
 MOUNTS_FILE = "mounts.toml"
 SLICE_FILE = "slice.toml"

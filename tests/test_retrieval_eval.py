@@ -14,7 +14,7 @@ from evals.retrieval import systems
 from evals.retrieval.dataset import load_queries
 from evals.retrieval.metrics import interval, mrr_at, ndcg_at, percentile, recall_at, resamples, verdict
 from evals.retrieval.run import RESULTS, check, rank_all, summarize
-from mindslice import index as index_module
+from mindslice.retrieval import index as index_module
 
 TOLERANCE = 0.02  # nDCG@5 a split/language may lose against results/run.json before this test fails
 

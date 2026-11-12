@@ -14,7 +14,7 @@ Agent cards correspond to no dataset turn, so a card is judged by what it *state
 * A card is **warned** exactly as in Mode B (``evals/external/harness.py``): status not ``active``, or
   ``baseline_superseded_by`` / ``missing_baselines`` (over the whole extends closure).
 
-``Judge`` reads card files and the lineage index directly (``mindslice.query._Ctx``), never through
+``Judge`` reads card files and the lineage index directly (``mindslice.retrieval.query._Ctx``), never through
 ``read()``, so judging changes nothing in the workspace (no read telemetry).
 """
 
@@ -27,9 +27,9 @@ from typing import Any, Iterable, Sequence
 
 from evals.external.datasets import normalize_text, words
 from mindslice import Workspace
-from mindslice.card import parse_card
-from mindslice.writer import read_card_file
-from mindslice.query import _Ctx, _baseline_closure
+from mindslice.model.card import parse_card
+from mindslice.storage.card_io import read_card_file
+from mindslice.retrieval.query import _Ctx, _baseline_closure
 
 K = 10
 

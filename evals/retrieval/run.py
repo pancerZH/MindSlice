@@ -8,6 +8,8 @@
 
 from __future__ import annotations
 
+from evals.provenance import engine_digest
+
 import argparse
 import hashlib
 import json
@@ -20,7 +22,7 @@ from pathlib import Path
 from typing import Any
 
 import mindslice
-from mindslice.lexical import analyzer_signature
+from mindslice.retrieval.lexical import analyzer_signature
 
 from .dataset import (
     ALIASED,
@@ -195,9 +197,8 @@ def environment() -> dict[str, Any]:
 
     package = Path(mindslice.__file__).parent
     status = git("status", "--porcelain", "--", str(package))
-    engine = hashlib.sha256(b"".join(f.name.encode() + b"\0" + f.read_bytes() for f in sorted(package.glob("*.py"))))
     return {"mindslice": mindslice.__version__, "engine_commit": git("rev-parse", "--short", "HEAD"),
-            "engine_dirty": bool(status) if status is not None else None, "engine_digest": engine.hexdigest(),
+            "engine_dirty": bool(status) if status is not None else None, "engine_digest": engine_digest(package),
             "python": sys.version.split()[0],
             "sqlite": sqlite3.sqlite_version, "unicode": unicodedata.unidata_version, "analyzer": analyzer_signature(),
             "k": K, "bootstrap": {"replicates": BOOTSTRAP_REPLICATES, "seed": BOOTSTRAP_SEED}}

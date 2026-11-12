@@ -21,18 +21,11 @@ from contextlib import contextmanager
 from pathlib import Path
 from typing import Any, Iterator, Sequence
 
-from . import (
-    bake as bake_mod,
-    boot as boot_mod,
-    query,
-    slice_transfer,
-    staging as staging_mod,
-    status as status_mod,
-    validation,
-    writer,
-)
-from .addressing import alias_from_name, normalize_alias
-from .config import (
+from .baking import bake as bake_mod, slice_transfer
+from .operations import boot as boot_mod, staging as staging_mod, status as status_mod, validation, writer
+from .retrieval import query
+from .model.addressing import alias_from_name, normalize_alias
+from .storage.config import (
     MOUNTS_FILE,
     Mount,
     MountTable,
@@ -42,11 +35,11 @@ from .config import (
     save_mounts,
 )
 from .errors import MountError, NotFoundError, WorkspaceNotFoundError
-from .history import ChangeHistory
-from .index import FRONTMATTER_CODES, Index, SyncStats
-from .lineage import FollowSpec
-from .locking import WorkspaceLock
-from .staging import StagingArea
+from .storage.history import ChangeHistory
+from .retrieval.index import FRONTMATTER_CODES, Index, SyncStats
+from .model.lineage import FollowSpec
+from .storage.locking import WorkspaceLock
+from .operations.staging import StagingArea
 
 CACHE_DIR = ".cache"
 INDEX_FILE = "index.sqlite"
@@ -322,7 +315,7 @@ class Workspace:
         Previous directories remain untouched. Batch outputs use workspace ``slices/`` defaults.
         """
         if alias is None:
-            from . import bake_batch
+            from .baking import bake_batch
             from .errors import InvalidArgumentsError
             if any(x is not None for x in (output_path, prefix, tags, name, description, version)) or include_deps:
                 raise InvalidArgumentsError("single-slice options require an alias")
@@ -338,7 +331,7 @@ class Workspace:
 
     def plan_bake(self, assignments: dict[str, str | None] | None = None, *, resume: bool = True) -> dict[str, Any]:
         """Review all overlay cards; null destinations explicitly defer cards. No content writes."""
-        from .bake_batch import plan_bake
+        from .baking.bake_batch import plan_bake
         return plan_bake(self, assignments, resume=resume)
 
     # ------------------------------------------------------------------

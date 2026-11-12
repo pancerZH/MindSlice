@@ -35,7 +35,7 @@ STOP = frozenset("a an and as at by for from in is of on s that the to was with 
 
 def _cards(ws: Path) -> dict[str, tuple[bool, str]]:
     """address -> (text) for every card file in the workspace's mounts (overlay and history)."""
-    from mindslice.card import parse_card
+    from mindslice.model.card import parse_card
 
     out = {}
     for alias, sub in (("@overlay", "overlay"), ("@history", "history.slice")):
@@ -58,7 +58,7 @@ def replay(hdir: Path, upto: int, tmp: Path) -> dict[str, str]:
     with the ``@history`` cards the harness had added by then. Returns address -> card text."""
     from evals.external.datasets import LOADERS
     from mindslice import Workspace
-    from mindslice.mcp_server import MCPServer
+    from mindslice.interfaces.mcp_server import MCPServer
 
     from .runner import HISTORY_ARMS, HISTORY_ALIAS, write_history
     from .sessions import agent_sessions

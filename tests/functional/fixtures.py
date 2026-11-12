@@ -5,7 +5,8 @@ from __future__ import annotations
 from dataclasses import dataclass, field
 from pathlib import Path
 
-from mindslice import Workspace, tomlfmt
+from mindslice import Workspace
+from mindslice.model import tomlfmt
 
 from ..helpers import card_text
 

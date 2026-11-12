@@ -15,6 +15,8 @@ Rules: PLAN.md. How to read the results: README.md.
 
 from __future__ import annotations
 
+from evals.provenance import engine_digest
+
 import argparse
 import hashlib
 import json
@@ -30,7 +32,7 @@ from pathlib import Path
 from typing import Any
 
 import mindslice
-from mindslice.lexical import analyzer_signature
+from mindslice.retrieval.lexical import analyzer_signature
 
 from . import hints, sources
 from .checks import CHECKS
@@ -476,9 +478,8 @@ def environment() -> dict[str, Any]:
             return None
 
     package = Path(mindslice.__file__).parent
-    engine = hashlib.sha256(b"".join(f.name.encode() + b"\0" + f.read_bytes() for f in sorted(package.glob("*.py"))))
     return {"mindslice": mindslice.__version__, "commit": git("rev-parse", "--short", "HEAD"),
-            "engine_dirty": bool(git("status", "--porcelain", "--", str(package))), "engine_digest": engine.hexdigest(),
+            "engine_dirty": bool(git("status", "--porcelain", "--", str(package))), "engine_digest": engine_digest(package),
             "harness_digest": harness_digest(), "python": sys.version.split()[0], "sqlite": sqlite3.sqlite_version,
             "unicode": unicodedata.unidata_version, "analyzer": analyzer_signature(), "k": K,
             "sources": {k: {"url": s.url, "sha256": s.sha256} for k, s in sources.SOURCES.items()}}

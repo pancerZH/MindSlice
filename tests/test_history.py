@@ -12,8 +12,8 @@ from pathlib import Path
 from unittest.mock import patch
 
 from mindslice import ApplyConflictError, HistoryError, InvalidArgumentsError, NotFoundError, Workspace
-from mindslice.card import parse_card
-from mindslice.mcp_server import MCPServer
+from mindslice.model.card import parse_card
+from mindslice.interfaces.mcp_server import MCPServer
 
 from .helpers import WorkspaceTestCase, card_text
 from .test_interfaces import run_cli
@@ -184,12 +184,12 @@ class HistoryRecoveryTests(WorkspaceTestCase):
         self.assertEqual(len(self.ws.history.events()), 1)
 
     def test_recovery_after_append_does_not_duplicate_events(self):
-        from mindslice.history import unlink_if_exists as unlink
+        from mindslice.storage.history import unlink_if_exists as unlink
         def stop(path):
             if path == self.ws.history.journal_path:
                 raise OSError("crashed after append")
             return unlink(path)
-        with patch("mindslice.history.unlink_if_exists", side_effect=stop):
+        with patch("mindslice.storage.history.unlink_if_exists", side_effect=stop):
             with self.assertRaises(OSError):
                 self.ws.write("note", summary="Once.", reason="Exactly one event.")
         self.assertEqual(len(self.ws.history.events()), 1)
@@ -276,7 +276,8 @@ class HistoryRecoveryTests(WorkspaceTestCase):
         self.ws.close()
         worker = r'''
 import os, sys
-from mindslice import Workspace, history
+from mindslice import Workspace
+from mindslice.storage import history
 write = history.atomic_write_text
 def interrupt(path, text):
     write(path, text)

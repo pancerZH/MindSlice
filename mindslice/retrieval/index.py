@@ -21,10 +21,10 @@ from dataclasses import dataclass, field
 from pathlib import Path
 from typing import Any, Iterable, Sequence
 
-from .addressing import MountCatalog, resolve_ref
-from .card import PARSER_VERSION, parse_card, preview_text, sha256_bytes
-from .config import OVERVIEW_PATH, Mount, MountTable
-from .fsutil import iter_markdown
+from ..model.addressing import MountCatalog, resolve_ref
+from ..model.card import PARSER_VERSION, parse_card, preview_text, sha256_bytes
+from ..storage.config import OVERVIEW_PATH, Mount, MountTable
+from ..storage.fsutil import iter_markdown
 from .lexical import QueryPlan, analyze_query, analyzer_signature, fold, index_text
 
 SCHEMA_VERSION = "2"  # table layout ("2": cards.load); text-analysis and parsing changes are tracked by index_signature()

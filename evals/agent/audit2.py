@@ -36,7 +36,7 @@ def snapshots(hdir: Path, points) -> dict[str, dict[str, tuple[bool, m2.Text, st
     sessions, would otherwise be replayed from the start for every point). Same workspace as ``audit.replay``."""
     from evals.external.datasets import LOADERS
     from mindslice import Workspace
-    from mindslice.mcp_server import MCPServer
+    from mindslice.interfaces.mcp_server import MCPServer
 
     from .judge import Judge
     from .runner import HISTORY_ALIAS, HISTORY_ARMS, write_history

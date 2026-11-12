@@ -36,10 +36,10 @@ import tempfile
 from pathlib import Path
 from typing import TYPE_CHECKING, Any, Sequence
 
-from .addressing import format_address, normalize_alias, resolve_ref
+from ..model.addressing import format_address, normalize_alias, resolve_ref
 from .archive import archive_format, write_archive
-from .card import normalize_newlines, parse_card, truncate
-from .config import (
+from ..model.card import normalize_newlines, parse_card, truncate
+from ..storage.config import (
     DESCRIPTION_CHARS,
     MOUNTS_FILE,
     OVERVIEW_PATH,
@@ -52,16 +52,16 @@ from .config import (
     portable_path,
     dump_mounts,
 )
-from .errors import AlreadyExistsError, BakeConflictError, InvalidAddressError, InvalidArgumentsError, MountError, NotFoundError
-from .fsutil import fsync_dir
-from .history import event, file_action, file_sha
-from .lexical import fold
+from ..errors import AlreadyExistsError, BakeConflictError, InvalidAddressError, InvalidArgumentsError, MountError, NotFoundError
+from ..storage.fsutil import fsync_dir
+from ..storage.history import event, file_action, file_sha
+from ..model.text import fold
 from .slice_transfer import dependency_closure, export_text, overlay_cards, retire_overlay_paths, rewrite_refs
-from .validation import validate_slice_dir
-from .writer import reassemble
+from ..operations.validation import validate_slice_dir
+from ..model.card import reassemble
 
 if TYPE_CHECKING:  # pragma: no cover
-    from .workspace import Workspace
+    from ..workspace import Workspace
 
 
 _SEMVER_RE = re.compile(r"^(\d+)\.(\d+)\.(\d+)$")

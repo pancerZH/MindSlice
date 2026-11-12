@@ -12,11 +12,11 @@ from __future__ import annotations
 
 from typing import TYPE_CHECKING, Any, Iterable
 
-from .addressing import MountCatalog, format_address, resolve_ref
+from ..model.addressing import MountCatalog, format_address, resolve_ref
 
 if TYPE_CHECKING:  # pragma: no cover
-    from .card import ParsedCard
-    from .index import Index
+    from ..model.card import ParsedCard
+    from ..retrieval.index import Index
 
 MAX_AFFECTED = 25
 _KINDS = (("wikilink", "affected_backlinks", "links_to"), ("extends", "affected_extensions", "extends"))

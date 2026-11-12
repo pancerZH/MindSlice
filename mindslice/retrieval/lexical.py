@@ -30,6 +30,8 @@ import re
 import unicodedata
 from dataclasses import dataclass
 
+from ..model.text import fold, normalize
+
 ANALYZER_VERSION = "3"  # never reused: "2" also kept a suggestion vocabulary (card_words), since removed
 
 # Unicode blocks of scripts written without spaces between words. Blocks are listed whole;
@@ -105,19 +107,7 @@ def _build_classes() -> tuple[str, str]:
 _BASE_CLASS, _MARK_CLASS = _build_classes()
 _BASE = re.compile(f"[{_BASE_CLASS}]")
 _RUN = re.compile(f"[{_BASE_CLASS}][{_BASE_CLASS}{_MARK_CLASS}]*")
-# Default-ignorable characters that must not change what text matches.
-_IGNORABLE = re.compile("[­​-‍⁠﻿︀-️\U000e0100-\U000e01ef]")
 _WORD = re.compile(r"\w+(\*)?")
-
-
-def normalize(text: str) -> str:
-    """Search-side normalization: drop ignorable characters, then NFKC."""
-    return unicodedata.normalize("NFKC", _IGNORABLE.sub("", text or ""))
-
-
-def fold(text: str) -> str:
-    """Normalization for exact-match keys (aliases, tags): NFKC + case folding + whitespace."""
-    return " ".join(normalize(text).casefold().split())
 
 
 def _units(run: str) -> list[str]:

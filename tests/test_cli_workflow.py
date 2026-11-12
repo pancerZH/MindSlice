@@ -6,9 +6,9 @@ import json
 import os
 
 from mindslice import NotFoundError
-from mindslice.card import parse_card
-from mindslice.cli import build_parser
-from mindslice.mcp_server import INSTRUCTIONS
+from mindslice.model.card import parse_card
+from mindslice.interfaces.cli import build_parser
+from mindslice.interfaces.mcp_server import INSTRUCTIONS
 
 from .helpers import WorkspaceTestCase, card_text
 from .test_interfaces import run_cli

@@ -27,8 +27,8 @@ from pathlib import Path
 from typing import Iterable, Sequence
 
 from mindslice import Workspace
-from mindslice.card import SUMMARY_PREVIEW_CHARS, truncate
-from mindslice.writer import build_text
+from mindslice.model.card import SUMMARY_PREVIEW_CHARS, truncate
+from mindslice.operations.writer import build_text
 
 USER_ROLES = ("user",)
 

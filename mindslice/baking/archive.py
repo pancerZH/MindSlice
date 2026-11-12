@@ -10,7 +10,7 @@ import tempfile
 import zipfile
 from pathlib import Path
 
-from .fsutil import fsync_dir
+from ..storage.fsutil import fsync_dir
 
 
 def archive_format(output: Path) -> str:

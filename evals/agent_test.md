@@ -65,7 +65,7 @@ reproduce the `flat` and `oracle` numbers; `scripted-overlay` must reproduce `or
 ### 4.1 Tools
 
 Expose exactly MindSlice's four MCP tools (`manifest`, `search`, `read`, `write`) with the shipped schemas
-and descriptions (`mindslice/mcp_server.py`: `TOOLS`, `INSTRUCTIONS`). Either:
+and descriptions (`mindslice/interfaces/mcp_server.py`: `TOOLS`, `INSTRUCTIONS`). Either:
 
 - **real MCP over stdio**: `python -m mindslice -w <workspace> mcp`, from an MCP-capable client; or
 - **in process** (recommended for throughput): give the model `TOOLS` as its tool definitions, put

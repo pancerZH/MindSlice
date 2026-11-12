@@ -39,8 +39,8 @@ from typing import Any, Iterable
 
 from . import tomlfmt
 from .addressing import extract_wikilinks
-from .lexical import normalize
-from .errors import FrontmatterError
+from .text import normalize
+from ..errors import FrontmatterError
 
 FENCE = "+++"
 YAML_FENCE = "---"
@@ -623,3 +623,19 @@ def truncate(text: str, limit: int) -> tuple[str, bool]:
     if space >= limit * 0.6:
         cut = cut[:space]
     return cut.rstrip(" ,;:") + "…", True
+
+
+def reassemble(parsed: ParsedCard, original: str, fields: dict[str, Any] | None, after: str | None) -> str:
+    """Rebuild a card, keeping untouched regions (frontmatter text, body) verbatim."""
+    original = normalize_newlines(original)
+    if fields is None and after is None:
+        return original if original.endswith("\n") or not original else original + "\n"
+    new_after = (parsed.after if after is None else after).lstrip("\n")
+    if fields is None and parsed.raw_frontmatter is None:
+        text = new_after
+    elif fields is None and parsed.frontmatter_format == "yaml":
+        text = f"---\n{parsed.raw_frontmatter}---\n" + ("\n" + new_after if new_after else "")  # kept verbatim
+    else:
+        fm = parsed.raw_frontmatter if fields is None else dump_frontmatter(fields)
+        text = f"+++\n{fm}+++\n" + ("\n" + new_after if new_after else "")
+    return text if text.endswith("\n") or not text else text + "\n"

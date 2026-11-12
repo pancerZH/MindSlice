@@ -19,7 +19,7 @@ from pathlib import Path
 from typing import Any
 
 from mindslice import NotFoundError, Workspace
-from mindslice.lexical import analyze_query
+from mindslice.retrieval.lexical import analyze_query
 
 from .corpus import GRANULARITY, Card, add_files, address, new_workspace, write_card
 from .datasets import Haystack, Question

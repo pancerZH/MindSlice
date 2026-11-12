@@ -6,8 +6,8 @@ import json
 import sqlite3
 import unittest
 
-from mindslice.impact import MAX_AFFECTED
-from mindslice.mcp_server import MCPServer
+from mindslice.operations.impact import MAX_AFFECTED
+from mindslice.interfaces.mcp_server import MCPServer
 
 from .helpers import WorkspaceTestCase, card_text
 from .test_interfaces import run_cli
