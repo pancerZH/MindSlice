@@ -14,8 +14,6 @@ They hold dataset text and are never committed; ``results/`` gets the generated 
 
 from __future__ import annotations
 
-from evals.provenance import engine_digest
-
 import argparse
 import hashlib
 import json
@@ -26,6 +24,8 @@ import time
 from concurrent.futures import ProcessPoolExecutor, as_completed
 from pathlib import Path
 from typing import Any
+
+from evals.provenance import engine_digest
 
 import mindslice
 from evals.external import sources

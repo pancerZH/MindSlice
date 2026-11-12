@@ -15,8 +15,6 @@ Answers go to ``$MINDSLICE_AGENT_RUNS/reader-qa/<reader>/`` (they hold dataset t
 
 from __future__ import annotations
 
-from evals.provenance import engine_digest
-
 import argparse
 import hashlib
 import json
@@ -28,6 +26,8 @@ from collections import defaultdict
 from concurrent.futures import ThreadPoolExecutor, as_completed
 from pathlib import Path
 from typing import Any
+
+from evals.provenance import engine_digest
 
 from . import reader as rd
 

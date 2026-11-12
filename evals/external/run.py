@@ -15,8 +15,6 @@ Rules: PLAN.md. How to read the results: README.md.
 
 from __future__ import annotations
 
-from evals.provenance import engine_digest
-
 import argparse
 import hashlib
 import json
@@ -30,6 +28,8 @@ import unicodedata
 from concurrent.futures import ProcessPoolExecutor
 from pathlib import Path
 from typing import Any
+
+from evals.provenance import engine_digest
 
 import mindslice
 from mindslice.retrieval.lexical import analyzer_signature

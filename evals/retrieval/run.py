@@ -8,8 +8,6 @@
 
 from __future__ import annotations
 
-from evals.provenance import engine_digest
-
 import argparse
 import hashlib
 import json
@@ -20,6 +18,8 @@ import tempfile
 import unicodedata
 from pathlib import Path
 from typing import Any
+
+from evals.provenance import engine_digest
 
 import mindslice
 from mindslice.retrieval.lexical import analyzer_signature
