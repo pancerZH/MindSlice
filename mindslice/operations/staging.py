@@ -11,18 +11,20 @@ that finds it can finish the batch idempotently.
 from __future__ import annotations
 
 import difflib
+import hashlib
 import json
 import os
 import time
 from pathlib import Path
 from typing import TYPE_CHECKING, Any
 
-from ..model.addressing import format_address
+from ..model.addressing import format_address, parse_address, resolve_ref
 from ..model.card import ParsedCard, parse_card
-from ..errors import ApplyConflictError, LineageCycleError
+from ..errors import ApplyConflictError, InvalidArgumentsError, LineageCycleError
 from ..storage.fsutil import atomic_write_text, durable_move, fsync_dir, iter_markdown, prune_empty_dirs, unlink_if_exists
 from ..storage.history import change, file_action, transitions
-from .writer import check_cycles
+from .writer import check_cycles, prospective_successors
+from .impact import inbound_impact, supersede_targets
 from ..storage.card_io import read_card_file
 
 if TYPE_CHECKING:  # pragma: no cover
@@ -252,6 +254,7 @@ def _diff_staging(ws: "Workspace", table: "MountTable") -> dict[str, Any]:
     items = []
     counts = {"create": 0, "modify": 0, "delete": 0, "conflicts": 0}
     history_details = ws.history.details()
+    catalogs = ws.index.catalogs()
     for path, entry in ws.staging.entries().items():
         address = format_address(overlay.alias, path)
         current_text, current_sha = read_card_file(overlay.root / f"{path}.md")
@@ -277,6 +280,11 @@ def _diff_staging(ws: "Workspace", table: "MountTable") -> dict[str, Any]:
             "conflict": conflict,
             "diff": unified(current_text, staged_text, f"a/{address}.md", f"b/{address}.md"),
         }
+        parsed = parse_card(staged_text) if staged_text is not None else None
+        targets = [address] + (supersede_targets(parsed, overlay.alias, catalogs) if parsed else [])
+        item["impact"] = inbound_impact(ws.index, overlay.alias, overlay.precedence, targets, exclude=[address])
+        item["references"] = {"extends": parsed.extends, "supersedes": parsed.supersedes,
+                              "wikilinks": parsed.wikilink_targets()} if parsed else {}
         if entry.get("change_ids"):
             item["change_ids"] = entry["change_ids"]
             item["changes"] = ws.history.descriptions(entry["change_ids"], records=history_details)
@@ -286,6 +294,7 @@ def _diff_staging(ws: "Workspace", table: "MountTable") -> dict[str, Any]:
             item["requires_approval"] = entry["requires_approval"]
         items.append(item)
     return {
+        "revision": hashlib.sha256(json.dumps(items, sort_keys=True, ensure_ascii=False).encode()).hexdigest(),
         "scope": "staging",
         "items": items,
         "summary": {"total": len(items), **counts},
@@ -372,12 +381,76 @@ def _diff_overlay(ws: "Workspace", table: "MountTable") -> dict[str, Any]:
 # ---------------------------------------------------------------------------
 
 
-def apply(ws: "Workspace") -> dict[str, Any]:
+def select_entries(entries: dict[str, Any], ids: list[str] | None) -> dict[str, Any]:
+    """Select exact staging IDs; None means all, an empty list means none."""
+    if ids is None:
+        return dict(entries)
+    if not isinstance(ids, (list, tuple)) or any(not isinstance(value, str) for value in ids):
+        raise InvalidArgumentsError("card IDs must be a list of staging paths")
+    selected = set()
+    for value in ids:
+        alias, path = parse_address(value)
+        if alias not in (None, "@overlay"):
+            raise InvalidArgumentsError("review targets must be staging IDs or @overlay/path", address=value)
+        if path not in entries:
+            raise InvalidArgumentsError("no pending change for this card; run mindslice diff", address=value)
+        selected.add(path)
+    return {path: entry for path, entry in entries.items() if path in selected}
+
+
+def dependency_conflicts(ws, table, overrides):
+    """Reject newly broken live links and references that need an unaccepted proposal.
+
+    Existing unresolved links remain lint concerns, not blockers for unrelated reviews.
+    Catalogs include aliases and obey the same slice-local resolution as normal reads.
+    """
+    alias = table.overlay.alias
+    before = ws.index.catalogs()
+    _, after = prospective_successors(ws.index, alias, overrides)
+    _, proposed = prospective_successors(ws.index, alias, ws.staging.prospective_overrides(table.overlay.root))
+    refs = []
+    for mount in table.all():
+        for row in ws.index.all_cards(mount.alias):
+            path = row["path"]
+            if mount.alias == alias and path in overrides:
+                continue
+            refs.extend((mount.alias, path, edge["kind"], edge["raw"])
+                        for edge in ws.index.outbound(mount.alias, path))
+    for path, parsed in overrides.items():
+        if parsed is not None:
+            for kind, values in (("extends", parsed.extends), ("supersedes", parsed.supersedes),
+                                 ("wikilink", parsed.wikilink_targets())):
+                refs.extend((alias, path, kind, raw) for raw in values)
+    conflicts = []
+    for source, path, kind, raw in refs:
+        if resolve_ref(raw, source, after).resolved:
+            continue
+        previous = resolve_ref(raw, source, before)
+        pending = resolve_ref(raw, source, proposed)
+        selected = source == alias and path in overrides
+        if previous.resolved or (selected and pending.resolved):
+            target = previous.address if previous.resolved else pending.address
+            conflicts.append({"address": format_address(source, path), "reason": "dependency",
+                              "kind": kind, "target": target,
+                              "detail": f"{kind} {raw!r} would not resolve. Accept its pending target or dependent "
+                                        "edit together, or revise the reference before applying."})
+    return conflicts
+
+
+def apply(ws: "Workspace", ids: list[str] | None = None, *, reject: list[str] | None = None,
+          revision: str | None = None, dry_run: bool = False) -> dict[str, Any]:
     with ws._writing() as table:
         overlay = table.overlay
         staging = ws.staging
-        entries = staging.entries()
-        if not entries:
+        all_entries = staging.entries()
+        entries = select_entries(all_entries, ids)
+        rejected = select_entries(all_entries, reject or [])
+        if entries.keys() & rejected.keys():
+            raise InvalidArgumentsError("a pending card cannot be both accepted and rejected")
+        if revision is not None and revision != _diff_staging(ws, table)["revision"]:
+            raise ApplyConflictError("review changed; run mindslice review again before accepting or rejecting",
+                                     conflicts=[{"reason": "stale_review"}])
+        if not entries and not rejected and not dry_run:
             return {"applied": 0, "created": [], "modified": [], "deleted": [], "skipped": []}
         conflicts: list[dict[str, Any]] = []
         overrides: dict[str, ParsedCard | None] = {}
@@ -413,6 +486,13 @@ def apply(ws: "Workspace") -> dict[str, Any]:
                 conflicts.append({"address": exc.details.get("address"), "reason": "lineage_cycle",
                                   "cycle": exc.details.get("cycle")})
                 break
+        # Legacy apply-all still allows deliberately dangling references, as write() does.
+        # A selective review must not split a dependency across the approval boundary.
+        if ids is not None or rejected:
+            conflicts.extend(dependency_conflicts(ws, table, overrides))
+        if dry_run:
+            return {"ready": not conflicts, "conflicts": conflicts, "accept": list(entries),
+                    "reject": list(rejected), "pending": sorted(set(all_entries) - entries.keys() - rejected.keys())}
         if conflicts:
             raise ApplyConflictError(
                 f"apply aborted before touching overlay: {len(conflicts)} conflict(s)", conflicts=conflicts
@@ -424,6 +504,12 @@ def apply(ws: "Workspace") -> dict[str, Any]:
                       "before_sha256": action.get("base_sha256"), "after_sha256": action.get("sha256"),
                       "origin": "apply"}
             action["history_events"] = transitions("applied", ids, **fields) if ids else [change("applied", reason=None, **fields)]
+        for path, entry in rejected.items():
+            ids = entry.get("change_ids", [])
+            fields = {"address": format_address(overlay.alias, path), "cause": "review"}
+            events = transitions("discarded", ids, **fields) if ids else [change("discarded", **fields)]
+            actions.append({"op": "discard", "id": path, "entry": entry,
+                            "sha256": read_card_file(staging.file(path))[1], "history_events": events})
         journal = {"version": 1, "started_at": _now(), "overlay_root": str(overlay.root), "actions": actions}
         staging.write_journal(journal)
         return replay(ws, table, journal)
@@ -440,6 +526,9 @@ def replay(ws: "Workspace", table: "MountTable", journal: dict[str, Any]) -> dic
     overlay_root = Path(journal.get("overlay_root") or table.overlay.root)
     alias = table.overlay.alias
     report: dict[str, Any] = {"applied": 0, "created": [], "modified": [], "deleted": [], "skipped": []}
+    if any(a["op"] == "discard" for a in journal.get("actions", [])):
+        report["discarded"] = 0
+        report["discarded_ids"] = []
     skipped: list[dict[str, Any]] = []
     updated = False
     entries = staging.load_manifest()
@@ -459,10 +548,25 @@ def replay(ws: "Workspace", table: "MountTable", journal: dict[str, Any]) -> dic
         address = format_address(alias, path)
         dst = overlay_root / f"{path}.md"
         completed = all(e["event_id"] in recorded for e in action["history_events"])
+        if completed and action["op"] == "discard":
+            report["discarded"] += 1
+            report["discarded_ids"].append(path)
+            continue
         if completed:
             key = "deleted" if action["op"] == "delete" else ("created" if action.get("change") == "create" else "modified")
             report[key].append(address)
             report["applied"] += 1
+            continue
+        if action["op"] == "discard":
+            current = read_card_file(staging.file(path))[1]
+            if current is not None and current != action.get("sha256"):
+                report["skipped"].append({"address": address, "reason": "staged file changed during recovery; kept"})
+                skipped.append(action)
+                continue
+            staging._drop_file(staging.file(path))
+            ws.history.append(action["history_events"])
+            report["discarded"] += 1
+            report["discarded_ids"].append(path)
             continue
         if action["op"] == "move":
             src = staging.file(path)
@@ -495,7 +599,11 @@ def replay(ws: "Workspace", table: "MountTable", journal: dict[str, Any]) -> dic
         ws.history.append(action["history_events"])
         report["applied"] += 1
     ws._sync(table)  # (c) one SQLite transaction
-    staging.save_manifest(_skipped_entries(staging.load_manifest(), skipped))  # (d) removed when nothing was skipped
+    manifest = staging.load_manifest()
+    remaining = {p: entry for p, entry in manifest.items()
+                 if p not in {a["id"] for a in journal.get("actions", [])}}
+    remaining.update(_skipped_entries(manifest, skipped))
+    staging.save_manifest(remaining)  # preserve every unselected proposal, including during replay
     staging.remove_empty_subdirs()
     unlink_if_exists(staging.journal_path)  # (e) strictly last
     return report
@@ -513,15 +621,20 @@ def _skipped_entries(manifest: dict[str, dict[str, Any]], skipped: list[dict[str
     return kept
 
 
-def discard(ws: "Workspace") -> dict[str, Any]:
+def discard(ws: "Workspace", ids: list[str] | None = None) -> dict[str, Any]:
     with ws._writing():
-        entries = ws.staging.entries()
+        entries = select_entries(ws.staging.entries(), ids)
         events = []
         for path, entry in entries.items():
             ids = entry.get("change_ids", [])
             fields = {"address": format_address(ws.table().overlay.alias, path), "cause": "discard"}
             events += transitions("discarded", ids, **fields) if ids else [change("discarded", **fields)]
-        actions = [file_action(p, None, ws.staging.root) for p in sorted(ws.staging.root.rglob("*")) if p.is_file()]
+        remaining = {p: entry for p, entry in ws.staging.load_manifest().items() if p not in entries}
+        actions = [file_action(ws.staging.file(p), None, ws.staging.root) for p in entries]
+        if entries:
+            actions.append(file_action(ws.staging.manifest_path, ws.staging.manifest_text(remaining)))
+        if ids is None:
+            actions = [file_action(p, None, ws.staging.root) for p in sorted(ws.staging.root.rglob("*")) if p.is_file()]
         if actions or events:
             ws.history.transact(actions, events)
         ws.staging.remove_empty_subdirs()

@@ -340,8 +340,14 @@ class Workspace:
     def diff(self, scope: str = "staging") -> dict[str, Any]:
         return staging_mod.diff(self, scope)
 
-    def apply(self) -> dict[str, Any]:
-        return staging_mod.apply(self)
+    def apply(self, ids: list[str] | None = None) -> dict[str, Any]:
+        """Accept all pending changes, or only the specified staging card IDs."""
+        return staging_mod.apply(self, ids)
 
-    def discard(self) -> dict[str, Any]:
-        return staging_mod.discard(self)
+    def discard(self, ids: list[str] | None = None) -> dict[str, Any]:
+        """Reject all pending changes, or only the specified staging card IDs."""
+        return staging_mod.discard(self, ids)
+
+    def review(self, accept: list[str], reject: list[str], *, revision: str, dry_run: bool = False) -> dict[str, Any]:
+        """Execute reviewed choices in one recoverable batch; other cards stay pending."""
+        return staging_mod.apply(self, accept, reject=reject, revision=revision, dry_run=dry_run)

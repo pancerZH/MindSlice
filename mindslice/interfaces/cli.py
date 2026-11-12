@@ -104,6 +104,9 @@ def build_parser() -> argparse.ArgumentParser:
     s = sub.add_parser("init", help="create a workspace (mounts.toml, overlay/, staging/, slices/, .cache/)")
     s.add_argument("path", nargs="?", default=".")
 
+    s = sub.add_parser("doctor", help="check local workspace, startup payload and MCP; guide client verification")
+    s.add_argument("--json", action="store_true", help="structured diagnostic report")
+
     s = sub.add_parser("status", help="show mounts, pending review and unbaked overlay changes")
     s.add_argument("--json", action="store_true", help="structured JSON instead of the workspace overview")
 
@@ -193,8 +196,13 @@ def build_parser() -> argparse.ArgumentParser:
     s.add_argument("--scope", choices=("staging", "overlay"), default="staging")
     s.add_argument("--json", action="store_true", help="structured JSON instead of a unified diff")
 
-    sub.add_parser("apply", help="promote staging/ into overlay/ (journaled, all-or-nothing)")
-    sub.add_parser("discard", help="drop everything in staging/")
+    for command, description in (
+        ("apply", "accept selected staging cards (default: all), saved and active immediately"),
+        ("discard", "reject selected staging cards (default: all), keeping live memory unchanged"),
+        ("review", "interactively accept, reject or leave staged cards pending"),
+    ):
+        s = sub.add_parser(command, help=description)
+        s.add_argument("ids", nargs="*", help="exact pending card IDs or @overlay/path; omit for all")
 
     s = sub.add_parser("mcp", help="serve the 4-tool MCP server (manifest/search/read/write) over stdio")
     s.add_argument("--stage-writes", action="store_true", help="force every agent write into staging/")
@@ -219,6 +227,15 @@ def main(argv: Sequence[str] | None = None) -> int:
             with Workspace.init(target) as ws:
                 _emit({"workspace": str(ws.root), "mounts": str(ws.root / "mounts.toml")}, compact)
             return 0
+        if args.command == "doctor":
+            from .doctor import diagnose, render
+
+            result = diagnose(args.workspace or os.environ.get("MINDSLICE_WORKSPACE"))
+            if args.json:
+                _emit(result, compact)
+            else:
+                sys.stdout.write(render(result))
+            return 0 if result["ok"] else 1
         if args.command == "mcp":
             from .mcp_server import serve
 
@@ -315,9 +332,12 @@ def _dispatch(ws: Workspace, args: argparse.Namespace, compact: bool) -> int:
                 if item.get("conflict"):
                     sys.stderr.write(f"conflict: {item['address']}: {item['conflict']}\n")
     elif cmd == "apply":
-        _emit(ws.apply(), compact)
+        _emit(ws.apply(args.ids or None), compact)
     elif cmd == "discard":
-        _emit(ws.discard(), compact)
+        _emit(ws.discard(args.ids or None), compact)
+    elif cmd == "review":
+        from .staging_review import run
+        _emit(run(ws, args.ids or None), compact)
     else:  # pragma: no cover - argparse guards this
         raise SystemExit(f"unknown command {cmd}")
     return 0

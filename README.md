@@ -48,6 +48,7 @@ mindslice init ~/mindslice
 ```
 
 Then [connect your agent](docs/integrations.md) and tell it what to remember.
+Run `mindslice -w ~/mindslice doctor`, then [verify a new session](docs/getting-started.md#verify-your-first-session).
 [Full setup guide](docs/getting-started.md) · [Review changes and bake slices](docs/workflow.md)
 
 ## Documentation

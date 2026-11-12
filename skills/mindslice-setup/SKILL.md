@@ -76,13 +76,23 @@ When the user runs a small local model that follows tool instructions less relia
 
 ## Step 4 - Verify and hand off
 
+Run `<mindslice_bin> -w <workspace> doctor --json`. Fix failed local checks and explain any
+remaining warnings. Its MCP check uses the current Python installation; compare that with the
+executable configured in the actual app. Do not treat `ok: true` as proof that the app injected
+startup instructions: `doctor` always reports `client_verified: false`. Record an observed
+client-side check separately.
+Use the [first-session checklist](../../docs/getting-started.md#verify-your-first-session) to
+verify standing context and an actual memory lookup in a fresh conversation. If a new client
+session cannot be observed from here, hand off that check explicitly rather than claiming it passed.
+
 1. Run `<mindslice_bin> -w <workspace> validate` and fix any validation errors.
 2. Run `<mindslice_bin> -w <workspace> status` to check mounts and pending review. Run
    `<mindslice_bin> -w <workspace> boot` to verify that standing cards (or the empty-workspace onboarding prompt) render cleanly.
 3. Tell the user:
    - Where their memory workspace lives on disk (`<workspace>/overlay/` for agent notes, `<workspace>/mounts.toml` for mounted slices).
-   - How to start a fresh session in their app (e.g. `/new` in `agy` or Claude Code) so the new MCP server and startup hook take effect — **no manual startup command needed**.
-   - That future agent edits to `load = "always"` cards are staged for safety and approved with `mindslice -w <workspace> diff` and `mindslice -w <workspace> apply`.
+   - How to start a fresh session in their app (e.g. `/new` in `agy` or Claude Code). Explain whether standing memory loads automatically in the verified setup or needs an initial `manifest` call; identify any client-side check still pending.
+   - That future agent edits to `load = "always"` cards wait for review. Use `mindslice -w <workspace> review` to accept, reject or leave each proposal pending, or `apply ID...` / `discard ID...` for exact selections. Omitting IDs affects all pending changes.
+   - That overlay memory is already saved and available to retrieval; bake creates reusable slice versions. A card without a slice destination is still valid memory.
    - To disconnect or uninstall later, tell the agent to follow [`uninstall.md`](uninstall.md).
 
 For standing cards without tool instructions, use `boot --cards-only`. Startup hooks use plain `boot`;

@@ -134,7 +134,8 @@ the highest-precedence mount; written **inside a card**, it resolves only within
 | B | `bake(alias=None, output_path=None, prefix=None, tags=None, include_deps=False, dry_run=False, plan=None)` | omitted alias executes a workspace plan; named new targets require `prefix`; old folders stay untouched |
 | B | `plan_bake(assignments=None, resume=True)` | propose all overlay destinations; exact card IDs map to aliases or null (defer) |
 | C | `diff(scope="staging"\|"overlay")` | structured summary + unified diffs |
-| C | `apply()` / `discard()` | precondition-checked, journaled, crash-recoverable |
+| C | `apply(ids=None)` / `discard(ids=None)` | all pending cards by default; exact IDs select a subset; `[]` selects none; journaled and crash-recoverable |
+| C | `review(accept, reject, *, revision, dry_run=False)` | mixed accept/reject batch using the staging `diff()` revision; dry-run returns dependencies/conflicts before execution |
 
 ### CLI overview and output modes
 
@@ -146,6 +147,28 @@ within one slice it is counted once in `total`, but may appear in several relati
 cards have no such relation to a mounted slice. Changes still in staging appear under pending review.
 External edits to mounted files are indexed normally but are not tracked as dirty against a baseline.
 `status --json` returns the same overview as structured data, without card bodies or patches.
+It also includes `memory_state` (saved overlay cards, mounted cards, pending changes and unassigned
+cards) and `next_step`. Unassigned cards are already saved and available to retrieval; they simply
+have no relationship assigning them to a mounted slice. Bake is optional packaging/versioning.
+
+`mindslice doctor [--json]` checks local runtime/FTS5, mounts, validation, index integrity, boot
+payload generation and a real subprocess MCP handshake plus `manifest`. It uses the same Python
+interpreter and selected workspace, with a bounded subprocess timeout. Exit 0 means local checks
+passed (warnings may remain), exit 1 means a check failed. The report always identifies client
+session loading as unverified; it does not inspect or modify client settings. Follow the
+[first-session check](getting-started.md#verify-your-first-session) to verify the connected app.
+
+`mindslice review [ID...]` interactively collects accept/reject/leave-pending choices and checks
+dependencies before one final confirmation. `apply ID...` and `discard ID...` are noninteractive
+selections; omitting IDs affects every pending card. IDs refer to exact staging paths, with optional
+`.md` suffix or `@overlay/` qualification. Selection does not resolve mounted-card aliases.
+Selective application checks references against the resulting live state: dependencies on pending-only
+cards and newly broken live links block the batch. Already broken references remain validation concerns.
+Legacy apply-all preserves its existing permissive handling of dangling links.
+Staging diffs expose `revision`, `references` and `impact` alongside patches and reasons.
+`Workspace.review` rejects stale revisions before changing any selected files; `dry_run=True`
+returns `ready`, `conflicts`, `accept`, `reject` and `pending`. A mixed review uses the same
+recovery journal as apply. Unselected proposals survive completion and recovery.
 
 `mindslice diff` prints a unified patch of staging changes. `--scope overlay` compares applied overlay
 cards with their baselines. `diff --json` returns the structured report; reasons and conflicts in text mode are

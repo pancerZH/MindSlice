@@ -76,6 +76,52 @@ topic. From here there are three ways to seed it:
 Follow the [connection guide](integrations.md) for your app, including session-start loading.
 Then tell it: “Remember that I use uv, not pip.” In a later conversation, ask how to install packages.
 
+## Verify your first session
+
+Run the local checks after connecting the app:
+
+```bash
+mindslice -w ~/mindslice doctor
+```
+
+`doctor` checks the runtime, mount directories, cards, synchronized index, startup payload,
+and the real MCP stdio handshake and `manifest` call. It does not change your app configuration
+or create test memories. Normal index synchronization and interrupted-transaction recovery still
+apply. `doctor --json` provides the report for scripts; exit code 1 means a local check failed.
+Warnings include pending standing-card changes that have not taken effect.
+
+**Local checks passing does not prove your app loaded memory into the model.** Finish with
+a new conversation in the connected app:
+
+1. Choose a standing preference and an ordinary fact already saved during setup. Check that
+   they are active with `status`; accept any intended pending cards with `review` first.
+2. Restart/reconnect the app as needed and start a fresh conversation. Ask which standing
+   reply preferences it received at startup, before using any tools. Compare with
+   `mindslice -w ~/mindslice boot --cards-only` and, where available, the client's context/hook
+   logs. A model's claim alone is not proof of injection.
+3. Ask about the saved fact without repeating its answer. Confirm an actual MindSlice
+   `search`/`read` call and the expected card address in its result. This verifies retrieval
+   independently of startup loading.
+4. Open another new conversation and repeat the fact lookup. No source text or previous
+   chat should need to be pasted again.
+
+If you need a disposable fact for this check, choose an unused card ID and write it explicitly:
+
+```bash
+mindslice -w ~/mindslice write setup-check/first-session \
+  --summary "The setup verification phrase is amber maple 47." --reason "Temporary setup check."
+```
+
+Ask the new conversation for the setup verification phrase, then remove only this test card:
+
+```bash
+mindslice -w ~/mindslice write setup-check/first-session --op delete --reason "Setup check complete."
+```
+
+If retrieval works but standing preferences are missing, check the app's startup-instruction
+handling in the [connection guide](integrations.md). If both fail, compare the executable and
+workspace paths in that app with the workspace reported by `doctor`.
+
 ## Standing preferences
 
 You don't have to write standing notes by hand: just tell your connected agent *"From now on, reply in Simplified

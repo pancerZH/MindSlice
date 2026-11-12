@@ -2,6 +2,9 @@
 
 from __future__ import annotations
 
+import os
+import shlex
+import subprocess
 from typing import TYPE_CHECKING, Any
 
 from ..storage.config import OVERVIEW_PATH
@@ -46,7 +49,22 @@ def status(ws: "Workspace") -> dict[str, Any]:
                     "total": len(cards),
                     **{kind: sum(kind in c["kinds"] for c in cards) for kind in ("extends", "supersedes", "shadow")},
                 }})
+        overlay_count = next(m["card_count"] for m in mounts if m["kind"] == "overlay")
+        summary = {"saved_overlay_cards": overlay_count,
+                   "mounted_cards": sum(m["card_count"] for m in mounts if m["kind"] != "overlay"),
+                   "pending_changes": len(pending), "unassigned_cards": len(unassigned)}
+        if any(m["missing"] for m in mounts):
+            next_step = {"command": "doctor", "reason": "Check missing slice directories."}
+        elif pending:
+            next_step = {"command": "review", "reason": "Review pending changes before they affect memory."}
+        elif overlay_count:
+            next_step = {"command": "bake", "reason": "Optionally organize saved overlay cards into slice versions."}
+        else:
+            next_step = {"command": "doctor", "reason": "Verify local readiness and follow the new-session check."}
+        next_step["arguments"] = ["-w", str(ws.root), next_step["command"]]
         return {
+            "memory_state": summary,
+            "next_step": next_step,
             "workspace": str(ws.root),
             "mounts": mounts,
             "pending_review": {"files": pending, "summary": staged["summary"]},
@@ -57,7 +75,13 @@ def status(ws: "Workspace") -> dict[str, Any]:
 
 
 def render_status(result: dict[str, Any]) -> str:
-    lines = [f"Workspace: {result['workspace']}", "", f"Mounts ({len(result['mounts'])}):"]
+    state = result["memory_state"]
+    lines = [f"Workspace: {result['workspace']}", "",
+             f"Saved memory: {state['saved_overlay_cards']} overlay cards, {state['mounted_cards']} mounted cards.",
+             "Overlay memory is already saved and available to retrieval; bake creates reusable slice versions.",
+             f"Pending review: {state['pending_changes']} changes, not yet active (existing live cards stay active).",
+             f"Not yet assigned to a slice: {state['unassigned_cards']} overlay cards; already saved, not an error.",
+             "", f"Mounts ({len(result['mounts'])}):"]
     for mount in result["mounts"]:
         flags = [name for name in ("missing", "dirty") if mount[name]]
         if mount["kind"] == "overlay":
@@ -90,14 +114,18 @@ def render_status(result: dict[str, Any]) -> str:
                 if change.get("reason"):
                     lines.append(f"      reason ({change['op']}): {change['reason']}")
     new = result["unassigned_overlay_cards"]
-    lines += ["", f"Unassigned overlay cards ({len(new)}):"]
+    lines += ["", f"Overlay cards without a slice destination ({len(new)}; saved and available):"]
     for card in new:
         lines.append(f"  {card['address']}")
         for change in card.get("changes", []):
             if change.get("reason"):
                 lines.append(f"    reason ({change['op']}): {change['reason']}")
     if pending["files"]:
-        lines += ["", "Review with `mindslice diff`; accept with `mindslice apply` or drop with `mindslice discard`."]
+        lines += ["", "Use `mindslice review` to accept/reject individual proposals; `mindslice diff` shows the patch.",
+                  "`mindslice apply ID...` and `mindslice discard ID...` select cards; omitting IDs affects all pending cards."]
     if result["clean"]:
         lines += ["", "No pending review or unbaked overlay changes."]
+    command = ["mindslice", *result["next_step"]["arguments"]]
+    command = subprocess.list2cmdline(command) if os.name == "nt" else shlex.join(command)
+    lines += ["", f"Next: {command} — {result['next_step']['reason']}"]
     return "\n".join(lines) + "\n"

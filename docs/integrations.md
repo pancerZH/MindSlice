@@ -5,6 +5,9 @@
 Initialize a workspace first. Use absolute executable and workspace paths in app configuration.
 Verify session-start loading in a new conversation: the model should receive your standing notes
 through MCP instructions, a startup hook running `mindslice boot`, or an initial `manifest` call.
+After configuring the app, run `mindslice -w /path/to/workspace doctor` and complete the
+[new-session verification](getting-started.md#verify-your-first-session). The local MCP probe
+cannot establish that this particular app forwarded startup instructions to its model.
 
 ## Claude Code
 

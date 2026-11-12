@@ -12,14 +12,38 @@ You can instead pass `-w /path/to/workspace` with each command.
 
 ## Review changes
 
+Overlay cards are already saved on disk and available to retrieval. Staging holds proposed
+changes that are not active yet; an existing card's applied version remains active meanwhile.
+`bake` packages applied knowledge into reusable slice versions. It is not needed to save overlay
+memory. Cards without a slice destination are valid saved memory, not an error.
+
 Changes to always-on notes (and all writes when `--stage-writes` is enabled) wait in a review area until you decide:
 
 ```bash
 mindslice status          # mounts, pending review, and slices with unbaked overlay changes
 mindslice diff            # see the proposed changes as a patch
-mindslice apply           # accept them
-mindslice discard         # or throw them away
+mindslice review          # accept, reject or leave each proposal pending; confirm the batch once
+mindslice apply prefs/tone project/tooling    # accept only these pending cards
+mindslice discard scratch/idea               # reject only this pending proposal
 ```
+
+IDs are exact staging card paths, optionally `@overlay/path` or with a `.md` suffix.
+`review ID...` limits the interactive review to those cards. Omitting IDs from `apply` or
+`discard` retains the original behavior: accept or reject **all** pending changes.
+Review requires a terminal; scripts can inspect `diff --json` and specify IDs explicitly.
+
+Interactive review shows each patch, its reasons, references and affected live backlinks/extensions.
+Enter leaves a proposal pending; cancelling or reaching EOF before final confirmation executes
+none of the choices. A dependency check runs before confirmation. If card A needs a new staged
+card B, accept both or leave A pending. A live version of B is sufficient even if B has another
+pending edit. A selected deletion or alias change cannot break an existing live reference;
+include its dependent edit or revise the reference. Pre-existing unresolved references do not
+block independent approvals. Legacy `apply` without IDs continues to allow dangling references
+as `write` does; use `validate` to inspect them.
+
+The final confirmation rechecks the reviewed snapshot. If content, reasons, or relevant live
+state changed, review again. Accepted and rejected choices share one recoverable transaction;
+unselected cards retain their original content, preconditions and reasons through recovery.
 
 `status --json` and `diff --json` provide structured output for scripts. `diff --scope overlay`
 shows the applied overlay changes against mounted slices. In `status`, a dirty slice has related
