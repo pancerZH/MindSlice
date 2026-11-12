@@ -270,7 +270,10 @@ MindSlice makes these cards available without a search query. The chat app must 
   handling of server instructions depends on the client. MCP registration applies to that client only,
   not to other apps using the same model server. When a harness lazy-loads or drops `initialize`
   instructions, wire `mindslice -w /path/to/workspace boot` into its session-start
-  hook (see [`skills/mindslice-setup/SKILL.md`](../skills/mindslice-setup/SKILL.md)). If the set changes
+  hook (see [`skills/mindslice-setup/SKILL.md`](../skills/mindslice-setup/SKILL.md)). Context
+  compaction drops anything injected as a message or tool result, so the same payload has to be
+  supplied again afterwards: a post-compaction hook running `boot`, or a rule to call `manifest()`
+  again ([Connect your agent](getting-started.md#connect-your-agent)). If the set changes
   mid-session (a slice is mounted, the user approves a change), the next tool result carries an
   `always_loaded_update` with the new or changed cards.
 - **Empty workspace onboarding**: when only `@overlay` is mounted, no cards are indexed, and nothing is
@@ -416,8 +419,9 @@ file records metadata, not old card bodies, so it is not a content rollback stor
 ## Slice lifecycle
 
 [`skills/mindslice-setup/SKILL.md`](../skills/mindslice-setup/SKILL.md) (with
-[`uninstall.md`](../skills/mindslice-setup/uninstall.md)) covers initial installation, harness MCP +
-session-start hook configuration, three-way conversational onboarding, and clean uninstallation.
+[`uninstall.md`](../skills/mindslice-setup/uninstall.md)) covers initial installation, connecting the harness (MCP server, standing memory at session start
+and after context compaction), three-way conversational onboarding, validation with `doctor`, and
+clean uninstallation.
 [`skills/slice-builder/SKILL.md`](../skills/slice-builder/SKILL.md) builds one or more initial slices from
 multiple source files or one large document. Source boundaries do not determine slice boundaries:
 one document can feed several slices, and several documents can feed one. It plans slices by

@@ -176,6 +176,19 @@ class MCPAlwaysLoadedTests(AlwaysLoadedCase):
         err, res = self.tool("read", address="prefs/lang")
         self.assertEqual(res["always_loaded_update"]["removed"], ["@persona/tone"])
 
+    def test_manifest_reloads_the_current_set_after_a_compaction(self):
+        """What the instructions ask for after a compaction: manifest() again gives the whole current set,
+        including a change the session only ever saw as a (now discarded) always_loaded_update."""
+        self.assertIn("After your context is compacted or summarized, call manifest() again", INSTRUCTIONS)
+        self.server.handle({"jsonrpc": "2.0", "id": 0, "method": "initialize", "params": {}})
+        self.ws.write("prefs/lang", summary="Reply in Chinese.", load="always", stage=False)
+        err, res = self.tool("search", query="glossary")
+        self.assertIn("always_loaded_update", res)  # delivered once, in a tool result
+        for _ in range(2):  # the client compacts; the model calls manifest() again, as often as it needs
+            err, res = self.tool("manifest")
+            self.assertFalse(err, res)
+            self.assertEqual([c["address"] for c in res["always_loaded"]], ["@persona/tone", "@overlay/prefs/lang"])
+
     def test_manifest_delivers_the_set(self):
         err, res = self.tool("manifest")
         self.assertEqual([c["address"] for c in res["always_loaded"]], ["@persona/tone"])

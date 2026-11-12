@@ -1,19 +1,46 @@
 ---
 name: mindslice-setup
-description: Install MindSlice, wire its MCP server and automatic session-start boot into the active agent harness (Claude Code, Antigravity, Cursor, Codex, Strata, or generic MCP apps), and guide the user through seeding initial memory from an existing workspace/slice, existing notes/docs, or a short plain-language conversation.
+description: Install MindSlice, connect its MCP server to the agent harness you are running in, make the user's standing memory load automatically at session start and again after context compaction, seed initial memory (existing workspace/slice, existing notes/docs, or a short conversation), and validate with `mindslice doctor`.
 ---
 
 # mindslice-setup
 
-Set up MindSlice end-to-end so the user never has to hand-edit MCP JSON, memorize card frontmatter, or paste a manual startup prompt into every chat.
+Set up MindSlice end-to-end so the user never has to hand-edit MCP configuration, memorize card
+frontmatter, or paste a startup prompt into a chat.
 
-## Step 1 - Locate or install `mindslice`
+The user may have said no more than "read this file to finish setup". That is a request for the
+whole procedure, in this order:
 
-1. Check whether `mindslice` is already installed (`command -v mindslice` or `~/.local/bin/mindslice`).
-2. If not installed and you are inside (or can clone) the MindSlice repository (`Python >= 3.12` required):
-   - Prefer `pipx install -e .` if `pipx` is available;
-   - Otherwise create a virtualenv in the repo: `python3 -m venv .venv && .venv/bin/pip install -e .`.
-3. Record the **absolute path** to the `mindslice` executable (`<mindslice_bin>`). GUI apps and background daemons often run with a minimal `PATH`, so always use `<mindslice_bin>` and absolute workspace paths in MCP and hook configs.
+1. **Install** the `mindslice` command.
+2. **Agree on the workspace and seed it**: ask where the memory should live and how to start it.
+3. **Connect this harness**: its MCP server, and the user's standing memory at session start and
+   after context compaction.
+4. **Validate** with `mindslice doctor`, then hand off.
+
+This skill gives you the goal of each step and the way to validate it. How your own harness defines
+MCP servers, hooks and always-on rules is yours to work out from the harness itself.
+
+**When something fails, go by the error report.** A failing `mindslice` command prints
+`error [code]: message` on stderr, often with `Next:` steps; `mindslice doctor` prints a `Next:` line
+under every failed check. Follow those, fix the cause and re-run, rather than working around the
+failure or guessing at a configuration.
+
+## What done looks like
+
+1. The `mindslice` command is installed, and you know its absolute path (`<mindslice_bin>`).
+2. A workspace exists at a location the user confirmed (`<workspace>`, absolute), seeded the way they chose.
+3. This harness can call MindSlice's MCP server and sees its four tools: `manifest`, `search`, `read`, `write`.
+4. The model receives the user's standing memory **at the start of every session and again after
+   every context compaction**, with no action from the user.
+5. `<mindslice_bin> -w <workspace> doctor` passes, and you confirmed items 3 and 4 in the harness itself.
+
+## Step 1 - Install the command
+
+MindSlice is a Python package (`Python >= 3.12`, no runtime dependencies) installed from its
+repository checkout. Reuse an existing `mindslice`; otherwise install it into an isolated
+environment in whatever way suits this machine. `<mindslice_bin> --version` confirms it runs.
+Apps and background processes often start with a minimal `PATH`, so use absolute paths for the
+executable and the workspace in everything you configure.
 
 ## Step 2 - Confirm location and how to seed the workspace
 
@@ -28,7 +55,7 @@ Set up MindSlice end-to-end so the user never has to hand-edit MCP JSON, memoriz
 2. **Import existing Markdown notes or project docs**
    - Initialize the confirmed path if needed (`<mindslice_bin> init <workspace>`).
    - **Plain Markdown / Obsidian notes folder**: mount it directly (`<mindslice_bin> -w <workspace> mount <notes_dir>`). MindSlice indexes plain `.md` and YAML-frontmatter notes read-only with no conversion.
-   - **Source material (multiple project/lore files or one long handbook/specification)**: read [`../slice-builder/SKILL.md`](../slice-builder/SKILL.md), plan one or more outputs under `<workspace>/slices/<name>.slice/` by independent use rather than file boundaries. Track source coverage to slice/card addresses in a shared ledger outside all slices; validate each slice and their cross-slice dependencies, check retrieval, and mount the requested slices separately with unique aliases (`--precedence 50 --role curated`).
+   - **Source material to distill (several project/lore files, or one long handbook/specification)**: follow [`../slice-builder/SKILL.md`](../slice-builder/SKILL.md) with `<workspace>/slices/` as the output root and this workspace as the one to seed; it covers building, checking and mounting the slices.
 3. **Start from scratch in plain language**
    - Initialize the confirmed path (`<mindslice_bin> init <workspace>`).
    - Ask 2-3 brief, concrete questions in plain language — no syntax required from the user:
@@ -39,72 +66,75 @@ Set up MindSlice end-to-end so the user never has to hand-edit MCP JSON, memoriz
      - **Standing reply rules (`load = "always"`)**: keep short; confirm the summary with the user and write directly via CLI with `--load always --no-stage` (e.g. `prefs/communication`) so it is active immediately without requiring a separate `mindslice apply`.
      - **Topic cards (`load = "as-needed"`)**: one focused sub-topic per card in `@overlay`, named by durable slot (`tooling/python`, `projects/overview`), never by a transient value (`tooling/uv`), with 3-8 search `aliases`.
 
-## Step 3 - Connect MCP and automatic session-start loading
+## Step 3 - Connect this harness
 
-Detect which agent harness you are running in (or ask if ambiguous). Always **merge** into existing config files using `<server_name>` (default `mindslice`) — never clobber other MCP servers or hooks.
+Merge into existing configuration; never overwrite other MCP servers, hooks or rules.
 
-Do not ask the user to choose an MCP server name during onboarding. Honor a name they already
-provided; otherwise reuse a MindSlice entry targeting the confirmed workspace, or use `mindslice`.
-If the default name belongs to another instance, choose an available descriptive name such as
-`mindslice-work` (with a numeric suffix if needed), checking both server and hook names. Preserve
-the other instance. Resolve an explicitly requested name collision with the user only when their
-intent to replace or keep that instance is unclear.
+**MCP server.** Register a stdio server that runs `<mindslice_bin> -w <workspace> mcp`, available
+wherever the user works with this harness unless they ask otherwise. Append `--stage-writes` when
+the user runs a small local model, so every write it makes waits for their review.
 
-| Harness | MCP configuration | Automatic session-start loading (no manual greeting) |
-| :-- | :-- | :-- |
-| **Claude Code** | `claude mcp add --scope user <server_name> -- <mindslice_bin> -w <workspace> mcp` | Automatic: Claude Code forwards MCP `initialize.instructions` (which includes MindSlice's rules and `load = "always"` cards) into the session prompt. |
-| **Antigravity (`agy` CLI / IDE / App)** | Merge `mcpServers.<server_name>` (`command`: `<mindslice_bin>`, `args`: `["-w", "<workspace>", "mcp"]`) into `~/.gemini/config/mcp_config.json`. | Antigravity lazy-loads MCP `instructions.md`. Add a `<server_name>-boot` `SessionStart` hook in `~/.gemini/config/hooks.json` (template below) running `<mindslice_bin> -w <workspace> boot` so every new session receives MindSlice's instructions and `always_loaded` cards automatically. |
-| **Cursor** | Merge `mcpServers.<server_name>` into `~/.cursor/mcp.json` (global) or `.cursor/mcp.json` (project). | Add a short global Cursor Rule instructing the agent to call `<server_name>` `manifest()` on the first turn when standing preferences are not already in context. |
-| **OpenAI Codex CLI** | Add `[mcp_servers.<server_name>]` (`command = "<mindslice_bin>"`, `args = ["-w", "<workspace>", "mcp"]`) in `~/.codex/config.toml`. | If MCP instructions are not auto-inlined by the active Codex version, add a 2-line reminder in `~/.codex/AGENTS.md` to call `manifest()` at session start and record durable learnings with `write()`. |
-| **Strata (local models)** | For CLI apps via Strata, configure the app above and add `"--stage-writes"` for small local models. For Strata web chat, merge `mcp_servers.<server_name>` into both the active launch JSON (`~/.local/state/strata/launch/...`) and base model JSON (`~/.local/share/strata/install/...`), then restart Strata. | Strata 0.1.58 web chat does not forward `initialize.instructions`; if the web UI has a system prompt setting, paste `<mindslice_bin> -w <workspace> boot`, otherwise start new web chats by asking the model to call `<server_name>__manifest`. |
-| **Other MCP apps** | Merge `{"mcpServers": {"<server_name>": {"command": "<mindslice_bin>", "args": ["-w", "<workspace>", "mcp"]}}}` into the app's MCP config. | If the app forwards MCP `initialize.instructions`, nothing else is needed. Otherwise wire `<mindslice_bin> -w <workspace> boot` into its startup hook / system prompt, or add a global rule to call `manifest()` first. |
+Do not ask the user to choose a server name. Honor a name they already provided; otherwise reuse a
+MindSlice entry that targets the confirmed workspace, or use `mindslice`. If that name belongs to
+another instance, keep that instance and pick a free descriptive name such as `mindslice-work`.
 
-### Antigravity `~/.gemini/config/hooks.json` template
+**Standing memory.** `<mindslice_bin> -w <workspace> boot` prints the startup payload on stdout:
+MindSlice's usage instructions, then the user's `load = "always"` cards. The model needs it in
+context at two moments:
 
-Merge this top-level entry into `~/.gemini/config/hooks.json` (substituting `<server_name>`, `<mindslice_bin>` and `<workspace>`):
+- **Session start**, before its first reply.
+- **After each context compaction.** When the harness summarizes or truncates a long conversation,
+  anything injected earlier as a message or tool result is gone, and the user's standing
+  instructions go with it.
 
-```json
-{
-  "<server_name>-boot": {
-    "SessionStart": [
-      {
-        "type": "command",
-        "command": "python3 -c 'import json, subprocess; out = subprocess.run([\"<mindslice_bin>\", \"-w\", \"<workspace>\", \"boot\"], capture_output=True, text=True).stdout.strip(); print(json.dumps({\"injectSteps\": [{\"systemMessage\": {\"systemMessage\": out}}]} if out else {}))'"
-      }
-    ]
-  }
-}
-```
+For each moment, use the first of these your harness supports:
 
-### Optional: `--stage-writes` for smaller local models
+1. **Server instructions.** The MCP server already sends the payload as its `initialize` instructions.
+   If the harness puts those in the model's system prompt, session start is covered. Compaction is
+   covered only if that system prompt survives it; check, do not assume. The instructions also tell
+   the model to call `manifest` again after a compaction.
+2. **A hook.** Run `boot` from the session-start hook and the post-compaction hook, and pass its
+   stdout to the model in the form the hook expects. Some harnesses have a separate event for
+   compaction; others fire the session-start event again with a compaction reason.
+3. **A standing rule.** Without a hook for that moment, add a rule to the harness's always-on
+   instructions: call the `<server_name>` `manifest` tool before the first reply of a session and
+   again right after the conversation is compacted, then follow its `always_loaded` cards.
 
-When the user runs a small local model that follows tool instructions less reliably, append `"--stage-writes"` to the MCP `args` (`["-w", "<workspace>", "mcp", "--stage-writes"]`) so every runtime write lands in `staging/` for `mindslice diff` / `mindslice apply`.
+Do not deliver the payload twice at the same moment. Where server instructions already arrive, skip
+the session-start hook, and use `boot --cards-only` (the cards without the usage instructions) in
+the post-compaction hook. Add that hook even then: cards that changed mid-session reach the model
+in tool results, which compaction discards.
 
-## Step 4 - Verify and hand off
+## Step 4 - Validate and hand off
 
-Run `<mindslice_bin> -w <workspace> doctor --json`. Fix failed local checks and explain any
-remaining warnings. Its MCP check uses the current Python installation; compare that with the
-executable configured in the actual app. Do not treat `ok: true` as proof that the app injected
-startup instructions: `doctor` always reports `client_verified: false`. Record an observed
-client-side check separately.
-Use the [first-session checklist](../../docs/getting-started.md#verify-your-first-session) to
-verify standing context and an actual memory lookup in a fresh conversation. If a new client
-session cannot be observed from here, hand off that check explicitly rather than claiming it passed.
+Run `<mindslice_bin> -w <workspace> doctor`. It checks the runtime, workspace, mounts, cards, index,
+startup payload and a real MCP handshake; exit code 1 means a check failed, and each failure prints
+a `Next:` line. Fix every failure and explain remaining warnings.
 
-1. Run `<mindslice_bin> -w <workspace> validate` and fix any validation errors.
-2. Run `<mindslice_bin> -w <workspace> status` to check mounts and pending review. Run
-   `<mindslice_bin> -w <workspace> boot` to verify that standing cards (or the empty-workspace onboarding prompt) render cleanly.
-3. Give a compact handoff in the user's language:
-   - State what is ready: workspace path, connected app/server name, slice/card counts and standing-card count. Distinguish built artifacts from successfully mounted slices.
-   - Summarize checks and any material gaps or pending proposals. Separate local engine checks, source/retrieval spot checks and actual client-session verification; passing one does not prove the others.
-   - Explain how to reconnect and open a fresh session, whether standing context should load automatically or requires `manifest`, and what remains unverified. Provide a standing-context check when applicable and a source-backed retrieval question for document imports. Reuse the builder's acceptance examples, with brief expected facts and links to source evidence; do not hand over questions whose answers the user has no way to check.
-   - Link the build ledger for document imports and the [review/bake workflow](../../docs/workflow.md). Mention `review` when proposals are pending; avoid a full command tutorial or a list of every card/configuration path. Keep slice paths, dependencies, detailed results and setup configuration details in the ledger when one exists.
+`doctor` cannot see your harness: it always ends with a `[MANUAL] client_session` item. Confirm that
+part yourself:
+
+- **The server is connected**: the harness lists `<server_name>` with four tools, started by the
+  same `<mindslice_bin>` you installed.
+- **Each hook works**: run the configured command by hand and check its output is what the hook expects.
+- **A fresh session has the standing memory** before any tool call. Compare what the model reports
+  with `boot --cards-only`.
+- **Compaction keeps it**: if the harness can compact on request, do so in a test conversation and
+  check the standing cards are still there.
+
+The [first-session checklist](../../docs/getting-started.md#verify-your-first-session) covers the
+last two, with an actual memory lookup. If you cannot observe a new session or a compaction from
+here, hand that check to the user explicitly instead of claiming it passed.
+
+Then run `<mindslice_bin> -w <workspace> status` for the mounts, card counts and pending review you
+report, and give a compact handoff in the user's language:
+
+- State what is ready: workspace path, connected app/server name, slice/card counts and standing-card count. Distinguish built artifacts from successfully mounted slices.
+- Summarize checks and any material gaps or pending proposals. Separate local engine checks, source/retrieval spot checks and actual client-session verification; passing one does not prove the others.
+- Explain how to reconnect and open a fresh session, how standing context loads at session start and after compaction (server instructions, hook, or the `manifest` rule), and what remains unverified. Provide a standing-context check when applicable and a source-backed retrieval question for document imports. Reuse the builder's acceptance examples, with brief expected facts and links to source evidence; do not hand over questions whose answers the user has no way to check.
+- Link the build ledger for document imports and the [review/bake workflow](../../docs/workflow.md). Mention `review` when proposals are pending; avoid a full command tutorial or a list of every card/configuration path. Keep slice paths, dependencies, detailed results and setup configuration details in the ledger when one exists.
 
 Aim for a short summary, a few actionable checks and links to details. Do not repeat the builder's
 entire report when this setup skill calls it. Be clear that active overlay memory is already saved;
 bake creates reusable versions, and future standing-card edits wait for approval. For later
 disconnection or removal, use [`uninstall.md`](uninstall.md).
-
-For standing cards without tool instructions, use `boot --cards-only`. Startup hooks use plain `boot`;
-remove the former `--mcp-instructions` flag from existing hook commands when upgrading. Use `diff` for
-the patch view (`--patch` is removed), and `status --json` / `diff --json` for script-readable output.

@@ -81,16 +81,18 @@ the cards you did find, before concluding the memory has nothing.
 After consolidation, `mindslice bake` reviews all applied overlay cards, proposes unambiguous existing
 destinations and asks about unassigned groups. Choose an existing or new alias, split a group,
 inspect summaries/reasons/diffs, or defer cards. New cards can join existing slices. Confirm the full
-plan once; `bake --dry-run --json` previews it. Staging remains pending; a card with a pending edit
-must be deferred or reviewed through apply/discard first. `.bake-plan.json` saves choices for resume;
-`--fresh` ignores those choices. Do not write that file directly; use review or assignment options.
+plan once; `bake --dry-run` previews it. Staging remains pending. `.bake-plan.json` saves choices for
+resume; `--fresh` ignores those choices. Do not write that file directly; use review or assignment options.
 
 For noninteractive work, use explicit selections such as `--assign 'research/=@research'` and
 `--defer 'scratch/'`, inspect `--dry-run --json`, then execute `--plan <reviewed.json> --yes --json`
-when baking is authorized. Never use `--yes` to bypass a requested human review. Plans become stale
-when inputs or output paths change. Resolve every destination/blocker before execution; a new slice
-needs no `--prefix` in this flow because its cards are explicitly assigned. Batch outputs are
+when baking is authorized. Never use `--yes` to bypass a requested human review. Batch outputs are
 versioned directories; custom paths and archives use the named-slice flow below.
+
+**When a bake does not go through, go by its output.** `bake --dry-run` lists every card that needs a
+destination and every blocker, and ends with `Next:` steps; a failed bake prints the same under
+`error [bake_conflict]` (`details.next_steps` and each blocker's `fix` with `--json`). Do what they
+say and run it again, until the plan is ready.
 
 Inspect every entry in `baked` and return its alias, version, absolute `path` and `previous_path`.
 Check `remaining_overlay_cards`, `retained_overlay_cards` and `pending_review`; staged/read-only
@@ -109,9 +111,9 @@ references can require keeping overlay copies. Successful baking need not mean a
    `--stage` + `mindslice diff` + `mindslice apply` when a human should review.
 3. **Scrub**: remove secrets, personal data, absolute paths, ephemeral session details.
 4. **Bake and mount**: `mindslice bake @team --prefix team/ --output team.slice` creates a new
-   slice and mounts it as `@team`. A new alias requires `--prefix`, which selects overlay card paths;
-   use `--prefix ''` to select all paths. `--tag ...` adds a tag filter. References to excluded overlay
-   cards abort the bake; add `--include-deps` to pull them in. Cross-slice references become dependencies.
+   slice and mounts it as `@team`. `--prefix` selects overlay card paths (`--prefix ''` selects all),
+   `--tag ...` adds a tag filter and `--include-deps` pulls in the overlay cards the selection
+   references. Cross-slice references become dependencies.
 5. **Verify and share**: check the `validation:` line of the bake output (the `validation` field with
    `--json`), or run `mindslice validate team.slice`, then
    report the artifact for sharing. Publish only when the user requested publication.
@@ -127,5 +129,5 @@ default the ones that extend or supersede a card of `@team`, or share a path wit
 new version goes. `mindslice bake @team` builds that version, switches the mount while preserving its
 alias, precedence and role, and retires the overlay copies. `--prefix` / `--tag` select other cards;
 `--output` chooses another destination. The old folder stays unchanged and is no longer mounted.
-Bake refuses an overlay card that extends the slice card at its own path (merge the two into one card
-first, consolidation step 2) and a selected card with a staged change. Check `validation` before publishing.
+If the bake stops, its error names each card that cannot move and how to fix it. Check `validation`
+before publishing.

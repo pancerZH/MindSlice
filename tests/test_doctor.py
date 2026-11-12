@@ -18,6 +18,7 @@ class DoctorTests(WorkspaceTestCase):
         checks = {item["name"]: item for item in result["checks"]}
         self.assertEqual(checks["mcp"]["status"], "pass")
         self.assertEqual(checks["client_session"]["status"], "manual")
+        self.assertIn("after a context compaction", checks["client_session"]["action"])
         self.assertEqual(checks["boot"]["standing_cards"], 0)
         self.assertEqual(list((self.root / "overlay").rglob("*.md")), [])
         self.assertEqual(self.ws.history.events(), [])

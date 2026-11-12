@@ -33,8 +33,7 @@ Paste this into your coding agent:
 
 ```text
 Clone https://github.com/pancerZH/MindSlice.git (or use the existing checkout).
-Read skills/mindslice-setup/SKILL.md, install MindSlice, connect it to this agent
-with session-start memory loading, and help me seed my initial memory.
+Read skills/mindslice-setup/SKILL.md to finish setup.
 ```
 
 The agent helps you choose a workspace, connect your app, and start from existing notes,
@@ -49,7 +48,7 @@ pipx install -e .
 mindslice init ~/mindslice
 ```
 
-Then [connect your agent](docs/integrations.md) and tell it what to remember.
+Then [connect your agent](docs/getting-started.md#connect-your-agent) and tell it what to remember.
 Run `mindslice -w ~/mindslice doctor`, then [verify a new session](docs/getting-started.md#verify-your-first-session).
 [Full setup guide](docs/getting-started.md) · [Review changes and bake slices](docs/workflow.md)
 

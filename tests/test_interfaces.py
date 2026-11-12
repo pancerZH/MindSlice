@@ -89,6 +89,31 @@ class CLITests(WorkspaceTestCase):
         self.assertEqual((code, out), (1, ""))
         self.assertEqual(json.loads(err)["code"], "not_found")
 
+    def test_setup_errors_say_what_to_do_next(self):
+        missing = self.tmp / "no-workspace"
+        code, out, err = run_cli("-w", str(missing), "boot")
+        self.assertEqual((code, out), (1, ""))
+        self.assertIn("error [workspace_not_found]: ", err)
+        self.assertIn(f"`mindslice init {missing}`", err.split("Next:")[1])
+        code, _, err = run_cli("-w", str(missing), "boot", "--json")
+        self.assertEqual(len(json.loads(err)["details"]["next_steps"]), 2)
+        old = os.getcwd()
+        os.chdir(self.tmp)
+        try:
+            code, _, err = run_cli("status")
+        finally:
+            os.chdir(old)
+        self.assertEqual(code, 1)
+        self.assertIn("`mindslice -w PATH <command>`", err.split("Next:")[1])
+        root = self.mount_slice("kb", {"a": card_text("A", "A.")}, "@kb", 50, "curated")
+        other = self.make_slice("other", {"b": card_text("B", "B.")})
+        code, _, err = run_cli("-w", str(self.root), "mount", str(other), "--alias", "kb")
+        self.assertEqual(code, 1)
+        self.assertIn("Next: Mount under another name with `--alias NAME`, or run `mindslice unmount @kb`", err)
+        code, _, err = run_cli("-w", str(self.root), "mount", str(root), "--alias", "again")
+        self.assertEqual(code, 1)
+        self.assertIn("Next: Nothing to do: its cards are available as @kb.", err)
+
     def test_human_output_by_default_and_json_on_request(self):
         w = str(self.root)
         self.mount_slice("kb", {"api/auth": card_text("Auth", "Token expiration is 15 minutes.")}, "@kb", 50, "curated")

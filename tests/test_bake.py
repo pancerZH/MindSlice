@@ -109,8 +109,9 @@ class BakeTests(WorkspaceTestCase):
                       extends=["@persona/tone"], stage=False)
         self.ws.write("persona/words", summary="Favourite words.", stage=False)
         self.ws.write("diary", summary="Talked about [[persona/style]] today.", stage=False)
-        with self.assertRaises(UnresolvedExportDependencyError):
+        with self.assertRaises(UnresolvedExportDependencyError) as ctx:
             self.ws.bake("@persona", prefix="persona/style")
+        self.assertIn("`--include-deps`", ctx.exception.details["next_steps"][0])  # the fix the next line takes
         res = self.ws.bake("@persona", prefix="persona/style", include_deps=True)
         self.assertEqual(res["included_dependencies"], ["persona/words"])
         self.assertEqual(res["dependencies_added"], ["@kb"])

@@ -1,6 +1,6 @@
 # Getting started
 
-[Home](../README.md) · [Connect your agent](integrations.md) · [Review and bake](workflow.md)
+[Home](../README.md) · [Review and bake](workflow.md)
 
 Python 3.12 or newer is required. MindSlice runs on Linux, macOS and Windows.
 The shell examples below use Bash; on Windows, use the corresponding PowerShell paths and environment syntax.
@@ -10,14 +10,15 @@ The shell examples below use Bash; on Windows, use the corresponding PowerShell 
 Paste this into your coding agent (Claude Code, Antigravity, Cursor, Codex, or any agent with terminal access):
 
 ```text
-Clone https://github.com/pancerZH/MindSlice.git (or use this repo if already cloned), read skills/mindslice-setup/SKILL.md, install MindSlice, connect it to this agent with automatic session-start loading, and walk me through seeding my initial memory.
+Clone https://github.com/pancerZH/MindSlice.git (or use this repo if already cloned).
+Read skills/mindslice-setup/SKILL.md to finish setup.
 ```
 
 Following [`skills/mindslice-setup/SKILL.md`](../skills/mindslice-setup/SKILL.md), the agent will:
 
-1. Install `mindslice` and confirm **where to store your memory workspace** (default `~/mindslice`), **what to name the MCP instance** (default `mindslice`, or e.g. `mindslice-work` / `mindslice-rpg` if you keep separate memories), and **how you want to seed it**: connect an existing workspace/`.slice`, mount existing Markdown notes / distill project docs, or start from scratch with 2–3 plain-language questions.
-2. Register the MCP server **plus** automatic session-start loading for your specific harness (such as a `SessionStart` hook when the client lazy-loads MCP instructions), so you don't have to paste a startup prompt into every chat.
-3. Create and validate your initial cards so your next session starts with your memory ready.
+1. Install `mindslice` and confirm **where to store your memory workspace** (default `~/mindslice`) and **how you want to seed it**: connect an existing workspace/`.slice`, mount existing Markdown notes / distill project docs, or start from scratch with 2–3 plain-language questions. The MCP instance is named `mindslice` unless you ask for another name (e.g. `mindslice-work` if you keep separate memories).
+2. Register the MCP server and make your standing notes load **at session start and again after context compaction**, using whatever its own app provides (server instructions, hooks or an always-on rule), so you never paste a startup prompt into a chat. The skill states the goal; the agent works out the configuration for the app it runs in.
+3. Create your initial cards, validate with `mindslice doctor`, and tell you what is left to check in a new session.
 
 To disconnect or uninstall later, paste:
 `Read skills/mindslice-setup/uninstall.md in the MindSlice repo and revert my MindSlice setup` (the agent will ask whether to keep or delete your memory workspace folder).
@@ -65,7 +66,7 @@ topic. From here there are three ways to seed it:
   at the [slice-builder skill](../skills/slice-builder/SKILL.md), or use its standalone
   [prompt template](../skills/slice-builder/prompt-template.md).
 - **Mount a shared `.slice`.** If someone sent you a slice folder, run `mindslice mount path/to/topic.slice`.
-- **Start from scratch, in conversation.** Leave `~/mindslice` empty and connect your agent ([connection guide](integrations.md)). When a
+- **Start from scratch, in conversation.** Leave `~/mindslice` empty and [connect your agent](#connect-your-agent). When a
   workspace has no cards or mounted slices yet, MindSlice includes a cold-start onboarding prompt in its MCP
   startup instructions (and in `manifest()`), so you can greet your agent and describe your reply preferences,
   preferred tools, and current projects in plain words — the agent formats and writes the cards for you, and the
@@ -73,8 +74,36 @@ topic. From here there are three ways to seed it:
 
 ## Connect your agent
 
-Follow the [connection guide](integrations.md) for your app, including session-start loading.
-Then tell it: “Remember that I use uv, not pip.” In a later conversation, ask how to install packages.
+The agent-led setup above does this for you. By hand, your app needs two things, both configured
+with absolute paths (`which mindslice` prints the executable's):
+
+**1. The MCP server.** Register a stdio MCP server that runs `mindslice -w /path/to/workspace mcp`.
+Most apps accept an entry of this shape in their MCP settings:
+
+```json
+{"mcpServers": {"mindslice": {"command": "/home/you/.local/bin/mindslice", "args": ["-w", "/home/you/mindslice", "mcp"]}}}
+```
+
+The registration applies to that app only. With a small local model, append `"--stage-writes"` to
+`args` so every change the agent makes waits for you in the [review workflow](workflow.md#review-changes).
+
+**2. Your standing notes, at session start and after compaction.** The model needs the output of
+`mindslice -w /path/to/workspace boot` (usage instructions plus your `load = "always"` notes) before
+its first reply, and again whenever the app summarizes or truncates a long conversation, because
+compaction drops what was injected earlier as a message or tool result. Use the first of these your
+app supports:
+
+- **MCP instructions in the system prompt.** The server already sends that payload as its MCP
+  instructions. If the app shows them to the model in a system prompt that survives compaction,
+  nothing more is needed.
+- **A hook** that runs `boot` at session start and after compaction and passes its output to the
+  model. Use `boot --cards-only` where the usage instructions are already in the system prompt.
+- **An always-on rule** telling the agent to call MindSlice's `manifest` tool before its first reply
+  and again right after a compaction, then follow its `always_loaded` notes.
+
+If a `mindslice` command fails while you set this up, read its error, then run
+`mindslice -w /path/to/workspace doctor`: each failed check prints a `Next:` line.
+Then tell the agent: “Remember that I use uv, not pip.” In a later conversation, ask how to install packages.
 
 ## Verify your first session
 
@@ -104,6 +133,9 @@ a new conversation in the connected app:
    independently of startup loading.
 4. Open another new conversation and repeat the fact lookup. No source text or previous
    chat should need to be pasted again.
+5. In a long conversation, let the app compact its context (or trigger it, if the app has a
+   command for that) and ask for your standing reply preferences again. They should still be
+   there: compaction drops what was injected at session start unless the app reloads it.
 
 If you need a disposable fact for this check, choose an unused card ID and write it explicitly:
 
@@ -118,8 +150,8 @@ Ask the new conversation for the setup verification phrase, then remove only thi
 mindslice -w ~/mindslice write setup-check/first-session --op delete --reason "Setup check complete."
 ```
 
-If retrieval works but standing preferences are missing, check the app's startup-instruction
-handling in the [connection guide](integrations.md). If both fail, compare the executable and
+If retrieval works but standing preferences are missing, at session start or after compaction,
+check how the app delivers them ([Connect your agent](#connect-your-agent)). If both fail, compare the executable and
 workspace paths in that app with the workspace reported by `doctor`.
 
 ## Standing preferences

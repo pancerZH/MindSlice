@@ -115,7 +115,8 @@ def diagnose(root=None):
             ws.close()
     add("client_session", "manual", "Client configuration and model receipt have not been verified",
         "Follow docs/getting-started.md#verify-your-first-session: reconnect the app, start a new conversation, "
-        "and verify standing instructions and a memory read. Local MCP success alone does not prove client loading.")
+        "and verify standing instructions and a memory read; then check the standing instructions are still "
+        "present after a context compaction. Local MCP success alone does not prove client loading.")
     return {"ok": not any(c["status"] == "fail" for c in checks), "scope": "local_engine",
             "workspace": str(root) if root else None, "client_verified": False, "checks": checks}
 

@@ -122,6 +122,9 @@ def dependency_closure(
             f"export references {len(targets)} excluded {overlay_alias} card(s): {', '.join(targets)} "
             "(pass include_deps=True to pull them in)",
             missing=missing,
+            next_steps=["Add `--include-deps` to bake those cards into the slice too, or widen `--prefix`/`--tag` "
+                        "so the selection covers them.",
+                        "Or remove the references to them from the selected cards, then bake again."],
         )
     return included, pulled, external, warnings
 

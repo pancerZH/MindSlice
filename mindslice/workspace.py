@@ -53,7 +53,11 @@ class Workspace:
         self.root = Path(os.path.abspath(Path(root).expanduser()))
         if not (self.root / MOUNTS_FILE).is_file():
             if not create:
-                raise WorkspaceNotFoundError(f"{self.root} is not a MindSlice workspace (no {MOUNTS_FILE}); run `mindslice init`")
+                raise WorkspaceNotFoundError(
+                    f"{self.root} is not a MindSlice workspace (no {MOUNTS_FILE}); run `mindslice init`", next_steps=[
+                        "If the path is wrong, pass the right workspace with `-w PATH`; a hook or MCP configuration "
+                        "needs the absolute path.",
+                        f"If there is no workspace yet, create one: `mindslice init {self.root}`."])
             self._bootstrap()
         self.cache_dir = self.root / CACHE_DIR
         self.staging = StagingArea(self.root / STAGING_DIR)
@@ -79,7 +83,9 @@ class Workspace:
         for candidate in (current, *current.parents):
             if (candidate / MOUNTS_FILE).is_file():
                 return cls(candidate, **kwargs)
-        raise WorkspaceNotFoundError(f"no {MOUNTS_FILE} found in {current} or any parent directory")
+        raise WorkspaceNotFoundError(f"no {MOUNTS_FILE} found in {current} or any parent directory", next_steps=[
+            "Name the workspace: `mindslice -w PATH <command>`, or set `MINDSLICE_WORKSPACE=PATH`.",
+            "If there is no workspace yet, create one: `mindslice init PATH`."])
 
     def _bootstrap(self) -> None:
         self.root.mkdir(parents=True, exist_ok=True)
@@ -268,10 +274,14 @@ class Workspace:
             alias = alias_from_name(target.name.removesuffix(".slice"))
         with self._writing() as table:
             if alias == table.overlay.alias or table.get(alias) is not None:
-                raise MountError(f"alias {alias} is already mounted", alias=alias)
+                raise MountError(f"alias {alias} is already mounted", alias=alias, next_steps=[
+                    f"Mount under another name with `--alias NAME`, or run `mindslice unmount {alias}` first to "
+                    "replace that mount; `mindslice status` lists the mounts."])
             for m in table.all():
                 if m.root == target:
-                    raise MountError(f"{target} is already mounted as {m.alias}", alias=m.alias)
+                    raise MountError(f"{target} is already mounted as {m.alias}", alias=m.alias, next_steps=[
+                        f"Nothing to do: its cards are available as {m.alias}. To change its alias or precedence, "
+                        f"run `mindslice unmount {m.alias}` and mount it again."])
             if target in (self.staging.root, self.cache_dir, self.history.root) or any(
                     root in target.parents for root in (self.cache_dir, self.history.root)):
                 raise MountError("cannot mount MindSlice internal directories")
