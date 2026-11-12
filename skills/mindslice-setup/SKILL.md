@@ -15,12 +15,11 @@ Set up MindSlice end-to-end so the user never has to hand-edit MCP JSON, memoriz
    - Otherwise create a virtualenv in the repo: `python3 -m venv .venv && .venv/bin/pip install -e .`.
 3. Record the **absolute path** to the `mindslice` executable (`<mindslice_bin>`). GUI apps and background daemons often run with a minimal `PATH`, so always use `<mindslice_bin>` and absolute workspace paths in MCP and hook configs.
 
-## Step 2 - Confirm location, name, and how to seed the workspace
+## Step 2 - Confirm location and how to seed the workspace
 
-**Do not create `~/mindslice` silently before asking.** Unless the user already specified them, ask once (in their language) to confirm three things together — offering sensible defaults so they can simply accept defaults or customize:
+**Do not create `~/mindslice` silently before asking.** Unless the user already specified them, ask once (in their language) to confirm two things together — offering sensible defaults so they can simply accept defaults or customize:
 
 - **Workspace directory (`<workspace>`)**: where the memory folder should live on disk (suggest `~/mindslice` by default, or their chosen path such as `~/memories/work` or `~/worlds/doskvol`). Resolve it to an absolute path.
-- **Instance / MCP server name (`<server_name>`)**: the name registered in MCP and startup hooks (default `mindslice`, or e.g. `mindslice-rpg` / `mindslice-work` if they want multiple separate memory instances; if an entry with that name already exists in the harness config, ask whether to update it in place or register a new name).
 - **How to start**:
 
 1. **Connect an existing MindSlice workspace or `.slice`**
@@ -43,6 +42,13 @@ Set up MindSlice end-to-end so the user never has to hand-edit MCP JSON, memoriz
 ## Step 3 - Connect MCP and automatic session-start loading
 
 Detect which agent harness you are running in (or ask if ambiguous). Always **merge** into existing config files using `<server_name>` (default `mindslice`) — never clobber other MCP servers or hooks.
+
+Do not ask the user to choose an MCP server name during onboarding. Honor a name they already
+provided; otherwise reuse a MindSlice entry targeting the confirmed workspace, or use `mindslice`.
+If the default name belongs to another instance, choose an available descriptive name such as
+`mindslice-work` (with a numeric suffix if needed), checking both server and hook names. Preserve
+the other instance. Resolve an explicitly requested name collision with the user only when their
+intent to replace or keep that instance is unclear.
 
 | Harness | MCP configuration | Automatic session-start loading (no manual greeting) |
 | :-- | :-- | :-- |
@@ -88,12 +94,16 @@ session cannot be observed from here, hand off that check explicitly rather than
 1. Run `<mindslice_bin> -w <workspace> validate` and fix any validation errors.
 2. Run `<mindslice_bin> -w <workspace> status` to check mounts and pending review. Run
    `<mindslice_bin> -w <workspace> boot` to verify that standing cards (or the empty-workspace onboarding prompt) render cleanly.
-3. Tell the user:
-   - Where their memory workspace lives on disk (`<workspace>/overlay/` for agent notes, `<workspace>/mounts.toml` for mounted slices).
-   - How to start a fresh session in their app (e.g. `/new` in `agy` or Claude Code). Explain whether standing memory loads automatically in the verified setup or needs an initial `manifest` call; identify any client-side check still pending.
-   - That future agent edits to `load = "always"` cards wait for review. Use `mindslice -w <workspace> review` to accept, reject or leave each proposal pending, or `apply ID...` / `discard ID...` for exact selections. Omitting IDs affects all pending changes.
-   - That overlay memory is already saved and available to retrieval; bake creates reusable slice versions. A card without a slice destination is still valid memory.
-   - To disconnect or uninstall later, tell the agent to follow [`uninstall.md`](uninstall.md).
+3. Give a compact handoff in the user's language:
+   - State what is ready: workspace path, connected app/server name, slice/card counts and standing-card count. Distinguish built artifacts from successfully mounted slices.
+   - Summarize checks and any material gaps or pending proposals. Separate local engine checks, source/retrieval spot checks and actual client-session verification; passing one does not prove the others.
+   - Explain how to reconnect and open a fresh session, whether standing context should load automatically or requires `manifest`, and what remains unverified. Provide a standing-context check when applicable and a source-backed retrieval question for document imports. Reuse the builder's acceptance examples, with brief expected facts and links to source evidence; do not hand over questions whose answers the user has no way to check.
+   - Link the build ledger for document imports and the [review/bake workflow](../../docs/workflow.md). Mention `review` when proposals are pending; avoid a full command tutorial or a list of every card/configuration path. Keep slice paths, dependencies, detailed results and setup configuration details in the ledger when one exists.
+
+Aim for a short summary, a few actionable checks and links to details. Do not repeat the builder's
+entire report when this setup skill calls it. Be clear that active overlay memory is already saved;
+bake creates reusable versions, and future standing-card edits wait for approval. For later
+disconnection or removal, use [`uninstall.md`](uninstall.md).
 
 For standing cards without tool instructions, use `boot --cards-only`. Startup hooks use plain `boot`;
 remove the former `--mcp-instructions` flag from existing hook commands when upgrading. Use `diff` for

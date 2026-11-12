@@ -17,7 +17,7 @@ checks. MCP's four memory tools alone cannot read arbitrary input files or mount
 
 ## Establish the input and output
 
-Use the user's stated sources, subject, intended audience, exclusions and destination. Infer a
+Use the user's stated sources, subject, intended audience, exclusions and destination. Infer
 slice names, unique aliases and language when clear; ask only when missing scope would materially change
 what you build. Inputs can be a directory, selected files, one long document, or a mixture.
 Apply the long-document reading method to any large file in a collection. Source and slice
@@ -42,6 +42,10 @@ its locator (relative file path plus heading and line/page range), read status, 
 target slice/card addresses (for example `@operations/deploy/rollback`), and any exclusion or
 unresolved issue. A unit can map to cards across slices; a card can combine several source units. Distinguish unread material from deliberately skipped material. For long
 jobs, save the ledger and next unread location after each batch so work can resume across contexts.
+
+For long builds, give brief milestone updates: material read, slices drafted, checks or repairs
+underway, and unresolved issues. Card creation is not completion; validation may require several
+repair passes. Describe the current work without inventing a completion percentage or ETA.
 
 ### Multiple files
 
@@ -168,17 +172,32 @@ only for standing instructions actually intended for every session, not general 
    cross-slice targets and lineage. Standalone validation alone cannot establish that external
    references resolve. Fix errors, assess warnings and report unavailable dependencies. Without
    the engine, inspect format/links manually and report unrun checks.
-4. **Retrieval:** when the engine is available, use the test workspace to try representative
-   questions for each slice in the intended user's words, plus cross-slice questions where relevant. Include cross-source topics and
-   late-section exceptions where present. For slices intended for independent use, also test with
+4. **Retrieval:** derive representative questions and expected facts from the sources and intended
+   use, before querying the generated cards. Cover each slice, plus cross-slice questions where
+   relevant, cross-source topics and late-section exceptions where present. When the engine is
+   available, use the test workspace to try these questions. For slices intended for independent use, also test with
    only that slice and its declared available dependencies mounted. Check that `search` finds
    relevant cards and `read` gives enough context to answer correctly. Improve titles/aliases or boundaries based on observed
-   misses without adding unsupported facts. Record a few queries/results in the ledger and report
+   misses without adding unsupported facts or weakening source-backed expectations to fit the output.
+   Record queries, expected facts, source locators, retrieved addresses, observed results and repairs in the ledger; report
    unrun or failing checks. Use the intended workspace instead when mounting there is already
    part of the request.
-5. **Delivery:** report a list of slices with physical paths, aliases, purposes, card counts and
-   dependencies, plus the shared ledger location, coverage gaps/conflicts and validation/retrieval
-   results. If workspace seeding was requested, mount each requested slice with
+5. **Acceptance examples:** select a small set (usually 2-3) of the source-backed questions for a
+   user unfamiliar with the material. Include an exception or cross-source dependency when present,
+   not only easy definitions. For each, provide a brief expected answer with its key conditions,
+   a clickable source locator (file plus heading/line/page range), and the target card addresses.
+   Keep full evidence and observed results in the ledger. Add one plausible question the supplied
+   material cannot settle, with the expected response to acknowledge missing evidence and why it
+   is unsupported within the reviewed scope. A search miss alone does not establish absence.
+   Distinguish CLI search/read checks from an actual agent answer: leave unobserved client behavior
+   explicitly untested. These are builder-selected spot checks, not independent or exhaustive
+   proof of fidelity; failed or unrun checks remain visible.
+6. **Delivery:** keep the final message concise: what was built, a compact slice list (alias,
+   purpose, linked physical path and card count), checks performed, material gaps and the next
+   action. Link the shared ledger for the full card inventory, dependencies, coverage mappings,
+   validation/retrieval results and acceptance examples. Include a small selection of those examples
+   with expected facts and source links so the user can start checking immediately; do not enumerate
+   every card path or paste the ledger into the response. If workspace seeding was requested, mount each requested slice with
    `mindslice -w <workspace> mount <output>/<name>.slice --alias @<alias> --precedence 50 --role curated`
    and report the mounts and any unmet dependencies. Creation alone does not imply publication or
    replacement of another slice.

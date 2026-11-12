@@ -35,6 +35,10 @@ exclusions or unresolved issues. Record claim-level locators where a card combin
 evidence. Persist progress and the next unread location between batches. This is a build ledger,
 not a card, `.history` log or new frontmatter schema.
 
+During long builds, give brief milestone updates on reading, drafting, validation and repairs.
+Creating the cards does not mean the build is finished; repair passes may take an uncertain amount
+of time. Describe current work and outstanding issues without inventing percentages or an ETA.
+
 **For multiple files:** inventory selected files and relevant versions, noting explicit exclusions.
 Read within-scope material in batches, compare related files and follow references needed to
 understand claims. Do not silently sample the corpus or assume one file equals one card. Retain
@@ -148,14 +152,30 @@ outside every slice and out of slice exports.
    cross-slice targets and lineage. Standalone validation cannot prove external links resolve.
    Fix errors, assess warnings and report unavailable dependencies. Otherwise inspect format/links
    manually and report that engine validation was not run.
-4. When the engine is available, try representative questions for each slice in the test workspace,
-   using the intended user's words, plus cross-slice questions, cross-source topics and late exceptions. For
+4. Derive representative questions and expected facts from the sources and intended use before
+   querying the generated cards. Cover each slice, cross-slice questions where relevant, cross-source
+   topics and late exceptions. When the engine is available, try them in the test workspace. For
    independently usable slices, also test with only that slice and its declared available
    dependencies mounted. Check both `search` results and `read` content. Improve titles, aliases
-   or boundaries based on misses without inventing facts. Record queries/results in the ledger. Use the intended
+   or boundaries based on misses without inventing facts or weakening source-backed expectations to
+   fit the output. Record queries, expected facts, source locators, retrieved addresses, observed
+   results and repairs in the ledger. Use the intended
    workspace instead if mounting there is part of the request; report unrun or failing checks.
-5. Return a list of slices with physical paths, aliases, purposes, card counts and dependencies,
-   plus the shared ledger path, coverage gaps/conflicts and validation/retrieval results. If
+5. Prepare a small set (usually 2-3) of acceptance examples for a user unfamiliar with the material,
+   drawn from those source-backed questions. Include an exception or cross-source dependency when
+   present, not just easy definitions. Each example needs a brief expected answer with key
+   conditions, a clickable source locator (file plus heading/line/page range), and target card
+   addresses. Add one plausible question the supplied material cannot settle: expect an explicit
+   acknowledgment of missing evidence and explain why it is unsupported within the reviewed scope.
+   A search miss alone does not establish absence. Keep full evidence and observed results in the
+   ledger. Separate CLI search/read checks from actual agent answers; unobserved client behavior
+   remains untested. These are builder-selected spot checks, not independent or exhaustive proof
+   of fidelity. Preserve failed and unrun checks in the report.
+6. Give a concise final summary: what was built, a compact slice list (alias, purpose, linked
+   physical path and card count), checks performed, material gaps and the next action. Link the
+   ledger for the full card inventory, dependencies, coverage mappings, validation/retrieval results
+   and acceptance examples. Include a small selection of examples with expected facts and source
+   links for immediate checking; do not list every card path or paste the ledger into the response. If
    workspace seeding was requested, mount each requested slice using
    `mindslice -w <workspace> mount <output-root>/<slice-name>.slice --alias @<alias> --precedence 50 --role curated`
    and report the mounts and unmet dependencies. Do not publish or replace existing slices without
