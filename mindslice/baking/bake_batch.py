@@ -31,6 +31,59 @@ if TYPE_CHECKING:
     from ..workspace import Workspace
 
 PLAN_FILE = ".bake-plan.json"
+MERGE_FIX = ("merge the two into one card (rewrite the overlay card with the combined text and drop its "
+             "`extends` link; the slice-maintainer skill does this)")
+
+
+def _stale(message: str, **details) -> BakeConflictError:
+    """A plan no longer matches the workspace: nothing to fix, only to plan again."""
+    return BakeConflictError(message, code="stale_bake_plan", next_steps=[
+        "Run `mindslice bake` again: the plan is rebuilt from the current workspace, and destination "
+        "choices saved for unchanged cards are kept."], **details)
+
+
+def _selectors(plan: dict, ids: list[str]) -> list[str]:
+    """Shortest ``--assign``/``--defer`` selectors for ``ids``: a whole top folder when every card in it is listed."""
+    wanted, out = set(ids), []
+    for path in ids:
+        folder = path.partition("/")[0] + "/" if "/" in path else None
+        inside = [c["id"] for c in plan["cards"] if folder and c["id"].startswith(folder)]
+        selector = folder if folder and set(inside) <= wanted else path
+        if selector not in out:
+            out.append(selector)
+    return out
+
+
+def blocked_message(plan: dict) -> str:
+    parts = []
+    if plan["unassigned"]:
+        parts.append(f"{len(plan['unassigned'])} overlay card(s) need a destination")
+    if plan["blockers"]:
+        parts.append(f"{len(plan['blockers'])} blocker(s) must be resolved")
+    return "bake stopped before writing: " + " and ".join(parts or ["the plan is not ready"])
+
+
+def next_steps(plan: dict) -> list[str]:
+    """What the user has to do before this plan can bake; empty when it is ready."""
+    steps = []
+    if plan["unassigned"]:
+        selectors = _selectors(plan, plan["unassigned"])
+        shown = ", ".join(selectors[:5]) + (f" (+{len(selectors) - 5} more)" if len(selectors) > 5 else "")
+        assign = " ".join(f"--assign '{sel}=@ALIAS'" for sel in selectors[:3])
+        steps.append(f"Choose a destination for {shown}: `mindslice bake {assign}` sends cards to a new or mounted "
+                     f"slice; use `--defer '{selectors[0]}'` instead to leave cards in overlay; "
+                     "or run `mindslice bake` in a terminal to decide card by card.")
+    seen = set()
+    for item in plan["blockers"]:
+        if item.get("derived"):  # disappears with the blocker it follows from
+            continue
+        where = item.get("address") or item.get("alias") or "workspace"
+        key = (where, item.get("ref")) if item.get("ref") else (where, item["reason"])
+        if key in seen:  # one broken reference can surface as two blockers; its first fix covers both
+            continue
+        seen.add(key)
+        steps.append(f"{where}: {item.get('fix') or item['reason']}")
+    return steps
 
 
 def _tree_files(root: Path):
@@ -89,7 +142,7 @@ def load_plan(path: Path) -> dict:
 def save_plan(ws, plan):
     with ws._writing() as table:
         if plan.get("revision") != _revision(ws, table):
-            raise BakeConflictError("workspace changed during review; run bake again", code="stale_bake_plan")
+            raise _stale("workspace changed during review; run bake again")
         atomic_write_text(ws.root / PLAN_FILE, json.dumps(plan, ensure_ascii=False, indent=2) + "\n")
 
 
@@ -150,7 +203,9 @@ def _prepare(ws, table, assignments):
                     state="unassigned" if path not in choices else ("assigned" if choices[path] else "deferred"))
         items.append(item)
         if choices.get(path) and path in staged:
-            blockers.append({"address": item["address"], "reason": "staged change pending; apply, discard or defer this card"})
+            blockers.append({"address": item["address"], "reason": "staged change pending; apply, discard or defer this card",
+                             "fix": f"`mindslice apply {path}` to accept the staged change or `mindslice discard {path}` "
+                                    f"to drop it, or keep the card in overlay with `--defer {path}`"})
     destinations = {p: a for p, a in choices.items() if a}
     groups = defaultdict(list)
     for path, alias in sorted(destinations.items()):
@@ -171,15 +226,24 @@ def _prepare(ws, table, assignments):
             ref = resolve(raw, source)
             if not ref.resolved:
                 if portable:
-                    blockers.append({"address": format_address(target, path), "ref": raw, "reason": "unresolved reference"})
+                    blockers.append({"address": format_address(target, path), "ref": raw, "reason": "unresolved reference",
+                                     "fix": f"the card references {raw!r}, which no mounted card matches: correct or "
+                                            "remove that reference"
+                                            + (f", or keep the card in overlay with `--defer {path}`"
+                                               if source == table.overlay.alias else "")})
                 return raw
             alias, dest_path = ref.mount, ref.path
             if alias == table.overlay.alias:
                 alias = destinations.get(dest_path)
                 if alias is None:
                     if portable:
+                        needed = format_address(table.overlay.alias, dest_path)
                         blockers.append({"address": format_address(target, path), "ref": raw,
-                                         "reason": "referenced overlay card needs a destination"})
+                                         "reason": "referenced overlay card needs a destination",
+                                         "fix": f"it references {needed}, which stays in overlay: bake that card too "
+                                                f"with `--assign '{dest_path}={target}'`"
+                                                + (f", or keep this card in overlay with `--defer {path}`"
+                                                   if source == table.overlay.alias else "")})
                     return raw
             if not portable and ref.mount != table.overlay.alias:
                 return raw
@@ -216,13 +280,16 @@ def _prepare(ws, table, assignments):
 
     prepared, slices, used_outputs = {}, [], set()
     projected = {}
+    same_path = {}  # baked address -> the overlay card that extends it at its own path
     for alias, paths in sorted(groups.items()):
         mount = table.get(alias)
         files = {}
         baseline_rebased = []
         if mount:
             if not mount.root.is_dir():
-                blockers.append({"alias": alias, "reason": "mounted directory is missing"})
+                blockers.append({"alias": alias, "reason": "mounted directory is missing",
+                                 "fix": f"restore {mount.root}, or `mindslice unmount {alias}` and assign its cards "
+                                        "elsewhere (`mindslice doctor` lists missing directories)"})
             for path, _ in iter_markdown(mount.root, exclude=tuple(ws._exclude())):
                 text, _ = read_card_file(mount.root / f"{path}.md")
                 if text is not None and path not in paths:
@@ -234,8 +301,10 @@ def _prepare(ws, table, assignments):
             for raw in parsed.extends:
                 ref = resolve(raw, table.overlay.alias)
                 if ref.resolved and ref.mount == alias and ref.path == path:
+                    same_path[format_address(alias, path)] = format_address(table.overlay.alias, path)
                     blockers.append({"address": format_address(table.overlay.alias, path),
-                                     "reason": "extends destination at the same path; consolidate content first"})
+                                     "reason": "extends destination at the same path; consolidate content first",
+                                     "fix": f"{MERGE_FIX}, or keep the card in overlay with `--defer {path}`"})
             value = rewrite(text, parsed, table.overlay.alias, alias, path)
             parsed_new = parse_card(value)
             if path in parsed_new.supersedes:
@@ -245,7 +314,8 @@ def _prepare(ws, table, assignments):
         sm = load_slice_manifest(mount.root) if mount else SliceManifest(
             name=alias[1:], version="0.1.0", alias=alias, description=f"Baked from {table.overlay.alias}", present=True)
         if sm.errors:
-            blockers.append({"alias": alias, "reason": "invalid slice manifest", "errors": sm.errors})
+            blockers.append({"alias": alias, "reason": "invalid slice manifest", "errors": sm.errors,
+                             "fix": f"correct {mount.root / SLICE_FILE} (`mindslice validate {mount.root}` lists the problems)"})
         sm.alias = alias
         sm.name = sm.name or (mount.root.name.removesuffix(".slice") if mount else alias[1:])
         sm.version = bump_version(sm.version) if mount and sm.version else (sm.version or "0.1.0")
@@ -254,13 +324,16 @@ def _prepare(ws, table, assignments):
             try:
                 declared.add(normalize_alias(dep))
             except ValueError:
-                blockers.append({"alias": alias, "dependency": dep, "reason": "invalid dependency alias"})
+                blockers.append({"alias": alias, "dependency": dep, "reason": "invalid dependency alias",
+                                 "fix": f"correct the dependency {dep!r} in {mount.root / SLICE_FILE if mount else SLICE_FILE}"})
         dependencies = set(declared)
         for path, value in files.items():
             parsed = parse_card(value)
             projected[(alias, path)] = parsed
             if parsed.errors:
-                blockers.append({"address": format_address(alias, path), "reason": "invalid card", "errors": parsed.errors})
+                blockers.append({"address": format_address(alias, path), "reason": "invalid card", "errors": parsed.errors,
+                                 "fix": "correct the card's frontmatter so it parses"
+                                        + (f", or keep it in overlay with `--defer {path}`" if path in paths else "")})
             for _, raw in _refs(parsed):
                 ref = resolve_ref(raw, alias, future)
                 if ref.mount and ref.mount != alias:
@@ -269,7 +342,11 @@ def _prepare(ws, table, assignments):
         sm.dependencies = sorted(dependencies)
         for dep in sm.dependencies:
             if dep not in future or dep == table.overlay.alias:
-                blockers.append({"alias": alias, "dependency": dep, "reason": "missing or nonportable dependency"})
+                blockers.append({"alias": alias, "dependency": dep, "reason": "missing or nonportable dependency",
+                                 "fix": (f"cards bound for {alias} reference overlay cards that stay behind: give those "
+                                         "cards a destination too" if dep == table.overlay.alias else
+                                         f"mount the slice it depends on (`mindslice mount PATH --alias {dep}`), or "
+                                         f"drop {dep} from the slice's declared dependencies and card references")})
         output = default_output(ws, alias, mount)
         # Two mounts can have the same directory basename; reserve outputs across the full batch.
         while str(output) in used_outputs:
@@ -277,7 +354,9 @@ def _prepare(ws, table, assignments):
         used_outputs.add(str(output))
         for root in [ws.staging.root, ws.cache_dir, ws.history.root] + [m.root for m in table.all()]:
             if output.resolve() == root.resolve() or root.resolve() in output.resolve().parents:
-                blockers.append({"alias": alias, "reason": "output falls inside a mounted/internal directory", "path": str(output)})
+                blockers.append({"alias": alias, "reason": "output falls inside a mounted/internal directory", "path": str(output),
+                                 "fix": f"bake this slice on its own to another location: `mindslice bake {alias} --output DIR`"
+                                        + ("" if mount else " (with `--prefix` to select its cards)")})
         slices.append({"alias": alias, "path": str(output), "output": str(output),
                        "previous_path": str(mount.root) if mount else None, "version": sm.version,
                        "action": "update" if mount else "create", "cards": paths,
@@ -300,12 +379,19 @@ def _prepare(ws, table, assignments):
         for kind, raw in _refs(parsed):
             ref = resolve_ref(raw, alias, future)
             if alias in groups and not ref.resolved:
-                blockers.append({"address": format_address(alias, path), "ref": raw, "reason": "unresolved output reference"})
+                blockers.append({"address": format_address(alias, path), "ref": raw, "reason": "unresolved output reference",
+                                 "fix": f"the baked card would reference {raw!r}, which nothing in the planned workspace "
+                                        "matches: correct or remove that reference, or bake its target in the same run"})
             if kind != "wikilink" and ref.resolved:
                 graph[format_address(alias, path)].append(ref.address)
     nodes = set(graph) | {n for values in graph.values() for n in values}
     for cycle in strongly_connected_cycles(sorted(nodes), lambda n: graph.get(n, ())):
-        blockers.append({"reason": "lineage cycle in planned workspace", "cards": cycle})
+        cause = same_path.get(cycle[0]) if len(cycle) == 1 else None
+        blockers.append({"reason": "lineage cycle in planned workspace", "cards": cycle} | (
+            # Baked as it is, a card extending its own path would extend itself: one problem, not two.
+            {"fix": f"follows from {cause} extending this path; resolving that card removes the cycle", "derived": True}
+            if cause else
+            {"fix": "remove one `extends`/`supersedes` link among " + ", ".join(cycle) + " to break the cycle"}))
 
     # Retained and staged cards stay byte-identical. All other remaining overlay refs are rebased
     # in one pass, using only targets that really retire.
@@ -332,7 +418,7 @@ def _prepare(ws, table, assignments):
             "remaining_overlay_cards": sorted(set(cards) - retired)}
     plan["ready"] = not (plan["unassigned"] or blockers)
     if revision != _revision(ws, table):
-        raise BakeConflictError("files changed during planning; retry review", code="stale_bake_plan")
+        raise _stale("files changed during planning; retry review")
     return plan, prepared, retired, rebased
 
 
@@ -340,11 +426,11 @@ def _reviewed(ws, table, reviewed):
     if not isinstance(reviewed, dict) or reviewed.get("schema_version") != 1 or reviewed.get("workspace") != str(ws.root):
         raise InvalidArgumentsError("invalid bake plan or wrong workspace")
     if reviewed.get("revision") != _revision(ws, table):
-        raise BakeConflictError("workspace changed since review; run bake again", code="stale_bake_plan")
+        raise _stale("workspace changed since review; run bake again")
     ws._sync(table, verify=True)
     prepared = _prepare(ws, table, reviewed.get("assignments"))
     if prepared[0]["slices"] != reviewed.get("slices"):
-        raise BakeConflictError("bake outputs changed since review; run bake again", code="stale_bake_plan")
+        raise _stale("bake outputs changed since review; run bake again")
     return prepared
 
 
@@ -357,7 +443,8 @@ def execute(ws: "Workspace", reviewed: dict) -> dict:
     with ws._writing() as table:
         plan, prepared, retired, rebased = _reviewed(ws, table, reviewed)
         if not plan["ready"]:
-            raise BakeConflictError("bake needs destination assignments or conflict resolution", plan=plan)
+            raise BakeConflictError(blocked_message(plan), plan=plan, next_steps=next_steps(plan) + [
+                "Then plan and bake again."])
         if not prepared:
             return {"baked": [], "remaining_overlay_cards": plan["remaining_overlay_cards"],
                     "retained_overlay_cards": [], "pending_review": len(plan["pending_review"]),
@@ -380,11 +467,12 @@ def execute(ws: "Workspace", reviewed: dict) -> dict:
                     atomic_write_text(tree / f"{path}.md", text)
                 atomic_write_text(tree / SLICE_FILE, dump_slice_manifest(sm))
             if plan["revision"] != _revision(ws, table):
-                raise BakeConflictError("files changed while preparing bake; review again", code="stale_bake_plan")
+                raise _stale("files changed while preparing bake; review again")
             # Publish via a sibling temp directory so the final rename works across devices.
             for alias, (_, _, output, _) in prepared.items():
                 if output.exists():
-                    raise BakeConflictError("output appeared during bake", path=str(output))
+                    raise BakeConflictError("output appeared during bake", path=str(output), next_steps=[
+                        "Run `mindslice bake` again: planning picks an output directory that is still free."])
                 output.parent.mkdir(parents=True, exist_ok=True)
                 sibling = Path(tempfile.mkdtemp(prefix=".bake-", dir=output.parent))
                 try:
@@ -433,7 +521,7 @@ def execute(ws: "Workspace", reviewed: dict) -> dict:
                 receipt.append(dict(result, history_event_id=record["event_id"]))
             guards = [{"path": str(p), "sha256": file_sha(p)} for output in published for p in _tree_files(output)]
             if plan["revision"] != _revision(ws, table):
-                raise BakeConflictError("files changed before commit; review again", code="stale_bake_plan")
+                raise _stale("files changed before commit; review again")
             transaction_started = True
             ws.history.transact(actions, events, guards=guards)
             ws._sync(ws._reload_table())

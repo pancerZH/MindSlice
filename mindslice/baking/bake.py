@@ -138,17 +138,23 @@ def bake(
 
         staged_paths = ws.staging.entries()
         staged = sorted(p for p in included if p in staged_paths)
-        conflicts = [{"address": format_address(overlay.alias, p), "reason": "staged change pending (apply or discard it first)"}
+        conflicts = [{"address": format_address(overlay.alias, p), "reason": "staged change pending (apply or discard it first)",
+                      "fix": f"`mindslice apply {p}` to accept the staged change, or `mindslice discard {p}` to drop it"}
                      for p in staged]
         for path in sorted(included):
             parsed = cards[path][1]
             if path in slice_paths and any(targets_slice(r) == path for r in parsed.extends):
                 conflicts.append({"address": format_address(overlay.alias, path),
                                   "reason": f"extends {format_address(alias, path)} at the same path; merge the two "
-                                            "into one card first (the slice-maintainer skill does this)"})
+                                            "into one card first (the slice-maintainer skill does this)",
+                                  "fix": "rewrite the overlay card with the combined text and drop its `extends` link, "
+                                         "so one card replaces the slice's"})
         if conflicts:
             raise BakeConflictError(f"bake into {alias} stopped before writing: {len(conflicts)} card(s) can't move as they are",
-                                    conflicts=conflicts)
+                                    conflicts=conflicts,
+                                    next_steps=[f"{c['address']}: {c['fix']}" for c in conflicts]
+                                    + [f"Then run the same `mindslice bake {alias}` command again; "
+                                       "`--dry-run` previews it without writing."])
 
         def mapper(raw: str) -> str:
             res = resolve_ref(raw, overlay.alias, cats)

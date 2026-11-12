@@ -85,6 +85,10 @@ class BakeTests(WorkspaceTestCase):
         with self.assertRaises(BakeConflictError) as ctx:
             self.ws.bake("@persona")
         self.assertIn("merge the two", ctx.exception.details["conflicts"][0]["reason"])
+        self.assertIn("drop its `extends` link", ctx.exception.details["conflicts"][0]["fix"])
+        steps = ctx.exception.details["next_steps"]
+        self.assertTrue(steps[0].startswith("@overlay/tone: "), steps)
+        self.assertIn("`mindslice bake @persona`", steps[-1])
         self.assertEqual((self.persona / "tone.md").read_text(), before)
         self.assertEqual(self.baked, self.persona)
         self.assertFalse((self.root / "slices" / "persona-2.slice").exists())
@@ -95,8 +99,10 @@ class BakeTests(WorkspaceTestCase):
         self.ws.write("emoji2", summary="Also stickers.", extends=["@persona/tone"], stage=False)
         self.ws.apply()
         self.ws.write("emoji", op="append", content="- Sparingly.", stage=True)
-        with self.assertRaises(BakeConflictError):
+        with self.assertRaises(BakeConflictError) as ctx:
             self.ws.bake("@persona")
+        self.assertIn("`mindslice apply emoji`", ctx.exception.details["conflicts"][0]["fix"])
+        self.assertIn("`mindslice discard emoji`", ctx.exception.details["next_steps"][0])
 
     def test_prefix_dependencies_and_rewritten_references(self):
         self.ws.write("persona/style", summary="Uses the [[persona/words]] list; see [[@kb/api/auth]].",

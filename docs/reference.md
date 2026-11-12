@@ -466,7 +466,10 @@ is excluded from bake exports, and is removed by a successful batch commit. `--d
 draft but does not save one or publish outputs (normal recovery/index maintenance may still run).
 
 Noninteractive or `--json` execution never prompts. Unresolved destinations or validation blockers
-return a structured `bake_conflict` with the plan. A resolved noninteractive plan still requires
+return a structured `bake_conflict` with the plan. Every `bake_conflict` says what to do next: the
+error carries `next_steps` (printed as `Next:` lines, `details.next_steps` with `--json`), and each
+entry in `plan["blockers"]` (or `conflicts`, for `bake @alias`) has a `fix` beside its `reason`.
+`bake --dry-run` prints the same `Next:` guidance under the plan. A resolved noninteractive plan still requires
 `--yes`; this skips confirmation, never validation. Exported `--plan` inputs are bound to their
 workspace, content revision and planned output paths. Stale inputs fail before execution; regenerate
 a dry-run after edits. Plan files are review artifacts, not a way to override output paths.

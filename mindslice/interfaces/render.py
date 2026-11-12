@@ -302,11 +302,22 @@ def render_cancelled(result: dict[str, Any]) -> str:
 # --- errors ------------------------------------------------------------------------------------
 
 
+def render_next_steps(steps: list[str]) -> str:
+    """``Next:`` guidance: one line for a single step, a numbered list for several."""
+    if not steps:
+        return ""
+    if len(steps) == 1:
+        return f"Next: {steps[0]}\n"
+    return _join(["Next:"] + [f"  {n}. {step}" for n, step in enumerate(steps, 1)])
+
+
 def render_error(error: dict[str, Any]) -> str:
-    """``error [code]: message`` plus readable details, for stderr."""
+    """``error [code]: message``, readable details, then any ``next_steps`` the error carries, for stderr."""
     head = f"error [{error['code']}]: {error['message']}" if error.get("code") else f"error: {error['message']}"
     lines = [head]
-    for key, value in (error.get("details") or {}).items():
+    details = dict(error.get("details") or {})
+    steps = details.pop("next_steps", None)
+    for key, value in details.items():
         if key == "plan" and isinstance(value, dict):
             if "slices" in value:
                 from .bake_review import render_plan
@@ -328,4 +339,6 @@ def render_error(error: dict[str, Any]) -> str:
         else:
             text = str(value)
         lines.append(f"  {key}: {text}")
+    if isinstance(steps, list):
+        lines.append(render_next_steps([str(step) for step in steps]).rstrip())
     return _join(lines)

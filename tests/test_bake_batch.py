@@ -2,6 +2,7 @@
 from __future__ import annotations
 
 import json
+import shutil
 from pathlib import Path
 from unittest.mock import patch
 
@@ -96,6 +97,12 @@ class BatchBakeTests(WorkspaceTestCase):
         plan = self.ws.plan_bake({'a':'one', 'b':None})
         self.assertFalse(plan['ready'])
         self.assertTrue(any('needs a destination' in b['reason'] for b in plan['blockers']))
+        blocker = next(b for b in plan['blockers'] if 'needs a destination' in b['reason'])
+        self.assertIn("--assign 'b=@one'", blocker['fix'])
+        self.assertIn('--defer a', blocker['fix'])
+        # One broken reference surfaces as two blockers, but is one thing to do.
+        self.assertEqual(len(plan['blockers']), 2)
+        self.assertEqual(len(bake_batch.next_steps(plan)), 1)
 
     def test_baseline_refs_to_moving_cards_are_rewritten_in_the_new_version(self):
         self.ws.write('topic/item', summary='Item.')
@@ -131,9 +138,102 @@ class BatchBakeTests(WorkspaceTestCase):
         reasons = ' '.join(b['reason'] for b in plan['blockers'])
         self.assertIn('consolidate', reasons)
         self.assertIn('unresolved', reasons)
-        with self.assertRaises(BakeConflictError):
+        self.assertTrue(all(b['fix'] for b in plan['blockers']), plan['blockers'])
+        steps = bake_batch.next_steps(plan)
+        self.assertTrue(any(s.startswith('@overlay/rule: merge the two') and '--defer rule' in s for s in steps), steps)
+        self.assertTrue(any("'target'" in s for s in steps), steps)
+        # The self-cycle a same-path extension would create is that card's problem, not a second step.
+        self.assertTrue(any(b.get('derived') for b in plan['blockers']), plan['blockers'])
+        self.assertFalse(any('cycle' in s for s in steps), steps)
+        with self.assertRaises(BakeConflictError) as ctx:
             self.ws.bake(plan=plan)
+        self.assertEqual(ctx.exception.details['next_steps'][:-1], steps)
         self.assertFalse((self.root/'slices/new.slice').exists())
+
+    def blocker(self, plan, reason):
+        self.assertFalse(plan['ready'])
+        found = [b for b in plan['blockers'] if b['reason'] == reason]
+        self.assertEqual(len(found), 1, plan['blockers'])
+        self.assertIn(f"{found[0].get('address') or found[0]['alias']}: {found[0]['fix']}", bake_batch.next_steps(plan))
+        return found[0]
+
+    def test_missing_mount_directory_blocker_names_both_ways_out(self):
+        root = self.project({'rule': card_text('Rule', 'Original.')})
+        self.ws.write('extra', summary='Extra.')
+        saved = self.tmp / 'saved.slice'
+        shutil.copytree(root, saved)
+        shutil.rmtree(root)
+        fix = self.blocker(self.ws.plan_bake({'extra': 'project'}), 'mounted directory is missing')['fix']
+        self.assertIn(f'restore {root}', fix)
+        self.assertIn('`mindslice unmount @project`', fix)
+        # Both suggestions clear it: put the directory back, or unmount and send the card elsewhere.
+        shutil.copytree(saved, root)
+        self.assertTrue(self.ws.plan_bake({'extra': 'project'}, resume=False)['ready'])
+        shutil.rmtree(root)
+        self.ws.unmount('@project')
+        self.assertTrue(self.ws.plan_bake({'extra': 'elsewhere'}, resume=False)['ready'])
+
+    def test_invalid_manifest_blocker_points_at_the_file_and_validate(self):
+        root = self.project({'rule': card_text('Rule', 'Original.')})
+        self.ws.write('extra', summary='Extra.')
+        good = (root / 'slice.toml').read_text()
+        (root / 'slice.toml').write_text('name = [unclosed\n')
+        blocker = self.blocker(self.ws.plan_bake({'extra': 'project'}), 'invalid slice manifest')
+        self.assertTrue(blocker['errors'])
+        self.assertIn(f"correct {root / 'slice.toml'}", blocker['fix'])
+        self.assertIn(f'`mindslice validate {root}`', blocker['fix'])
+        # The suggested command does list the problem, and correcting the file clears the blocker.
+        report = self.ws.validate(root)
+        self.assertEqual([e['code'] for e in report['errors']], ['invalid_slice_manifest'])
+        (root / 'slice.toml').write_text(good)
+        self.assertTrue(self.ws.plan_bake({'extra': 'project'}, resume=False)['ready'])
+
+    def test_invalid_dependency_alias_blocker_quotes_the_entry(self):
+        root = self.mount_slice('project-kb', {'rule': card_text('Rule', 'Original.')}, '@project', 50, 'curated',
+                                dependencies=['not a valid alias!'])
+        self.ws.write('extra', summary='Extra.')
+        blocker = self.blocker(self.ws.plan_bake({'extra': 'project'}), 'invalid dependency alias')
+        self.assertEqual(blocker['dependency'], 'not a valid alias!')
+        self.assertEqual(blocker['fix'], f"correct the dependency 'not a valid alias!' in {root / 'slice.toml'}")
+        text = (root / 'slice.toml').read_text()
+        self.assertIn('not a valid alias!', text)
+        (root / 'slice.toml').write_text(text.replace('"not a valid alias!"', ''))
+        self.assertTrue(self.ws.plan_bake({'extra': 'project'}, resume=False)['ready'])
+
+    def test_missing_dependency_blocker_suggests_mounting_it(self):
+        self.mount_slice('project-kb', {'rule': card_text('Rule', 'Original.')}, '@project', 50, 'curated',
+                         dependencies=['@ghost'])
+        self.ws.write('extra', summary='Extra.')
+        blocker = self.blocker(self.ws.plan_bake({'extra': 'project'}), 'missing or nonportable dependency')
+        self.assertEqual(blocker['dependency'], '@ghost')
+        self.assertIn('`mindslice mount PATH --alias @ghost`', blocker['fix'])
+        self.assertIn("drop @ghost from the slice's declared dependencies", blocker['fix'])
+        self.mount_slice('ghost', {'g': card_text('G', 'Ghost.')}, '@ghost', 40, 'baseline')
+        self.assertTrue(self.ws.plan_bake({'extra': 'project'}, resume=False)['ready'])
+
+    def test_dependency_on_cards_left_in_overlay_says_to_bake_them_too(self):
+        self.ws.write('a', summary='See [[@overlay/b]].')
+        self.ws.write('b', summary='B.')
+        plan = self.ws.plan_bake({'a': 'one', 'b': None})
+        blocker = self.blocker(plan, 'missing or nonportable dependency')
+        self.assertEqual((blocker['alias'], blocker['dependency']), ('@one', '@overlay'))
+        self.assertIn('give those cards a destination too', blocker['fix'])
+        self.assertNotIn('mindslice mount', blocker['fix'])
+        self.assertTrue(self.ws.plan_bake({'a': 'one', 'b': 'one'}, resume=False)['ready'])
+
+    def test_output_inside_a_mount_blocker_suggests_a_single_slice_bake(self):
+        (self.root / 'slices' / 'notes').mkdir(parents=True)
+        (self.root / 'slices' / 'notes' / 'n.md').write_text('A note.\n')
+        self.ws.mount(self.root / 'slices', alias='@all')
+        self.ws.write('extra', summary='Extra.')
+        blocker = self.blocker(self.ws.plan_bake({'extra': 'new'}), 'output falls inside a mounted/internal directory')
+        self.assertEqual(blocker['path'], str(self.root / 'slices' / 'new.slice'))
+        self.assertIn('`mindslice bake @new --output DIR` (with `--prefix` to select its cards)', blocker['fix'])
+        # That command is a real way out: the same card bakes to a directory outside the mount.
+        output = self.tmp / 'elsewhere' / 'new.slice'
+        result = self.ws.bake('@new', output, prefix='')
+        self.assertEqual((result['output'], result['validation']['ok']), (str(output), True))
+        self.assertFalse(self.overlay_file('extra').exists())
 
     def test_explicit_new_slice_refs_and_projected_cycles(self):
         self.put_overlay('a', card_text('A', 'A.', extends=['@new/b']))
@@ -141,6 +241,7 @@ class BatchBakeTests(WorkspaceTestCase):
         plan = self.ws.plan_bake({'a':'new', 'b':'new'})
         self.assertFalse(plan['ready'])
         self.assertTrue(any('cycle' in b['reason'] for b in plan['blockers']))
+        self.assertTrue(any('break the cycle' in s for s in bake_batch.next_steps(plan)))
         self.put_overlay('b', card_text('B', 'B.'))
         plan = self.ws.plan_bake({'a':'new', 'b':'new'})
         self.assertTrue(plan['ready'], plan['blockers'])
@@ -291,6 +392,14 @@ class BatchBakeCLITests(WorkspaceTestCase):
         self.assertEqual(code, 1)
         self.assertEqual(json.loads(err)['code'], 'bake_conflict')
         self.assertFalse(out)
+        steps = json.loads(err)['details']['next_steps']
+        self.assertIn("mindslice bake --assign 'topic/=@ALIAS'", steps[0])
+        self.assertIn("--defer 'topic/'", steps[0])
+        self.assertIn('mindslice bake --yes', steps[-1])
+        code, out, err = self.cli('--yes')
+        self.assertEqual((code, out), (1, ''))
+        self.assertIn('error [bake_conflict]: bake stopped before writing: 1 overlay card(s) need a destination', err)
+        self.assertIn("\nNext:\n  1. Choose a destination for topic/: ", err)
         code, out, err = self.cli('--assign', 'topic/=topic', '--yes', '--json')
         self.assertEqual((code, err), (0,''))
         self.assertTrue(Path(json.loads(out)['baked'][0]['path']).is_dir())
@@ -304,6 +413,7 @@ class BatchBakeCLITests(WorkspaceTestCase):
         code, _, err = self.cli('--plan', str(plan_file), '--yes', '--json')
         self.assertEqual(code,1)
         self.assertIn('stale', json.loads(err)['message'])
+        self.assertIn(f'mindslice bake --plan {plan_file} --yes', json.loads(err)['details']['next_steps'][-1])
         code, out, _ = self.cli('--assign', 'a=one', '--dry-run', '--json')
         plan_file.write_text(out)
         code, out, err = self.cli('--plan', str(plan_file), '--yes', '--json')
@@ -315,6 +425,7 @@ class BatchBakeCLITests(WorkspaceTestCase):
         code, _, err = self.cli('--assign', 'a=one', '--json')
         self.assertEqual(code, 1)
         self.assertIn('review required', json.loads(err)['message'])
+        self.assertIn('run `mindslice bake --yes`', json.loads(err)['details']['next_steps'][0])
         code, out, err = self.cli('one', '--prefix', '', '--json')
         self.assertEqual((code,err),(0,''))
         self.assertEqual(json.loads(out)['alias'], '@one')
@@ -379,6 +490,22 @@ class BatchBakeCLITests(WorkspaceTestCase):
         self.assertEqual(code, 0, err)
         self.assertIn('Bake cancelled', out)
 
+    def test_interactive_bake_of_a_blocked_plan_shows_the_fix_and_keeps_asking(self):
+        self.mount_slice('project-kb', {'rule': card_text('Rule', 'Original.')}, '@project', 50, 'curated')
+        self.ws.write('rule', summary='Extension.', extends=['@project/rule'])
+        with patch('sys.stdin.isatty', return_value=True), patch('mindslice.interfaces.bake_review._answer',
+                side_effect=['bake', 'cancel']) as answer:
+            code, out, err = self.cli()
+        self.assertEqual(code, 0, err)
+        self.assertEqual(answer.call_count, 2)  # refused to bake, then asked again
+        self.assertIn('Blocked: @overlay/rule: extends destination at the same path', err)
+        self.assertIn('Resolve the blockers or defer those cards before baking. Your plan is saved.\n'
+                      'Next: @overlay/rule: merge the two into one card', err)
+        self.assertIn('--defer rule', err)
+        self.assertIn('Bake cancelled', out)
+        self.assertTrue(self.overlay_file('rule').exists())
+        self.assertFalse((self.root / 'slices' / 'project-kb-2.slice').exists())
+
     def test_invalid_plan_is_a_structured_error(self):
         plan = self.tmp/'invalid.json'
         plan.write_text('{"schema_version": 1, "assignments": {}, "cards": [null]}')
@@ -396,4 +523,7 @@ class BatchBakeCLITests(WorkspaceTestCase):
         # Format follows --json only, not whether stdout is a terminal (run_cli's stdout is not).
         code, out, err = self.cli('--assign', 'a=one', '--dry-run')
         self.assertEqual((code, err), (0, ''))
-        self.assertEqual(out, text)
+        self.assertEqual(out, text + 'Next: The plan is ready: replace `--dry-run` with `--yes` to bake it as shown.\n')
+        self.ws.write('b', summary='B.')
+        code, out, err = self.cli('--assign', 'a=one', '--dry-run')
+        self.assertIn("Next:\n  1. Choose a destination for b: `mindslice bake --assign 'b=@ALIAS'`", out)

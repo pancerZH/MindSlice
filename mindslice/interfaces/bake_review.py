@@ -8,6 +8,7 @@ from pathlib import Path
 from ..baking import bake_batch
 from ..model.addressing import normalize_alias
 from ..errors import BakeConflictError, InvalidArgumentsError, MindSliceError
+from .render import render_next_steps
 
 
 def render_plan(plan, *, details=False):
@@ -32,7 +33,11 @@ def render_plan(plan, *, details=False):
     for item in plan["retained_overlay_cards"]:
         lines.append(f"Retain {item['address']}: {item['reason']}")
     for item in plan["blockers"]:
-        lines.append(f"Blocked: {item.get('address', item.get('alias', 'workspace'))}: {item['reason']}")
+        extra = [repr(item["ref"])] if item.get("ref") else []
+        extra += [str(item[k]) for k in ("dependency", "path") if item.get(k)]
+        extra += item.get("errors", []) + item.get("cards", [])
+        lines.append(f"Blocked: {item.get('address', item.get('alias', 'workspace'))}: {item['reason']}"
+                     + (f" ({'; '.join(extra)})" if extra else ""))
     return "\n".join(lines) + "\n"
 
 
@@ -146,10 +151,31 @@ def review(ws, plan):
             elif action in ("bake", "bake all", "b", "yes", "y"):
                 if plan["ready"]:
                     return plan
-                sys.stderr.write("Resolve the blockers or defer those cards before baking. Your plan is saved.\n")
+                sys.stderr.write("Resolve the blockers or defer those cards before baking. Your plan is saved.\n"
+                                 + render_next_steps(bake_batch.next_steps(plan)))
     except (EOFError, KeyboardInterrupt):
         sys.stderr.write("\nReview cancelled; destination choices saved.\n")
         return None
+
+
+def _steps(plan, *, saved):
+    """Next steps for a CLI user: what blocks the plan, then how to run it.
+
+    ``saved`` is False for ``--dry-run``, which keeps no choices: its flags have to be repeated.
+    """
+    steps = bake_batch.next_steps(plan)
+    if steps:
+        return steps + [
+            "Destination choices made so far are saved. Finish with `mindslice bake --yes`; "
+            "`mindslice bake --dry-run` previews the plan." if saved else
+            "Once that is done, re-run this command (with any new `--assign`/`--defer` choices) and "
+            "replace `--dry-run` with `--yes` to bake."]
+    if not plan["cards"]:
+        return []
+    if saved:
+        return ["The plan is ready and saved: run `mindslice bake --yes` to execute it as shown, "
+                "or `mindslice bake` in a terminal to review it card by card."]
+    return ["The plan is ready: replace `--dry-run` with `--yes` to bake it as shown."]
 
 
 def run(ws, args, out):
@@ -164,7 +190,10 @@ def run(ws, args, out):
         plan = ws.plan_bake(old["assignments"], resume=False)
         if (old.get("workspace") != plan["workspace"] or old.get("revision") != plan["revision"]
                 or old.get("slices") != plan["slices"]):
-            raise BakeConflictError("saved input plan is stale; regenerate with bake --dry-run", code="stale_bake_plan")
+            raise BakeConflictError("saved input plan is stale; regenerate with bake --dry-run", code="stale_bake_plan", next_steps=[
+                "Regenerate the plan from the current workspace: re-run the `mindslice bake ... --dry-run --json` "
+                f"command that produced it and save its output to {args.plan}.",
+                f"Review it, then run `mindslice bake --plan {args.plan} --yes`."])
     else:
         plan = ws.plan_bake(resume=not args.fresh)
     choices = dict(plan["assignments"])
@@ -179,7 +208,7 @@ def run(ws, args, out):
             choices[path] = None
     plan = ws.plan_bake(choices, resume=False)
     if args.dry_run:
-        out(plan, lambda p: render_plan(p, details=True))
+        out(plan, lambda p: render_plan(p, details=True) + render_next_steps(_steps(p, saved=False)))
         return 0
     bake_batch.save_plan(ws, plan)
     if not plan["cards"]:
@@ -192,10 +221,10 @@ def run(ws, args, out):
             out({"cancelled": True, "plan_path": str(ws.root / bake_batch.PLAN_FILE)}, render_receipt)
             return 0
     elif not plan["ready"]:
-        raise BakeConflictError("assign destinations or resolve blockers before baking", plan=plan,
-                                plan_path=str(ws.root / bake_batch.PLAN_FILE))
+        raise BakeConflictError(bake_batch.blocked_message(plan), plan=plan,
+                                plan_path=str(ws.root / bake_batch.PLAN_FILE), next_steps=_steps(plan, saved=True))
     elif not args.yes:
         raise BakeConflictError("review required; run in a terminal or use --yes with a reviewed plan",
-                                code="bake_review_required", plan=plan)
+                                code="bake_review_required", plan=plan, next_steps=_steps(plan, saved=True))
     out(ws.bake(plan=plan), render_receipt)
     return 0
