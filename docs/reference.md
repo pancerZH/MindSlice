@@ -1,8 +1,8 @@
 # MindSlice reference
 
 How MindSlice works: the file formats, every primitive, and the engine's guarantees. To get started, see the
-[README](../README.md); for benchmark results, see [evaluations](evaluations.md). The full design, with its
-behavior matrix, is [`MindSlice_design.md`](../MindSlice_design.md).
+[setup guide](getting-started.md); for benchmark results, see [evaluations](evaluations.md). The full design, with its
+behavior matrix, is [design specification](design.md).
 
 ## Principles
 

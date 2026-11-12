@@ -1,7 +1,7 @@
 # MindSlice evaluations
 
 What the evaluations measured, what they settled in the engine's design, and how to run them. None of this is
-needed to use MindSlice; see the [README](../README.md) for that and the [reference](reference.md) for how it works.
+needed to use MindSlice; see the [setup guide](getting-started.md) for that and the [reference](reference.md) for how it works.
 
 ## What the evaluations show, and where MindSlice stops
 
