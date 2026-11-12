@@ -124,6 +124,11 @@ workspace paths in that app with the workspace reported by `doctor`.
 
 ## Standing preferences
 
+For a customizable policy on when the agent should record information proactively, choose the
+[English or Chinese standing-card example](../examples/README.md#proactive-memory-policy).
+The default startup instructions already encourage proactive writes; the optional card expresses
+your workspace's recording preferences. Choose one language version rather than loading both.
+
 You don't have to write standing notes by hand: just tell your connected agent *"From now on, reply in Simplified
 Chinese, keep answers short, and show code instead of describing it."* The agent saves a `load = "always"` card
 for your approval ([review changes](workflow.md#review-changes)).

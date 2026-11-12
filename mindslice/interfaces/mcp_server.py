@@ -113,8 +113,11 @@ TOOLS: list[dict[str, Any]] = [
     {
         "name": "write",
         "description": (
-            "Record memory in the writable @overlay layer (base slices are read-only). One focused sub-topic per card: "
-            "a 1-2 sentence summary plus 5-15 self-contained '- ' bullet statements that keep the concrete values, "
+            "Proactively record confirmed information useful in future sessions; do not wait for 'remember this'. "
+            "Use for lasting preferences, accepted decisions, stable constraints, corrections and verified reusable "
+            "lessons, within the user's memory policy. Search/read related memory first to avoid duplicate writes. "
+            "Write into @overlay (base slices are read-only). One focused sub-topic per card: "
+            "a short summary and only the self-contained '- ' bullet statements needed to keep the concrete values, "
             "names, dates and conditions (search is lexical: a word you leave out can't be found); link related cards "
             "with [[path]]. supersedes and delete act on whole cards, so keep facts that can change on their own on "
             "separate cards. op=create (idempotent if identical), replace (only the fields you pass), append (adds "
@@ -164,7 +167,18 @@ TOOLS: list[dict[str, Any]] = [
 
 INSTRUCTIONS = (
     "MindSlice is your long-term memory. Start with manifest() to see the mounted slices, use search() to find "
-    "relevant cards, and read() an address for full content (it composes extensions and follows replacements). "
+    "relevant cards, and read() an address for full content (it composes extensions and follows replacements).\n\n"
+    "Actively maintain memory within the user's requested scope and standing memory policy; do not wait for "
+    "the user to say 'remember this'. Record explicitly stated lasting preferences, accepted project decisions, "
+    "stable constraints, user corrections and verified reusable debugging lessons when they will help future "
+    "sessions. After a relevant confirmation or verified result, and before completing a meaningful task phase, "
+    "check whether anything new or corrected should be saved. Write it while the evidence is available; do not "
+    "rely on receiving a session-end notification. If there is no durable change, make no memory write.\n\n"
+    "Distinguish user decisions from your own suggestions that have not been adopted. Do not automatically store "
+    "guesses, one-off task state or raw conversation transcripts. Respect requests not to remember something. "
+    "Search for related cards and read likely matches before writing unless you already checked them in this "
+    "conversation; update an existing card when appropriate and skip information already represented. Keep "
+    "the scope, conditions and evidence; do not invent detail to fill a card. "
     "Supply reason with write() to explain the user correction or evidence for the change. The engine owns "
     ".history/changes.jsonl; never write that log yourself. "
     "Record durable learnings, user corrections and debugging lessons with write() into @overlay: prefer append "
@@ -177,7 +191,11 @@ INSTRUCTIONS = (
     "Cards marked load=\"always\" are standing context for every session (below, and in manifest's always_loaded; "
     "a tool result's always_loaded_update brings changes to them). When the user states a lasting preference about "
     "how you should behave (reply language, tone, persona), record it with load=\"always\"; such writes are staged "
-    "until the user approves them, so tell the user."
+    "until the user approves them, so tell the user.\n\n"
+    "Check the write result before reporting success: distinguish saved/live memory from a pending proposal, "
+    "and never describe a failed write as remembered. Briefly mention meaningful saved updates or pending review "
+    "without interrupting the main task to ask whether every qualifying fact should be recorded. Automatic "
+    "recording does not authorize applying pending changes or baking slices; preserve the user's review workflow."
 )
 
 EMPTY_WORKSPACE_HINT = (
