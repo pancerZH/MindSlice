@@ -26,6 +26,7 @@ from .errors import (
     NotFoundError,
     PreconditionFailedError,
     ReadOnlyMountError,
+    RecoveryError,
     UnresolvedExportDependencyError,
     WorkspaceNotFoundError,
 )
@@ -50,6 +51,7 @@ __all__ = [
     "NotFoundError",
     "PreconditionFailedError",
     "ReadOnlyMountError",
+    "RecoveryError",
     "UnresolvedExportDependencyError",
     "WorkspaceNotFoundError",
     "__version__",

@@ -214,6 +214,28 @@ class Workspace:
         """Mounts, pending review and unbaked overlay changes, without card bodies."""
         return status_mod.status(self)
 
+    def card_history(self, address: str | None = None, limit: int = 20, offset: int = 0) -> dict[str, Any]:
+        from .operations.audit import card_history
+        return card_history(self, address, limit, offset)
+
+    def explain(self, address: str, follow_supersedes=True, max_extensions: int = 5,
+                extensions_offset: int = 0) -> dict[str, Any]:
+        from .operations.audit import explain
+        return explain(self, address, follow_supersedes, max_extensions, extensions_offset)
+
+    def rollback(self, alias: str, path=None, *, dry_run: bool = False, revision: str | None = None) -> dict[str, Any]:
+        from .operations.recovery import rollback
+        return rollback(self, alias, path, dry_run=dry_run, revision=revision)
+
+    def backup(self, output) -> dict[str, Any]:
+        from .storage.snapshots import backup
+        return backup(self, output)
+
+    @classmethod
+    def restore(cls, source, destination) -> dict[str, Any]:
+        from .storage.snapshots import restore
+        return restore(source, destination)
+
     def mount(self, path: str | os.PathLike[str], alias: str | None = None, precedence: int = 50,
               role: str = "baseline", retire_overlay: bool = True) -> dict[str, Any]:
         """Mount a read-only slice directory.

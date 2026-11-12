@@ -130,6 +130,10 @@ the highest-precedence mount; written **inside a card**, it resolves only within
 | A | `boot()` | resolved always-loaded cards; CLI `boot` emits the full startup payload, `--cards-only` emits card content |
 | B | `mount(path, alias, precedence, role, retire_overlay=True)` / `unmount(alias)` | updates `mounts.toml` and the index; retires overlay copies the slice holds unchanged |
 | B | `status()` | all mounts, pending review files and conflicts, dirty slices and unassigned overlay cards |
+| B | `card_history(address=None, limit=20, offset=0)` | recorded events and reasons, newest first; metadata only; deleted addresses remain inspectable |
+| B | `explain(address, follow_supersedes=True, max_extensions=5, extensions_offset=0)` | read selection, lineage, physical sources and verified reasons; does not increment read telemetry |
+| B | `rollback(alias, path=None, dry_run=False, revision=None)` | switch a slice pointer to a recorded predecessor or explicit directory; overlay/staging preserved; revision checks a reviewed preview |
+| B | `backup(output)` / `Workspace.restore(source, destination)` | verified directory snapshot and restore to a new workspace, including external mounts and available recorded versions |
 | B | `validate(slice_path=None, rebuild_index=False)` | lints from disk; rebuild re-hashes everything |
 | B | `bake(alias=None, output_path=None, prefix=None, tags=None, include_deps=False, dry_run=False, plan=None)` | omitted alias executes a workspace plan; named new targets require `prefix`; old folders stay untouched |
 | B | `plan_bake(assignments=None, resume=True)` | propose all overlay destinations; exact card IDs map to aliases or null (defer) |
@@ -138,6 +142,13 @@ the highest-precedence mount; written **inside a card**, it resolves only within
 | C | `review(accept, reject, *, revision, dry_run=False)` | mixed accept/reject batch using the staging `diff()` revision; dry-run returns dependencies/conflicts before execution |
 
 ### CLI overview and output modes
+
+`history [CARD]`, `explain CARD`, `rollback ALIAS`, `backup DIRECTORY` and
+`restore BACKUP --output NEW_WORKSPACE` have human output by default and support `--json`.
+Rollback supports `--to DIRECTORY`, `--dry-run` and `--yes`; it requires confirmation before
+changing a mount. Backup and restore require new destinations and never overwrite existing ones.
+The MCP server still exposes only its four online memory tools. See
+[history and recovery](history-and-recovery.md) for semantics, limitations and examples.
 
 `mindslice status` lists every mount (alias, directory, precedence, role and card count), pending
 review files (create/modify/delete, approval reasons and staging conflicts), dirty slices, and

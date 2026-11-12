@@ -110,6 +110,35 @@ def build_parser() -> argparse.ArgumentParser:
     s = sub.add_parser("status", help="show mounts, pending review and unbaked overlay changes")
     s.add_argument("--json", action="store_true", help="structured JSON instead of the workspace overview")
 
+    s = sub.add_parser("history", help="inspect recorded reasons and lifecycle events (not old content snapshots)")
+    s.add_argument("address", nargs="?", help="card address; omit for workspace history, including version switches")
+    s.add_argument("--limit", type=int, default=20)
+    s.add_argument("--offset", type=int, default=0)
+    s.add_argument("--json", action="store_true")
+
+    s = sub.add_parser("explain", help="explain the sources, precedence and lineage of a read result")
+    s.add_argument("address")
+    s.add_argument("--follow", help="all | none | comma-separated roles/@aliases")
+    s.add_argument("--max-extensions", type=int, default=5)
+    s.add_argument("--extensions-offset", type=int, default=0)
+    s.add_argument("--json", action="store_true")
+
+    s = sub.add_parser("rollback", help="preview and switch a mounted slice to an earlier directory; overlay stays")
+    s.add_argument("alias", type=normalize_alias)
+    s.add_argument("--to", dest="target", help="physical slice directory (default: recorded predecessor)")
+    s.add_argument("--dry-run", action="store_true")
+    s.add_argument("--yes", action="store_true", help="execute after reviewing the preview")
+    s.add_argument("--json", action="store_true")
+
+    s = sub.add_parser("backup", help="create a verified portable directory snapshot, including external mounts")
+    s.add_argument("output", help="new backup directory outside the workspace and mounted sources")
+    s.add_argument("--json", action="store_true")
+
+    s = sub.add_parser("restore", help="verify a backup and restore into a new workspace directory")
+    s.add_argument("source", help="backup directory")
+    s.add_argument("--output", required=True, help="new workspace directory; never overwrites an existing directory")
+    s.add_argument("--json", action="store_true")
+
     s = sub.add_parser("manifest", help="paginated mount and folder map for memory navigation")
     s.add_argument("--limit", type=int, default=20)
     s.add_argument("--offset", type=int, default=0)
@@ -227,6 +256,15 @@ def main(argv: Sequence[str] | None = None) -> int:
             with Workspace.init(target) as ws:
                 _emit({"workspace": str(ws.root), "mounts": str(ws.root / "mounts.toml")}, compact)
             return 0
+        if args.command == "restore":
+            result = Workspace.restore(args.source, args.output)
+            if args.json:
+                _emit(result, compact)
+            else:
+                sys.stdout.write(f"Restored workspace: {result['workspace']}\n{result['note']}\n")
+                for path in result["unavailable_versions"]:
+                    sys.stdout.write(f"Historical version unavailable in backup: {path}\n")
+            return 0
         if args.command == "doctor":
             from .doctor import diagnose, render
 
@@ -263,6 +301,53 @@ def _dispatch(ws: Workspace, args: argparse.Namespace, compact: bool) -> int:
             _emit(result, compact)
         else:
             sys.stdout.write(render_status(result))
+    elif cmd in ("history", "explain"):
+        from ..operations.audit import render_history, render_explain
+        with ws._reading():
+            address = cli_reference(ws, args.address) if args.address else None
+            result = (ws.card_history(address, args.limit, args.offset) if cmd == "history" else
+                      ws.explain(address, _follow(args.follow), args.max_extensions, args.extensions_offset))
+        if args.json:
+            _emit(result, compact)
+        else:
+            sys.stdout.write(render_history(result) if cmd == "history" else render_explain(result))
+    elif cmd == "backup":
+        result = ws.backup(args.output)
+        if args.json:
+            _emit(result, compact)
+        else:
+            sys.stdout.write(f"Backup: {result['path']} ({result['files']} files)\n{result['note']}\n")
+            for path in result["unavailable_versions"]:
+                sys.stdout.write(f"Historical version already missing: {path}\n")
+    elif cmd == "rollback":
+        from ..operations.recovery import render_rollback
+        from ..errors import RecoveryError
+        plan = ws.rollback(args.alias, args.target, dry_run=True)
+        if args.dry_run:
+            if args.json:
+                _emit(plan, compact)
+            else:
+                sys.stdout.write(render_rollback(plan))
+            return 0 if plan["ready"] else 1
+        if not plan["ready"]:
+            raise RecoveryError("rollback is blocked; inspect rollback --dry-run", plan=plan)
+        if not args.yes:
+            if args.json or not sys.stdin.isatty():
+                raise RecoveryError("review rollback --dry-run, then use --yes to execute", plan=plan)
+            sys.stderr.write(render_rollback(plan) + "Switch this slice pointer? [yes/No]: ")
+            sys.stderr.flush()
+            try:
+                answer = sys.stdin.readline().strip().lower()
+            except KeyboardInterrupt:
+                answer = ""
+            if answer not in ("yes", "y"):
+                _emit({"cancelled": True}, compact)
+                return 0
+        result = ws.rollback(args.alias, plan["path"], revision=plan["revision"])
+        if args.json:
+            _emit(result, compact)
+        else:
+            sys.stdout.write("Slice pointer switched.\n" + render_rollback(result))
     elif cmd == "manifest":
         _emit(ws.manifest(args.limit, args.offset, args.max_folders_per_mount, args.include_overview,
                           args.include_always), compact)

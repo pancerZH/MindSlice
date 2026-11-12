@@ -96,3 +96,9 @@ class LockTimeoutError(MindSliceError, TimeoutError):
 
 class HistoryError(MindSliceError):
     code = "history_error"
+
+
+class RecoveryError(MindSliceError):
+    """Recovery or backup cannot proceed without changing its reviewed scope."""
+
+    code = "recovery_error"

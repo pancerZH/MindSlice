@@ -55,6 +55,7 @@ Run `mindslice -w ~/mindslice doctor`, then [verify a new session](docs/getting-
 
 - [Concepts](docs/concepts.md) — isolation, evolution, and how MindSlice fits other memory architectures.
 - [Reference](docs/reference.md) — commands, Python API, MCP tools and card formats.
+- [History and recovery](docs/history-and-recovery.md) — explain memory, roll back slices, back up and restore workspaces.
 - [Build slices](skills/slice-builder/SKILL.md) — turn one document or many into one or more slices.
 - [Maintain memory](skills/slice-maintainer/SKILL.md) — consolidate knowledge and repair relationships.
 - [Evaluations](docs/evaluations.md) · [Design](docs/design.md) · [Uninstall](skills/mindslice-setup/uninstall.md)

@@ -10,6 +10,9 @@ export MINDSLICE_WORKSPACE=~/mindslice
 
 You can instead pass `-w /path/to/workspace` with each command.
 
+To inspect why memory changed or recover an earlier state, see
+[history, explanations, rollback and workspace backups](history-and-recovery.md).
+
 ## Review changes
 
 Overlay cards are already saved on disk and available to retrieval. Staging holds proposed
