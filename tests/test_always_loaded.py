@@ -180,6 +180,10 @@ class MCPAlwaysLoadedTests(AlwaysLoadedCase):
         """What the instructions ask for after a compaction: manifest() again gives the whole current set,
         including a change the session only ever saw as a (now discarded) always_loaded_update."""
         self.assertIn("After your context is compacted or summarized, call manifest() again", INSTRUCTIONS)
+        # Card organisation is in the text every client delivers, not only in the lazily loaded write description.
+        self.assertIn("one focused sub-topic per card", INSTRUCTIONS)
+        self.assertIn("replace the statements that are now wrong", INSTRUCTIONS)
+        self.assertNotIn("prefer append", INSTRUCTIONS)
         self.server.handle({"jsonrpc": "2.0", "id": 0, "method": "initialize", "params": {}})
         self.ws.write("prefs/lang", summary="Reply in Chinese.", load="always", stage=False)
         err, res = self.tool("search", query="glossary")
