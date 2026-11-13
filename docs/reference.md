@@ -12,7 +12,7 @@ MindSlice is the *filesystem layer* for agent memory: plain Markdown cards in di
 index. It holds no LLM calls and no built-in trust heuristics; memory *policy* plugs in
 through files, skills and caller-supplied trust rules.
 
-- **Python 3.12+ standard library only** (`sqlite3` FTS5, `tomllib`, `fcntl`); POSIX (Linux/macOS).
+- **Python 3.12+ standard library only** (`sqlite3` FTS5, `tomllib`, `fcntl`); POSIX (Linux/macOS); msvcrt (Windows).
 - **Markdown + TOML is the source of truth.** Delete `.cache/` at any time; it is rebuilt from disk
   (only best-effort `read_count` / `last_read_at` telemetry is lost).
 - **Read-only base slices + writable `overlay/`**, with explicit `extends` / `supersedes` lineage.
