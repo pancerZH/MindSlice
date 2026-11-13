@@ -1,5 +1,5 @@
 [build-system]
-requires = ["setuptools>=68"]
+requires = ["setuptools>=77"]  # 77: SPDX license expressions (PEP 639)
 build-backend = "setuptools.build_meta"
 
 [project]
@@ -7,15 +7,24 @@ name = "mindslice"
 version = "0.1.0"
 description = "Layered, pluggable, human-readable long-term memory engine for LLM agents (Python stdlib only)."
 readme = "README.md"
+license = "Apache-2.0"
+license-files = ["LICENSE", "NOTICE"]
+authors = [{ name = "pancerZH" }]
 requires-python = ">=3.12"
 dependencies = []
 keywords = ["llm", "agents", "memory", "markdown", "mcp"]
 classifiers = [
     "Programming Language :: Python :: 3",
     "Programming Language :: Python :: 3.12",
-    "Operating System :: POSIX",
+    "Operating System :: OS Independent",
+    "Intended Audience :: Developers",
     "Topic :: Software Development :: Libraries",
 ]
+
+[project.urls]
+Homepage = "https://github.com/pancerZH/MindSlice"
+Documentation = "https://github.com/pancerZH/MindSlice/blob/main/docs/getting-started.md"
+Issues = "https://github.com/pancerZH/MindSlice/issues"
 
 [project.scripts]
 mindslice = "mindslice.interfaces.cli:main"

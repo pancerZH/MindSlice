@@ -60,3 +60,8 @@ Run `mindslice -w ~/mindslice doctor`, then [verify a new session](docs/getting-
 - [Build slices](skills/slice-builder/SKILL.md) — turn one document or many into one or more slices.
 - [Maintain memory](skills/slice-maintainer/SKILL.md) — consolidate knowledge and repair relationships.
 - [Evaluations](docs/evaluations.md) · [Design](docs/design.md) · [Uninstall](skills/mindslice-setup/uninstall.md)
+
+## License
+
+[Apache License 2.0](LICENSE). Benchmark excerpts quoted in the evaluation records keep their
+datasets' licences; see [NOTICE](NOTICE).

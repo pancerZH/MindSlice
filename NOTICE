@@ -1,0 +1,22 @@
+MindSlice
+Copyright 2026 pancerZH and the MindSlice contributors
+
+Licensed under the Apache License, Version 2.0 (see LICENSE).
+
+Third-party material
+--------------------
+
+The evaluation records under evals/ quote short excerpts from published
+benchmark datasets, and text that evaluated agents wrote from them: example
+questions in evals/external/results/summary.md, and card lines and values in
+the reports and audit worksheets under evals/agent/results/. That material is
+not covered by the Apache License. It remains under the licence of the dataset
+it comes from:
+
+  MEME               CC BY 4.0      https://huggingface.co/datasets/meme-benchmark/MEME
+  LoCoMo             CC BY-NC 4.0   https://github.com/snap-research/locomo
+  LongMemEval        MIT            https://huggingface.co/datasets/xiaowu0162/longmemeval-cleaned
+  MemoryAgentBench   MIT            https://huggingface.co/datasets/ai-hyz/MemoryAgentBench
+
+The datasets themselves are not redistributed. evals/external/sources.py pins
+the revision, digest and licence of each file the evaluations download.

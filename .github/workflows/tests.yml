@@ -13,9 +13,11 @@ jobs:
     # Text analysis depends on Python's Unicode database (mindslice/retrieval/lexical.py), and the recorded eval
     # results were produced on Python 3.12 (Unicode 15.0.0): keep CI on the same minor version.
     strategy:
+      fail-fast: false  # a failure on one platform should not hide the result on the others
       matrix:
-        # Pin the OS release; GitHub's standard x64 Windows runners use Windows Server.
-        os: [ubuntu-24.04, windows-2025]
+        # Pin the OS release; GitHub's standard x64 Windows runners use Windows Server, and the macOS
+        # runner is Apple silicon.
+        os: [ubuntu-24.04, windows-2025, macos-15]
     runs-on: ${{ matrix.os }}
     timeout-minutes: 15
     steps:
