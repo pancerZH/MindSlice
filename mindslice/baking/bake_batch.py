@@ -31,8 +31,8 @@ if TYPE_CHECKING:
     from ..workspace import Workspace
 
 PLAN_FILE = ".bake-plan.json"
-MERGE_FIX = ("merge the two into one card (rewrite the overlay card with the combined text and drop its "
-             "`extends` link; the slice-maintainer skill does this)")
+MERGE_FIX = ("merge the two into one card: rewrite the overlay card with the combined text and drop its "
+             "`extends` link")
 
 
 def _stale(message: str, **details) -> BakeConflictError:

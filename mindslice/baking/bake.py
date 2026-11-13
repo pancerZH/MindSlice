@@ -146,7 +146,7 @@ def bake(
             if path in slice_paths and any(targets_slice(r) == path for r in parsed.extends):
                 conflicts.append({"address": format_address(overlay.alias, path),
                                   "reason": f"extends {format_address(alias, path)} at the same path; merge the two "
-                                            "into one card first (the slice-maintainer skill does this)",
+                                            "into one card first",
                                   "fix": "rewrite the overlay card with the combined text and drop its `extends` link, "
                                          "so one card replaces the slice's"})
         if conflicts:

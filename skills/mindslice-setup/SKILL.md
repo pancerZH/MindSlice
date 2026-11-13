@@ -111,20 +111,13 @@ Run `<mindslice_bin> -w <workspace> doctor`. It checks the runtime, workspace, m
 startup payload and a real MCP handshake; exit code 1 means a check failed, and each failure prints
 a `Next:` line. Fix every failure and explain remaining warnings.
 
-`doctor` cannot see your harness: it always ends with a `[MANUAL] client_session` item. Confirm that
-part yourself:
+`doctor` cannot see your harness, so it ends with a `[MANUAL] client_session` item that lists the
+checks only the harness can show: the server and its four tools, the startup payload in a new
+session, a real memory lookup, and the standing memory after a compaction. Do each one. Before
+them, run every hook command you configured by hand and check its output is what the hook expects.
 
-- **The server is connected**: the harness lists `<server_name>` with four tools, started by the
-  same `<mindslice_bin>` you installed.
-- **Each hook works**: run the configured command by hand and check its output is what the hook expects.
-- **A fresh session has the standing memory** before any tool call. Compare what the model reports
-  with `boot --cards-only`.
-- **Compaction keeps it**: if the harness can compact on request, do so in a test conversation and
-  check the standing cards are still there.
-
-The [first-session checklist](../../docs/getting-started.md#verify-your-first-session) covers the
-last two, with an actual memory lookup. If you cannot observe a new session or a compaction from
-here, hand that check to the user explicitly instead of claiming it passed.
+If you cannot observe a new session or a compaction from here, hand that check to the user
+explicitly instead of claiming it passed.
 
 Then run `<mindslice_bin> -w <workspace> status` for the mounts, card counts and pending review you
 report, and give a compact handoff in the user's language:

@@ -18,7 +18,12 @@ class DoctorTests(WorkspaceTestCase):
         checks = {item["name"]: item for item in result["checks"]}
         self.assertEqual(checks["mcp"]["status"], "pass")
         self.assertEqual(checks["client_session"]["status"], "manual")
-        self.assertIn("after a context compaction", checks["client_session"]["action"])
+        steps = checks["client_session"]["steps"]
+        self.assertTrue(any("compact" in step for step in steps), steps)
+        # The report has to stand on its own: no pointer to a doc or skill the reader may not have.
+        report = json.dumps(result)
+        self.assertNotIn(".md", report)
+        self.assertNotIn("docs/", report)
         self.assertEqual(checks["boot"]["standing_cards"], 0)
         self.assertEqual(list((self.root / "overlay").rglob("*.md")), [])
         self.assertEqual(self.ws.history.events(), [])
@@ -79,6 +84,8 @@ class DoctorTests(WorkspaceTestCase):
         self.assertIn("Local checks passed", out)
         self.assertIn("[MANUAL] client_session", out)
         self.assertIn("new conversation", out)
+        self.assertIn("    2. Start a new conversation", out)
+        self.assertIn(f"mindslice -w {self.root} boot\n", out)  # the real workspace, ready to run
 
     def test_status_explains_saved_pending_and_unassigned_with_next_action(self):
         self.ws.write("saved", summary="Already persisted.")

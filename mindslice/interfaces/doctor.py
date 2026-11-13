@@ -15,6 +15,20 @@ from ..workspace import Workspace
 from .mcp_server import format_instructions
 
 
+# What only the connected app can show. Self-contained: a pip-installed user has no docs checkout to open.
+CLIENT_STEPS = [
+    "Restart or reconnect the app so it reloads its MCP configuration. It should list this server with four "
+    "tools: manifest, search, read, write.",
+    "Start a new conversation and, before any tool call, ask the model what MindSlice supplied at startup. "
+    "Compare its answer with: mindslice -w <workspace> boot",
+    "Ask about a fact already saved in memory without repeating it. The answer should come from an actual "
+    "search or read call that returns the card.",
+    "Let the app compact a long conversation (or trigger compaction if it has a command), then ask for the "
+    "standing instructions again. They should still be there.",
+    "Go by the app's tool-call or hook log where it has one; the model saying it remembers is not proof.",
+]
+
+
 def probe_mcp(root):
     """Exercise the real stdio entry point; never execute commands from client configs."""
     command = [sys.executable, "-m", "mindslice", "-w", str(root), "mcp"]
@@ -114,9 +128,8 @@ def diagnose(root=None):
         if ws is not None:
             ws.close()
     add("client_session", "manual", "Client configuration and model receipt have not been verified",
-        "Follow docs/getting-started.md#verify-your-first-session: reconnect the app, start a new conversation, "
-        "and verify standing instructions and a memory read; then check the standing instructions are still "
-        "present after a context compaction. Local MCP success alone does not prove client loading.")
+        "Confirm these in the app itself; a local MCP success does not prove the app loads memory into the model.",
+        steps=CLIENT_STEPS)
     return {"ok": not any(c["status"] == "fail" for c in checks), "scope": "local_engine",
             "workspace": str(root) if root else None, "client_verified": False, "checks": checks}
 
@@ -124,10 +137,12 @@ def diagnose(root=None):
 def render(result):
     title = "Local checks passed" if result["ok"] else "Local checks need attention"
     lines = [title + "; client session verification is still required.", ""]
+    workspace = result["workspace"] or "/path/to/workspace"
+    quoted = subprocess.list2cmdline([workspace]) if os.name == "nt" else shlex.quote(workspace)
     for check in result["checks"]:
         lines.append(f"[{check['status'].upper()}] {check['name']}: {check['message']}")
         if check.get("action"):
-            workspace = result["workspace"] or "/path/to/workspace"
-            quoted = subprocess.list2cmdline([workspace]) if os.name == "nt" else shlex.quote(workspace)
             lines.append("  Next: " + check["action"].replace("<workspace>", quoted))
+        for number, step in enumerate(check.get("steps", []), 1):
+            lines.append(f"    {number}. " + step.replace("<workspace>", quoted))
     return "\n".join(lines) + "\n"
