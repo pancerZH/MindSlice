@@ -24,6 +24,19 @@ def fsync_dir(path: Path) -> None:
         os.close(fd)
 
 
+def fsync_file(path: Path) -> None:
+    """Flush a file this process just wrote or copied, so its contents are durable before it is published.
+
+    The handle is opened for writing because Windows can only flush a writable handle: ``os.fsync`` on a
+    read-only one fails there with ``EBADF``, although POSIX accepts it.
+    """
+    fd = os.open(path, os.O_RDWR | getattr(os, "O_BINARY", 0))
+    try:
+        os.fsync(fd)
+    finally:
+        os.close(fd)
+
+
 def atomic_write_bytes(path: Path, data: bytes) -> None:
     path.parent.mkdir(parents=True, exist_ok=True)
     fd, tmp = tempfile.mkstemp(prefix=f".{path.name}.", suffix=".tmp", dir=path.parent)

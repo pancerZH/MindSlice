@@ -19,7 +19,7 @@ from .bake import bump_version, default_output
 from ..model.card import normalize_newlines, parse_card, sha256_bytes
 from ..storage.config import MOUNTS_FILE, SLICE_FILE, Mount, MountTable, SliceManifest, dump_mounts, dump_slice_manifest, load_slice_manifest, portable_path
 from ..errors import BakeConflictError, InvalidArgumentsError
-from ..storage.fsutil import atomic_write_text, fsync_dir, iter_markdown
+from ..storage.fsutil import atomic_write_text, fsync_dir, fsync_file, iter_markdown
 from ..storage.history import change, event, file_action, file_sha
 from ..model.lineage import strongly_connected_cycles
 from .slice_transfer import overlay_cards, rewrite_refs
@@ -478,8 +478,7 @@ def execute(ws: "Workspace", reviewed: dict) -> dict:
                 try:
                     shutil.copytree(temporary / alias[1:], sibling / "tree")
                     for p in _tree_files(sibling / "tree"):
-                        with p.open("rb") as f:
-                            os.fsync(f.fileno())
+                        fsync_file(p)
                     for directory, _, _ in os.walk(sibling / "tree", topdown=False):
                         fsync_dir(Path(directory))
                     os.rename(sibling / "tree", output)

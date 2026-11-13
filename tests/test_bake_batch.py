@@ -1,8 +1,12 @@
 """Workspace bake: mixed destinations, full-plan validation, review and recoverable execution."""
 from __future__ import annotations
 
+import errno
 import json
+import os
 import shutil
+import sys
+import unittest
 from pathlib import Path
 from unittest.mock import patch
 
@@ -311,6 +315,28 @@ class BatchBakeTests(WorkspaceTestCase):
         self.assertEqual((self.root/'mounts.toml').read_bytes(), mounts)
         self.assertTrue(self.overlay_file('a').exists())
         self.assertTrue(all(not Path(s['path']).exists() for s in plan['slices']))
+
+    @unittest.skipIf(sys.platform == "win32", "Windows enforces this itself; here its rule is emulated")
+    def test_publication_only_flushes_writable_handles(self):
+        """Windows cannot fsync a handle opened read-only (EBADF); POSIX can, which hid the bug locally."""
+        import fcntl
+
+        real = os.fsync
+
+        def windows_fsync(fd):
+            number = fd.fileno() if hasattr(fd, "fileno") else fd
+            if fcntl.fcntl(number, fcntl.F_GETFL) & os.O_ACCMODE == os.O_RDONLY:
+                raise OSError(errno.EBADF, "Bad file descriptor")
+            return real(number)
+
+        self.project({'rule': card_text('Rule', 'Original.')})
+        self.ws.write('extra', summary='Extra.', extends=['@project/rule'])
+        self.ws.write('fresh', summary='Fresh.')
+        plan = self.ws.plan_bake({'extra': 'project', 'fresh': 'new'})
+        with patch('os.fsync', side_effect=windows_fsync):
+            result = self.ws.bake(plan=plan)
+        self.assertEqual([b['alias'] for b in result['baked']], ['@new', '@project'])
+        self.assertTrue(all(Path(b['path'], 'slice.toml').is_file() for b in result['baked']))
 
     def test_batch_history_failure_recovers_all_mounts_once(self):
         self.ws.write('a', summary='A.', reason='First topic.')
