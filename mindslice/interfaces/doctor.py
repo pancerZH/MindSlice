@@ -12,21 +12,33 @@ import sys
 from .. import __version__
 from ..errors import MindSliceError
 from ..workspace import Workspace
-from .mcp_server import format_instructions
+from .mcp_server import DOCTOR_CLIENT, format_instructions, read_clients
 
 
 # What only the connected app can show. Self-contained: a pip-installed user has no docs checkout to open.
 CLIENT_STEPS = [
-    "Restart or reconnect the app so it reloads its MCP configuration. It should list this server with four "
-    "tools: manifest, search, read, write.",
-    "Start a new conversation and, before any tool call, ask the model what MindSlice supplied at startup. "
-    "Compare its answer with: mindslice -w <workspace> boot",
+    "Restart or reconnect the app so it reloads its MCP configuration, open a conversation, and run doctor again: "
+    "client_connection should name the app. It should list this server with four tools: manifest, search, read, write.",
+    "Give the startup check a phrase the model cannot guess. Save a temporary standing card with words you make up: "
+    "mindslice -w <workspace> write setup-check/startup --load always --no-stage "
+    "--summary \"The MindSlice startup check phrase is amber maple 47.\" --reason \"Temporary setup check.\"",
+    "Start a new conversation (a one-shot, non-interactive session from the shell if the app has one) and send only: "
+    "\"What is the MindSlice startup check phrase? Answer from what you were given for this session; do not search "
+    "or read memory for it. Say NONE if you do not have it.\" The phrase means standing memory reaches the model; "
+    "NONE, or a search or read call, means it does not: fix how the app delivers it, then ask again in another new "
+    "conversation.",
+    "Remove the card: mindslice -w <workspace> write setup-check/startup --op delete --no-stage "
+    "--reason \"Setup check complete.\"",
     "Ask about a fact already saved in memory without repeating it. The answer should come from an actual "
     "search or read call that returns the card.",
     "Let the app compact a long conversation (or trigger compaction if it has a command), then ask for the "
     "standing instructions again. They should still be there.",
     "Go by the app's tool-call or hook log where it has one; the model saying it remembers is not proof.",
 ]
+
+# Apps that pass MCP server instructions to the model may cut them at a length (a few thousand characters), and
+# the standing cards are the end of that text. Above this size, say so.
+INSTRUCTIONS_SOFT_LIMIT = 4000
 
 
 def probe_mcp(root):
@@ -35,7 +47,7 @@ def probe_mcp(root):
     requests = [
         {"jsonrpc": "2.0", "id": 1, "method": "initialize", "params": {
             "protocolVersion": "2025-06-18", "capabilities": {},
-            "clientInfo": {"name": "mindslice-doctor", "version": __version__}}},
+            "clientInfo": {"name": DOCTOR_CLIENT, "version": __version__}}},
         {"jsonrpc": "2.0", "method": "notifications/initialized"},
         {"jsonrpc": "2.0", "id": 2, "method": "tools/list"},
         {"jsonrpc": "2.0", "id": 3, "method": "tools/call",
@@ -107,8 +119,13 @@ def diagnose(root=None):
         try:
             boot = ws.boot()
             payload = format_instructions(boot)
+            long = boot["total"] and len(payload) > INSTRUCTIONS_SOFT_LIMIT
             add("boot", "pass", f"{boot['total']} standing card(s); {len(payload)} characters in startup payload",
-                standing_cards=boot["total"], payload_characters=len(payload))
+                standing_cards=boot["total"], payload_characters=len(payload),
+                **({"note": "An app that passes MCP server instructions to the model may cut them at a few thousand "
+                            "characters, and the standing cards come last. Do not count on server instructions alone "
+                            "for a payload this long: the session-start hook or the manifest rule delivers it whole."}
+                   if long else {}))
             if boot.get("pending_approval"):
                 add("standing_review", "warn", "Some standing-card changes are still pending, not active",
                     "Run mindslice -w <workspace> review.")
@@ -127,11 +144,28 @@ def diagnose(root=None):
     finally:
         if ws is not None:
             ws.close()
+    clients = read_clients(root) if root and ws is not None else {}
+    if clients:
+        name, last = max(clients.items(), key=lambda item: str(item[1].get("connected_at", "")))
+        used = [t for t in last.get("tools_used", []) if isinstance(t, str)]
+        others = sorted(n for n in clients if n != name)
+        add("client_connection", "pass",
+            f"{name}{' ' + last['version'] if isinstance(last.get('version'), str) else ''} started this "
+            f"workspace's MCP server at {last.get('connected_at', 'an unknown time')}; "
+            + (f"first tool call: {last.get('first_tool')}; tools used: {', '.join(used)}" if used else "no tool call yet")
+            + (f"; earlier: {', '.join(others)}" if others else ""),
+            note="This shows an app launches the server. It does not show the model received the startup payload.",
+            clients=clients)
+    elif ws is not None:
+        add("client_connection", "pending", "No app has started this workspace's MCP server yet",
+            "Restart or reconnect the app, open a conversation and run doctor again. If this stays empty, the app's "
+            "MCP entry is not loaded or points at another workspace.")
     add("client_session", "manual", "Client configuration and model receipt have not been verified",
         "Confirm these in the app itself; a local MCP success does not prove the app loads memory into the model.",
         steps=CLIENT_STEPS)
     return {"ok": not any(c["status"] == "fail" for c in checks), "scope": "local_engine",
-            "workspace": str(root) if root else None, "client_verified": False, "checks": checks}
+            "workspace": str(root) if root else None, "client_connected": bool(clients), "client_verified": False,
+            "checks": checks}
 
 
 def render(result):
@@ -143,6 +177,8 @@ def render(result):
         lines.append(f"[{check['status'].upper()}] {check['name']}: {check['message']}")
         if check.get("action"):
             lines.append("  Next: " + check["action"].replace("<workspace>", quoted))
+        if check.get("note"):
+            lines.append("  Note: " + check["note"])
         for number, step in enumerate(check.get("steps", []), 1):
             lines.append(f"    {number}. " + step.replace("<workspace>", quoted))
     return "\n".join(lines) + "\n"

@@ -143,6 +143,8 @@ def render_write(result: dict[str, Any]) -> str:
             lines.append(f"Review with `mindslice diff`; accept with `mindslice apply {result['id']}`.")
     else:
         lines = [f"{_VERBS.get(op, op)} {address}"]
+    if result.get("forked_from"):
+        lines.append(f"copy of {result['forked_from']} (read-only slice), which it now replaces; the next bake folds it in")
     if result.get("sha256"):
         lines.append(f"sha256: {result['sha256']}")
     if result.get("reason"):

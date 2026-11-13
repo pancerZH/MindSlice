@@ -17,8 +17,8 @@ Read skills/mindslice-setup/SKILL.md to finish setup.
 Following [`skills/mindslice-setup/SKILL.md`](../skills/mindslice-setup/SKILL.md), the agent will:
 
 1. Install `mindslice` and confirm **where to store your memory workspace** (default `~/mindslice`) and **how you want to seed it**: connect an existing workspace/`.slice`, mount existing Markdown notes / distill project docs, or start from scratch with 2–3 plain-language questions. The MCP instance is named `mindslice` unless you ask for another name (e.g. `mindslice-work` if you keep separate memories).
-2. Register the MCP server and make your standing notes load **at session start and again after context compaction**, using whatever its own app provides (server instructions, hooks or an always-on rule), so you never paste a startup prompt into a chat. The skill states the goal; the agent works out the configuration for the app it runs in.
-3. Create your initial cards, validate with `mindslice doctor`, and tell you what is left to check in a new session.
+2. Register the MCP server and make your standing notes load **at session start and again after context compaction**: an always-on rule in every app, plus a hook where the app has one, so you never paste a startup prompt into a chat. The skill is the same for every app; the agent works out the configuration for the one it runs in.
+3. Create your initial cards, validate with `mindslice doctor`, and check a new session: it runs that check itself when the app can start one from the shell, and otherwise tells you what is left to check.
 
 To disconnect or uninstall later, paste:
 `Read skills/mindslice-setup/uninstall.md in the MindSlice repo and revert my MindSlice setup` (the agent will ask whether to keep or delete your memory workspace folder).
@@ -90,16 +90,30 @@ The registration applies to that app only. With a small local model, append `"--
 **2. Your standing notes, at session start and after compaction.** The model needs the output of
 `mindslice -w /path/to/workspace boot` (usage instructions plus your `load = "always"` notes) before
 its first reply, and again whenever the app summarizes or truncates a long conversation, because
-compaction drops what was injected earlier as a message or tool result. Use the first of these your
-app supports:
+compaction drops what was injected earlier as a message or tool result.
 
-- **MCP instructions in the system prompt.** The server already sends that payload as its MCP
-  instructions. If the app shows them to the model in a system prompt that survives compaction,
-  nothing more is needed.
-- **A hook** that runs `boot` at session start and after compaction and passes its output to the
-  model. Use `boot --cards-only` where the usage instructions are already in the system prompt.
-- **An always-on rule** telling the agent to call MindSlice's `manifest` tool before its first reply
-  and again right after a compaction, then follow its `always_loaded` notes.
+The server already sends that payload as its MCP instructions, but apps differ in what they do with
+it: some show it to the model, some cut it at a length, some keep it in a file the model never
+opens. Do not count on it. Set up both of these:
+
+- **An always-on rule**, in the app's standing instructions file (every app has one, and it
+  survives compaction):
+
+  ```text
+  MindSlice (the `mindslice` MCP server) is this user's long-term memory. If its usage instructions
+  and its "Always-loaded memory" cards are not in your context, at the start of a session or after
+  the conversation was compacted or summarized, call its `manifest` tool before you reply, then
+  follow the `instructions` and `always_loaded` cards it returns.
+  ```
+
+  `manifest` returns the whole startup payload, so this works in any app, and it does nothing where
+  the payload already arrived.
+- **A hook, where the app has one**, that runs `boot` at session start (and after compaction, if
+  there is an event for it) and passes its output to the model. A hook does not depend on the model
+  following a rule.
+
+A duplicate costs a few thousand characters; a missing payload means your standing notes are not in
+effect. Trim only after the [new-session check](#verify-your-first-session) passes.
 
 If a `mindslice` command fails while you set this up, read its error, then run
 `mindslice -w /path/to/workspace doctor`: each failed check prints a `Next:` line.
@@ -119,16 +133,31 @@ or create test memories. Normal index synchronization and interrupted-transactio
 apply. `doctor --json` provides the report for scripts; exit code 1 means a local check failed.
 Warnings include pending standing-card changes that have not taken effect.
 
-**Local checks passing does not prove your app loaded memory into the model.** Finish with
-a new conversation in the connected app:
+Two lines are about your app. `client_connection` names the app that last started this workspace's
+MCP server and the tools it called (the server records this in `.cache/`); it stays `[PENDING]` until
+an app really connects, whatever its configuration file says. `[MANUAL] client_session` prints the
+new-session checks below with your workspace filled in.
 
-1. Choose a standing preference and an ordinary fact already saved during setup. Check that
-   they are active with `status`; accept any intended pending cards with `review` first.
-2. Restart/reconnect the app as needed and start a fresh conversation. Ask which standing
-   reply preferences it received at startup, before using any tools. Compare with
-   `mindslice -w ~/mindslice boot --cards-only` and, where available, the client's context/hook
-   logs. A model's claim alone is not proof of injection.
-3. Ask about the saved fact without repeating its answer. Confirm an actual MindSlice
+**Local checks passing does not prove your app loaded memory into the model.** Finish with
+a new conversation in the connected app. If the app can run a one-shot session from the shell,
+that counts, and its output is easier to inspect:
+
+1. Restart/reconnect the app as needed, open a conversation, and run `doctor` again:
+   `client_connection` should name the app.
+2. **Startup check.** Plant a phrase the model cannot guess as a temporary standing note:
+   ```bash
+   mindslice -w ~/mindslice write setup-check/startup --load always --no-stage \
+     --summary "The MindSlice startup check phrase is amber maple 47." --reason "Temporary setup check."
+   ```
+   In a **new** conversation send only: *"What is the MindSlice startup check phrase? Answer from
+   what you were given for this session; do not search or read memory for it. Say NONE if you do not
+   have it."* The phrase means your standing notes reach the model. `NONE`, or a `search`/`read`
+   call, means they do not: check how the app delivers them ([Connect your agent](#connect-your-agent)).
+   Then remove the note:
+   ```bash
+   mindslice -w ~/mindslice write setup-check/startup --op delete --no-stage --reason "Setup check complete."
+   ```
+3. Ask about an ordinary saved fact without repeating its answer. Confirm an actual MindSlice
    `search`/`read` call and the expected card address in its result. This verifies retrieval
    independently of startup loading.
 4. Open another new conversation and repeat the fact lookup. No source text or previous
@@ -137,7 +166,7 @@ a new conversation in the connected app:
    command for that) and ask for your standing reply preferences again. They should still be
    there: compaction drops what was injected at session start unless the app reloads it.
 
-If you need a disposable fact for this check, choose an unused card ID and write it explicitly:
+If you need a disposable fact for step 3, choose an unused card ID and write it explicitly:
 
 ```bash
 mindslice -w ~/mindslice write setup-check/first-session \

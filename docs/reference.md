@@ -125,13 +125,13 @@ the highest-precedence mount; written **inside a card**, it resolves only within
 
 | Group | Primitive | Notes |
 | :-- | :-- | :-- |
-| A (MCP) | `manifest(limit=20, offset=0, max_folders_per_mount=10, include_overview=False, include_always=True)` | mounts, roles, counts, 160-char descriptions, bounded folder lists, always-loaded cards |
-| A (MCP) | `search(query, source=None, tags=None, k=10, offset=0, max_neighbors=3, follow_supersedes=True)` | `score = -bm25(10,5,3,2,1) > 0`; supersession redirect; 240-char summaries |
+| A (MCP) | `manifest(limit=20, offset=0, max_folders_per_mount=10, include_overview=False, include_always=True)` | mounts, roles, counts, 160-char descriptions, bounded folder lists, always-loaded cards; over MCP also `instructions`, the usage text |
+| A (MCP) | `search(query, source=None, tags=None, k=10, offset=0, max_neighbors=3, follow_supersedes=True)` | `score = -bm25(10,5,3,2,1) > 0`; supersession redirect; 240-char summaries; over MCP `limit` is accepted for `k` |
 | A (MCP) | `read(address, follow_supersedes=True, max_backlinks=10, backlinks_offset=0, max_extensions=5, extensions_offset=0)` | forwarding, extends composition, shadows, backlinks, `sha256` |
-| A (MCP) | `write(id, op="create"\|"replace"\|"append"\|"delete", content, summary, title, tags, aliases, extends, supersedes, stage=None, if_match=None, load=None, reason=None)` | overlay only; cycle checks; verified TOML round-trip; `affected_backlinks` / `affected_extensions` when it supersedes or deletes; changes to always-loaded cards are staged |
+| A (MCP) | `write(id, op="create"\|"replace"\|"append"\|"delete", content, summary, title, tags, aliases, extends, supersedes, stage=None, if_match=None, load=None, reason=None)` | overlay only; cycle checks; verified TOML round-trip; `replace` / `append` of a card that lives only in a mounted slice save an edited copy that supersedes it (`forked_from`); `affected_backlinks` / `affected_extensions` when it supersedes or deletes; changes to always-loaded cards are staged |
 | A | `boot()` | resolved always-loaded cards; CLI `boot` emits the full startup payload, `--cards-only` emits card content |
 | B | `mount(path, alias, precedence, role, retire_overlay=True)` / `unmount(alias)` | updates `mounts.toml` and the index; retires overlay copies the slice holds unchanged |
-| B | `status()` | all mounts, pending review files and conflicts, dirty slices and unassigned overlay cards |
+| B | `status()` | all mounts, pending review files and conflicts, dirty slices and unassigned overlay cards; `clean` when nothing is pending and no slice is dirty |
 | B | `card_history(address=None, limit=20, offset=0)` | recorded events and reasons, newest first; metadata only; deleted addresses remain inspectable |
 | B | `explain(address, follow_supersedes=True, max_extensions=5, extensions_offset=0)` | read selection, lineage, physical sources and verified reasons; does not increment read telemetry |
 | B | `rollback(alias, path=None, dry_run=False, revision=None)` | switch a slice pointer to a recorded predecessor or explicit directory; overlay/staging preserved; revision checks a reviewed preview |
@@ -163,8 +163,11 @@ cards have no such relation to a mounted slice. Changes still in staging appear 
 External edits to mounted files are indexed normally but are not tracked as dirty against a baseline.
 `status --json` returns the same overview as structured data, without card bodies or patches.
 It also includes `memory_state` (saved overlay cards, mounted cards, pending changes and unassigned
-cards) and `next_step`. Unassigned cards are already saved and available to retrieval; they simply
+cards), `next_step` and `clean`. Unassigned cards are already saved and available to retrieval; they simply
 have no relationship assigning them to a mounted slice. Bake is optional packaging/versioning.
+`clean` is true when nothing waits for you: no pending review and no dirty slice. Unassigned cards do
+not make a workspace unclean, and one marked `standing` (a `load = "always"` card, whose normal home is
+the overlay) does not make `next_step` suggest a bake.
 
 `mindslice doctor [--json]` checks local runtime/FTS5, mounts, validation, index integrity, boot
 payload generation and a real subprocess MCP handshake plus `manifest`. It uses the same Python
@@ -172,6 +175,16 @@ interpreter and selected workspace, with a bounded subprocess timeout. Exit 0 me
 passed (warnings may remain), exit 1 means a check failed. The report always identifies client
 session loading as unverified; it does not inspect or modify client settings. Follow the
 [first-session check](getting-started.md#verify-your-first-session) to verify the connected app.
+
+Two parts of the report concern the app. `client_connection` reads the record the MCP server keeps in
+`.cache/mcp-clients.json`: for each client that sent `initialize`, its name and version, when it
+connected, its first tool call and the tools it used. It is `pending` until an app has connected
+(`client_connected` in `--json`), and shows that an app launches this workspace's server whichever
+configuration file made it do so; `doctor`'s own probe is not recorded. It does not show that the
+model received the startup payload: `client_session` stays `manual` and prints the new-session checks,
+among them a startup check with a planted phrase. A startup payload over about 4,000 characters gets a
+`note`: an app that passes MCP server instructions to the model may cut them near that length, and
+the standing cards are the end of that text.
 
 `mindslice review [ID...]` interactively collects accept/reject/leave-pending choices and checks
 dependencies before one final confirmation. `apply ID...` and `discard ID...` are noninteractive
@@ -230,6 +243,29 @@ never silently rebased: if `B` is superseded, `read(B)` reports `unrebased_exten
 `read(E)` reports `baseline_superseded_by`. That notice covers the whole `extends` chain (a
 baseline of a baseline counts), `missing_baselines` names a reference on it that no longer resolves
 (a deleted baseline), and `search()` previews carry both.
+
+### Editing a card that lives in a slice
+
+Mounted slices are read-only, and after a bake the overlay copy of a card is gone: the card is
+`@slice/path` now. `write(path, op="replace" | "append")` still works with the same id. When the
+overlay (and staging) has no card at that path and a mounted slice does, the engine edits a copy of
+the card `read(path)` selects and saves it in the overlay:
+
+- the copy keeps every field the write does not pass, with the slice-relative references of the
+  original made qualified (`[[people]]` -> `[[@story/people]]`), since they would otherwise point at
+  overlay cards;
+- it `supersedes` the original, so `search()` hits and `read("@slice/path")` forward to it and one
+  card answers for the topic;
+- the result carries `forked_from` (the original's address); `if_match` is checked against the
+  `sha256` that `read()` returned for the original;
+- a write that changes nothing makes no copy (`changed: false`, the original's address);
+- the copy of an always-loaded card is staged for approval like any change to the boot set, and once
+  approved replaces the original there.
+
+The slice's files are never touched. `status` lists the copy under that slice's unbaked changes, and
+the next `bake` writes it over the original in the new version. `create` keeps its meaning (a new
+overlay card at that path), and an id that names the slice (`@story/path`) is still refused with
+`read_only_mount`, with the path to use instead.
 
 ### Who still points at a retired card
 
@@ -314,6 +350,19 @@ Generic MCP client config:
 ```json
 {"mcpServers": {"mindslice": {"command": "python3", "args": ["-m", "mindslice", "-w", "/path/to/workspace", "mcp"]}}}
 ```
+
+What the server adds to the four primitives:
+
+- **Startup context twice over.** The `initialize` instructions carry the usage text and the
+  always-loaded cards. A client may not pass them to the model (some keep them in a file, some cut
+  them at a length), so the first page of `manifest` returns the same context as `instructions` and
+  `always_loaded`: one `manifest` call is a complete session start in any client, and the way back
+  after a compaction.
+- **Argument names.** A call with a missing or unknown argument is refused with `invalid_arguments`,
+  the allowed names and a hint (`mount` -> `source`). One other name is accepted: `limit` for `k` on
+  `search`, since `manifest` pages with `limit`. `write` accepts only its schema's names.
+- **Connection record.** `.cache/mcp-clients.json` (see `doctor` above). It lives in the disposable
+  cache, is written at most once per tool per connection, and never fails a request.
 
 ## Search, ranking & multilingual text
 

@@ -8,6 +8,7 @@ Before changing anything, check:
 
 1. **Connected MCP instances and startup hooks/rules** in the active harness:
    - Look for any MCP server entry named `mindslice`, `mindslice-*`, or whose command/args invoke `mindslice ... mcp`.
+   - Look in every place the harness reads MCP configuration from (user-wide, the project or workspace directory, plugins), not only in what its list command prints: a harness can load an entry its list does not show. `mindslice -w <workspace> doctor` reports under `client_connection` which apps have started that workspace's server, so an app named there still has an entry somewhere.
    - Record each instance's **server name** (`<server_name>`) and **workspace path** (`<workspace>`, passed after `-w`).
    - Find everything else setup added for that instance: hooks that run `mindslice ... boot` (at session start and after context compaction), and always-on rules that tell the agent to call the instance's `manifest` tool.
 2. **Workspace contents** for each discovered `<workspace>`:
@@ -35,7 +36,7 @@ found, using the harness's own commands for editing its configuration where it h
 
 - **The MCP server entry** `<server_name>`, in every scope it was added to.
 - **Hooks** that run `mindslice ... boot` for `<workspace>`, both session-start and post-compaction.
-- **Always-on rules** added for `<server_name>` (calling `manifest` at session start or after compaction).
+- **Always-on rules** added for `<server_name>` (calling `manifest` at session start or after compaction), in every rules file setup wrote one to.
 - **Anything pasted by hand**, such as `boot` output in a chat app's system prompt: remind the user to clear it.
 
 Edit surgically so every other MCP server, hook, rule and setting stays valid; leave a config file
@@ -54,6 +55,6 @@ user to restart it.
 
 ## Step 5 - Verify clean state
 
-1. Verify every edited config file still parses and the harness no longer lists `<server_name>` (its own list command, or a JSON/TOML parser).
+1. Verify every edited config file still parses and the harness no longer lists `<server_name>` (its own list command, or a JSON/TOML parser). Where the harness can start a one-shot session from the shell, start one and confirm the MindSlice tools are gone from it.
 2. If the CLI was uninstalled, check that `mindslice --version` no longer runs.
 3. Summarize what was reverted/uninstalled and whether `<workspace>` was preserved or deleted, and remind the user to start a new session (`/new` or restart the app) so the active session drops the disconnected tools.

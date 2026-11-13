@@ -14,7 +14,7 @@ from pathlib import Path
 from mindslice import NotFoundError
 from mindslice.model.card import sha256_bytes
 from mindslice.interfaces.cli import main
-from mindslice.interfaces.mcp_server import TOOLS, MCPServer
+from mindslice.interfaces.mcp_server import CLIENTS_FILE, DOCTOR_CLIENT, INSTRUCTIONS, TOOLS, MCPServer, read_clients
 
 from .helpers import WorkspaceTestCase, card_text
 
@@ -243,6 +243,53 @@ class MCPTests(WorkspaceTestCase):
         self.assertEqual(res["code"], "not_found")
         err, res = self.tool("write", id="x", bogus=True)
         self.assertTrue(err)
+
+    def test_manifest_is_a_complete_session_start(self):
+        """A client may keep the initialize instructions from the model: manifest returns the same context."""
+        self.ws.write("tone", summary="Reply briefly.", load="always", stage=False)
+        err, res = self.tool("manifest")
+        self.assertFalse(err)
+        self.assertEqual(res["instructions"], INSTRUCTIONS)
+        self.assertEqual(next(iter(res)), "instructions")  # read before the mount list
+        self.assertEqual([c["address"] for c in res["always_loaded"]], ["@overlay/tone"])
+        for arguments in ({"include_always": False}, {"offset": 1}):  # later pages and opt-outs stay small
+            self.assertNotIn("instructions", self.tool("manifest", **arguments)[1])
+        self.assertNotIn("instructions", self.ws.manifest())  # the Python API is unchanged
+
+    def test_search_accepts_limit_for_k(self):
+        for i in range(3):
+            self.ws.write(f"notes/{i}", summary=f"Token note number {i}.")
+        err, res = self.tool("search", query="token", limit=2)
+        self.assertFalse(err, res)
+        self.assertEqual(len(res["results"]), 2)
+        err, res = self.tool("search", query="token", limit=2, k=1)  # both: the schema's name wins, the other is refused
+        self.assertEqual((err, res["details"]["unexpected"]), (True, ["limit"]))
+        err, res = self.tool("search", query="token", mount="@kb")  # other names are hinted, not accepted
+        self.assertEqual((err, res["details"]["hints"]), (True, {"mount": "source"}))
+        err, res = self.tool("write", id="x", limit=1)  # write stays strict
+        self.assertTrue(err)
+        self.assertFalse(self.overlay_file("x").exists())
+
+    def test_connection_record(self):
+        """Which app launched the server, and whether it asked for the boot context first."""
+        self.assertEqual(read_clients(self.root), {})
+        self.tool("search", query="token")  # no initialize (a library caller): nothing recorded
+        self.assertEqual(read_clients(self.root), {})
+        self.call("initialize", {"protocolVersion": "2025-06-18", "clientInfo": {"name": "some-app", "version": "1.2"}})
+        record = read_clients(self.root)["some-app"]
+        self.assertEqual((record["version"], record["first_tool"], record["tools_used"]), ("1.2", None, []))
+        self.tool("manifest")
+        self.tool("search", query="token")
+        self.tool("search", query="token again")
+        record = read_clients(self.root)["some-app"]
+        self.assertEqual((record["first_tool"], record["tools_used"]), ("manifest", ["manifest", "search"]))
+        other = MCPServer(self.ws)
+        other.handle({"jsonrpc": "2.0", "id": 1, "method": "initialize", "params": {"clientInfo": {"name": DOCTOR_CLIENT}}})
+        other.handle({"jsonrpc": "2.0", "id": 2, "method": "initialize", "params": {}})
+        self.assertEqual(sorted(read_clients(self.root)), ["some-app", "unknown"])  # doctor's own probe is not an app
+        (self.root / ".cache" / CLIENTS_FILE).write_text("not json", encoding="utf-8")
+        self.assertEqual(read_clients(self.root), {})
+        self.assertFalse(self.tool("read", address="@kb/api/auth")[0])  # a broken record never fails a request
 
     def test_stage_writes_policy(self):
         server = MCPServer(self.ws, stage_writes=True)

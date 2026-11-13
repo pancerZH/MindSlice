@@ -51,6 +51,14 @@ unselected cards retain their original content, preconditions and reasons throug
 `status --json` and `diff --json` provide structured output for scripts. `diff --scope overlay`
 shows the applied overlay changes against mounted slices. In `status`, a dirty slice has related
 overlay cards waiting to be baked; this does not track external edits to the slice's own files.
+`clean` in `status --json` means nothing is pending and no slice is dirty. Overlay cards without a
+slice destination, standing notes among them, are saved memory and do not make a workspace unclean.
+
+**Updating a baked card.** After a bake the card lives in the slice and its overlay copy is gone,
+but the agent keeps updating it under the same id: `replace` and `append` save an edited copy in the
+overlay that supersedes the slice's card, so searches and reads return the new text at once. The
+slice stays as it was, `status` shows the copy under that slice, and the next `bake` folds it into a
+new version.
 
 Agents supply a `reason` with `write` to explain each change; the CLI accepts `--reason "..."`.
 `status` shows these reasons, and `diff` prints them on stderr alongside the patch on stdout

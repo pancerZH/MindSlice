@@ -35,6 +35,7 @@ from ..storage.history import change, file_action
 from ..storage.card_io import read_card_file
 from .impact import inbound_impact, supersede_targets
 from ..model.lineage import cycle_through
+from ..baking.slice_transfer import rewrite_refs
 
 if TYPE_CHECKING:  # pragma: no cover
     from ..workspace import Workspace
@@ -58,6 +59,10 @@ def overlay_card_path(ws: "Workspace", card_id: str, strict: bool = True) -> str
             raise ReadOnlyMountError(
                 f"{alias} is a read-only base slice; runtime writes go to {overlay_alias}",
                 alias=alias,
+                next_steps=[
+                    f"To change a card of {alias}, write to the same path without the alias ({rest or 'folder/card'!r}): "
+                    f"replace and append save the edited copy in {overlay_alias} as its replacement, and the slice "
+                    "stays as it is until the next bake."],
             )
         card_id = rest
     return normalize_path(card_id, strict=strict)
@@ -232,6 +237,52 @@ def unresolved_lineage(parsed: ParsedCard, overlay_alias: str, cats: dict[str, M
 
 
 # ---------------------------------------------------------------------------
+# Editing a card that lives in a read-only slice (copy-on-write)
+# ---------------------------------------------------------------------------
+
+
+def mounted_base(ws: "Workspace", table, path: str) -> tuple[str, str, str] | None:
+    """``(address, text, sha256)`` of the read-only card ``read(path)`` selects when the overlay has none."""
+    for row in ws.index.cards_at_path(path):
+        mount = table.get(row["mount"])
+        if mount is None or mount.alias == table.overlay.alias:
+            continue
+        text, sha = read_card_file(mount.root / f"{path}.md")
+        if text is not None and sha is not None:
+            return format_address(mount.alias, path), text, sha
+    return None
+
+
+def fork_seed(text: str, base_address: str, cats: dict[str, MountCatalog]) -> str:
+    """A mounted card's text as it reads from ``@overlay``: its slice-relative references made qualified.
+
+    Inside a slice ``[[other]]`` means the slice's own card; copied to the overlay unchanged it would point
+    at an overlay card of that name instead.
+    """
+    alias = base_address.partition("/")[0]
+
+    def qualify(raw: str) -> str:
+        if raw.strip().startswith("@"):
+            return raw
+        res = resolve_ref(raw, alias, cats)
+        return res.address if res.resolved and res.address else raw
+
+    return rewrite_refs(text, parse_card(text), qualify)
+
+
+def _superseding(text: str, path: str, base_address: str, overlay_alias: str, cats: dict[str, MountCatalog]) -> str:
+    """``text`` with ``base_address`` among its ``supersedes``, so hits and reads of the base forward to it."""
+    parsed = parse_card(text)
+    if any(resolve_ref(raw, overlay_alias, cats).address == base_address for raw in parsed.supersedes):
+        return text
+    fields = dict(parsed.frontmatter) if not parsed.errors else {}
+    if not parsed.title:
+        fields["title"] = parsed.display_title(path)
+    fields["supersedes"] = [*parsed.supersedes, base_address]
+    return reassemble(parsed, text, fields, None)
+
+
+# ---------------------------------------------------------------------------
 # write()
 # ---------------------------------------------------------------------------
 
@@ -304,9 +355,19 @@ def write(
         address = format_address(overlay.alias, path)
         staging = ws.staging
         approval = None  # why this change needs the user's approval (it touches the always-loaded context)
+        live_text = read_card_file(overlay.root / f"{path}.md")[0]
+        staged_text = staging.prospective_state(path, overlay.root)[0]
+        # replace / append of a card that exists only in a read-only slice (after a bake, say) edits a copy:
+        # the result is saved in the overlay as the card's replacement and the slice is left as it is.
+        base = None
+        if op in ("replace", "append") and live_text is None and staged_text is None:
+            base = mounted_base(ws, table, path)
         if stage is not False:
-            texts = [read_card_file(overlay.root / f"{path}.md")[0], staging.prospective_state(path, overlay.root)[0]]
+            texts = [live_text, staged_text]
             lineage = [("extends", r) for r in extends_l or []] + [("supersedes", r) for r in supersedes_l or []]
+            if base is not None:
+                texts.append(base[1])
+                lineage.append(("supersedes", base[0]))
             approval = protection_reason(ws, table, path, texts, load, lineage)
             if stage is None:
                 stage = approval is not None
@@ -325,13 +386,14 @@ def write(
         }
         if reason is not None:
             result["reason"] = reason
-        if if_match is not None and if_match != current_sha:
+        match_sha = base[2] if base is not None else current_sha  # read(path) returned the base's sha256
+        if if_match is not None and if_match != match_sha:
             raise PreconditionFailedError(
                 f"{address} changed since it was read (if_match={if_match[:12]}…, current="
-                f"{current_sha[:12] + '…' if current_sha else 'absent'})",
+                f"{match_sha[:12] + '…' if match_sha else 'absent'})",
                 address=address,
                 expected=if_match,
-                current=current_sha,
+                current=match_sha,
             )
         if op == "create" and current is not None:
             new_text, _ = build_text(
@@ -343,7 +405,7 @@ def write(
                 result.update(write_impact(ws, table, path, parse_card(current), stage=stage, deleting=False))
                 return result  # idempotent retry
             raise AlreadyExistsError(f"{address} already exists with different content", address=address, sha256=current_sha)
-        if op in ("replace", "append") and current is None:
+        if op in ("replace", "append") and current is None and base is None:
             raise NotFoundError(f"{address} does not exist{' in staging or overlay' if stage else ''}", address=address)
         if op == "delete" and current is None:
             result["sha256"] = None
@@ -353,11 +415,19 @@ def write(
                 staging.stage_delete(path, overlay.root, audit=ws.history)  # clears stale entries, if any
             return result
 
+        seed = fork_seed(base[1], base[0], ws.index.catalogs()) if base is not None else current
         new_text, info = build_text(
-            op, path, current, content=content, summary=summary, title=title, tags=tags_l,
+            op, path, seed, content=content, summary=summary, title=title, tags=tags_l,
             aliases=aliases_l, extends=extends_l, supersedes=supersedes_l, load=load,
         )
         result.update(info)
+        if base is not None:
+            assert new_text is not None and seed is not None
+            if new_text == normalize_newlines(seed):  # nothing to change: no copy is made
+                result["address"], result["sha256"] = base[0], base[2]
+                return result
+            new_text = _superseding(new_text, path, base[0], overlay.alias, ws.index.catalogs())
+            result["forked_from"] = base[0]
         parsed_new: ParsedCard | None = None
         if new_text is not None:
             parsed_new = parse_card(new_text)

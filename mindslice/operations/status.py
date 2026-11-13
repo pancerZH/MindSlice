@@ -7,6 +7,7 @@ import shlex
 import subprocess
 from typing import TYPE_CHECKING, Any
 
+from ..model.addressing import format_address
 from ..storage.config import OVERVIEW_PATH
 from .staging import _diff_overlay, _diff_staging
 
@@ -21,6 +22,7 @@ def status(ws: "Workspace") -> dict[str, Any]:
                    for item in staged["items"]]
         changes = {m.alias: [] for m in table.mounts}
         unassigned = []
+        standing = {format_address(row["mount"], row["path"]) for row in ws.index.always_cards()}
         for item in _diff_overlay(ws, table)["items"]:
             if item["id"] == OVERVIEW_PATH:
                 continue
@@ -32,6 +34,8 @@ def status(ws: "Workspace") -> dict[str, Any]:
                         relations.setdefault(alias, set()).add(kind)
             entry = {k: item[k] for k in ("address", "kind", "unresolved", "unrebased", "changes", "change_ids") if k in item}
             if not relations:
+                if entry["address"] in standing:
+                    entry["standing"] = True  # a load="always" card: the overlay is where it normally lives
                 unassigned.append(entry)
             for alias, kinds in relations.items():
                 changes[alias].append(dict(entry, kinds=sorted(kinds)))
@@ -57,7 +61,7 @@ def status(ws: "Workspace") -> dict[str, Any]:
             next_step = {"command": "doctor", "reason": "Check missing slice directories."}
         elif pending:
             next_step = {"command": "review", "reason": "Review pending changes before they affect memory."}
-        elif overlay_count:
+        elif dirty or any(not card.get("standing") for card in unassigned):
             next_step = {"command": "bake", "reason": "Optionally organize saved overlay cards into slice versions."}
         else:
             next_step = {"command": "doctor", "reason": "Verify local readiness and follow the new-session check."}
@@ -70,7 +74,9 @@ def status(ws: "Workspace") -> dict[str, Any]:
             "pending_review": {"files": pending, "summary": staged["summary"]},
             "dirty_slices": dirty,
             "unassigned_overlay_cards": unassigned,
-            "clean": not (pending or dirty or unassigned),
+            # Nothing waits for the user: no pending review, no slice with unbaked changes. Overlay cards without
+            # a slice destination are saved and live; they are listed, not counted as unfinished work.
+            "clean": not (pending or dirty),
         }
 
 
@@ -116,7 +122,7 @@ def render_status(result: dict[str, Any]) -> str:
     new = result["unassigned_overlay_cards"]
     lines += ["", f"Overlay cards without a slice destination ({len(new)}; saved and available):"]
     for card in new:
-        lines.append(f"  {card['address']}")
+        lines.append(f"  {card['address']}" + (" [standing]" if card.get("standing") else ""))
         for change in card.get("changes", []):
             if change.get("reason"):
                 lines.append(f"    reason ({change['op']}): {change['reason']}")
@@ -124,7 +130,7 @@ def render_status(result: dict[str, Any]) -> str:
         lines += ["", "Use `mindslice review` to accept/reject individual proposals; `mindslice diff` shows the patch.",
                   "`mindslice apply ID...` and `mindslice discard ID...` select cards; omitting IDs affects all pending cards."]
     if result["clean"]:
-        lines += ["", "No pending review or unbaked overlay changes."]
+        lines += ["", "No pending review or unbaked slice changes."]
     command = ["mindslice", *result["next_step"]["arguments"]]
     command = subprocess.list2cmdline(command) if os.name == "nt" else shlex.join(command)
     lines += ["", f"Next: {command} — {result['next_step']['reason']}"]

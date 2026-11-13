@@ -32,7 +32,9 @@ failure or guessing at a configuration.
 3. This harness can call MindSlice's MCP server and sees its four tools: `manifest`, `search`, `read`, `write`.
 4. The model receives the user's standing memory **at the start of every session and again after
    every context compaction**, with no action from the user.
-5. `<mindslice_bin> -w <workspace> doctor` passes, and you confirmed items 3 and 4 in the harness itself.
+5. `<mindslice_bin> -w <workspace> doctor` passes, and items 3 and 4 were seen to work in a **new
+   session** of the harness: one you started yourself where the harness allows it, otherwise one the
+   user runs from the steps you hand over. Until then setup is pending, not done.
 
 ## Step 1 - Install the command
 
@@ -71,8 +73,11 @@ executable and the workspace in everything you configure.
 Merge into existing configuration; never overwrite other MCP servers, hooks or rules.
 
 **MCP server.** Register a stdio server that runs `<mindslice_bin> -w <workspace> mcp`, available
-wherever the user works with this harness unless they ask otherwise. Append `--stage-writes` when
-the user runs a small local model, so every write it makes waits for their review.
+wherever the user works with this harness unless they ask otherwise. Use the harness's own command
+for adding a server where it has one, in a location its documentation names, and then confirm that
+its own listing shows the server. An entry the harness does not list is not a finished registration,
+even if it happens to load. Append `--stage-writes` when the user runs a small local model, so every
+write it makes waits for their review.
 
 Do not ask the user to choose a server name. Honor a name they already provided; otherwise reuse a
 MindSlice entry that targets the confirmed workspace, or use `mindslice`. If that name belongs to
@@ -87,23 +92,33 @@ context at two moments:
   anything injected earlier as a message or tool result is gone, and the user's standing
   instructions go with it.
 
-For each moment, use the first of these your harness supports:
+The MCP server also sends the payload as its `initialize` instructions, but what a harness does with
+those is not something to assume: one puts them in the system prompt, another cuts them at a length,
+another keeps them in a file the model never opens. You cannot see from this session what the model
+of the next one will be given. So leave neither moment to server instructions. Configure both of
+these, for every harness:
 
-1. **Server instructions.** The MCP server already sends the payload as its `initialize` instructions.
-   If the harness puts those in the model's system prompt, session start is covered. Compaction is
-   covered only if that system prompt survives it; check, do not assume. The instructions also tell
-   the model to call `manifest` again after a compaction.
-2. **A hook.** Run `boot` from the session-start hook and the post-compaction hook, and pass its
-   stdout to the model in the form the hook expects. Some harnesses have a separate event for
-   compaction; others fire the session-start event again with a compaction reason.
-3. **A standing rule.** Without a hook for that moment, add a rule to the harness's always-on
-   instructions: call the `<server_name>` `manifest` tool before the first reply of a session and
-   again right after the conversation is compacted, then follow its `always_loaded` cards.
+1. **A standing rule, always.** Every harness has always-on instructions, and they outlast a
+   compaction. Add this to them, with the real server name:
 
-Do not deliver the payload twice at the same moment. Where server instructions already arrive, skip
-the session-start hook, and use `boot --cards-only` (the cards without the usage instructions) in
-the post-compaction hook. Add that hook even then: cards that changed mid-session reach the model
-in tool results, which compaction discards.
+   > MindSlice (the `<server_name>` MCP server) is this user's long-term memory. If its usage
+   > instructions and its "Always-loaded memory" cards are not in your context, at the start of a
+   > session or after the conversation was compacted or summarized, call its `manifest` tool before
+   > you reply, then follow the `instructions` and `always_loaded` cards it returns.
+
+   `manifest` returns the whole startup payload, so the rule is a complete delivery by itself. It is
+   conditional, so it costs nothing where the payload arrived another way.
+2. **A hook as well, where the harness has one.** A rule depends on the model following it; a hook
+   does not. If the harness can run a command when a session starts and hand its output to the
+   model, run `boot` there and pass its stdout in the form the hook expects. Do the same after a
+   compaction: some harnesses have a separate event for it, others fire the session-start event
+   again with a compaction reason, and where there is neither the rule covers it.
+
+A payload that arrives twice costs a few thousand characters. A payload that does not arrive is a
+failed setup. So do not drop either mechanism to avoid a duplicate. The one saving worth making
+comes after Step 4 has shown, in a new session, that another delivery arrives whole (down to the
+last standing card): then the hook can run `boot --cards-only`, the cards without the usage
+instructions.
 
 ## Step 4 - Validate and hand off
 
@@ -111,20 +126,43 @@ Run `<mindslice_bin> -w <workspace> doctor`. It checks the runtime, workspace, m
 startup payload and a real MCP handshake; exit code 1 means a check failed, and each failure prints
 a `Next:` line. Fix every failure and explain remaining warnings.
 
-`doctor` cannot see your harness, so it ends with a `[MANUAL] client_session` item that lists the
-checks only the harness can show: the server and its four tools, the startup payload in a new
-session, a real memory lookup, and the standing memory after a compaction. Do each one. Before
-them, run every hook command you configured by hand and check its output is what the hook expects.
+`doctor` cannot see your harness. Two of its lines are about it, and both are settled only by a new
+session:
 
-If you cannot observe a new session or a compaction from here, hand that check to the user
-explicitly instead of claiming it passed.
+- **`client_connection`** names the app that last started this workspace's MCP server and the tools
+  it called; the server records this itself. `[PENDING]` means no app has. After the harness has
+  reloaded its configuration and opened a session, it must name your harness. If it does not, the
+  registration is not being loaded, whatever the configuration file says.
+- **`[MANUAL] client_session`** lists the checks: the server and its four tools, the **startup
+  check** (a temporary standing card holding a phrase the model cannot guess, asked for in a new
+  session, then removed), a real memory lookup, and the standing memory after a compaction.
+
+Before them, run every hook command you configured by hand and check its output is what the hook
+expects.
+
+**Start the new session yourself when the harness can.** Most command-line harnesses have a
+one-shot, non-interactive mode that takes a prompt and prints the reply (see the harness's `--help`).
+A session started that way loads the same MCP configuration, rules and hooks as one the user opens,
+so it is a real test, and you can read its answer and its tool calls. Run the startup check through
+it exactly as `doctor` prints it: plant the phrase, ask in the new session, read the result, remove
+the card.
+
+- The phrase comes back: standing memory reaches the model. Then ask the memory-lookup question the
+  same way.
+- `NONE`, or the model had to `search` or `read` for it: delivery failed. Fix Step 3 and ask again
+  in another new session. Do not report setup as done on a configuration you have not seen work.
+
+Where the harness has no way to start a session from here, say that setup is **pending acceptance**
+and hand the user those same steps with the exact commands and prompt, instead of claiming it passed.
+A compaction can rarely be triggered from outside a conversation: hand that check over unless the
+harness has a command for it.
 
 Then run `<mindslice_bin> -w <workspace> status` for the mounts, card counts and pending review you
 report, and give a compact handoff in the user's language:
 
 - State what is ready: workspace path, connected app/server name, slice/card counts and standing-card count. Distinguish built artifacts from successfully mounted slices.
 - Summarize checks and any material gaps or pending proposals. Separate local engine checks, source/retrieval spot checks and actual client-session verification; passing one does not prove the others.
-- Explain how to reconnect and open a fresh session, how standing context loads at session start and after compaction (server instructions, hook, or the `manifest` rule), and what remains unverified. Provide a standing-context check when applicable and a source-backed retrieval question for document imports. Reuse the builder's acceptance examples, with brief expected facts and links to source evidence; do not hand over questions whose answers the user has no way to check.
+- Explain how to reconnect and open a fresh session, how standing context loads at session start and after compaction (the `manifest` rule, and the hook where there is one), which of the new-session checks you ran yourself with what result, and what remains unverified. Provide a standing-context check when applicable and a source-backed retrieval question for document imports. Reuse the builder's acceptance examples, with brief expected facts and links to source evidence; do not hand over questions whose answers the user has no way to check.
 - Link the build ledger for document imports and the [review/bake workflow](../../docs/workflow.md). Mention `review` when proposals are pending; avoid a full command tutorial or a list of every card/configuration path. Keep slice paths, dependencies, detailed results and setup configuration details in the ledger when one exists.
 
 Aim for a short summary, a few actionable checks and links to details. Do not repeat the builder's

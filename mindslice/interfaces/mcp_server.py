@@ -11,6 +11,14 @@ Always-loaded cards (``load = "always"``) reach the agent without a query: rende
 mounted, a staged change approved), attached once to the next tool result as
 ``always_loaded_update``. Agent writes that touch them are always staged for the user's approval:
 the agent cannot opt out with ``stage=false``, and ``apply`` is not an agent tool.
+
+A client is free to keep the ``initialize`` instructions from the model (some park them in a file, some
+cut them at a length), so ``manifest`` returns the same startup context: ``instructions`` (the usage
+text) next to ``always_loaded``. One ``manifest`` call is then a complete session start in any client.
+
+The server also notes which client connected and which tools it used in ``.cache/mcp-clients.json``
+(``doctor`` reports it): evidence that an app really launches this workspace's server, whatever
+configuration file made it do so.
 """
 
 from __future__ import annotations
@@ -18,14 +26,21 @@ from __future__ import annotations
 import difflib
 import json
 import sys
+from datetime import datetime, timezone
+from pathlib import Path
 from typing import IO, Any
 
 from .. import __version__
 from ..operations.boot import fingerprint, render_markdown
 from ..errors import InvalidArgumentsError, MindSliceError
+from ..storage.fsutil import atomic_write_text
 from ..workspace import Workspace
 
 PROTOCOL_VERSIONS = ("2025-06-18", "2025-03-26", "2024-11-05")
+
+# Which MCP clients connected to this workspace (under ``.cache/``: disposable, never part of memory).
+CLIENTS_FILE = "mcp-clients.json"
+DOCTOR_CLIENT = "mindslice-doctor"  # doctor's own handshake probe is not an app connecting
 
 _FOLLOW_SCHEMA = {
     "type": ["boolean", "array"],
@@ -43,9 +58,10 @@ TOOLS: list[dict[str, Any]] = [
     {
         "name": "manifest",
         "description": (
-            "Boot context: list mounted memory slices (alias, role, precedence, card counts, 160-char description, "
-            "top-level folders), plus always_loaded: the full always-loaded cards (persona, language, standing "
-            "instructions) that apply to the whole session. Call this first to learn what memory exists."
+            "Boot context; call this first in a session, and again after the conversation is compacted. Returns "
+            "instructions (how to use and maintain this memory), always_loaded (the full always-loaded cards: "
+            "persona, language, standing instructions that apply to the whole session; follow them) and the mounted "
+            "memory slices (alias, role, precedence, card counts, 160-char description, top-level folders)."
         ),
         "inputSchema": {
             "type": "object",
@@ -54,7 +70,7 @@ TOOLS: list[dict[str, Any]] = [
                 "offset": _int(0, "pagination offset"),
                 "max_folders_per_mount": _int(10, "top-level folders listed per mount"),
                 "include_overview": {"type": "boolean", "default": False, "description": "inline each slice's overview.md"},
-                "include_always": {"type": "boolean", "default": True, "description": "include always_loaded cards (first page only)"},
+                "include_always": {"type": "boolean", "default": True, "description": "include instructions and always_loaded cards (first page only)"},
             },
             "additionalProperties": False,
         },
@@ -121,7 +137,10 @@ TOOLS: list[dict[str, Any]] = [
             "names, dates and conditions (search is lexical: a word you leave out can't be found); link related cards "
             "with [[path]]. supersedes and delete act on whole cards, so keep facts that can change on their own on "
             "separate cards. op=create (idempotent if identical), replace (only the fields you pass), append (adds "
-            "bullets, skips duplicates; unions tags/aliases/extends/supersedes), delete. supersedes: this card "
+            "bullets, skips duplicates; unions tags/aliases/extends/supersedes), delete. replace/append on a card "
+            "that lives only in a read-only slice (search or read found it as @slice/path) work with the same id: "
+            "the edited copy is saved in @overlay as that card's replacement (forked_from in the result). "
+            "supersedes: this card "
             "replaces an outdated one, which stays searchable and forwards its hits here (restate whatever in it is "
             "still true). extends: this card refines, adds an exception or if-then rule to, or depends on another "
             "card as its premise; if that baseline is later superseded or deleted, this card is flagged. A wrong "
@@ -229,6 +248,8 @@ class MCPServer:
         self.protocol_version = PROTOCOL_VERSIONS[0]
         # Fingerprints of the always-loaded cards the agent has been given (None: none delivered yet).
         self._boot_seen: dict[str, str] | None = None
+        # This connection's entry in CLIENTS_FILE (None until a client introduces itself with initialize).
+        self._client: dict[str, Any] | None = None
 
     # -- always-loaded cards ----------------------------------------------
     def _boot_cards(self) -> list[dict[str, Any]]:
@@ -268,11 +289,48 @@ class MCPServer:
             update["removed"] = removed
         return update
 
+    # -- connection record ------------------------------------------------
+    def _note_client(self, params: dict[str, Any]) -> None:
+        info = params.get("clientInfo")
+        info = info if isinstance(info, dict) else {}
+        name = info.get("name") if isinstance(info.get("name"), str) and info.get("name") else "unknown"
+        if name == DOCTOR_CLIENT:
+            return
+        self._client = {"name": name, "connected_at": _now(), "first_tool": None, "tools_used": []}
+        if isinstance(info.get("version"), str):
+            self._client["version"] = info["version"]
+        self._save_client()
+
+    def _note_tool(self, name: str) -> None:
+        client = self._client
+        if client is None or name in client["tools_used"]:
+            return  # one write per tool per connection, not one per call
+        if client["first_tool"] is None:
+            client["first_tool"] = name
+        client["tools_used"].append(name)
+        self._save_client()
+
+    def _save_client(self) -> None:
+        """Best effort: a diagnostic record must never fail a request."""
+        assert self._client is not None
+        try:
+            path = self.ws.cache_dir / CLIENTS_FILE
+            clients = read_clients(self.ws.root)
+            clients[self._client["name"]] = {k: v for k, v in self._client.items() if k != "name"}
+            path.parent.mkdir(parents=True, exist_ok=True)
+            atomic_write_text(path, json.dumps({"clients": clients}, ensure_ascii=False, indent=2) + "\n")
+        except OSError:
+            pass
+
     # -- tool execution ---------------------------------------------------
     def call_tool(self, name: str, arguments: dict[str, Any]) -> dict[str, Any]:
         args = dict(arguments or {})
         if name == "manifest":
-            return self.ws.manifest(**args)
+            result = self.ws.manifest(**args)
+            if args.get("offset", 0) == 0 and args.get("include_always", True):
+                # The startup context in full, for a client that did not pass the initialize instructions on.
+                result = {"instructions": INSTRUCTIONS, **result}
+            return result
         if name == "search":
             return self.ws.search(args.pop("query"), **args)
         if name == "read":
@@ -295,6 +353,7 @@ class MCPServer:
         params = message.get("params") or {}
         try:
             if method == "initialize":
+                self._note_client(params)
                 requested = params.get("protocolVersion")
                 self.protocol_version = requested if requested in PROTOCOL_VERSIONS else PROTOCOL_VERSIONS[0]
                 result = {
@@ -323,7 +382,8 @@ class MCPServer:
         name = params.get("name")
         if name not in {t["name"] for t in TOOLS}:
             return _tool_result({"error": "UnknownTool", "message": f"unknown tool {name!r}"}, is_error=True)
-        arguments = params.get("arguments")
+        self._note_tool(name)
+        arguments = accept_aliases(name, params.get("arguments"))
         try:
             check_arguments(name, {} if arguments is None else arguments)
             payload = self.call_tool(name, arguments or {})
@@ -364,7 +424,40 @@ class MCPServer:
 # Names a caller is likely to use for another argument of the same tool (shown as a hint, never accepted).
 _ARGUMENT_HINTS = {"write": {"address": "id", "path": "id", "card": "id", "body": "content", "text": "content"},
                    "read": {"id": "address", "path": "address", "card": "address"},
-                   "search": {"q": "query", "queries": "query", "text": "query"}}
+                   "search": {"q": "query", "queries": "query", "text": "query", "mount": "source",
+                              "mounts": "source", "alias": "source", "sources": "source", "top_k": "k"}}
+
+# Another name accepted for an argument: the page size is ``limit`` on manifest and ``k`` on search, and a
+# caller that has just used one reaches for it on the other. Read-only tools only; write() stays strict.
+_ARGUMENT_ALIASES = {"search": {"limit": "k"}}
+
+
+def accept_aliases(name: Any, arguments: Any) -> Any:
+    """``arguments`` with an accepted alias renamed to the schema's name (unless that one is given too)."""
+    aliases = _ARGUMENT_ALIASES.get(name) if isinstance(name, str) else None
+    if not aliases or not isinstance(arguments, dict):
+        return arguments
+    out = dict(arguments)
+    for alias, canonical in aliases.items():
+        if alias in out and canonical not in out:
+            out[canonical] = out.pop(alias)
+    return out
+
+
+def _now() -> str:
+    return datetime.now(timezone.utc).isoformat(timespec="seconds")
+
+
+def read_clients(root: str | Path) -> dict[str, dict[str, Any]]:
+    """The MCP clients that have connected to the workspace at ``root`` (``{name: record}``; empty if none)."""
+    try:
+        value = json.loads((Path(root) / ".cache" / CLIENTS_FILE).read_text(encoding="utf-8"))
+    except (OSError, ValueError):
+        return {}
+    clients = value.get("clients") if isinstance(value, dict) else None
+    if not isinstance(clients, dict):
+        return {}
+    return {k: v for k, v in clients.items() if isinstance(k, str) and isinstance(v, dict)}
 
 
 def check_arguments(name: str, arguments: Any) -> None:
