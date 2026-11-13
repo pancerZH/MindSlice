@@ -183,6 +183,8 @@ class MCPAlwaysLoadedTests(AlwaysLoadedCase):
         # Card organisation is in the text every client delivers, not only in the lazily loaded write description.
         self.assertIn("one focused sub-topic per card", INSTRUCTIONS)
         self.assertIn("replace the statements that are now wrong", INSTRUCTIONS)
+        self.assertIn("op=replace swaps the whole body", INSTRUCTIONS)
+        self.assertIn("the card of the subject it is about", INSTRUCTIONS)
         self.assertNotIn("prefer append", INSTRUCTIONS)
         self.server.handle({"jsonrpc": "2.0", "id": 0, "method": "initialize", "params": {}})
         self.ws.write("prefs/lang", summary="Reply in Chinese.", load="always", stage=False)

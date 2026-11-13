@@ -358,7 +358,7 @@ def _dispatch(ws: Workspace, args: argparse.Namespace) -> int:
         if args.alias is None:
             from .bake_review import run
             return run(ws, args, out)
-        if args.assign or args.defer or args.plan or args.fresh or args.yes:
+        if args.assign or args.defer or args.plan or args.fresh:
             from ..errors import InvalidArgumentsError
             raise InvalidArgumentsError("batch review options cannot be combined with a target alias")
         out(ws.bake(args.alias, _cwd_path(args.output) if args.output else None, args.prefix, args.tags,

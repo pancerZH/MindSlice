@@ -66,7 +66,8 @@ class CLITests(WorkspaceTestCase):
 
         code, out, _ = run_cli("-w", w, "validate")
         self.assertEqual(code, 0, out)
-        code, out, _ = run_cli("-w", w, "--json", "bake", "@out", "--output", str(self.tmp / "out.slice"), "--prefix", "api/")
+        # --yes with a target alias is harmless: a single-target bake never asks for confirmation
+        code, out, _ = run_cli("-w", w, "--json", "bake", "@out", "--output", str(self.tmp / "out.slice"), "--prefix", "api/", "--yes")
         self.assertEqual(json.loads(out)["dependencies"], ["@kb"])
 
         code, out, _ = run_cli("-w", w, "--json", "manifest")
