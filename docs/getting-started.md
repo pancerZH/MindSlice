@@ -10,8 +10,8 @@ The shell examples below use Bash; on Windows, use the corresponding PowerShell 
 Paste this into your coding agent (Claude Code, Antigravity, Cursor, Codex, or any agent with terminal access):
 
 ```text
-Clone https://github.com/pancerZH/MindSlice.git (or use this repo if already cloned).
-Read skills/mindslice-setup/SKILL.md to finish setup.
+Install MindSlice (`pipx install mindslice` or `uv tool install mindslice`),
+then read https://raw.githubusercontent.com/pancerZH/MindSlice/main/skills/mindslice-setup/SKILL.md to finish setup.
 ```
 
 Following [`skills/mindslice-setup/SKILL.md`](../skills/mindslice-setup/SKILL.md), the agent will:
@@ -21,29 +21,30 @@ Following [`skills/mindslice-setup/SKILL.md`](../skills/mindslice-setup/SKILL.md
 3. Verify the selected memory, validate with `mindslice doctor`, and check a new session: it runs that check itself when the app can start one from the shell, and otherwise tells you what is left to check.
 
 To disconnect or uninstall later, paste:
-`Read skills/mindslice-setup/uninstall.md in the MindSlice repo and revert my MindSlice setup` (the agent will ask whether to keep or delete your memory workspace folder).
+`Read https://raw.githubusercontent.com/pancerZH/MindSlice/main/skills/mindslice-setup/uninstall.md and revert my MindSlice setup` (the agent will ask whether to keep or delete your memory workspace folder).
 
 ## Manual installation
 
 ```bash
-git clone https://github.com/pancerZH/MindSlice.git
-cd MindSlice
-pipx install -e .
+pipx install mindslice   # or: uv tool install mindslice
 ```
 
-This installs the `mindslice` command. If you don't have pipx yet, install it first (on Debian or Ubuntu:
-`sudo apt install pipx && pipx ensurepath`, then open a new terminal).
+This installs the `mindslice` command from PyPI. If you don't have pipx yet, install it first (on Debian or
+Ubuntu: `sudo apt install pipx && pipx ensurepath`, then open a new terminal).
 
-Without pipx, use a virtual environment instead:
+Without pipx or uv, use a virtual environment instead:
 
 ```bash
-python3 -m venv .venv
-.venv/bin/pip install -e .
-export PATH="$PWD/.venv/bin:$PATH"   # add this line to ~/.bashrc to keep it in new terminals
+python3 -m venv ~/.venvs/mindslice
+~/.venvs/mindslice/bin/pip install mindslice
+export PATH="$HOME/.venvs/mindslice/bin:$PATH"   # add this line to ~/.bashrc to keep it in new terminals
 ```
 
 A plain `pip install` fails on many Linux systems (`externally-managed-environment`), because they keep
 the system Python for the system's own packages.
+
+For local development from source:
+`git clone https://github.com/pancerZH/MindSlice.git && cd MindSlice && pipx install -e .`.
 
 ## Create or import your memory
 
