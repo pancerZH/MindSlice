@@ -1,13 +1,13 @@
 # Conversion prompt for MindSlice-forge
 
 Fill in the template below and save its body as `conversion-prompt.md`, outside the source folder.
-Pass it to Forge using `--prompt conversion-prompt.md`; source paths, output workspace, harness,
-model and sample limit are CLI arguments. See the [builder skill](SKILL.md) for destination selection
+Pass it to Forge using `--prompt conversion-prompt.md`; source paths, output workspace, harness
+command and sample limit are CLI arguments. See the [builder skill](SKILL.md) for destination selection
 and connecting the result, or [Forge's README](https://github.com/pancerZH/MindSlice-forge) for CLI use.
 
 ```bash
 mindslice-forge ./selected-sources --prompt ./conversion-prompt.md \
-  --harness agy --model <model-id> -o ./knowledge.workspace
+  -o ./knowledge.workspace --harness-cmd '<command for one unattended agent session> {message}'
 ```
 
 ## Template body

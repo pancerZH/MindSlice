@@ -75,16 +75,18 @@ no initialization is needed. Connect that workspace directly rather than mountin
 [MindSlice-forge](https://github.com/pancerZH/MindSlice-forge) turns one long document or many files
 into topic cards, handling chunks, fresh agent sessions, recorded searches, repairs and resume.
 Install it separately when you want this conversion; it needs `mindslice`, `git` and an authenticated
-agent harness. The [builder skill](../skills/slice-builder/SKILL.md) guides the process. Its
+agent harness that can run a session unattended. Forge knows no particular harness: `--harness-cmd` is
+the command line that runs one agent session of yours, and `mindslice-forge --help` says what that
+command must do. The [builder skill](../skills/slice-builder/SKILL.md) guides the process. Its
 [conversion prompt template](../skills/slice-builder/prompt-template.md) can also be passed directly
 to Forge's CLI.
 
 For a **new workspace**, let Forge create it. Do not run `mindslice init` at that destination first:
 
 ```bash
-# Select the actual source paths and model; keep the prompt outside the source directory.
+# Select the actual source paths and harness command; keep the prompt outside the source directory.
 mindslice-forge ./selected-sources --prompt ./conversion-prompt.md \
-  --harness agy --model <model-id> -o ./knowledge.workspace
+  -o ./knowledge.workspace --harness-cmd '<command for one unattended agent session> {message}'
 mindslice -w ./knowledge.workspace validate
 export MINDSLICE_WORKSPACE="$PWD/knowledge.workspace"
 ```

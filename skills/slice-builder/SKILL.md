@@ -28,13 +28,23 @@ Use the user's sources, intended questions, language, exclusions and destination
 missing choices that materially affect the build. Reuse a specified harness, model and sampling
 limit. Reading chunks are not slice boundaries: choose slices by independent use and evolution.
 
-Forge needs Python 3.12+, `mindslice`, `git`, and an authenticated agent harness on PATH. Reuse
-installed tools and local checkouts; otherwise install Forge from its repository using its
+Forge needs Python 3.12+, `mindslice`, `git`, and an authenticated agent harness that can run a
+session unattended from the command line. Reuse installed tools and local checkouts; otherwise
+install Forge following its
 [installation instructions](https://github.com/pancerZH/MindSlice-forge#install).
-Check `mindslice-forge --help` and the harness's available models before constructing a command.
-Use `--harness agy|claude` and `--model`, or `--harness-cmd` for another supported local setup.
 If a prerequisite cannot be made available, report the blocker; do not silently replace the
 Forge build with a second manual extraction workflow.
+
+Forge knows no particular harness. You give it, as `--harness-cmd`, the command line that runs
+one agent session, and it runs that command once per step. Use the harness and model the user
+names; otherwise the harness you are running in. `mindslice-forge --help` states what the command
+must do, and `--dry-run` lists the directories a session must reach. Take the options for a
+non-interactive session, for approving tool use without prompts, for the model and for directory
+access from that harness's own help, not from memory, and write paths as absolute paths. Build
+sessions act without anyone approving their tool calls: unless the user gave the command
+themselves, tell them so and get their agreement before the first run. Forge checks a new command
+with one short session before the build; when that check fails, correct the command from its
+message and the session log it names, and run again.
 
 Select the input boundary **before** running even `--dry-run`: Forge recursively reads non-hidden
 files and detects text encodings; it does not implement project-specific ignore rules or forbidden
@@ -59,13 +69,13 @@ over time. Use `--dict` for optional navigation or terminology, not as a substit
 
 ## Run Forge
 
-For example, after selecting the actual paths, harness and model:
+For example, after selecting the actual paths and composing the harness command:
 
 ```bash
 mindslice-forge ./selected-sources --prompt ./conversion-prompt.md \
-  --harness agy --model <model-id> -o ./knowledge.workspace --dry-run
+  -o ./knowledge.workspace --dry-run
 mindslice-forge ./selected-sources --prompt ./conversion-prompt.md \
-  --harness agy --model <model-id> -o ./knowledge.workspace
+  -o ./knowledge.workspace --harness-cmd '<command for one unattended agent session> {message}'
 ```
 
 Use `--sample N` when the user requests a trial or a processing limit. Report partial coverage;
