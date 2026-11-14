@@ -1,6 +1,6 @@
 ---
 name: mindslice-setup
-description: Install MindSlice, connect its MCP server to the agent harness you are running in, make the user's standing memory load automatically at session start and again after context compaction, seed initial memory (existing workspace/slice, existing notes/docs, or a short conversation), and validate with `mindslice doctor`.
+description: Install MindSlice, connect its MCP server to the agent harness you are running in, make the user's standing memory load automatically at session start and again after context compaction, seed memory by connecting a workspace, mounting slices or Markdown, using Forge for document conversion, or starting from a short conversation, and validate with `mindslice doctor`.
 ---
 
 # mindslice-setup
@@ -51,15 +51,24 @@ executable and the workspace in everything you configure.
 - **Workspace directory (`<workspace>`)**: where the memory folder should live on disk (suggest `~/mindslice` by default, or their chosen path such as `~/memories/work` or `~/worlds/doskvol`). Resolve it to an absolute path.
 - **How to start**:
 
-1. **Connect an existing MindSlice workspace or `.slice`**
-   - If `<workspace>` already has `mounts.toml`, open it directly; otherwise run `<mindslice_bin> init <workspace>`.
-   - Mount any `.slice` folder(s) the user provides (`<mindslice_bin> -w <workspace> mount <slice_path>`).
-2. **Import existing Markdown notes or project docs**
+1. **Connect an existing MindSlice workspace**
+   - If the supplied path has `mounts.toml`, use it directly as `<workspace>` and continue to Step 3.
+     Do not reinitialize it or mount its root directory as a slice.
+2. **Mount existing slices or Markdown folders**
+   - Initialize the confirmed workspace only if needed (`<mindslice_bin> init <workspace>`).
+   - Mount each provided `.slice` or notes directory (`<mindslice_bin> -w <workspace> mount <directory>`).
+     Plain Markdown and YAML-frontmatter notes are indexed read-only as is; Forge is not needed.
+3. **Distill source documents into cards with MindSlice-forge**
+   - Follow [slice-builder](../slice-builder/SKILL.md), which runs
+     [MindSlice-forge](https://github.com/pancerZH/MindSlice-forge).
+   - For a new workspace, let Forge create `<workspace>` itself; do not initialize it first.
+   - For an existing workspace, build in a separate new directory, then integrate the selected
+     generated slices and their dependencies as the builder describes. Never point Forge at the
+     existing workspace as its build output.
+   - Continue to Step 3 using the resulting new workspace or the existing destination. Keep any
+     sample coverage limit and content gaps visible; connecting MCP does not make a partial build complete.
+4. **Start from scratch in plain language**
    - Initialize the confirmed path if needed (`<mindslice_bin> init <workspace>`).
-   - **Plain Markdown / Obsidian notes folder**: mount it directly (`<mindslice_bin> -w <workspace> mount <notes_dir>`). MindSlice indexes plain `.md` and YAML-frontmatter notes read-only with no conversion.
-   - **Source material to distill (several project/lore files, or one long handbook/specification)**: follow [`../slice-builder/SKILL.md`](../slice-builder/SKILL.md) with `<workspace>/slices/` as the output root and this workspace as the one to seed; it covers building, checking and mounting the slices.
-3. **Start from scratch in plain language**
-   - Initialize the confirmed path (`<mindslice_bin> init <workspace>`).
    - Ask 2-3 brief, concrete questions in plain language — no syntax required from the user:
      - How should the agent communicate with you? (reply language, tone, conciseness, standing rules)
      - What tools, languages, or conventions do you use by default? (e.g. `uv` vs `pip`, test commands, formatting)
@@ -163,7 +172,7 @@ report, and give a compact handoff in the user's language:
 - State what is ready: workspace path, connected app/server name, slice/card counts and standing-card count. Distinguish built artifacts from successfully mounted slices.
 - Summarize checks and any material gaps or pending proposals. Separate local engine checks, source/retrieval spot checks and actual client-session verification; passing one does not prove the others.
 - Explain how to reconnect and open a fresh session, how standing context loads at session start and after compaction (the `manifest` rule, and the hook where there is one), which of the new-session checks you ran yourself with what result, and what remains unverified. Provide a standing-context check when applicable and a source-backed retrieval question for document imports. Reuse the builder's acceptance examples, with brief expected facts and links to source evidence; do not hand over questions whose answers the user has no way to check.
-- Link the build ledger for document imports and the [review/bake workflow](../../docs/workflow.md). Mention `review` when proposals are pending; avoid a full command tutorial or a list of every card/configuration path. Keep slice paths, dependencies, detailed results and setup configuration details in the ledger when one exists.
+- Link the Forge report, ledgers and acceptance note for converted documents and the [review/bake workflow](../../docs/workflow.md). Mention `review` when proposals are pending; avoid a full command tutorial or a list of every card/configuration path. Keep slice paths, dependencies, detailed results and setup configuration details in the ledger when one exists.
 
 Aim for a short summary, a few actionable checks and links to details. Do not repeat the builder's
 entire report when this setup skill calls it. Be clear that active overlay memory is already saved;

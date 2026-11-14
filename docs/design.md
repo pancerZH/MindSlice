@@ -300,12 +300,22 @@ Assuming `@overlay` (`precedence=100, role="runtime"`) and `@project` (`preceden
 ---
 
 ## 7. End-to-End Slice Lifecycle
-This repository ships `slice-builder` for initialization (plus a self-contained prompt template) and `slice-maintainer` for existing-memory maintenance and consolidation. Semantic judgment stays outside the storage engine:
+This repository ships `mindslice-setup` for onboarding, `slice-builder` as the integration skill for
+optional [MindSlice-forge](https://github.com/pancerZH/MindSlice-forge), and `slice-maintainer` for
+existing-memory maintenance. The engine has no Forge dependency or LLM calls.
 
-1. **Cold Start (Bootstrap from Raw Sources)**:
-   * A folder of existing Markdown notes can be mounted as is when the goal is searching originals (Section 3.2). A request to distill sources into cards follows the build workflow.
-   * Point an agent equipped with `slice-builder` at multiple source files or one large document to produce one or more slices. Source and slice boundaries are independent. It inventories sources, reads long files in bounded chunks, reconciles evidence, then plans slices by independent mounting/reuse/sharing/versioning and cards within each slice. A shared ledger outside all slices maps source units to slice/card addresses.
-   * Each slice receives focused cards with `+++` TOML frontmatter, its own `overview.md`, `slice.toml` and unique alias. The agent checks source coverage, claim fidelity, per-slice structure, declared dependencies and actual cross-slice references in a test workspace, plus retrieval per slice and across relevant slices. When the engine is unavailable it reports unrun checks. For workspace seeding, mount requested slice directories individually, not their parent collection directory.
+1. **Cold Start**:
+   * Initialize an empty workspace and learn through conversation, connect an existing workspace,
+     or mount Markdown notes and `.slice` directories directly. These paths need only MindSlice.
+   * To distill documents, `slice-builder` establishes scope, conversion instructions and the
+     destination, then runs Forge. Forge owns planning, chunking, recorded lookups, agent sessions,
+     validation, repairs and checkpoints; semantic extraction remains the model's work.
+   * Forge creates a new workspace and mounts its generated slices. Do not initialize that path
+     beforehand. To add knowledge to an existing workspace, build separately, then integrate the
+     individual slices and dependencies. Keep mounted baselines stable across subsequent rebuilds.
+   * Source and slice boundaries are independent. Forge's sibling work directory contains source
+     mappings and progress outside memory. Check representative facts and retrieval separately from
+     structural validation; full input processing does not establish lossless extraction.
 2. **Organic Daily Refining (Runtime Growth in `overlay/` & `staging/`)**:
    * During everyday tasks, base slices remain read-only while the agent navigates memory progressively via `manifest() -> search() -> read()`.
    * New insights, debugging lessons, and user corrections are recorded via `write(op="create" | "replace" | "append" | "delete")` into `overlay/` (or isolated in `staging/` for review via `diff()` and `apply()`).

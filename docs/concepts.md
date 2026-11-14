@@ -68,7 +68,10 @@ wiki with links, logging and checks for stale claims. MindSlice adds a particula
 versioning mechanism for independently mounted knowledge packages; it can support that authoring
 workflow. See the [original LLM Wiki description](https://gist.github.com/karpathy/442a6bf555914893e9891c11519de94f).
 
-To build initial slices from either one large document or multiple sources, use
-[slice-builder](../skills/slice-builder/SKILL.md) or its standalone
-[prompt template](../skills/slice-builder/prompt-template.md). Choose slice boundaries by
-independent use and evolution; source-file boundaries need not match slice boundaries.
+To distill one large document or multiple sources, use the optional
+[MindSlice-forge](https://github.com/pancerZH/MindSlice-forge) tool through
+[slice-builder](../skills/slice-builder/SKILL.md), or pass the
+[conversion prompt](../skills/slice-builder/prompt-template.md) to Forge directly. Forge creates
+a new workspace; connect it or mount its individual slices in an existing workspace. Choose slice
+boundaries by independent use and evolution; source-file boundaries need not match slice boundaries.
+Empty initialization, direct workspace connections and raw Markdown mounting remain engine operations.

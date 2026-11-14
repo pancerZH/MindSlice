@@ -50,8 +50,9 @@ reranker. Three boundaries for reading these numbers against it (details in
 ## Search decisions the evaluations settled
 
 On the evaluation's blind holdout ([`evals/retrieval`](../evals/retrieval/PLAN.md), `holdout-3`), aliases
-written by an agent following the [`slice-builder`](../skills/slice-builder/SKILL.md) skill added 0.16 nDCG@5 on queries in the asker's own words, and 0.14
-overall. They also put about one card from the other language's handbook on every first page, which costs
+written by an agent following the then-current manual `slice-builder` workflow added 0.16 nDCG@5
+on queries in the asker's own words, and 0.14 overall. This predates the
+[Forge integration](../skills/slice-builder/SKILL.md) and is not an evaluation of Forge. They also put about one card from the other language's handbook on every first page, which costs
 ordinary queries a little when only the asker's own handbook counts (-0.025).
 
 Spelling suggestions (`did_you_mean`) were tried and removed. A small corpus lacks many ordinary words,

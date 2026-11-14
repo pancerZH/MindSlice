@@ -16,9 +16,9 @@ Read skills/mindslice-setup/SKILL.md to finish setup.
 
 Following [`skills/mindslice-setup/SKILL.md`](../skills/mindslice-setup/SKILL.md), the agent will:
 
-1. Install `mindslice` and confirm **where to store your memory workspace** (default `~/mindslice`) and **how you want to seed it**: connect an existing workspace/`.slice`, mount existing Markdown notes / distill project docs, or start from scratch with 2–3 plain-language questions. The MCP instance is named `mindslice` unless you ask for another name (e.g. `mindslice-work` if you keep separate memories).
+1. Install `mindslice` and confirm **where to store your memory workspace** (default `~/mindslice`) and **how you want to seed it**: connect an existing workspace, mount slices or Markdown unchanged, convert documents with optional MindSlice-forge, or start from scratch with 2–3 plain-language questions. The MCP instance is named `mindslice` unless you ask for another name (e.g. `mindslice-work` if you keep separate memories).
 2. Register the MCP server and make your standing notes load **at session start and again after context compaction**: an always-on rule in every app, plus a hook where the app has one, so you never paste a startup prompt into a chat. The skill is the same for every app; the agent works out the configuration for the one it runs in.
-3. Create your initial cards, validate with `mindslice doctor`, and check a new session: it runs that check itself when the app can start one from the shell, and otherwise tells you what is left to check.
+3. Verify the selected memory, validate with `mindslice doctor`, and check a new session: it runs that check itself when the app can start one from the shell, and otherwise tells you what is left to check.
 
 To disconnect or uninstall later, paste:
 `Read skills/mindslice-setup/uninstall.md in the MindSlice repo and revert my MindSlice setup` (the agent will ask whether to keep or delete your memory workspace folder).
@@ -47,30 +47,70 @@ the system Python for the system's own packages.
 
 ## Create or import your memory
 
-Initialize a workspace folder (or reuse one you already have):
+Choose how you want to start. MindSlice's basic paths work without Forge or an agent harness.
+
+### Empty memory, existing workspace, or direct mounting
+
+For a new empty workspace:
 
 ```bash
 mindslice init ~/mindslice
-export MINDSLICE_WORKSPACE=~/mindslice   # tells the commands below where your memory is
+export MINDSLICE_WORKSPACE=~/mindslice
 ```
 
-Your memory is now `~/mindslice`. What the agent learns goes into `~/mindslice/overlay/`, one Markdown file per
-topic. From here there are three ways to seed it:
+For an existing workspace, set `MINDSLICE_WORKSPACE` to its path (or use `mindslice -w /path/to/workspace`);
+no initialization is needed. Connect that workspace directly rather than mounting its root into another one.
 
-- **Mount notes you already have.** Point MindSlice at any folder of Markdown files (Obsidian notes, a team
-  handbook, a `docs/` folder); it indexes them as they are and never edits them:
-  ```bash
-  mindslice mount ~/notes   # mounted read-only as @notes; mount as many folders as you like
-  ```
-  To distill multiple source files or a single long document into one or more structured slices, point an agent
-  at the [slice-builder skill](../skills/slice-builder/SKILL.md), or use its standalone
-  [prompt template](../skills/slice-builder/prompt-template.md).
-- **Mount a shared `.slice`.** If someone sent you a slice folder, run `mindslice mount path/to/topic.slice`.
-- **Start from scratch, in conversation.** Leave `~/mindslice` empty and [connect your agent](#connect-your-agent). When a
-  workspace has no cards or mounted slices yet, MindSlice includes a cold-start onboarding prompt in its MCP
-  startup instructions (and in `manifest()`), so you can greet your agent and describe your reply preferences,
-  preferred tools, and current projects in plain words — the agent formats and writes the cards for you, and the
-  onboarding prompt disappears once your first card is saved.
+- **Mount Markdown as is:** `mindslice mount ~/notes`. Plain Markdown and YAML-frontmatter notes
+  are indexed read-only without conversion. You can mount several folders.
+- **Mount shared slices:** `mindslice mount /path/to/topic.slice`. Mount individual slice directories,
+  not a parent directory containing several slices or an entire workspace.
+- **Start in conversation:** [connect your agent](#connect-your-agent) and describe your preferences,
+  tools and projects. Empty workspaces include a cold-start hint in MCP startup instructions and
+  `manifest()`; it disappears after the first card is saved or a slice is mounted. New learning
+  goes into the workspace's `overlay/`.
+
+### Convert source documents with Forge
+
+[MindSlice-forge](https://github.com/pancerZH/MindSlice-forge) turns one long document or many files
+into topic cards, handling chunks, fresh agent sessions, recorded searches, repairs and resume.
+Install it separately when you want this conversion; it needs `mindslice`, `git` and an authenticated
+agent harness. The [builder skill](../skills/slice-builder/SKILL.md) guides the process. Its
+[conversion prompt template](../skills/slice-builder/prompt-template.md) can also be passed directly
+to Forge's CLI.
+
+For a **new workspace**, let Forge create it. Do not run `mindslice init` at that destination first:
+
+```bash
+# Select the actual source paths and model; keep the prompt outside the source directory.
+mindslice-forge ./selected-sources --prompt ./conversion-prompt.md \
+  --harness agy --model <model-id> -o ./knowledge.workspace
+mindslice -w ./knowledge.workspace validate
+export MINDSLICE_WORKSPACE="$PWD/knowledge.workspace"
+```
+
+Then [connect your agent](#connect-your-agent) to that workspace. Select allowed input files or an
+allowed snapshot before running Forge: its recursive scan does not enforce repository ignore rules
+or forbidden-directory markers, even with `--dry-run`.
+
+For an **existing workspace**, build into a separate new directory, inspect the generated
+`slices/*.slice`, their aliases and dependencies, and mount the selected slices in the existing
+workspace. For example, if Forge produced `handbook.slice` with an unused `@handbook` alias:
+
+```bash
+mindslice -w ~/mindslice mount /path/to/knowledge.workspace/slices/handbook.slice \
+  --precedence 50 --role curated
+mindslice -w ~/mindslice validate
+```
+
+Keep those mounted paths stable. If you will rebuild the Forge output, first copy the slices to
+new durable library directories and mount the copies. Preserve cross-slice aliases and include
+their dependencies. Do not overwrite existing slices to resolve a naming collision.
+
+The same Forge command resumes a build; `--sample N` produces a partial trial. Keep the sibling
+`knowledge.workspace.forge/` directory while resuming or inspecting evidence. Its report and ledgers
+describe coverage and checks. Independently check representative facts with search/read: successful
+validation does not guarantee that the model preserved every fact.
 
 ## Connect your agent
 

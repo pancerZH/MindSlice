@@ -36,8 +36,18 @@ Clone https://github.com/pancerZH/MindSlice.git (or use the existing checkout).
 Read skills/mindslice-setup/SKILL.md to finish setup.
 ```
 
-The agent helps you choose a workspace, connect your app, and start from existing notes,
-shared slices or a short conversation.
+The agent helps you choose a workspace, connect your app, and choose how to start:
+
+| Starting point | Tool |
+| --- | --- |
+| Empty memory or a short conversation | MindSlice `init` and ordinary memory writes |
+| Existing MindSlice workspace | Connect it directly with `-w` |
+| Shared `.slice` or Markdown notes folder | MindSlice `mount`, indexed as is |
+| Documents to distill into structured cards | [MindSlice-forge](https://github.com/pancerZH/MindSlice-forge) |
+
+Forge is an optional document-conversion tool. It creates a new workspace using an agent harness;
+MindSlice handles storage, retrieval, mounting and memory evolution without needing Forge or an LLM.
+The [builder skill](skills/slice-builder/SKILL.md) guides conversion and integration with an existing workspace.
 
 Prefer manual setup? With Python 3.12+ and pipx installed:
 
@@ -57,7 +67,7 @@ Run `mindslice -w ~/mindslice doctor`, then [verify a new session](docs/getting-
 - [Concepts](docs/concepts.md) — isolation, evolution, and how MindSlice fits other memory architectures.
 - [Reference](docs/reference.md) — commands, Python API, MCP tools and card formats.
 - [History and recovery](docs/history-and-recovery.md) — explain memory, roll back slices, back up and restore workspaces.
-- [Build slices](skills/slice-builder/SKILL.md) — turn one document or many into one or more slices.
+- [Build slices with Forge](skills/slice-builder/SKILL.md) — convert documents and connect the resulting workspace or slices.
 - [Maintain memory](skills/slice-maintainer/SKILL.md) — consolidate knowledge and repair relationships.
 - [Evaluations](docs/evaluations.md) · [Design](docs/design.md) · [Uninstall](skills/mindslice-setup/uninstall.md)
 

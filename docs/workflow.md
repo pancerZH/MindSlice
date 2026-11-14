@@ -132,8 +132,10 @@ again. By default, bake takes the agent's notes that build on that slice; `--pre
 folder instead. For example, `mindslice bake @handbook --prefix python/ --output ./handbook-next.slice`
 keeps the alias and mount settings while switching to the new directory.
 
-A slice is just a folder of Markdown files, so you can also write one by hand and mount it, or let an agent with
-the [slice-builder skill](../skills/slice-builder/SKILL.md) build one or more from source files or a long document.
+A slice is just a folder of Markdown files, so you can write one by hand and mount it, or mount existing
+Markdown directly. To distill source documents, the [slice-builder skill](../skills/slice-builder/SKILL.md)
+runs [MindSlice-forge](https://github.com/pancerZH/MindSlice-forge) in a new build workspace, then
+integrates the resulting individual slices when requested.
 For consolidating existing overlay knowledge before bake, use
 [slice-maintainer](../skills/slice-maintainer/SKILL.md).
 

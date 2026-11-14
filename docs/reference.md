@@ -468,18 +468,23 @@ file records metadata, not old card bodies, so it is not a content rollback stor
 ## Slice lifecycle
 
 [`skills/mindslice-setup/SKILL.md`](../skills/mindslice-setup/SKILL.md) (with
-[`uninstall.md`](../skills/mindslice-setup/uninstall.md)) covers initial installation, connecting the harness (MCP server, standing memory at session start
-and after context compaction), three-way conversational onboarding, validation with `doctor`, and
-clean uninstallation.
-[`skills/slice-builder/SKILL.md`](../skills/slice-builder/SKILL.md) builds one or more initial slices from
-multiple source files or one large document. Source boundaries do not determine slice boundaries:
-one document can feed several slices, and several documents can feed one. It plans slices by
-independent mounting, reuse, sharing or versioning, then plans cards within each slice. Validation
-covers source evidence, per-slice structure, cross-slice dependencies and representative retrieval.
-Its [standalone prompt](../skills/slice-builder/prompt-template.md) provides the same workflow without
-skill support. A shared build ledger maps source units to slice/card addresses, stays outside all generated
-slices, and is separate from engine change history. Each slice has its own manifest, overview and
-unique alias; mount individual slice directories, not their parent output directory.
+[`uninstall.md`](../skills/mindslice-setup/uninstall.md)) covers installation, choosing a starting point,
+connecting the harness and standing memory, validation with `doctor`, and clean uninstallation.
+MindSlice itself initializes empty workspaces, opens existing ones and mounts slices or Markdown folders.
+
+[`skills/slice-builder/SKILL.md`](../skills/slice-builder/SKILL.md) routes document conversion to
+optional [MindSlice-forge](https://github.com/pancerZH/MindSlice-forge). Forge requires the engine
+and an agent harness, creates a new workspace, and manages planning, chunks, recorded lookups,
+validation, repair and resume. Its sibling `<output>.forge/` directory holds build state, reports
+and source-to-card ledgers outside all slices and engine change history. The
+[conversion prompt template](../skills/slice-builder/prompt-template.md) supplies task instructions
+for Forge's `--prompt` argument.
+
+For a new workspace, Forge performs initialization. For an existing workspace, build separately
+and mount selected generated `.slice` directories with their dependencies, preserving referenced
+aliases. Do not mount the build workspace root or its `slices/` parent. Source boundaries do not
+determine slice boundaries. Structural validation and recorded lookups do not prove factual completeness.
+
 [`skills/slice-maintainer/SKILL.md`](../skills/slice-maintainer/SKILL.md) covers existing memory updates,
 lineage repair and consolidation through `bake()`. Routine agent writes also receive MCP instructions.
 
@@ -605,8 +610,9 @@ archive of the complete baked slice. The mountable directory is created under `<
 the result's `output` points to the archive and `path` to the mounted directory. Directory outputs use
 the same value for both. Existing non-empty directories and existing archive files are never overwritten.
 `dry_run` (`--dry-run`) reports the selected cards and destinations without creating either output,
-changing mounts or retiring overlay cards. [`prompt-template.md`](../skills/slice-builder/prompt-template.md)
-contains portable slice-authoring guidance.
+changing mounts or retiring overlay cards. The shared
+[card-format guide](../skills/slice-builder/references/card-format.md) covers manual slice authoring;
+the [conversion prompt](../skills/slice-builder/prompt-template.md) is for document builds with Forge.
 
 ## Notes on interpretation
 
