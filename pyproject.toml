@@ -4,7 +4,7 @@ build-backend = "setuptools.build_meta"
 
 [project]
 name = "mindslice"
-version = "0.1.7"
+dynamic = ["version"]  # mindslice.__version__
 description = "Layered, pluggable, human-readable long-term memory engine for LLM agents (Python stdlib only)."
 readme = "README.md"
 license = "Apache-2.0"
@@ -28,6 +28,9 @@ Issues = "https://github.com/pancerZH/MindSlice/issues"
 
 [project.scripts]
 mindslice = "mindslice.interfaces.cli:main"
+
+[tool.setuptools.dynamic]
+version = { attr = "mindslice.__version__" }
 
 [tool.setuptools.packages.find]
 include = ["mindslice", "mindslice.*"]

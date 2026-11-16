@@ -32,7 +32,7 @@ from .errors import (
 )
 from .workspace import Workspace
 
-__version__ = "0.1.6"
+__version__ = "0.1.8"
 
 __all__ = [
     "Workspace",

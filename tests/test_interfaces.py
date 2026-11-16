@@ -309,6 +309,17 @@ class MCPTests(WorkspaceTestCase):
         self.assertIn("[[@alias/path]]", write_tool["inputSchema"]["properties"]["content"]["description"])
         self.assertIn("[[@alias/path]]", INSTRUCTIONS)
 
+    def test_version_single_source_of_truth(self):
+        import tomllib
+        import mindslice
+
+        data = tomllib.loads((REPO / "pyproject.toml").read_text(encoding="utf-8"))
+        self.assertEqual(data["project"].get("dynamic"), ["version"])
+        self.assertEqual(data["tool"]["setuptools"]["dynamic"]["version"], {"attr": "mindslice.__version__"})
+        out = subprocess.check_output([sys.executable, "-m", "mindslice.interfaces.cli", "--version"],
+                                      cwd=REPO, text=True).strip()
+        self.assertEqual(out, f"mindslice {mindslice.__version__}")
+
     def test_stdio_subprocess(self):
         lines = [
             {"jsonrpc": "2.0", "id": 1, "method": "initialize", "params": {"protocolVersion": "2025-06-18"}},
