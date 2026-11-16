@@ -135,7 +135,7 @@ TOOLS: list[dict[str, Any]] = [
             "Write into @overlay (base slices are read-only). One focused sub-topic per card: "
             "a short summary and only the self-contained '- ' bullet statements needed to keep the concrete values, "
             "names, dates and conditions (search is lexical: a word you leave out can't be found); link related cards "
-            "with [[path]]. supersedes and delete act on whole cards, so keep facts that can change on their own on "
+            "with [[path]] (within @overlay) or [[@alias/path]] (when linking to a card in another slice). supersedes and delete act on whole cards, so keep facts that can change on their own on "
             "separate cards. op=create (idempotent if identical), replace (only the fields you pass; content swaps the whole body, so include every statement that still holds, not just what changed), append (adds "
             "bullets, skips duplicates; unions tags/aliases/extends/supersedes), delete. replace/append on a card "
             "that lives only in a read-only slice (search or read found it as @slice/path) work with the same id: "
@@ -164,7 +164,7 @@ TOOLS: list[dict[str, Any]] = [
                        "e.g. \"team/lead\" (not \"team/lead-sarah-chen\"); if the slot's id is taken by the card being "
                        "superseded, qualify it with the date of the change (\"team/lead-2026-11\"), not the new value"},
                 "op": {"type": "string", "enum": ["create", "replace", "append", "delete"], "default": "create"},
-                "content": {"type": ["string", "array"], "items": {"type": "string"}, "description": "card body (Markdown), or bullet statements for append"},
+                "content": {"type": ["string", "array"], "items": {"type": "string"}, "description": "card body (Markdown), or bullet statements for append; qualify cross-slice wikilinks as [[@alias/path]] (same-@overlay links can use [[path]])"},
                 "summary": {"type": "string", "description": "1-2 sentence abstract (<= 240 chars) stating the key fact with its concrete value; shown in search previews"},
                 "title": {"type": "string", "description": "specific, descriptive title; the most heavily weighted search field"},
                 "tags": {"type": "array", "items": {"type": "string"}, "description": "facets; searched, and filterable with search(tags=...)"},
@@ -202,7 +202,7 @@ INSTRUCTIONS = (
     ".history/changes.jsonl; never write that log yourself. "
     "Write with write() into @overlay, one focused "
     "sub-topic per card: a person, a decision, an ongoing thread and the current state of the work each get their "
-    "own card, linked with [[path]], not one card collecting a whole session. Put each fact on "
+    "own card, linked with [[path]] ([[@alias/path]] across slices), not one card collecting a whole session. Put each fact on "
     "the card of the subject it is about; a "
     "current-state card says only where things stand now and links to the rest. Keep every card true and "
     "complete: replace the statements that are now wrong instead of adding the "
@@ -223,7 +223,7 @@ INSTRUCTIONS = (
     "until the user approves them, so tell the user.\n\n"
     "Check the write result before reporting success: distinguish saved/live memory from a pending proposal, "
     "and never describe a failed write as remembered. Briefly mention meaningful saved updates or pending review "
-    "without interrupting the main task to ask whether every qualifying fact should be recorded. Automatic "
+    "without asking whether every qualifying fact should be recorded. Automatic "
     "recording does not authorize applying pending changes or baking slices; preserve the user's review workflow."
 )
 

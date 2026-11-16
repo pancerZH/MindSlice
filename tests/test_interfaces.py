@@ -304,6 +304,10 @@ class MCPTests(WorkspaceTestCase):
         for tool in TOOLS:
             self.assertEqual(tool["inputSchema"]["type"], "object")
             self.assertTrue(tool["description"])
+        write_tool = next(t for t in TOOLS if t["name"] == "write")
+        self.assertIn("[[@alias/path]]", write_tool["description"])
+        self.assertIn("[[@alias/path]]", write_tool["inputSchema"]["properties"]["content"]["description"])
+        self.assertIn("[[@alias/path]]", INSTRUCTIONS)
 
     def test_stdio_subprocess(self):
         lines = [

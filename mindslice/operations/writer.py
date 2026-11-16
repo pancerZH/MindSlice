@@ -227,13 +227,76 @@ def check_cycles(index, overlay_alias: str, overrides: dict[str, ParsedCard | No
             )
 
 
-def unresolved_lineage(parsed: ParsedCard, overlay_alias: str, cats: dict[str, MountCatalog]) -> list[str]:
-    out = []
-    for kind, refs in (("extends", parsed.extends), ("supersedes", parsed.supersedes)):
+def _cross_mount_matches(
+    raw: str, overlay_alias: str, cats: dict[str, MountCatalog], mount_order: Sequence[str]
+) -> list[str]:
+    if raw.strip().startswith("@"):
+        return []
+    seen: list[str] = []
+    for alias in mount_order:
+        if alias == overlay_alias:
+            continue
+        cat = cats.get(alias)
+        hit = cat.lookup(raw) if cat is not None else None
+        if hit is not None:
+            addr = format_address(alias, hit)
+            if addr not in seen:
+                seen.append(addr)
+    return seen
+
+
+def unresolved_references(
+    parsed: ParsedCard,
+    overlay_alias: str,
+    cats: dict[str, MountCatalog],
+    mount_order: Sequence[str] = (),
+) -> list[str]:
+    """Warn on unresolved lineage or wikilink targets, suggesting ``@mount/path`` when another mount matches."""
+    out: list[str] = []
+    groups: tuple[tuple[str, Sequence[str]], ...] = (
+        ("extends", parsed.extends),
+        ("supersedes", parsed.supersedes),
+        ("wikilink", parsed.wikilink_targets()),
+    )
+    for kind, refs in groups:
         for raw in refs:
-            if not resolve_ref(raw, overlay_alias, cats).resolved:
+            if resolve_ref(raw, overlay_alias, cats).resolved:
+                continue
+            matches = _cross_mount_matches(raw, overlay_alias, cats, mount_order)
+            if kind == "wikilink":
+                if len(matches) == 1:
+                    out.append(
+                        f"wikilink [[{raw}]] does not resolve in {overlay_alias}; unqualified links only "
+                        f"search {overlay_alias} — did you mean [[{matches[0]}]]?"
+                    )
+                elif matches:
+                    opts = ", ".join(f"[[{m}]]" for m in matches)
+                    out.append(
+                        f"wikilink [[{raw}]] does not resolve in {overlay_alias}; unqualified links only "
+                        f"search {overlay_alias} — found in {opts}"
+                    )
+                else:
+                    out.append(f"wikilink [[{raw}]] does not resolve (yet)")
+            elif len(matches) == 1:
+                out.append(
+                    f"{kind} target {raw!r} does not resolve in {overlay_alias}; did you mean {matches[0]!r}?"
+                )
+            elif matches:
+                opts = ", ".join(repr(m) for m in matches)
+                out.append(
+                    f"{kind} target {raw!r} does not resolve in {overlay_alias}; found in {opts}"
+                )
+            else:
                 out.append(f"{kind} target {raw!r} does not resolve (yet)")
     return out
+
+
+def unresolved_lineage(parsed: ParsedCard, overlay_alias: str, cats: dict[str, MountCatalog]) -> list[str]:
+    return [
+        msg
+        for msg in unresolved_references(parsed, overlay_alias, cats)
+        if not msg.startswith("wikilink ")
+    ]
 
 
 # ---------------------------------------------------------------------------
@@ -439,7 +502,8 @@ def write(
             overrides[path] = parsed_new
             check_cycles(ws.index, overlay.alias, overrides, [path])
             _, cats = prospective_successors(ws.index, overlay.alias, overrides)
-            result["warnings"] += unresolved_lineage(parsed_new, overlay.alias, cats)
+            mount_order = [m.alias for m in table.all()]
+            result["warnings"] += unresolved_references(parsed_new, overlay.alias, cats, mount_order)
 
         if new_text is not None and current is not None and new_text == normalize_newlines(current):
             result["sha256"] = current_sha
