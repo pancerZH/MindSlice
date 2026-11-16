@@ -74,6 +74,7 @@ TOOLS: list[dict[str, Any]] = [
             },
             "additionalProperties": False,
         },
+        "_meta": {"anthropic/alwaysLoad": True},
     },
     {
         "name": "search",
@@ -103,6 +104,7 @@ TOOLS: list[dict[str, Any]] = [
             "required": ["query"],
             "additionalProperties": False,
         },
+        "_meta": {"anthropic/alwaysLoad": True},
     },
     {
         "name": "read",
@@ -125,6 +127,7 @@ TOOLS: list[dict[str, Any]] = [
             "required": ["address"],
             "additionalProperties": False,
         },
+        "_meta": {"anthropic/alwaysLoad": True},
     },
     {
         "name": "write",
@@ -181,20 +184,21 @@ TOOLS: list[dict[str, Any]] = [
             "required": ["id"],
             "additionalProperties": False,
         },
+        "_meta": {"anthropic/alwaysLoad": True},
     },
 ]
 
 INSTRUCTIONS = (
     "MindSlice is your long-term memory. Start with manifest() to see the mounted slices, use search() to find "
-    "relevant cards, and read() an address for full content (it composes extensions and follows replacements).\n\n"
-    "Actively maintain memory within the user's requested scope and standing memory policy; do not wait for "
-    "the user to say 'remember this'. Record explicitly stated lasting preferences, accepted project decisions, "
-    "stable constraints, user corrections and verified reusable debugging lessons when they will help future "
-    "sessions. After a relevant confirmation or verified result, and before completing a meaningful task phase, "
-    "check whether anything new or corrected should be saved. Write it while the evidence is available; do not "
-    "rely on receiving a session-end notification. If there is no durable change, make no memory write.\n\n"
-    "Distinguish user decisions from your own suggestions that have not been adopted. Do not automatically store "
-    "guesses, one-off task state or raw conversation transcripts. Respect requests not to remember something. "
+    "relevant cards, and read() an address for full content (it composes extensions and follows replacements). "
+    "Consult memory before exploring a codebase or answering project, decision or preference questions.\n\n"
+    "Actively maintain memory within the user's scope and standing policy; do not wait for 'remember this'. "
+    "Record explicitly stated lasting preferences, accepted project decisions, stable constraints, user corrections "
+    "and verified reusable debugging lessons when they will help future sessions. After a relevant confirmation or "
+    "verified result, and before completing a meaningful task phase, check whether anything new or corrected should "
+    "be saved. Write while evidence is at hand; do not wait for session end. With no durable change, do not write.\n\n"
+    "Distinguish user decisions from unaccepted suggestions. Never store guesses, one-off task state or raw "
+    "transcripts. Respect requests not to remember something. "
     "Search and read related cards before writing unless you already did in this "
     "conversation; update an existing card when appropriate and skip information already represented. Keep "
     "the scope, conditions and evidence; do not invent detail to fill a card. "
