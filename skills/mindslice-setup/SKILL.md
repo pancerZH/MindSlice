@@ -38,9 +38,10 @@ failure or guessing at a configuration.
 
 ## Step 1 - Install the command
 
-MindSlice is a Python package (`Python >= 3.12`, no runtime dependencies) installed from its
-repository checkout. Reuse an existing `mindslice`; otherwise install it into an isolated
-environment in whatever way suits this machine. `<mindslice_bin> --version` confirms it runs.
+MindSlice is a Python package on PyPI, named `mindslice` (`Python >= 3.12`, no runtime
+dependencies). Reuse an existing `mindslice`; otherwise install it into an isolated environment in
+whatever way suits this machine, for example `pipx install mindslice` or `uv tool install mindslice`.
+`<mindslice_bin> --version` confirms it runs.
 Apps and background processes often start with a minimal `PATH`, so use absolute paths for the
 executable and the workspace in everything you configure.
 
