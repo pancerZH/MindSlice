@@ -206,7 +206,10 @@ reported on stderr. The redundant `--patch` flag is removed. `apply` approves st
 overlay cannot be unmounted.
 
 `mindslice boot` emits the session startup payload: usage instructions, resolved always-loaded cards,
-and the onboarding hint when the workspace is empty. `boot --cards-only` emits only the composed card
+and the onboarding hint when the workspace is empty, then a last line saying the payload is complete
+(`[MindSlice startup context complete: ...]`), which tells a model that has it to call
+`manifest(include_always=false)` instead of fetching it again; an app that cuts the payload also cuts that
+line, and the model fetches the whole of it from `manifest()`. `boot --cards-only` emits only the composed card
 content, with no instruction header or onboarding text; with no standing cards it emits nothing.
 `--json` controls format independently: full mode includes `instructions` and the boot snapshot;
 cards-only mode includes just `cards` and `total`. Approval reminders go to stderr in both formats.
@@ -357,8 +360,8 @@ You are Mira, a concise, friendly pair programmer.
 
 MindSlice makes these cards available without a search query. The chat app must deliver them to the model:
 
-- **MCP**: the cards are appended to the server's `initialize` instructions and listed in `manifest()`
-  as `always_loaded`. Clients must include those instructions or the tool result in the model's context;
+- **MCP**: the cards are appended to the server's `initialize` instructions (the startup payload above,
+  with its closing line) and listed in `manifest()` as `always_loaded`. Clients must include those instructions or the tool result in the model's context;
   handling of server instructions depends on the client. MCP registration applies to that client only,
   not to other apps using the same model server. When a harness lazy-loads or drops `initialize`
   instructions, wire `mindslice -w /path/to/workspace boot` into its session-start

@@ -6,7 +6,10 @@ import json
 
 from mindslice import FrontmatterError
 from mindslice.model.card import parse_card
-from mindslice.interfaces.mcp_server import EMPTY_WORKSPACE_HINT, INSTRUCTIONS, MCPServer
+from mindslice.interfaces.mcp_server import EMPTY_WORKSPACE_HINT, INSTRUCTIONS, MCPServer, startup_complete_line
+
+# What initialize sends when no card is always-loaded: the instructions, then the line saying they arrived whole.
+INSTRUCTIONS_ONLY = INSTRUCTIONS + "\n\n" + startup_complete_line(0) + "\n"
 
 from .helpers import WorkspaceTestCase, card_text
 from .test_interfaces import run_cli
@@ -239,7 +242,7 @@ class OnboardingTests(WorkspaceTestCase):
         self.ws.write("tooling/python", summary="Use uv for Python dependencies.")
         self.assertNotIn("empty_workspace", self.ws.boot())
         self.assertNotIn("onboarding_hint", self.ws.manifest())
-        self.assertEqual(MCPServer(self.ws).instructions(), INSTRUCTIONS)
+        self.assertEqual(MCPServer(self.ws).instructions(), INSTRUCTIONS_ONLY)
         self.ws.write("tooling/python", op="delete")
         self.assertTrue(self.ws.boot()["empty_workspace"])
 
@@ -247,7 +250,7 @@ class OnboardingTests(WorkspaceTestCase):
         self.ws.write("prefs/lang", summary="Reply in Simplified Chinese.", load="always")
         self.assertNotIn("empty_workspace", self.ws.boot())
         self.assertNotIn("onboarding_hint", self.ws.manifest())
-        self.assertEqual(MCPServer(self.ws).instructions(), INSTRUCTIONS)
+        self.assertEqual(MCPServer(self.ws).instructions(), INSTRUCTIONS_ONLY)
 
         # Once approved, `boot` combines MCP instructions with Always-loaded memory.
         self.ws.apply()
@@ -256,6 +259,7 @@ class OnboardingTests(WorkspaceTestCase):
         self.assertIn(INSTRUCTIONS, hook_out)
         self.assertIn("# Always-loaded memory", hook_out)
         self.assertIn("Reply in Simplified Chinese.", hook_out)
+        self.assertEqual(hook_out.rstrip("\n").rsplit("\n", 1)[-1], startup_complete_line(1))
         code, json_out, _ = run_cli("-w", str(self.root), "boot", "--json")
         self.assertEqual(code, 0)
         self.assertIn("# Always-loaded memory", json.loads(json_out)["instructions"])
@@ -265,4 +269,4 @@ class OnboardingTests(WorkspaceTestCase):
         self.ws.mount(root, alias="@notes", precedence=20)
         self.assertNotIn("empty_workspace", self.ws.boot())
         self.assertNotIn("onboarding_hint", self.ws.manifest())
-        self.assertEqual(MCPServer(self.ws).instructions(), INSTRUCTIONS)
+        self.assertEqual(MCPServer(self.ws).instructions(), INSTRUCTIONS_ONLY)

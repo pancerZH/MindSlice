@@ -70,7 +70,7 @@ TOOLS: list[dict[str, Any]] = [
                 "offset": _int(0, "pagination offset"),
                 "max_folders_per_mount": _int(10, "top-level folders listed per mount"),
                 "include_overview": {"type": "boolean", "default": False, "description": "inline each slice's overview.md"},
-                "include_always": {"type": "boolean", "default": True, "description": "include instructions and always_loaded cards (first page only)"},
+                "include_always": {"type": "boolean", "default": True, "description": "include instructions and always_loaded cards (first page only); false when they are already in your context"},
             },
             "additionalProperties": False,
         },
@@ -176,8 +176,8 @@ TOOLS: list[dict[str, Any]] = [
                           "changes to always-loaded cards are staged whatever you pass"},
                 "load": {"type": "string", "enum": ["always", "as-needed"], "description": "\"always\": loaded into "
                          "every session without a query (persona, reply language, standing instructions); default \"as-needed\""},
-                "reason": {"type": "string", "minLength": 1, "description": "why this change is needed: the user's correction or the "
-                           "evidence or source; the engine records it (never edit .history yourself)"},
+                "reason": {"type": "string", "minLength": 1, "description": "supply it on every write: why the change is needed (the "
+                           "user's correction, or the evidence or source); the engine records it (never edit .history yourself)"},
                 "if_match": {"type": "string", "description": "sha256 from read(); rejects the write if the card changed"},
             },
             "required": ["id"],
@@ -201,8 +201,6 @@ INSTRUCTIONS = (
     "Search and read related cards before writing unless you already did in this "
     "conversation; update an existing card when appropriate and skip information already represented. Keep "
     "the scope, conditions and evidence; do not invent detail to fill a card. "
-    "Supply reason with write() to explain the user correction or evidence for the change. The engine owns "
-    ".history/changes.jsonl; never write that log yourself. "
     "Write with write() into @overlay, one focused "
     "sub-topic per card: a person, a decision, an ongoing thread and the current state of the work each get their "
     "own card, linked with [[path]] ([[@alias/path]] across slices), not one card collecting a whole session. Put each fact on "
@@ -211,19 +209,12 @@ INSTRUCTIONS = (
     "complete: replace the statements that are now wrong instead of adding the "
     "newer fact beside them. op=patch swaps only the text you quote; op=replace swaps the whole body, so send every statement that "
     "still holds, never only the latest change or a note that the rest is unchanged; append only adds "
-    "statements that are new, and a card that has grown to cover several topics is split. Use extends when a card refines, adds an exception or if-then "
-    "rule to, or depends on another, supersedes to replace an outdated card (not delete), and delete only to "
-    "forget on request. Name a "
-    "card by the durable topic or slot it fills (team/lead, subscriptions/streaming), never by the value in it "
-    "(team/lead-sarah-chen). When a write supersedes or deletes a card, its response lists "
-    "affected_backlinks and affected_extensions, the cards that still link to or extend it: update or rebase each "
-    "of them in the same session. "
+    "statements that are new, and a card that has grown to cover several topics is split. "
     "Cards marked load=\"always\" are standing context for every session (below, and in manifest's always_loaded; "
     "a tool result's always_loaded_update brings changes to them). After your context is compacted or summarized, "
     "call manifest() again before continuing: its always_loaded is the current set, and updates delivered in earlier "
     "tool results are gone. When the user states a lasting preference about "
-    "how you should behave (reply language, tone, persona), record it with load=\"always\"; such writes are staged "
-    "until the user approves them, so tell the user.\n\n"
+    "how you should behave (reply language, tone, persona), record it with load=\"always\".\n\n"
     "Check the write result before reporting success: distinguish saved/live memory from a pending proposal, "
     "and never describe a failed write as remembered. Briefly mention meaningful saved updates or pending review "
     "without asking whether every qualifying fact should be recorded. Automatic "
@@ -257,14 +248,23 @@ def _with_repair_hint(result: dict[str, Any]) -> dict[str, Any]:
     return result
 
 
+def startup_complete_line(cards: int) -> str:
+    """The startup payload's last line: it shows the text arrived whole, so manifest need not send it again."""
+    held = f"{cards} always-loaded card{'' if cards == 1 else 's'}" if cards else "no always-loaded cards"
+    return (f"[MindSlice startup context complete: these instructions and {held}. "
+            "manifest(include_always=false) lists the slices without repeating them.]")
+
+
 def format_instructions(snap: dict[str, Any]) -> str:
-    """Render MCP server instructions from a ``boot()`` snapshot."""
+    """Render MCP server instructions from a ``boot()`` snapshot, ending with ``startup_complete_line``."""
     text = render_markdown(snap["cards"])
     if text:
-        return INSTRUCTIONS + "\n\n" + text
-    if snap.get("empty_workspace"):
-        return INSTRUCTIONS + "\n\n" + EMPTY_WORKSPACE_HINT + "\n"
-    return INSTRUCTIONS
+        body = INSTRUCTIONS + "\n\n" + text.rstrip("\n")
+    elif snap.get("empty_workspace"):
+        body = INSTRUCTIONS + "\n\n" + EMPTY_WORKSPACE_HINT
+    else:
+        body = INSTRUCTIONS
+    return body + "\n\n" + startup_complete_line(len(snap["cards"])) + "\n"
 
 
 class MCPServer:
