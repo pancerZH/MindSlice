@@ -330,6 +330,9 @@ It is a query of the index (plus staged changes for `stage=True`), recomputed fr
 so a retry reports the same; the engine never edits those cards. Updating them is the agent's job, in the same
 session, and is easier when cards are named by durable slot (`team/lead`), not by value
 (`team/lead-sarah-chen`): a link to a slot can stay, a link to a value-named card keeps stating the old value.
+Over MCP, a `write` result that lists any of them (in its own impact report or one under `also`) also carries
+`repair`: the steps for updating them, sent with the result instead of in the tool description, which every
+request repeats.
 
 ## Always-loaded cards
 

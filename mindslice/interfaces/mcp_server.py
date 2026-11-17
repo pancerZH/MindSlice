@@ -79,16 +79,13 @@ TOOLS: list[dict[str, Any]] = [
     {
         "name": "search",
         "description": (
-            "Associative lexical search across all mounted slices (any language, including unspaced Chinese/Japanese/"
-            "Korean), ranked by BM25 score. Each card preview also reports coverage, the share of the query it matched. Returns card "
-            "previews (address, role, coverage, score, title, 240-char summary, 1-hop [[wikilink]] neighbors). Hits on "
-            "superseded cards are redirected to their replacement (see matched_via_superseded; bypassed_replacements "
-            "lists replacements your follow_supersedes policy did not trust). A preview whose "
-            "extends chain changed says so: baseline_superseded_by (a baseline, at any depth, was replaced) or "
-            "missing_baselines (one was deleted); read it before relying on it. Use read() on an "
-            "address for full content. Search is lexical: unmatched_terms lists query words no card contains. When "
-            "results are empty or weak, rephrase those words (fix a typo, try a synonym or the other language) or "
-            "reuse the vocabulary of the cards you did find."
+            "Associative search across all mounted slices, in any language. Returns card previews (address, role, "
+            "score, title, 240-char summary, 1-hop [[wikilink]] neighbors, and coverage: the share of the query it "
+            "matched); use read() on an address for full content. Hits on superseded cards are redirected to their "
+            "replacement (matched_via_superseded). A preview flagged baseline_superseded_by (a baseline, at any depth, "
+            "was replaced) or missing_baselines (one was deleted): read it before relying on it. Search is lexical: "
+            "unmatched_terms lists query words no card contains. When results are empty or weak, rephrase those words "
+            "(fix a typo, try a synonym or the other language) or reuse the vocabulary of the cards you did find."
         ),
         "inputSchema": {
             "type": "object",
@@ -110,10 +107,9 @@ TOOLS: list[dict[str, Any]] = [
         "name": "read",
         "description": (
             "Read one card by address: '@alias/path' (exact mount) or 'path' (highest-precedence mount wins; other "
-            "same-path cards are listed in shadows). Follows supersedes to the replacement (redirected_from; untrusted "
-            "replacements are listed in superseded_by_untrusted and bypassed_replacements, not followed), composes "
+            "same-path cards are listed in shadows). Follows supersedes to the replacement (redirected_from), composes "
             "extends baselines/extensions, and returns sha256 (pass it as write.if_match), links and backlinks. "
-            "A list of addresses reads them in one call: cards holds each card, or its error, in the order asked."
+            "Given a list of addresses, cards holds each card, or its error, in the order asked."
         ),
         "inputSchema": {
             "type": "object",
@@ -134,44 +130,27 @@ TOOLS: list[dict[str, Any]] = [
     {
         "name": "write",
         "description": (
-            "Proactively record confirmed information useful in future sessions; do not wait for 'remember this'. "
-            "Use for lasting preferences, accepted decisions, stable constraints, corrections and verified reusable "
-            "lessons, within the user's memory policy. Search/read related memory first to avoid duplicate writes. "
-            "Write into @overlay (base slices are read-only). One focused sub-topic per card: "
-            "a short summary and only the self-contained '- ' bullet statements needed to keep the concrete values, "
-            "names, dates and conditions (search is lexical: a word you leave out can't be found); link related cards "
-            "with [[path]] (within @overlay) or [[@alias/path]] (when linking to a card in another slice). supersedes and delete act on whole cards, so keep facts that can change on their own on "
-            "separate cards. op=create (idempotent if identical), replace (only the fields you pass; content swaps the whole body, so include every statement that still holds, not just what changed), "
-            "patch (edits swap only the text you quote, each old exactly once in the card's summary or body, and the "
-            "rest stays as it is: the op for changing a few statements or a link), append (adds "
-            "bullets, skips duplicates; unions tags/aliases/extends/supersedes), delete. also holds further writes "
-            "saved together with this one, all or none (a move, a split, a change with the repairs it calls for). "
-            "replace/patch/append on a card "
-            "that lives only in a read-only slice (search or read found it as @slice/path) work with the same id: "
-            "the edited copy is saved in @overlay as that card's replacement (forked_from in the result). "
-            "supersedes: this card "
-            "replaces an outdated one, which stays searchable and forwards its hits here (restate whatever in it is "
-            "still true). extends: this card refines, adds an exception or if-then rule to, or depends on another "
-            "card as its premise; if that baseline is later superseded or deleted, this card is flagged. A wrong "
-            "supersedes hides a card that is still true and extends hides nothing, so when unsure, use extends. "
-            "Use delete to forget on request or to remove a wrong card. stage=true buffers the change in staging/ "
-            "for human review. Name the id by the durable topic or slot it fills (team/lead, "
-            "subscriptions/streaming), never by its current value (team/lead-sarah-chen): ids and links outlive "
-            "values. When a write supersedes or deletes a card, the response lists affected_backlinks (cards that "
-            "[[link]] to it) and affected_extensions (cards that extend it). Fix them in the same session: rewrite "
-            "a card that still states the old value as current or links to a card named after it; rebase an "
-            "extension that still holds (replace with extends naming the replacement), else supersede or delete "
-            "it. A link to a slot can stay (read() follows supersedes). read_only items are in base slices: "
-            "supersede one only if it states the old value as current. load=\"always\" makes a card load into "
-            "every session (persona, reply language, standing instructions); any change to the always-loaded context is staged for the user's approval "
-            "(requires_approval in the result): tell the user, who approves it with `mindslice apply`."
+            "Proactively record confirmed, lasting information (preferences, accepted decisions, constraints, "
+            "corrections, verified lessons) within the user's memory policy; do not wait for 'remember this'. "
+            "Search/read related cards first to avoid duplicates. Writes go to @overlay; to change a card in another "
+            "(read-only) slice, replace/patch/append it with the same path as id: the edited copy is saved in @overlay "
+            "as its replacement. One focused sub-topic per card: a short summary and only the self-contained '- ' "
+            "bullets needed to keep the concrete values, names, dates and conditions (search is lexical: a word you "
+            "leave out can't be found). supersedes and delete act on whole cards, so keep facts that can change on "
+            "their own on separate cards. op: create (idempotent if identical); replace (only the fields you pass; "
+            "content swaps the whole body, so include every statement that still holds, not just what changed); "
+            "patch (swaps only the text quoted in edits: the op for changing a few statements or a link); append "
+            "(adds bullets, skips duplicates; unions tags/aliases/extends/supersedes); delete (to forget on request or "
+            "remove a wrong card). A supersede or delete lists the cards still pointing at what it retired "
+            "(affected_backlinks, affected_extensions): fix them in the same session as the result says."
         ),
         "inputSchema": {
             "type": "object",
             "properties": {
-                "id": {"type": "string", "description": "overlay-relative card path without .md, named by durable topic or slot, "
-                       "e.g. \"team/lead\" (not \"team/lead-sarah-chen\"); if the slot's id is taken by the card being "
-                       "superseded, qualify it with the date of the change (\"team/lead-2026-11\"), not the new value"},
+                "id": {"type": "string", "description": "overlay-relative card path without .md, named by the durable topic or "
+                       "slot it fills, never its current value (\"team/lead\", not \"team/lead-sarah-chen\": ids and links "
+                       "outlive values); if that id is taken by the card being superseded, add the date of the change "
+                       "(\"team/lead-2026-11\")"},
                 "op": {"type": "string", "enum": ["create", "replace", "patch", "append", "delete"], "default": "create"},
                 "content": {"type": ["string", "array"], "items": {"type": "string"}, "description": "card body (Markdown), or bullet statements for append; qualify cross-slice wikilinks as [[@alias/path]] (same-@overlay links can use [[path]])"},
                 "edits": {"type": "array", "items": {"type": "object", "properties": {"old": {"type": "string"}, "new": {"type": "string"}},
@@ -179,20 +158,26 @@ TOOLS: list[dict[str, Any]] = [
                           "description": "op=patch: text swaps applied in order; each old is quoted exactly from the card's current "
                           "summary or body and must occur exactly once there (quote more around it if it does not); new may be empty"},
                 "also": {"type": "array", "items": {"type": "object"},
-                         "description": "further writes saved in one transaction with this one, in order (each sees the ones before "
-                         "it); if any fails, none is saved. Each item is an object of this tool's arguments (id, op, ...) "
-                         "without stage and also, and takes this call's reason unless it has its own; results come back under also"},
+                         "description": "further writes saved with this one in one transaction (a move, a split, a change with its "
+                         "repairs): in order, each seeing the ones before; if any fails, none is saved. Items take this tool's "
+                         "arguments except stage and also, and this call's reason unless they have their own; results come "
+                         "back under also"},
                 "summary": {"type": "string", "description": "1-2 sentence abstract (<= 240 chars) stating the key fact with its concrete value; shown in search previews"},
                 "title": {"type": "string", "description": "specific, descriptive title; the most heavily weighted search field"},
                 "tags": {"type": "array", "items": {"type": "string"}, "description": "facets; searched, and filterable with search(tags=...)"},
                 "aliases": {"type": "array", "items": {"type": "string"}, "description": "3-8 search synonyms of 1-4 words: other phrasings, the asker's words, abbreviations, former names, other-language terms (weighted just below the title; also [[alias]] link targets)"},
-                "extends": {"type": "array", "items": {"type": "string"}, "description": "baselines this card refines, adds exceptions or if-then rules to, or depends on as a premise (@alias/path); flagged if one is later superseded or deleted"},
-                "supersedes": {"type": "array", "items": {"type": "string"}, "description": "outdated cards this one replaces (@alias/path); their search hits forward here"},
+                "extends": {"type": "array", "items": {"type": "string"}, "description": "baselines this card refines, adds exceptions "
+                            "or if-then rules to, or depends on as a premise (@alias/path); flagged if one is later superseded or "
+                            "deleted. It hides nothing, so use it when unsure between extends and supersedes"},
+                "supersedes": {"type": "array", "items": {"type": "string"}, "description": "outdated cards this one replaces "
+                               "(@alias/path): they stay searchable and forward their hits here, so restate whatever in them is "
+                               "still true; a wrong supersedes hides a card that is still true"},
                 "stage": {"type": "boolean", "description": "true buffers the change in staging/ for human review; "
                           "changes to always-loaded cards are staged whatever you pass"},
                 "load": {"type": "string", "enum": ["always", "as-needed"], "description": "\"always\": loaded into "
-                         "every session without a query (persona, language, standing instructions); default \"as-needed\""},
-                "reason": {"type": "string", "minLength": 1, "description": "Why this change is needed, including the user correction or source when available. Supply this on writes; the engine records history. Never edit .history directly."},
+                         "every session without a query (persona, reply language, standing instructions); default \"as-needed\""},
+                "reason": {"type": "string", "minLength": 1, "description": "why this change is needed: the user's correction or the "
+                           "evidence or source; the engine records it (never edit .history yourself)"},
                 "if_match": {"type": "string", "description": "sha256 from read(); rejects the write if the card changed"},
             },
             "required": ["id"],
@@ -255,6 +240,21 @@ EMPTY_WORKSPACE_HINT = (
     "distill with the slice-builder skill if you have shell access). If the user is asking a concrete task instead, "
     "handle the task first and record durable preferences or lessons along the way."
 )
+
+# Repair steps for the cards a write's impact report lists: sent only when there are some.
+REPAIR_HINT = (
+    "Cards still point at what this write retired (affected_backlinks, affected_extensions): fix them in this "
+    "session. Rewrite a card that still states the old value as current or links to a card named after it; rebase "
+    "an extension that still holds (replace with extends naming the replacement), else supersede or delete it. A "
+    "link to a slot can stay (read() follows supersedes). read_only items are in base slices: supersede one only if "
+    "it states the old value as current."
+)
+
+
+def _with_repair_hint(result: dict[str, Any]) -> dict[str, Any]:
+    if any(r.get("affected_backlinks") or r.get("affected_extensions") for r in [result, *result.get("also", [])]):
+        result["repair"] = REPAIR_HINT
+    return result
 
 
 def format_instructions(snap: dict[str, Any]) -> str:
@@ -366,7 +366,7 @@ class MCPServer:
                 args["stage"] = True
             elif args.get("stage") is False:
                 del args["stage"]  # the default: direct, except changes to always-loaded cards (staged for approval)
-            return self.ws.write(args.pop("id"), **args)
+            return _with_repair_hint(self.ws.write(args.pop("id"), **args))
         raise KeyError(name)
 
     # -- JSON-RPC ---------------------------------------------------------

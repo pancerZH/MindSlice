@@ -306,7 +306,6 @@ class MCPTests(WorkspaceTestCase):
             self.assertTrue(tool["description"])
             self.assertEqual(tool.get("_meta"), {"anthropic/alwaysLoad": True})
         write_tool = next(t for t in TOOLS if t["name"] == "write")
-        self.assertIn("[[@alias/path]]", write_tool["description"])
         self.assertIn("[[@alias/path]]", write_tool["inputSchema"]["properties"]["content"]["description"])
         self.assertIn("[[@alias/path]]", INSTRUCTIONS)
         self.assertIn("Consult memory before exploring a codebase", INSTRUCTIONS)
