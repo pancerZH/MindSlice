@@ -5,7 +5,9 @@ from __future__ import annotations
 from collections import defaultdict
 from typing import TYPE_CHECKING, Any, Iterable, Sequence
 
-from ..model.addressing import MountCatalog, format_address, normalize_alias, normalize_path, resolve_ref
+from ..model.addressing import (
+    MountCatalog, cross_mount_matches, format_address, normalize_alias, normalize_path, resolve_ref,
+)
 from ..model.card import (
     LIST_FIELDS,
     LOAD_ALWAYS,
@@ -62,7 +64,8 @@ def overlay_card_path(ws: "Workspace", card_id: str, strict: bool = True) -> str
                 next_steps=[
                     f"To change a card of {alias}, write to the same path without the alias ({rest or 'folder/card'!r}): "
                     f"replace and append save the edited copy in {overlay_alias} as its replacement, and the slice "
-                    "stays as it is until the next bake."],
+                    "stays as it is until the next bake.",
+                    f"To remove a card from {alias}, the user runs `mindslice bake {alias} --drop {rest or 'folder/card'}`."],
             )
         card_id = rest
     return normalize_path(card_id, strict=strict)
@@ -227,76 +230,32 @@ def check_cycles(index, overlay_alias: str, overrides: dict[str, ParsedCard | No
             )
 
 
-def _cross_mount_matches(
-    raw: str, overlay_alias: str, cats: dict[str, MountCatalog], mount_order: Sequence[str]
-) -> list[str]:
-    if raw.strip().startswith("@"):
-        return []
-    seen: list[str] = []
-    for alias in mount_order:
-        if alias == overlay_alias:
-            continue
-        cat = cats.get(alias)
-        hit = cat.lookup(raw) if cat is not None else None
-        if hit is not None:
-            addr = format_address(alias, hit)
-            if addr not in seen:
-                seen.append(addr)
-    return seen
-
-
-def unresolved_references(
+def unresolved_lineage(
     parsed: ParsedCard,
     overlay_alias: str,
     cats: dict[str, MountCatalog],
     mount_order: Sequence[str] = (),
 ) -> list[str]:
-    """Warn on unresolved lineage or wikilink targets, suggesting ``@mount/path`` when another mount matches."""
+    """Warn on unresolved ``extends`` / ``supersedes`` targets, suggesting ``@mount/path`` when another mount matches.
+
+    A broken lineage edge changes what reads return (a supersede that misses leaves the old card current), so it is
+    reported at write time. Unresolved ``[[wikilinks]]`` are not: a missing link costs little until the periodic
+    ``validate`` pass repairs it, and a warning here would cost the agent another write.
+    """
     out: list[str] = []
-    groups: tuple[tuple[str, Sequence[str]], ...] = (
-        ("extends", parsed.extends),
-        ("supersedes", parsed.supersedes),
-        ("wikilink", parsed.wikilink_targets()),
-    )
-    for kind, refs in groups:
+    for kind, refs in (("extends", parsed.extends), ("supersedes", parsed.supersedes)):
         for raw in refs:
             if resolve_ref(raw, overlay_alias, cats).resolved:
                 continue
-            matches = _cross_mount_matches(raw, overlay_alias, cats, mount_order)
-            if kind == "wikilink":
-                if len(matches) == 1:
-                    out.append(
-                        f"wikilink [[{raw}]] does not resolve in {overlay_alias}; unqualified links only "
-                        f"search {overlay_alias} — did you mean [[{matches[0]}]]?"
-                    )
-                elif matches:
-                    opts = ", ".join(f"[[{m}]]" for m in matches)
-                    out.append(
-                        f"wikilink [[{raw}]] does not resolve in {overlay_alias}; unqualified links only "
-                        f"search {overlay_alias} — found in {opts}"
-                    )
-                else:
-                    out.append(f"wikilink [[{raw}]] does not resolve (yet)")
-            elif len(matches) == 1:
-                out.append(
-                    f"{kind} target {raw!r} does not resolve in {overlay_alias}; did you mean {matches[0]!r}?"
-                )
+            matches = cross_mount_matches(raw, overlay_alias, cats, mount_order)
+            if len(matches) == 1:
+                out.append(f"{kind} target {raw!r} does not resolve in {overlay_alias}; did you mean {matches[0]!r}?")
             elif matches:
                 opts = ", ".join(repr(m) for m in matches)
-                out.append(
-                    f"{kind} target {raw!r} does not resolve in {overlay_alias}; found in {opts}"
-                )
+                out.append(f"{kind} target {raw!r} does not resolve in {overlay_alias}; found in {opts}")
             else:
                 out.append(f"{kind} target {raw!r} does not resolve (yet)")
     return out
-
-
-def unresolved_lineage(parsed: ParsedCard, overlay_alias: str, cats: dict[str, MountCatalog]) -> list[str]:
-    return [
-        msg
-        for msg in unresolved_references(parsed, overlay_alias, cats)
-        if not msg.startswith("wikilink ")
-    ]
 
 
 # ---------------------------------------------------------------------------
@@ -472,7 +431,13 @@ def write(
             raise NotFoundError(f"{address} does not exist{' in staging or overlay' if stage else ''}", address=address)
         if op == "delete" and current is None:
             result["sha256"] = None
-            result["warnings"].append(f"{address} does not exist; nothing to delete")
+            mounted = mounted_base(ws, table, path)
+            if mounted is not None:
+                result["warnings"].append(
+                    f"{address} does not exist; {mounted[0]} is in a read-only slice, so only the user can remove it, "
+                    f"with `mindslice bake {mounted[0].partition('/')[0]} --drop {path}`: tell the user")
+            else:
+                result["warnings"].append(f"{address} does not exist; nothing to delete")
             result.update(write_impact(ws, table, path, None, stage=stage, deleting=True, dangling=not stage))
             if stage:
                 staging.stage_delete(path, overlay.root, audit=ws.history)  # clears stale entries, if any
@@ -503,7 +468,7 @@ def write(
             check_cycles(ws.index, overlay.alias, overrides, [path])
             _, cats = prospective_successors(ws.index, overlay.alias, overrides)
             mount_order = [m.alias for m in table.all()]
-            result["warnings"] += unresolved_references(parsed_new, overlay.alias, cats, mount_order)
+            result["warnings"] += unresolved_lineage(parsed_new, overlay.alias, cats, mount_order)
 
         if new_text is not None and current is not None and new_text == normalize_newlines(current):
             result["sha256"] = current_sha

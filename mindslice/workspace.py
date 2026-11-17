@@ -339,17 +339,18 @@ class Workspace:
     def bake(self, alias: str | None = None, output_path: str | os.PathLike[str] | None = None, prefix: str | None = None,
              tags: str | Sequence[str] | None = None, include_deps: bool = False, dry_run: bool = False,
              *, name: str | None = None, description: str | None = None, version: str | None = None,
-             plan: dict[str, Any] | None = None) -> dict[str, Any]:
+             plan: dict[str, Any] | None = None, drop: Sequence[str] = ()) -> dict[str, Any]:
         """Bake one alias, or a reviewed workspace plan when ``alias`` is omitted.
 
-        Named new slices require ``prefix``; batch plans explicitly assign individual cards.
+        Named new slices require ``prefix``; batch plans explicitly assign individual cards. ``drop`` (named
+        bake only) leaves cards of the mounted version out of the new one.
         ``bake(dry_run=True)`` returns the batch plan; ``bake(plan=reviewed)`` verifies and executes it.
         Previous directories remain untouched. Batch outputs use workspace ``slices/`` defaults.
         """
         if alias is None:
             from .baking import bake_batch
             from .errors import InvalidArgumentsError
-            if any(x is not None for x in (output_path, prefix, tags, name, description, version)) or include_deps:
+            if any(x is not None for x in (output_path, prefix, tags, name, description, version)) or include_deps or drop:
                 raise InvalidArgumentsError("single-slice options require an alias")
             reviewed = self.plan_bake() if plan is None else plan
             if dry_run:
@@ -359,7 +360,7 @@ class Workspace:
             from .errors import InvalidArgumentsError
             raise InvalidArgumentsError("a workspace bake plan cannot be combined with an alias")
         return bake_mod.bake(self, alias, output_path, prefix, tags, include_deps, dry_run,
-                             name=name, description=description, version=version)
+                             name=name, description=description, version=version, drop=drop)
 
     def plan_bake(self, assignments: dict[str, str | None] | None = None, *, resume: bool = True) -> dict[str, Any]:
         """Review all overlay cards; null destinations explicitly defer cards. No content writes."""

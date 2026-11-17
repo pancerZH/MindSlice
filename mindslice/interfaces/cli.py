@@ -189,6 +189,9 @@ def build_parser() -> argparse.ArgumentParser:
                    "(default for an existing alias: cards that extend, supersede or share a path with its cards)")
     s.add_argument("--tag", action="append", dest="tags", help="bake the overlay cards with this tag (repeatable)")
     s.add_argument("--include-deps", action="store_true", help="also bake overlay cards the selection references")
+    s.add_argument("--drop", action="append", default=[], metavar="CARD",
+                   help="leave this card (path or @alias/path) of the mounted version out of the new one (repeatable); "
+                        "refused while a card extends it")
     s.add_argument("--dry-run", action="store_true", help="show what would move, write nothing")
     s.add_argument("--name", help="slice name")
     s.add_argument("--description", help="slice description")
@@ -356,6 +359,9 @@ def _dispatch(ws: Workspace, args: argparse.Namespace) -> int:
         return 0 if result["ok"] else 1
     elif cmd == "bake":
         if args.alias is None:
+            if args.drop:
+                from ..errors import InvalidArgumentsError
+                raise InvalidArgumentsError("--drop needs a target alias: `mindslice bake @alias --drop <card>`")
             from .bake_review import run
             return run(ws, args, out)
         if args.assign or args.defer or args.plan or args.fresh:
@@ -363,7 +369,7 @@ def _dispatch(ws: Workspace, args: argparse.Namespace) -> int:
             raise InvalidArgumentsError("batch review options cannot be combined with a target alias")
         out(ws.bake(args.alias, _cwd_path(args.output) if args.output else None, args.prefix, args.tags,
                     args.include_deps, args.dry_run, name=args.name, description=args.description,
-                    version=args.slice_version), render.render_bake)
+                    version=args.slice_version, drop=args.drop), render.render_bake)
     elif cmd == "diff":
         result = ws.diff(args.scope)
         if args.json:

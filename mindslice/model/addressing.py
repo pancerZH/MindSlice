@@ -249,3 +249,16 @@ def resolve_ref(ref: str, src_mount: str, catalogs: dict[str, MountCatalog]) -> 
     except InvalidAddressError:
         return Resolution(ref, src_mount, None, False)
     return Resolution(ref, src_mount, intended, False)
+
+
+def cross_mount_matches(raw: str, src_mount: str, catalogs: dict[str, MountCatalog], mount_order: Iterable[str]) -> list[str]:
+    """``@mount/path`` addresses an unqualified ``raw`` would hit in other mounts (for "did you mean" hints)."""
+    if raw.strip().startswith("@"):
+        return []
+    seen: list[str] = []
+    for alias in mount_order:
+        cat = catalogs.get(alias) if alias != src_mount else None
+        hit = cat.lookup(raw) if cat is not None else None
+        if hit is not None and format_address(alias, hit) not in seen:
+            seen.append(format_address(alias, hit))
+    return seen

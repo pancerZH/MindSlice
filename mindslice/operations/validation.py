@@ -7,7 +7,7 @@ from dataclasses import dataclass
 from pathlib import Path
 from typing import TYPE_CHECKING, Any
 
-from ..model.addressing import MountCatalog, format_address, normalize_alias, resolve_ref
+from ..model.addressing import MountCatalog, cross_mount_matches, format_address, normalize_alias, resolve_ref
 from ..model.card import MAX_CARD_LINES, SUMMARY_PREVIEW_CHARS, ParsedCard, parse_card
 from ..storage.config import DESCRIPTION_CHARS, OVERVIEW_PATH, SliceManifest, load_slice_manifest
 from ..errors import InvalidAddressError
@@ -86,6 +86,7 @@ def lint(
             cards[(src.alias, rel)] = (parsed, lines, file)
             cat.add(rel, parsed.aliases)
     by_alias = {s.alias: s for s in sources}
+    mount_order = [*by_alias, *(a for a in cats if a not in by_alias)]
     succ: dict[str, list[str]] = defaultdict(list)
 
     for src in sources:
@@ -165,7 +166,12 @@ def lint(
             elif lineage:
                 report.add("error", "broken_lineage", f"{kind} target {raw!r} does not exist", address, fname)
             else:
-                report.add("warning", "broken_wikilink", f"[[{raw}]] does not resolve", address, fname)
+                matches = [f"[[{m}]]" for m in cross_mount_matches(raw, mount, cats, mount_order)]
+                hint = ""
+                if matches:
+                    found = f"did you mean {matches[0]}?" if len(matches) == 1 else f"found in {', '.join(matches)}"
+                    hint = f"; unqualified links only search {mount} — {found}"
+                report.add("warning", "broken_wikilink", f"[[{raw}]] does not resolve{hint}", address, fname)
 
     for (mount, alias), paths in sorted(aliases_seen.items()):
         if len(set(paths)) > 1:

@@ -276,10 +276,13 @@ def render_bake(result: dict[str, Any]) -> str:
         lines.append(f"mounted directory: {result['path']}")
     if result.get("previous_path"):
         lines.append(f"previous version: {result['previous_path']} (left as it was)")
-    lines.append(f"cards ({len(result['cards'])}): {', '.join(result['cards'])}")
-    for key in ("created", "replaced", "included_dependencies", "retired_overlay_cards"):
+    if result["cards"] or not result.get("dropped"):
+        lines.append(f"cards ({len(result['cards'])}): {', '.join(result['cards'])}")
+    for key in ("created", "replaced", "included_dependencies", "retired_overlay_cards", "dropped", "cleared_supersedes"):
         if result.get(key):
             lines.append(f"{key.replace('_', ' ')}: {', '.join(result[key])}")
+    if result.get("dangling_links"):
+        lines.append(f"links left dangling (repair later; `mindslice validate` lists them): {', '.join(result['dangling_links'])}")
     if result.get("dependencies"):
         added = result.get("dependencies_added") or []
         lines.append(f"dependencies: {', '.join(result['dependencies'])}" + (f" (new: {', '.join(added)})" if added else ""))

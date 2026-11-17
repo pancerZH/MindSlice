@@ -41,6 +41,7 @@ Pick the right operation:
 | A card is now wrong or outdated (changed value, correction) | `create` with `--supersedes @project/api/auth-flow` |
 | Rewrite an overlay card you just read | `--op replace --if-match <sha256 from read>` |
 | A request to forget, or a card that should never have been written | `--op delete` |
+| The same, for a card in a base slice; or a forwarding stub nothing needs any more | `mindslice bake @slice --drop <path>` when baking is authorized (refused while a card extends it; previous slice directories still hold it) |
 | The response lists `affected_backlinks` / `affected_extensions` | Update or rebase each one now (below) |
 | A lasting preference about how the agent behaves (language, tone, persona) | `create` with `--load always` (staged for approval) |
 

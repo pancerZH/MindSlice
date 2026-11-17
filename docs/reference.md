@@ -573,6 +573,7 @@ mindslice bake @python --prefix python/               # create and mount a slice
 mindslice bake @python                               # update it from related overlay cards
 mindslice bake @python --prefix python/ --output ./python-next.slice
 mindslice bake @python --dry-run                      # inspect the plan without writing
+mindslice bake @python --drop python/old-style        # leave one card out of the next version
 ```
 
 For an alias that is not mounted, `prefix` (`--prefix`) is required, even when `tags` or `output_path`
@@ -604,6 +605,18 @@ Baking retires the overlay copies and rewrites references to them in the overlay
 references from read-only mounts that cannot be rewritten are reported as `broken_references`.
 Mounting an imported slice also retires identical overlay copies, keeping edited or staged copies;
 `retire_overlay=False` (`--keep-overlay`) disables this retirement for `mount()`.
+
+A card superseded from another path stays in each new version, as the route that forwards its hits.
+`drop` (`--drop CARD`, repeatable, `path` or `@alias/path`) is the only way to take a card out of a
+slice: a forwarding stub nothing needs any more, or a fact the user asked to forget. Runtime `write`
+cannot delete slice cards; deleting one by its path warns and names this command. The new version
+leaves the dropped cards out (a bake may consist of drops alone), and cards of the new version that
+supersede a dropped card lose that entry (`cleared_supersedes`). The bake is refused (`bake_conflict`)
+while a card extends a dropped card (rebase or merge it first) or supersedes it from outside the new
+version (bake it in the same run), since either edge would be left dangling. Links to a dropped card
+are allowed and reported as `dangling_links`; `validate` lists them for a later repair. The `baked`
+history event records `dropped`. The previous directory still holds the card (that is what
+`rollback` returns to), so forgetting a fact completely also means removing old directories and backups.
 
 For sharing, `--output python.zip`, `python.tar.gz` or `python.tgz` additionally writes a deterministic
 archive of the complete baked slice. The mountable directory is created under `<workspace>/slices/`;

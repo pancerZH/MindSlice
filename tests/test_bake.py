@@ -171,6 +171,97 @@ class BakeTests(WorkspaceTestCase):
         self.assertEqual(self.baked, out_dir)
 
 
+class BakeDropTests(WorkspaceTestCase):
+    """``bake(alias, drop=...)`` is the one way to take a card out of a slice: the next version leaves it out."""
+
+    def setUp(self):
+        super().setUp()
+        self.kb = self.mount_slice("kb", {
+            "old": card_text("Old", "The old fact."),
+            "new": card_text("New", "The new fact.", supersedes=["old"]),
+            "notes": card_text("Notes", "Pointers.", ["See [[old]]."]),
+            "keep": card_text("Keep", "A card that stays."),
+        }, "@kb", 50, "baseline")
+        self.mount_slice("other", {"ref": card_text("Ref", "Links across.", ["See [[@kb/old]]."])}, "@other", 40, "baseline")
+        self.original = snapshot(self.kb)
+
+    @property
+    def mounted(self):
+        return self.ws._reload_table().get("@kb").root
+
+    def test_drop_leaves_the_card_out_and_clears_the_supersedes_that_pointed_at_it(self):
+        res = self.ws.bake("@kb", drop=["old"])  # nothing in overlay: a drop-only bake
+        self.assertEqual((res["dropped"], res["cleared_supersedes"], res["cards"]), (["@kb/old"], ["@kb/new"], []))
+        self.assertEqual(res["dangling_links"], ["@kb/notes", "@other/ref"])
+        self.assertFalse((self.mounted / "old.md").exists())
+        self.assertEqual(parse_card((self.mounted / "new.md").read_text()).supersedes, [])
+        self.assertEqual(snapshot(self.kb), self.original)  # the old folder still holds it
+        self.assertTrue(res["validation"]["ok"])
+        with self.assertRaises(NotFoundError):
+            self.ws.read("@kb/old")
+        self.assertEqual(self.ws.read("@kb/new")["address"], "@kb/new")
+        baked = [e for e in self.ws.history.events() if e["event"] == "baked"][-1]
+        self.assertEqual(baked["dropped"], ["@kb/old"])
+
+    def test_an_overlay_replacement_bakes_in_while_the_stub_it_forwards_from_is_dropped(self):
+        self.ws.write("v2/keep", summary="A newer card.", content="- Replaces [[@kb/keep]].",
+                      supersedes=["@kb/keep"], stage=False)
+        res = self.ws.bake("@kb", drop=["keep"])
+        self.assertEqual((res["cards"], res["dropped"], res["cleared_supersedes"]), (["v2/keep"], ["@kb/keep"], []))
+        self.assertEqual(res["dangling_links"], ["@kb/v2/keep"])  # named where the card lives after the bake
+        self.assertFalse((self.mounted / "keep.md").exists())
+        self.assertEqual(parse_card((self.mounted / "v2" / "keep.md").read_text()).supersedes, [])
+        self.assertFalse(self.overlay_file("v2/keep").exists())
+        self.assertTrue(res["validation"]["ok"])
+
+    def test_lineage_that_would_dangle_blocks_the_bake(self):
+        self.ws.write("ext", summary="Refines keep.", extends=["@kb/keep"], stage=False)
+        with self.assertRaises(BakeConflictError) as cm:
+            self.ws.bake("@kb", drop=["keep"])
+        self.assertEqual([c["address"] for c in cm.exception.details["conflicts"]], ["@overlay/ext"])
+        self.ws.write("ext", op="delete")
+        # A replacement left out of this bake would supersede a card that no longer exists.
+        self.ws.write("v2/keep", summary="A newer card.", supersedes=["@kb/keep"], stage=False)
+        with self.assertRaises(BakeConflictError) as cm:
+            self.ws.bake("@kb", prefix="elsewhere/", drop=["keep"])
+        self.assertEqual([c["address"] for c in cm.exception.details["conflicts"]], ["@overlay/v2/keep"])
+        # An overlay card at the same path already replaces the card: nothing to drop.
+        self.ws.write("notes", summary="Rewritten pointers.", stage=False)
+        with self.assertRaises(BakeConflictError) as cm:
+            self.ws.bake("@kb", drop=["notes"])
+        self.assertEqual([c["address"] for c in cm.exception.details["conflicts"]], ["@kb/notes"])
+        self.assertEqual(self.mounted, self.kb)
+
+    def test_arguments_and_dry_run(self):
+        with self.assertRaises(NotFoundError):
+            self.ws.bake("@kb", drop=["missing"])
+        with self.assertRaisesRegex(InvalidArgumentsError, "names @other"):
+            self.ws.bake("@kb", drop=["@other/ref"])
+        self.ws.write("fresh/card", summary="New.")
+        with self.assertRaisesRegex(InvalidArgumentsError, "not mounted"):
+            self.ws.bake("@fresh", prefix="fresh/", drop=["x"])
+        with self.assertRaises(InvalidArgumentsError):
+            self.ws.bake(drop=["old"])
+        res = self.ws.bake("@kb", drop=["@kb/old.md"], dry_run=True)
+        self.assertEqual(res["dropped"], ["@kb/old"])
+        self.assertEqual((self.mounted, snapshot(self.kb)), (self.kb, self.original))
+
+    def test_deleting_a_slice_card_points_the_agent_at_the_user_run_drop(self):
+        res = self.ws.write("old", op="delete")
+        self.assertEqual(res["warnings"], ["@overlay/old does not exist; @kb/old is in a read-only slice, so only the "
+                                           "user can remove it, with `mindslice bake @kb --drop old`: tell the user"])
+        self.assertTrue((self.kb / "old.md").exists())
+
+    def test_cli(self):
+        code, _, err = run_cli("-w", str(self.root), "bake", "--drop", "old")
+        self.assertNotEqual(code, 0)
+        self.assertIn("--drop needs a target alias", err)
+        code, out, _ = run_cli("-w", str(self.root), "bake", "@kb", "--drop", "old")
+        self.assertEqual(code, 0)
+        self.assertIn("dropped: @kb/old", out)
+        self.assertIn("links left dangling", out)
+
+
 class BakeCreationTests(WorkspaceTestCase):
     def setUp(self):
         super().setUp()

@@ -246,6 +246,11 @@ MindSlice exposes **9 orthogonal primitives** across three groups. All 9 are ava
      `<workspace>/slices/<name>.slice`, using `-2`, `-3`, etc. to avoid existing paths. The completed
      directory takes over the mount atomically; the previous directory is preserved and unmounted.
      Existing aliases keep their precedence and role; new ones use `50` and `baseline`.
+   * `drop` names cards of the mounted version to leave out of the new one, the only way to remove a
+     card from a slice (slices stay read-only at runtime, so there are no tombstones). Cards of the new
+     version that supersede a dropped card lose that entry; an `extends` edge to it, or a `supersedes`
+     edge from outside the new version, raises `BakeConflictError`; links to it are reported as
+     `dangling_links`.
    * Every reference is resolved against `@overlay` first. Included overlay targets become
      slice-relative. On updates, targets in the old slice also become slice-relative. Other mounts
      stay qualified and join `slice.toml` dependencies. References to excluded overlay cards raise

@@ -115,34 +115,37 @@ class WriteTests(WorkspaceTestCase):
         res = self.ws.write("x", summary="x", extends=["@project/nope"])
         self.assertTrue(res["warnings"])
 
-    def test_unresolved_wikilink_warns_and_suggests_cross_mount_target(self):
+    def test_unresolved_wikilinks_are_left_to_validate_with_a_cross_mount_hint(self):
         self.project({"projects/flow": card_text("Flow", "Flow overview.", aliases=["flow-alias"])})
-        # Missing target anywhere -> plain unresolved warning
+
+        def broken_links(address):
+            return [w["message"] for w in self.ws.validate()["warnings"]
+                    if w["code"] == "broken_wikilink" and w["address"] == address]
+
+        # write() does not warn about unresolved wikilinks (acting on it would cost the agent another call) ...
         res = self.ws.write("note1", summary="S.", content="- See [[missing/card]].")
-        self.assertEqual(res["warnings"], ["wikilink [[missing/card]] does not resolve (yet)"])
-        # Exists in another mount -> suggests [[@mount/path]]
+        self.assertEqual(res["warnings"], [])
         res = self.ws.write("note2", summary="S.", content="- See [[projects/flow]] and [[flow-alias]].")
-        self.assertEqual(
-            res["warnings"],
-            [
-                "wikilink [[projects/flow]] does not resolve in @overlay; unqualified links only search @overlay"
-                " — did you mean [[@project/projects/flow]]?",
-                "wikilink [[flow-alias]] does not resolve in @overlay; unqualified links only search @overlay"
-                " — did you mean [[@project/projects/flow]]?",
-            ],
-        )
-        # Multiple other mounts match -> lists all candidates
+        self.assertEqual(res["warnings"], [])
+        # ... validate reports them, suggesting [[@mount/path]] when another mount has the target.
+        self.assertEqual(broken_links("@overlay/note1"), ["[[missing/card]] does not resolve"])
+        self.assertEqual(broken_links("@overlay/note2"), [
+            "[[projects/flow]] does not resolve; unqualified links only search @overlay"
+            " — did you mean [[@project/projects/flow]]?",
+            "[[flow-alias]] does not resolve; unqualified links only search @overlay"
+            " — did you mean [[@project/projects/flow]]?",
+        ])
+        # Lineage still warns at write time, listing every candidate when several mounts match.
         self.mount_slice("extra", {"projects/flow": card_text("Extra", "Extra flow.")}, "@extra", 40, "baseline")
         res = self.ws.write("note3", summary="S.", content="- See [[projects/flow]].", extends=["projects/flow"])
-        self.assertEqual(
-            res["warnings"],
-            [
-                "extends target 'projects/flow' does not resolve in @overlay; found in '@project/projects/flow', '@extra/projects/flow'",
-                "wikilink [[projects/flow]] does not resolve in @overlay; unqualified links only search @overlay"
-                " — found in [[@project/projects/flow]], [[@extra/projects/flow]]",
-            ],
-        )
-        # Properly qualified cross-mount and overlay-local links produce no warnings
+        self.assertEqual(res["warnings"], [
+            "extends target 'projects/flow' does not resolve in @overlay; found in '@project/projects/flow', '@extra/projects/flow'",
+        ])
+        self.assertEqual(broken_links("@overlay/note3"), [
+            "[[projects/flow]] does not resolve; unqualified links only search @overlay"
+            " — found in [[@project/projects/flow]], [[@extra/projects/flow]]",
+        ])
+        # Properly qualified cross-mount and overlay-local references produce nothing
         res = self.ws.write(
             "note4",
             summary="S.",
@@ -150,6 +153,7 @@ class WriteTests(WorkspaceTestCase):
             extends=["@project/projects/flow"],
         )
         self.assertEqual(res["warnings"], [])
+        self.assertEqual(broken_links("@overlay/note4"), [])
         # Staged forward reference resolves within prospective overlay without warning
         self.ws.write("staged-target", summary="Target.", stage=True)
         res = self.ws.write("note5", summary="S.", content="- See [[staged-target]].", stage=True)

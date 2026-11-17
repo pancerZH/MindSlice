@@ -17,9 +17,16 @@ How each card is written into the new slice:
   (``x``); references to other mounts stay qualified and are added to ``slice.toml`` dependencies;
 * a card that supersedes the slice card at its own path, or shadows it, replaces that file (the
   card's ``supersedes`` drops the reference to itself); a superseded card at another path stays,
-  as the route that forwards its hits;
+  as the route that forwards its hits, unless ``drop`` names it;
 * a card that *extends* the slice card at its own path can't replace it without losing the
   baseline: bake refuses it (``BakeConflictError``) until it is consolidated into one card.
+
+``drop`` leaves cards of the mounted version out of the new one: the only way to remove a card from a
+slice (a forwarding stub nothing needs any more, or a fact the user asked to forget; the old folder
+still holds it). Cards of the new version that supersede a dropped card lose that entry. A card that
+extends a dropped card, or supersedes it without being part of the new version, blocks the bake: the
+engine never rebases silently, and a dangling lineage edge is a validate error. Links to a dropped
+card are left dangling (``dangling_links``) for a later repair.
 
 The new slice's ``slice.toml`` version is bumped (``1.2.3`` -> ``1.2.4``) when it has that form. Its
 default path is ``<workspace>/slices/<name>.slice``, or ``<name>-2.slice``, ``-3`` ... when taken.
@@ -36,7 +43,7 @@ import tempfile
 from pathlib import Path
 from typing import TYPE_CHECKING, Any, Sequence
 
-from ..model.addressing import format_address, normalize_alias, resolve_ref
+from ..model.addressing import format_address, normalize_alias, parse_address, resolve_ref
 from .archive import archive_format, write_archive
 from ..model.card import normalize_newlines, parse_card, truncate
 from ..storage.config import (
@@ -85,6 +92,62 @@ def default_output(ws: "Workspace", alias: str, mount: Mount | None) -> Path:
         n += 1
 
 
+def drop_paths(alias: str, mount: Mount | None, drop: Sequence[str], slice_paths: set[str]) -> list[str]:
+    """Slice-relative paths of the ``drop`` cards (``path`` or ``@alias/path``), each a card of the mounted version."""
+    if drop and mount is None:
+        raise InvalidArgumentsError(f"drop removes cards from a mounted slice; {alias} is not mounted", alias=alias)
+    out: list[str] = []
+    for raw in drop:
+        named, path = parse_address(raw.strip().removesuffix(".md"))
+        if named not in (None, alias):
+            raise InvalidArgumentsError(f"drop {raw!r} names {named}, not {alias}", alias=alias)
+        if path == OVERVIEW_PATH or path not in slice_paths:
+            raise NotFoundError(f"{format_address(alias, path)} is not a card of {alias}", alias=alias)
+        if path not in out:
+            out.append(path)
+    return out
+
+
+def drop_impact(idx, alias: str, overlay_alias: str, dropped: list[str], included: set[str]):
+    """``(conflicts, cleared, dangling)`` for dropping ``dropped`` from ``alias`` while baking ``included``.
+
+    The new version holds the slice's cards (minus dropped ones and those an included overlay card replaces) plus the
+    included overlay cards. ``cleared``: slice paths whose ``supersedes`` loses a dropped entry; ``dangling``: source
+    addresses whose links will no longer resolve; ``conflicts``: ``extends`` edges, and ``supersedes`` edges from
+    cards outside the new version.
+    """
+    conflicts: list[dict[str, str]] = []
+    cleared: set[str] = set()
+    dangling: set[str] = set()
+    for path in dropped:
+        target = format_address(alias, path)
+        if path in included:
+            conflicts.append({"address": target, "reason": f"{format_address(overlay_alias, path)} replaces it in this bake",
+                              "fix": f"remove `--drop {path}`: the overlay card already takes its place"})
+            continue
+        for kind in ("extends", "supersedes", "wikilink"):
+            for r in idx.inbound(kind, alias, path):
+                src_mount, src_path = r["src_mount"], r["src_path"]
+                if src_mount == alias and (src_path in dropped or src_path in included):
+                    continue  # dropped as well, or replaced by an overlay card (seen as an overlay source)
+                src = format_address(src_mount, src_path)
+                baked_in = src_mount == overlay_alias and src_path in included
+                stays = src_mount == alias or baked_in
+                if kind == "wikilink":
+                    dangling.add(format_address(alias, src_path) if baked_in else src)  # where it lives after the bake
+                elif kind == "supersedes" and stays:
+                    if src_mount == alias:
+                        cleared.add(src_path)  # included overlay cards are cleaned while they are rewritten
+                elif kind == "extends":
+                    conflicts.append({"address": src, "reason": f"extends {target}, which the bake drops",
+                                      "fix": f"rebase it onto the card that replaces {target} (`mindslice write "
+                                             f"{src_path} --op replace --extends <replacement>`) or merge the two"})
+                else:
+                    conflicts.append({"address": src, "reason": f"supersedes {target} but stays outside this bake",
+                                      "fix": f"bake it into {alias} in the same run, or keep {target}"})
+    return conflicts, cleared, dangling
+
+
 def bake(
     ws: "Workspace",
     alias: str,
@@ -97,6 +160,7 @@ def bake(
     name: str | None = None,
     description: str | None = None,
     version: str | None = None,
+    drop: Sequence[str] = (),
 ) -> dict[str, Any]:
     alias = normalize_alias(alias)
     tag_set = {fold(t) for t in ([tags] if isinstance(tags, str) else (tags or [])) if fold(t)}
@@ -116,6 +180,7 @@ def bake(
         cats = idx.catalogs()
         cards = overlay_cards(ws, table)
         slice_paths = {r["path"] for r in idx.all_cards(alias)}
+        dropped = drop_paths(alias, mount, drop, slice_paths)
 
         def targets_slice(raw: str) -> str | None:
             res = resolve_ref(raw, overlay.alias, cats)
@@ -129,7 +194,7 @@ def bake(
             return path in slice_paths or any(targets_slice(r) for r in parsed.extends + parsed.supersedes)
 
         chosen = sorted(p for p, (_, parsed) in cards.items() if selected(p, parsed))
-        if not chosen:
+        if not chosen and not dropped:
             how = f"prefix={prefix!r} tags={sorted(tag_set)}" if (prefix is not None or tag_set) else (
                 f"none extends, supersedes or shares a path with a card in {alias}; pass prefix or tags to choose")
             raise NotFoundError(f"no {overlay.alias} cards to bake into {alias} ({how})", alias=alias)
@@ -149,6 +214,8 @@ def bake(
                                             "into one card first",
                                   "fix": "rewrite the overlay card with the combined text and drop its `extends` link, "
                                          "so one card replaces the slice's"})
+        drop_conflicts, cleared, dangling = drop_impact(idx, alias, overlay.alias, dropped, included)
+        conflicts += drop_conflicts
         if conflicts:
             raise BakeConflictError(f"bake into {alias} stopped before writing: {len(conflicts)} card(s) can't move as they are",
                                     conflicts=conflicts,
@@ -171,12 +238,24 @@ def bake(
             text, parsed = cards[path]
             new_text = rewrite_refs(text, parsed, mapper) if mount else export_text(text, parsed, overlay.alias, cats)
             new_parsed = parse_card(new_text)
-            if path in new_parsed.supersedes:  # it replaces the file it superseded; a self-reference would be a cycle
+            gone = {path, *dropped}  # the file it replaces (a self-reference would be a cycle) and dropped cards
+            if gone & set(new_parsed.supersedes):
                 fields = dict(new_parsed.frontmatter)
-                fields["supersedes"] = [r for r in new_parsed.supersedes if r != path]
+                fields["supersedes"] = [r for r in new_parsed.supersedes if r not in gone]
                 new_text = reassemble(new_parsed, new_text, fields, None)
             files[path] = normalize_newlines(new_text)
             (replaced if path in slice_paths else created).append(format_address(alias, path))
+
+        def to_dropped(raw: str) -> bool:
+            res = resolve_ref(raw, alias, cats)
+            return res.mount == alias and res.path in dropped
+
+        for path in sorted(cleared):  # slice cards that stay lose their supersedes entries to dropped cards
+            text = (mount.root / f"{path}.md").read_text(encoding="utf-8")
+            parsed = parse_card(text)
+            fields = dict(parsed.frontmatter)
+            fields["supersedes"] = [r for r in parsed.supersedes if not to_dropped(r)]
+            files[path] = normalize_newlines(reassemble(parsed, text, fields, None))
 
         sm = load_slice_manifest(mount.root) if mount else SliceManifest(
             name=alias.lstrip("@"), version="0.1.0", alias=alias,
@@ -233,6 +312,9 @@ def bake(
             "dependencies_added": added_deps,
             "warnings": warnings,
         }
+        if dropped:
+            result.update(dropped=[format_address(alias, p) for p in dropped], dangling_links=sorted(dangling),
+                          cleared_supersedes=[format_address(alias, p) for p in sorted(cleared)])
         if new_version:
             result["version"] = new_version
         if dry_run:
@@ -246,6 +328,13 @@ def bake(
                 shutil.copytree(mount.root, tree, symlinks=False, ignore=shutil.ignore_patterns(".git", ".history", ".bake-plan.json"))
             else:
                 tree.mkdir()
+            for path in dropped:
+                file = tree / f"{path}.md"
+                file.unlink()
+                for parent in file.parents:  # folders the drop emptied
+                    if parent == tree or any(parent.iterdir()):
+                        break
+                    parent.rmdir()
             for path, text in files.items():
                 dest = tree / f"{path}.md"
                 dest.parent.mkdir(parents=True, exist_ok=True)
@@ -283,7 +372,8 @@ def bake(
         baked = event("baked", alias=alias, path=str(output), output=str(requested),
                       previous_path=str(mount.root) if mount else None, version=new_version, cards=baked_cards,
                       change_ids=list(dict.fromkeys(id for card in baked_cards for id in card["change_ids"])),
-                      retired_overlay_cards=retired.get("retired_overlay_cards", []))
+                      retired_overlay_cards=retired.get("retired_overlay_cards", []),
+                      **({"dropped": result["dropped"]} if dropped else {}))
         events.append(baked)
         guards = [{"path": str(p), "sha256": file_sha(p)} for p in sorted(output.rglob("*")) if p.is_file()]
         ws.history.transact(actions, events, guards=guards)
