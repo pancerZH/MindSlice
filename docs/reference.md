@@ -185,7 +185,8 @@ configuration file made it do so; `doctor`'s own probe is not recorded. It does 
 model received the startup payload: `client_session` stays `manual` and prints the new-session checks,
 among them a startup check with a planted phrase. A startup payload over about 4,000 characters gets a
 `note`: an app that passes MCP server instructions to the model may cut them near that length, and
-the standing cards are the end of that text.
+the standing cards are the end of that text. A cut also drops the payload's closing line, so a model
+that follows the instructions fetches the payload with `manifest()`.
 
 `mindslice review [ID...]` interactively collects accept/reject/leave-pending choices and checks
 dependencies before one final confirmation. `apply ID...` and `discard ID...` are noninteractive

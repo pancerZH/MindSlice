@@ -123,8 +123,10 @@ def diagnose(root=None):
             add("boot", "pass", f"{boot['total']} standing card(s); {len(payload)} characters in startup payload",
                 standing_cards=boot["total"], payload_characters=len(payload),
                 **({"note": "An app that passes MCP server instructions to the model may cut them at a few thousand "
-                            "characters, and the standing cards come last. Do not count on server instructions alone "
-                            "for a payload this long: the session-start hook or the manifest rule delivers it whole."}
+                            "characters, and the standing cards come last. A cut also drops the payload's closing "
+                            "line, and a model that follows the instructions then fetches the payload with manifest(). "
+                            "Do not count on server instructions alone for a payload this long: the session-start "
+                            "hook or the manifest rule delivers it whole."}
                    if long else {}))
             if boot.get("pending_approval"):
                 add("standing_review", "warn", "Some standing-card changes are still pending, not active",
