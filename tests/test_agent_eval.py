@@ -67,9 +67,11 @@ class PromptTests(unittest.TestCase):
         self.assertEqual(prompts.session_message(1, 5, "2023/03/01 (Wed) 09:00", "T"), "Session 1 of 5, 2023/03/01 (Wed) 09:00:\n\nT")
 
     def test_system_prompts(self):
-        from mindslice.interfaces.mcp_server import INSTRUCTIONS
+        from mindslice.interfaces.mcp_server import INSTRUCTIONS, startup_complete_line
 
-        self.assertEqual(prompts.system_prompt("agent-default"), INSTRUCTIONS + "\n\n" + prompts.TASK)
+        # The arms get the startup payload a workspace without always-loaded cards sends, closing line included.
+        self.assertEqual(prompts.STARTUP, INSTRUCTIONS + "\n\n" + startup_complete_line(0))
+        self.assertEqual(prompts.system_prompt("agent-default"), prompts.STARTUP + "\n\n" + prompts.TASK)
         self.assertTrue(prompts.system_prompt("agent-overlay").endswith(prompts.POLICY + "\n\n" + prompts.OVERLAY))
         self.assertEqual(prompts.session_message(2, 5, "", "x"), "Session 2 of 5:\n\nx")
         self.assertEqual(len(set(prompts.digests().values())), len(prompts.digests()))

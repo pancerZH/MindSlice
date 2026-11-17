@@ -1,6 +1,7 @@
 """The agent prompts, verbatim from ``evals/agent_test.md`` (4.2, 4.3, 4.4), and the session message.
 
-The system prompt is the MCP server's ``INSTRUCTIONS`` string, a blank line, then the task prompt (plus,
+The system prompt is the MCP server's startup payload for a workspace without always-loaded cards
+(``INSTRUCTIONS`` and the line saying the payload is complete), a blank line, then the task prompt (plus,
 per arm, the policy paragraph and the overlay addendum, each after a blank line). ``digests()`` gives
 the SHA-256 of every piece and of each arm's full system prompt; PLAN.md freezes them.
 """
@@ -9,7 +10,11 @@ from __future__ import annotations
 
 import hashlib
 
-from mindslice.interfaces.mcp_server import INSTRUCTIONS
+from mindslice.interfaces.mcp_server import format_instructions
+
+# What `initialize` sends when no card is always-loaded (the arms have none), so a session that has it can
+# browse with manifest(include_always=false) instead of fetching it again.
+STARTUP = format_instructions({"cards": []}).rstrip("\n")
 
 TASK = (
     "You are the long-term memory keeper for one user. You will be shown their conversations with an "
@@ -42,9 +47,9 @@ OVERLAY = (
 )
 
 ARM_PARTS = {
-    "agent-default": (INSTRUCTIONS, TASK),
-    "agent-policy": (INSTRUCTIONS, TASK, POLICY),
-    "agent-overlay": (INSTRUCTIONS, TASK, POLICY, OVERLAY),
+    "agent-default": (STARTUP, TASK),
+    "agent-policy": (STARTUP, TASK, POLICY),
+    "agent-overlay": (STARTUP, TASK, POLICY, OVERLAY),
 }
 # Scripted agents receive the same prompt as the LLM arm they stand in for (and ignore it).
 SCRIPTED_PROMPT = {"scripted-flat": "agent-default", "scripted-oracle": "agent-policy", "scripted-overlay": "agent-overlay"}
@@ -66,6 +71,6 @@ def sha256(text: str) -> str:
 
 
 def digests() -> dict[str, str]:
-    out = {"INSTRUCTIONS": sha256(INSTRUCTIONS), "TASK": sha256(TASK), "POLICY": sha256(POLICY), "OVERLAY": sha256(OVERLAY)}
+    out = {"STARTUP": sha256(STARTUP), "TASK": sha256(TASK), "POLICY": sha256(POLICY), "OVERLAY": sha256(OVERLAY)}
     out.update({f"system:{arm}": sha256(system_prompt(arm)) for arm in ARM_PARTS})
     return out
