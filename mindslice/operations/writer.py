@@ -1,4 +1,4 @@
-"""``write()``: create / replace / append / delete cards in ``overlay/`` or ``staging/``."""
+"""``write()``: create / replace / patch / append / delete cards in ``overlay/`` or ``staging/``."""
 
 from __future__ import annotations
 
@@ -29,6 +29,7 @@ from ..errors import (
     InvalidAddressError,
     LineageCycleError,
     InvalidArgumentsError,
+    MindSliceError,
     NotFoundError,
     PreconditionFailedError,
     ReadOnlyMountError,
@@ -42,7 +43,10 @@ from ..baking.slice_transfer import rewrite_refs
 if TYPE_CHECKING:  # pragma: no cover
     from ..workspace import Workspace
 
-OPS = ("create", "replace", "append", "delete")
+OPS = ("create", "replace", "patch", "append", "delete")
+# What one member of a batch may say; ``stage`` is the whole call's.
+BATCH_FIELDS = ("id", "op", "content", "summary", "title", "tags", "aliases", "extends", "supersedes",
+                "if_match", "load", "reason", "edits")
 
 
 def overlay_card_path(ws: "Workspace", card_id: str, strict: bool = True) -> str:
@@ -89,6 +93,37 @@ def _body_text(content: Any) -> str | None:
     if isinstance(content, (list, tuple)):
         return "\n".join(statement_blocks(content))
     raise TypeError("content must be a string or a list of statements")
+
+
+def _as_edits(edits: Any) -> list[tuple[str, str]]:
+    """``op="patch"`` edits as ``(old, new)`` pairs; each is given as ``{"old": ..., "new": ...}`` or ``[old, new]``."""
+    if not isinstance(edits, (list, tuple)) or not edits:
+        raise InvalidArgumentsError('patch needs edits: a list of {"old": text, "new": text}')
+    out = []
+    for i, edit in enumerate(edits):
+        pair = (edit.get("old"), edit.get("new")) if isinstance(edit, dict) and set(edit) == {"old", "new"} else edit
+        if not isinstance(pair, (list, tuple)) or len(pair) != 2 or not all(isinstance(v, str) for v in pair) or not pair[0]:
+            raise InvalidArgumentsError(f'edits[{i}] must be {{"old": text, "new": text}} with a non-empty old', edit=i)
+        out.append((normalize_newlines(pair[0]), normalize_newlines(pair[1])))
+    return out
+
+
+def apply_edits(text: str, edits: Sequence[tuple[str, str]], address: str) -> str:
+    """``text`` with each ``old`` swapped for its ``new``, in order. The frontmatter is not searched.
+
+    An ``old`` must occur exactly once when its turn comes, so no edit lands somewhere the caller did not
+    mean, and a card that changed since it was read is refused instead of half-edited.
+    """
+    parsed = parse_card(text)
+    after = parsed.after
+    for i, (old, new) in enumerate(edits):
+        found = after.count(old)
+        if found != 1:
+            problem = (f"occurs {found} times; quote more of the text around it" if found else
+                       "is not in the card's summary or body; read() it and quote the current text exactly")
+            raise PreconditionFailedError(f"{address}: edits[{i}].old {problem}", address=address, edit=i, occurrences=found)
+        after = after.replace(old, new)
+    return reassemble(parsed, text, None, after)
 
 
 def humanize(path: str) -> str:
@@ -354,9 +389,13 @@ def write(
     if_match: str | None = None,
     load: str | None = None,
     reason: str | None = None,
+    edits: Any = None,
 ) -> dict[str, Any]:
     """``stage=None`` (the default) stages a change to the always-loaded context for the user's
-    approval and writes anything else straight to ``overlay/``; ``True`` / ``False`` force either."""
+    approval and writes anything else straight to ``overlay/``; ``True`` / ``False`` force either.
+
+    ``op="patch"`` is a ``replace`` whose summary and body come from ``edits`` (see ``apply_edits``)
+    instead of ``content``: the text no edit names stays as it is."""
     from .boot import protection_reason  # evaluate protection against the current workspace
 
     if reason is not None:
@@ -367,6 +406,12 @@ def write(
         raise ValueError(f"unknown op {op!r} (expected one of {', '.join(OPS)})")
     if load is not None and load not in LOAD_VALUES:
         raise ValueError(f"load must be {' or '.join(repr(v) for v in LOAD_VALUES)} (got {load!r})")
+    if op == "patch":
+        if content is not None:
+            raise InvalidArgumentsError("patch takes edits, not content; to swap the whole body use op='replace'")
+        edits = _as_edits(edits)
+    elif edits is not None:
+        raise InvalidArgumentsError(f"edits belong to op='patch', not op={op!r}")
     path = overlay_card_path(ws, id, strict=op == "create")
     tags_l = _as_list("tags", tags)
     aliases_l = _as_list("aliases", aliases)
@@ -382,7 +427,7 @@ def write(
         # replace / append of a card that exists only in a read-only slice (after a bake, say) edits a copy:
         # the result is saved in the overlay as the card's replacement and the slice is left as it is.
         base = None
-        if op in ("replace", "append") and live_text is None and staged_text is None:
+        if op in ("replace", "patch", "append") and live_text is None and staged_text is None:
             base = mounted_base(ws, table, path)
         if stage is not False:
             texts = [live_text, staged_text]
@@ -427,7 +472,7 @@ def write(
                 result.update(write_impact(ws, table, path, parse_card(current), stage=stage, deleting=False))
                 return result  # idempotent retry
             raise AlreadyExistsError(f"{address} already exists with different content", address=address, sha256=current_sha)
-        if op in ("replace", "append") and current is None and base is None:
+        if op in ("replace", "patch", "append") and current is None and base is None:
             raise NotFoundError(f"{address} does not exist{' in staging or overlay' if stage else ''}", address=address)
         if op == "delete" and current is None:
             result["sha256"] = None
@@ -444,9 +489,16 @@ def write(
             return result
 
         seed = fork_seed(base[1], base[0], ws.index.catalogs()) if base is not None else current
+        source = seed
+        if op == "patch":
+            # The caller quotes the card as read() returns it: for a slice card, its text before the copy's
+            # references are qualified.
+            source = apply_edits(base[1] if base is not None else current, edits, address)
+            if base is not None:
+                source = fork_seed(source, base[0], ws.index.catalogs())
         new_text, info = build_text(
-            op, path, seed, content=content, summary=summary, title=title, tags=tags_l,
-            aliases=aliases_l, extends=extends_l, supersedes=supersedes_l, load=load,
+            "replace" if op == "patch" else op, path, source, content=content, summary=summary, title=title,
+            tags=tags_l, aliases=aliases_l, extends=extends_l, supersedes=supersedes_l, load=load,
         )
         result.update(info)
         if base is not None:
@@ -506,5 +558,56 @@ def write(
         return result
 
 
-__all__ = ["write", "write_impact", "build_text", "check_cycles", "prospective_successors", "OPS",
-           "LIST_FIELDS"]
+def write_many(ws: "Workspace", writes: Sequence[dict[str, Any]], stage: bool | None = None) -> list[dict[str, Any]]:
+    """Several writes as one transaction: each sees the ones before it, and all are saved or none.
+
+    Each member is a ``write()`` call (its arguments as a dict, without ``stage``, which is the batch's) and
+    behaves exactly like one. If a member fails, the files are put back as they were, no history is
+    recorded, and the error names the member (``failed_write``). The members' ``affected_backlinks`` /
+    ``affected_extensions`` are then read from the state the whole batch leaves, so a reference a later
+    member repaired is not reported.
+    """
+    if not isinstance(writes, (list, tuple)) or not all(isinstance(w, dict) for w in writes):
+        raise InvalidArgumentsError("a batch is a list of writes, each an object with write()'s arguments")
+    for i, spec in enumerate(writes):
+        unknown = sorted(k for k in spec if k not in BATCH_FIELDS)
+        if unknown or "id" not in spec:
+            problem = f"unknown argument(s) {', '.join(map(repr, unknown))}" if unknown else "missing 'id'"
+            raise InvalidArgumentsError(f"write {i} of the batch: {problem}. Allowed: {', '.join(BATCH_FIELDS)}.",
+                                        failed_write={"index": i, "id": spec.get("id")})
+    with ws._writing() as table:
+        results: list[dict[str, Any]] = []
+        try:
+            with ws.history.batch():
+                for i, spec in enumerate(writes):
+                    failed = {"index": i, "id": spec["id"]}
+                    try:
+                        results.append(write(ws, stage=stage, **spec))
+                    except MindSliceError as exc:
+                        exc.message = f"write {i} of the batch ({spec['id']}) failed, so none of them was saved: {exc.message}"
+                        exc.args = (exc.message,)
+                        exc.details["failed_write"] = failed
+                        raise
+                    except (TypeError, ValueError) as exc:
+                        raise InvalidArgumentsError(
+                            f"write {i} of the batch ({spec['id']}) failed, so none of them was saved: {exc}",
+                            failed_write=failed) from exc
+        except BaseException:
+            ws._sync(table)  # the index follows the files back
+            raise
+        overlay = table.overlay
+        for result in results:
+            for key in ("affected_backlinks", "total_affected_backlinks", "affected_extensions", "total_affected_extensions"):
+                result.pop(key, None)
+            path, staged = result["id"], result["staged"]
+            if result["op"] == "delete":
+                result.update(write_impact(ws, table, path, None, stage=staged, deleting=True, dangling=not staged))
+                continue
+            text = ws.staging.prospective_state(path, overlay.root)[0] if staged else read_card_file(overlay.root / f"{path}.md")[0]
+            if text is not None:
+                result.update(write_impact(ws, table, path, parse_card(text), stage=staged, deleting=False))
+        return results
+
+
+__all__ = ["write", "write_many", "write_impact", "apply_edits", "build_text", "check_cycles", "prospective_successors",
+           "OPS", "BATCH_FIELDS", "LIST_FIELDS"]

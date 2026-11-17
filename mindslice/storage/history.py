@@ -2,6 +2,10 @@
 
 All methods run under the workspace lock. A pending journal contains the exact intended bytes;
 public history contains metadata only. Event IDs make replay after an interrupted append idempotent.
+
+``batch()`` joins several ``transact`` calls into one transaction. Its files change as each call runs, so
+the previous texts are saved first in ``.batch.json``: an error or a crash puts them back, and a clean
+exit turns the whole batch into one pending journal.
 """
 
 from __future__ import annotations
@@ -9,9 +13,10 @@ from __future__ import annotations
 import json
 import os
 import uuid
+from contextlib import contextmanager
 from datetime import datetime, timezone
 from pathlib import Path
-from typing import Any
+from typing import Any, Iterator
 
 from ..model.card import sha256_bytes
 from ..errors import HistoryError
@@ -45,14 +50,36 @@ def file_action(path: Path, text: str | None, prune_root: Path | None = None) ->
             "prune_root": str(prune_root) if prune_root else None}
 
 
+def _read_text(path: Path) -> str | None:
+    try:
+        return path.read_bytes().decode("utf-8")
+    except FileNotFoundError:
+        return None
+    except UnicodeDecodeError as exc:
+        raise HistoryError(f"{path} is not UTF-8 text, so a batch cannot keep its previous content", path=str(path)) from exc
+
+
+def _put(path: Path, text: str | None, prune_root: str | None) -> None:
+    """Make the file hold ``text`` (None: remove it, and the directories that leaves empty under ``prune_root``)."""
+    if text is None:
+        unlink_if_exists(path)
+        if prune_root:
+            prune_empty_dirs(Path(prune_root), path.parent)
+    else:
+        atomic_write_text(path, text)
+
+
 class ChangeHistory:
     def __init__(self, root: Path) -> None:
         self.root = root
         self.path = root / "changes.jsonl"
         self.journal_path = root / ".pending.json"
+        self.batch_path = root / ".batch.json"
+        self._batch: dict[str, Any] | None = None  # an open batch(): files it touched and events it holds back
 
     def has_journal(self) -> bool:
-        return self.journal_path.exists()
+        """Something to recover: a pending journal, or the batch journal of a process that died mid-batch."""
+        return self.journal_path.exists() or (self._batch is None and self.batch_path.exists())
 
     def _read(self) -> tuple[list[dict[str, Any]], int]:
         try:
@@ -101,19 +128,99 @@ class ChangeHistory:
                  *, guards: list[dict[str, Any]] | None = None) -> None:
         if self.has_journal():
             raise HistoryError("an unfinished history transaction must be recovered first", path=str(self.journal_path))
+        if self._batch is not None:
+            if guards:
+                raise HistoryError("a guarded transaction cannot be part of a batch")
+            self._batch_transact(actions, events)
+            return
         # Validate existing history before changing any content.
         self.events()
         journal = {"version": 1, "actions": actions, "events": events, "guards": guards or []}
         atomic_write_text(self.journal_path, json.dumps(journal, ensure_ascii=False) + "\n")
         self.recover()
 
+    # -- batch: several transact() calls, saved together or not at all -----
+    @contextmanager
+    def batch(self) -> Iterator[None]:
+        if self._batch is not None:  # already inside one: part of it
+            yield
+            return
+        if self.has_journal():
+            raise HistoryError("an unfinished history transaction must be recovered first", path=str(self.journal_path))
+        self.events()  # validate existing history before changing any content
+        self._batch = {"files": {}, "events": []}
+        try:
+            yield
+        except BaseException:
+            files, self._batch = self._batch["files"], None
+            self._undo(files)
+            raise
+        files, events, self._batch = self._batch["files"], self._batch["events"], None
+        if not files and not events:
+            return
+        actions = []
+        for path, entry in files.items():
+            text = _read_text(Path(path))
+            actions.append({"path": path, "before_sha256": entry["sha256"], "text": text,
+                            "after_sha256": sha256_bytes(text.encode("utf-8")) if text is not None else None,
+                            "prune_root": entry["prune_root"]})
+        journal = {"version": 1, "actions": actions, "events": events, "guards": []}
+        atomic_write_text(self.journal_path, json.dumps(journal, ensure_ascii=False) + "\n")  # the batch is now decided
+        unlink_if_exists(self.batch_path)
+        self.recover()
+
+    def _batch_transact(self, actions: list[dict[str, Any]], events: list[dict[str, Any]]) -> None:
+        assert self._batch is not None
+        files = self._batch["files"]
+        for action in actions:
+            path = Path(action["path"])
+            entry = files.setdefault(action["path"], {"text": _read_text(path), "sha256": file_sha(path),
+                                                      "written": [], "prune_root": None})
+            entry["written"].append(action["after_sha256"])
+            entry["prune_root"] = action.get("prune_root") or entry["prune_root"]
+        # The previous texts are on disk before any file changes.
+        atomic_write_text(self.batch_path, json.dumps({"version": 1, "files": files}, ensure_ascii=False) + "\n")
+        for action in actions:
+            _put(Path(action["path"]), action["text"], action.get("prune_root"))
+        self._batch["events"] += events
+
+    def _undo(self, files: dict[str, dict[str, Any]]) -> None:
+        """Put back the files a batch changed. A file that is neither as the batch found it nor as it wrote it stops this."""
+        conflicts = []
+        for path, entry in files.items():
+            actual = file_sha(Path(path))
+            if actual != entry["sha256"] and actual not in entry["written"]:
+                conflicts.append({"path": path, "current_sha256": actual})
+        if conflicts:
+            raise HistoryError("an unfinished batch could not be undone: files changed outside it; "
+                               "files and journal were preserved", conflicts=conflicts, journal=str(self.batch_path))
+        for path, entry in files.items():
+            if file_sha(Path(path)) != entry["sha256"]:
+                _put(Path(path), entry["text"], entry["prune_root"])
+        unlink_if_exists(self.batch_path)
+
     def recover(self) -> bool:
+        if self._batch is not None:
+            return False  # a batch is open in this process: its journal is not a leftover
+        undone = False
+        if self.batch_path.exists():
+            if self.journal_path.exists():  # the batch had been decided: only its pending journal counts
+                unlink_if_exists(self.batch_path)
+            else:
+                try:
+                    files = json.loads(self.batch_path.read_text(encoding="utf-8"))["files"]
+                    if not isinstance(files, dict):
+                        raise ValueError("invalid journal structure")
+                except (ValueError, UnicodeDecodeError, KeyError, TypeError) as exc:
+                    raise HistoryError("invalid batch journal; preserved for inspection", path=str(self.batch_path)) from exc
+                self._undo(files)
+                undone = True
         try:
             journal = json.loads(self.journal_path.read_text(encoding="utf-8"))
             if journal.get("version") != 1 or not isinstance(journal.get("actions"), list) or not isinstance(journal.get("events"), list):
                 raise ValueError("invalid journal structure")
         except FileNotFoundError:
-            return False
+            return undone
         except (ValueError, UnicodeDecodeError, AttributeError) as exc:
             raise HistoryError("invalid history journal; preserved for inspection", path=str(self.journal_path)) from exc
         self.events()
@@ -130,13 +237,8 @@ class ChangeHistory:
                                "files and journal were preserved", conflicts=conflicts, journal=str(self.journal_path))
         for action in journal["actions"]:
             path = Path(action["path"])
-            if file_sha(path) != action["after_sha256"]:
-                if action["text"] is None:
-                    unlink_if_exists(path)
-                else:
-                    atomic_write_text(path, action["text"])
-            if action["text"] is None and action.get("prune_root"):
-                prune_empty_dirs(Path(action["prune_root"]), path.parent)
+            if action["text"] is None or file_sha(path) != action["after_sha256"]:
+                _put(path, action["text"], action.get("prune_root"))
         self.append(journal["events"])
         unlink_if_exists(self.journal_path)  # last: a crash after append must only deduplicate events
         return True

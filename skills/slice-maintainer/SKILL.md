@@ -39,7 +39,9 @@ Pick the right operation:
 | Refines, adds an exception or if-then rule to, or depends on a card that stays valid | `create` with `--extends @project/api/auth-flow` |
 | An overlay card turns out to depend on another | `--op append --extends <baseline>` (adds the edge, text unchanged) |
 | A card is now wrong or outdated (changed value, correction) | `create` with `--supersedes @project/api/auth-flow` |
+| Change a few statements or a link on a card, leaving the rest as it is | `--op patch --edit "<old text>" "<new text>"` (each old text exactly once in the summary or body) |
 | Rewrite an overlay card you just read | `--op replace --if-match <sha256 from read>` |
+| Writes that belong together (a move, a split, a change with its repairs) | one `write` with `--also <file.json>`: all are saved or none |
 | A request to forget, or a card that should never have been written | `--op delete` |
 | The same, for a card in a base slice; or a forwarding stub nothing needs any more | `mindslice bake @slice --drop <path>` when baking is authorized (refused while a card extends it; previous slice directories still hold it) |
 | The response lists `affected_backlinks` / `affected_extensions` | Update or rebase each one now (below) |

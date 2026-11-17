@@ -8,7 +8,7 @@ from typing import TYPE_CHECKING, Any, Iterable, Sequence
 from ..model.addressing import format_address, normalize_alias, parse_address
 from ..model.card import KNOWN_FIELDS, LOAD_ALWAYS, SUMMARY_PREVIEW_CHARS, parse_card, truncate
 from ..storage.config import DESCRIPTION_CHARS, OVERVIEW_PATH, MountTable, load_slice_manifest
-from ..errors import InvalidAddressError, NotFoundError
+from ..errors import InvalidAddressError, MindSliceError, NotFoundError
 from ..model.lineage import FollowSpec, LineageView, TrustPolicy
 from ..storage.card_io import read_card_file
 
@@ -504,6 +504,40 @@ def read(
     with ws._reading() as table:
         ctx = _Ctx(ws, table, follow_supersedes)
         return resolve(ctx, address, max_backlinks, backlinks_offset, max_extensions, extensions_offset)
+
+
+def read_many(
+    ws: "Workspace",
+    addresses: Iterable[str],
+    follow_supersedes: FollowSpec = True,
+    max_backlinks: int = 10,
+    backlinks_offset: int = 0,
+    max_extensions: int = 5,
+    extensions_offset: int = 0,
+) -> dict[str, Any]:
+    """``read()`` for several addresses under one lock: ``cards`` holds each result in the order asked.
+
+    An address that cannot be read gets its error in place (``requested`` plus the error's fields) and the
+    others are still returned.
+    """
+    addresses = list(addresses)
+    if not all(isinstance(a, str) for a in addresses):
+        raise TypeError("addresses must be strings")
+    _nonneg(
+        max_backlinks=max_backlinks,
+        backlinks_offset=backlinks_offset,
+        max_extensions=max_extensions,
+        extensions_offset=extensions_offset,
+    )
+    cards: list[dict[str, Any]] = []
+    with ws._reading() as table:
+        for address in addresses:
+            try:
+                cards.append(resolve(_Ctx(ws, table, follow_supersedes), address, max_backlinks, backlinks_offset,
+                                     max_extensions, extensions_offset))
+            except MindSliceError as exc:
+                cards.append({"requested": address, **exc.to_dict()})
+    return {"cards": cards, "total": len(cards)}
 
 
 def resolve(

@@ -32,6 +32,8 @@ def _sync(sync: dict[str, Any]) -> str:
 
 def render_read(result: dict[str, Any]) -> str:
     """Composed view of a ``read()`` result: baselines, the card, extensions, then lineage notices."""
+    if "cards" in result:  # several addresses: each card's view, or its error, in the order asked
+        return "\n".join((render_error(c) if "error" in c else render_read(c)).rstrip() + "\n" for c in result["cards"])
     out: list[str] = []
 
     def card(c: dict[str, Any], heading: str) -> None:
@@ -128,7 +130,7 @@ def render_search(result: dict[str, Any]) -> str:
 # --- writes ----------------------------------------------------------------------------------
 
 
-_VERBS = {"create": "Created", "replace": "Replaced", "append": "Appended to", "delete": "Deleted"}
+_VERBS = {"create": "Created", "replace": "Replaced", "patch": "Patched", "append": "Appended to", "delete": "Deleted"}
 
 
 def render_write(result: dict[str, Any]) -> str:
@@ -154,7 +156,7 @@ def render_write(result: dict[str, Any]) -> str:
             total = result.get("total_" + key, len(result[key]))
             lines.append(f"{key.replace('_', ' ')} ({total}): {_refs(result[key])}")
     lines += [f"warning: {w}" for w in result.get("warnings", [])]
-    return _join(lines)
+    return _join(lines) + "".join(render_write(other) for other in result.get("also", []))
 
 
 def render_apply(result: dict[str, Any]) -> str:

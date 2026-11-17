@@ -132,7 +132,8 @@ def backup(ws, output):
             root = next(r for r in roots if path.is_relative_to(r))
             return (PurePosixPath(locations[root]) / path.relative_to(root).as_posix()).as_posix()
         snapshots = {root: inventory(root, ('.cache',) if root == ws.root else ()) for root in roots}
-        if any(p in snapshots[ws.root]['files'] for p in ('staging/.apply_journal.json', '.history/.pending.json')):
+        if any(p in snapshots[ws.root]['files'] for p in ('staging/.apply_journal.json', '.history/.pending.json',
+                                                           '.history/.batch.json')):
             raise RecoveryError('unfinished transaction; recover it before backing up')
         target.parent.mkdir(parents=True, exist_ok=True)
         temporary = Path(tempfile.mkdtemp(prefix='.mindslice-backup-', dir=target.parent))
@@ -181,7 +182,8 @@ def _load_backup(source):
         raise RecoveryError('backup contents do not match the manifest; no workspace restored')
     if 'workspace/mounts.toml' not in files:
         raise RecoveryError('backup has no workspace mount table')
-    if any(p in files for p in ('workspace/staging/.apply_journal.json', 'workspace/.history/.pending.json')):
+    if any(p in files for p in ('workspace/staging/.apply_journal.json', 'workspace/.history/.pending.json',
+                                'workspace/.history/.batch.json')):
         raise RecoveryError('backup contains an unfinished transaction; refusing to replay old absolute paths')
     roots = metadata.get('roots')
     if not isinstance(roots, dict) or not isinstance(metadata.get('mounts'), list):

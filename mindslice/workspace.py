@@ -200,18 +200,32 @@ class Workspace:
                max_neighbors: int = 3, follow_supersedes: FollowSpec = True) -> dict[str, Any]:
         return query.search(self, query_text, source, tags, k, offset, max_neighbors, follow_supersedes)
 
-    def read(self, address: str, follow_supersedes: FollowSpec = True, max_backlinks: int = 10,
+    def read(self, address: str | Sequence[str], follow_supersedes: FollowSpec = True, max_backlinks: int = 10,
              backlinks_offset: int = 0, max_extensions: int = 5, extensions_offset: int = 0) -> dict[str, Any]:
-        return query.read(self, address, follow_supersedes, max_backlinks, backlinks_offset,
-                          max_extensions, extensions_offset)
+        """One card, or for a list of addresses ``{"cards": [...]}`` with each card (or its error) in order."""
+        read = query.read if isinstance(address, str) else query.read_many
+        return read(self, address, follow_supersedes, max_backlinks, backlinks_offset, max_extensions, extensions_offset)
 
     def write(self, id: str, op: str = "create", content: Any = None, summary: str | None = None,
               title: str | None = None, tags: Sequence[str] | None = None, aliases: Sequence[str] | None = None,
               extends: Sequence[str] | None = None, supersedes: Sequence[str] | None = None,
-              stage: bool | None = None, if_match: str | None = None, load: str | None = None, reason: str | None = None) -> dict[str, Any]:
-        """``stage=None`` stages changes to the always-loaded context for approval (see ``boot``)."""
-        return writer.write(self, id, op, content, summary, title, tags, aliases, extends, supersedes, stage,
-                            if_match, load, reason)
+              stage: bool | None = None, if_match: str | None = None, load: str | None = None, reason: str | None = None,
+              edits: Any = None, also: Sequence[dict[str, Any]] | None = None) -> dict[str, Any]:
+        """``stage=None`` stages changes to the always-loaded context for approval (see ``boot``).
+
+        ``also`` lists further writes (dicts of these arguments, without ``stage`` and ``also``) saved in the
+        same transaction, in order after this one: all of them are saved or none. Their results come back
+        under ``also``; one without a ``reason`` takes this call's.
+        """
+        if not also:
+            return writer.write(self, id, op, content, summary, title, tags, aliases, extends, supersedes, stage,
+                                if_match, load, reason, edits)
+        first = {"id": id, "op": op, "content": content, "summary": summary, "title": title, "tags": tags,
+                 "aliases": aliases, "extends": extends, "supersedes": supersedes, "if_match": if_match,
+                 "load": load, "reason": reason, "edits": edits}
+        rest = [{"reason": reason, **spec} if isinstance(spec, dict) else spec for spec in also]
+        result, *others = writer.write_many(self, [first, *rest], stage)
+        return {**result, "also": others}
 
     # ------------------------------------------------------------------
     # Group B: slice management, linting & packaging

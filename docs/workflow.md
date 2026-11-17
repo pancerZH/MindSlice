@@ -55,7 +55,7 @@ overlay cards waiting to be baked; this does not track external edits to the sli
 slice destination, standing notes among them, are saved memory and do not make a workspace unclean.
 
 **Updating a baked card.** After a bake the card lives in the slice and its overlay copy is gone,
-but the agent keeps updating it under the same id: `replace` and `append` save an edited copy in the
+but the agent keeps updating it under the same id: `replace`, `patch` and `append` save an edited copy in the
 overlay that supersedes the slice's card, so searches and reads return the new text at once. The
 slice stays as it was, `status` shows the copy under that slice, and the next `bake` folds it into a
 new version.

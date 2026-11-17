@@ -112,12 +112,14 @@ TOOLS: list[dict[str, Any]] = [
             "Read one card by address: '@alias/path' (exact mount) or 'path' (highest-precedence mount wins; other "
             "same-path cards are listed in shadows). Follows supersedes to the replacement (redirected_from; untrusted "
             "replacements are listed in superseded_by_untrusted and bypassed_replacements, not followed), composes "
-            "extends baselines/extensions, and returns sha256 (pass it as write.if_match), links and backlinks."
+            "extends baselines/extensions, and returns sha256 (pass it as write.if_match), links and backlinks. "
+            "A list of addresses reads them in one call: cards holds each card, or its error, in the order asked."
         ),
         "inputSchema": {
             "type": "object",
             "properties": {
-                "address": {"type": "string", "description": "e.g. \"@project/api/auth-flow\" or \"api/auth-flow\""},
+                "address": {"type": ["string", "array"], "items": {"type": "string"},
+                            "description": "e.g. \"@project/api/auth-flow\" or \"api/auth-flow\"; or a list of them"},
                 "follow_supersedes": _FOLLOW_SCHEMA,
                 "max_backlinks": _int(10, "backlinks per page"),
                 "backlinks_offset": _int(0, "backlinks pagination offset"),
@@ -139,8 +141,12 @@ TOOLS: list[dict[str, Any]] = [
             "a short summary and only the self-contained '- ' bullet statements needed to keep the concrete values, "
             "names, dates and conditions (search is lexical: a word you leave out can't be found); link related cards "
             "with [[path]] (within @overlay) or [[@alias/path]] (when linking to a card in another slice). supersedes and delete act on whole cards, so keep facts that can change on their own on "
-            "separate cards. op=create (idempotent if identical), replace (only the fields you pass; content swaps the whole body, so include every statement that still holds, not just what changed), append (adds "
-            "bullets, skips duplicates; unions tags/aliases/extends/supersedes), delete. replace/append on a card "
+            "separate cards. op=create (idempotent if identical), replace (only the fields you pass; content swaps the whole body, so include every statement that still holds, not just what changed), "
+            "patch (edits swap only the text you quote, each old exactly once in the card's summary or body, and the "
+            "rest stays as it is: the op for changing a few statements or a link), append (adds "
+            "bullets, skips duplicates; unions tags/aliases/extends/supersedes), delete. also holds further writes "
+            "saved together with this one, all or none (a move, a split, a change with the repairs it calls for). "
+            "replace/patch/append on a card "
             "that lives only in a read-only slice (search or read found it as @slice/path) work with the same id: "
             "the edited copy is saved in @overlay as that card's replacement (forked_from in the result). "
             "supersedes: this card "
@@ -166,8 +172,16 @@ TOOLS: list[dict[str, Any]] = [
                 "id": {"type": "string", "description": "overlay-relative card path without .md, named by durable topic or slot, "
                        "e.g. \"team/lead\" (not \"team/lead-sarah-chen\"); if the slot's id is taken by the card being "
                        "superseded, qualify it with the date of the change (\"team/lead-2026-11\"), not the new value"},
-                "op": {"type": "string", "enum": ["create", "replace", "append", "delete"], "default": "create"},
+                "op": {"type": "string", "enum": ["create", "replace", "patch", "append", "delete"], "default": "create"},
                 "content": {"type": ["string", "array"], "items": {"type": "string"}, "description": "card body (Markdown), or bullet statements for append; qualify cross-slice wikilinks as [[@alias/path]] (same-@overlay links can use [[path]])"},
+                "edits": {"type": "array", "items": {"type": "object", "properties": {"old": {"type": "string"}, "new": {"type": "string"}},
+                                                     "required": ["old", "new"], "additionalProperties": False},
+                          "description": "op=patch: text swaps applied in order; each old is quoted exactly from the card's current "
+                          "summary or body and must occur exactly once there (quote more around it if it does not); new may be empty"},
+                "also": {"type": "array", "items": {"type": "object"},
+                         "description": "further writes saved in one transaction with this one, in order (each sees the ones before "
+                         "it); if any fails, none is saved. Each item is an object of this tool's arguments (id, op, ...) "
+                         "without stage and also, and takes this call's reason unless it has its own; results come back under also"},
                 "summary": {"type": "string", "description": "1-2 sentence abstract (<= 240 chars) stating the key fact with its concrete value; shown in search previews"},
                 "title": {"type": "string", "description": "specific, descriptive title; the most heavily weighted search field"},
                 "tags": {"type": "array", "items": {"type": "string"}, "description": "facets; searched, and filterable with search(tags=...)"},
@@ -210,7 +224,7 @@ INSTRUCTIONS = (
     "the card of the subject it is about; a "
     "current-state card says only where things stand now and links to the rest. Keep every card true and "
     "complete: replace the statements that are now wrong instead of adding the "
-    "newer fact beside them. op=replace swaps the whole body, so send every statement that "
+    "newer fact beside them. op=patch swaps only the text you quote; op=replace swaps the whole body, so send every statement that "
     "still holds, never only the latest change or a note that the rest is unchanged; append only adds "
     "statements that are new, and a card that has grown to cover several topics is split. Use extends when a card refines, adds an exception or if-then "
     "rule to, or depends on another, supersedes to replace an outdated card (not delete), and delete only to "

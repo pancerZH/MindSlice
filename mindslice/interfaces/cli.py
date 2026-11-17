@@ -134,7 +134,8 @@ def build_parser() -> argparse.ArgumentParser:
     s.add_argument("--follow", help="follow_supersedes: all (default) | none | comma-separated roles/@aliases")
 
     s = sub.add_parser("read", help="exact resolution of an address (with lineage composition)")
-    s.add_argument("address", help="@alias/path, unambiguous alias/path, or relative card path (./path forces relative)")
+    s.add_argument("address", nargs="+",
+                   help="@alias/path, unambiguous alias/path, or relative card path (./path forces relative); several read each")
     s.add_argument("--follow", help="follow_supersedes: all (default) | none | comma-separated roles/@aliases")
     s.add_argument("--max-backlinks", type=int, default=10)
     s.add_argument("--backlinks-offset", type=int, default=0)
@@ -142,11 +143,16 @@ def build_parser() -> argparse.ArgumentParser:
     s.add_argument("--extensions-offset", type=int, default=0)
     s.add_argument("--markdown", action="store_true", help=argparse.SUPPRESS)  # deprecated: now the default
 
-    s = sub.add_parser("write", help="create/replace/append/delete a card in overlay/ (or staging/)")
+    s = sub.add_parser("write", help="create/replace/patch/append/delete a card in overlay/ (or staging/)")
     s.add_argument("id", help="overlay-relative card id, e.g. api/auth-edge-cases")
-    s.add_argument("--op", choices=("create", "replace", "append", "delete"), default="create")
+    s.add_argument("--op", choices=("create", "replace", "patch", "append", "delete"), default="create")
     s.add_argument("--content", help="body text (append: bullet statements)")
     s.add_argument("--content-file", help="read content from file ('-' = stdin)")
+    s.add_argument("--edit", action="append", nargs=2, metavar=("OLD", "NEW"), dest="edits",
+                   help="--op patch: swap OLD, which must occur exactly once in the summary or body, for NEW (repeatable)")
+    s.add_argument("--also", metavar="FILE",
+                   help="JSON list of further writes ({\"id\": ..., \"op\": ..., ...}) saved in the same transaction "
+                        "as this one, all or none ('-' = stdin)")
     s.add_argument("--summary")
     s.add_argument("--reason", help="why this change is needed; stored in engine history, not in the card")
     s.add_argument("--title")
@@ -336,17 +342,20 @@ def _dispatch(ws: Workspace, args: argparse.Namespace) -> int:
             render.render_search)
     elif cmd == "read":
         with ws._reading():
-            address = cli_reference(ws, args.address)
-            result = ws.read(address, _follow(args.follow), args.max_backlinks, args.backlinks_offset,
-                             args.max_extensions, args.extensions_offset)
+            addresses = [cli_reference(ws, address) for address in args.address]
+            result = ws.read(addresses[0] if len(addresses) == 1 else addresses, _follow(args.follow), args.max_backlinks,
+                             args.backlinks_offset, args.max_extensions, args.extensions_offset)
         out(result, render.render_read)
     elif cmd == "write":
         content = _content(args)
+        also = None
+        if args.also is not None:
+            also = json.loads(sys.stdin.read() if args.also == "-" else Path(args.also).read_text(encoding="utf-8"))
         with ws._writing() as table:
             extends = [cli_reference(ws, ref, source=table.overlay.alias) for ref in args.extends] if args.extends else None
             supersedes = [cli_reference(ws, ref, source=table.overlay.alias) for ref in args.supersedes] if args.supersedes else None
             result = ws.write(args.id, args.op, content, args.summary, args.title, args.tags, args.aliases,
-                              extends, supersedes, args.stage, args.if_match, args.load, args.reason)
+                              extends, supersedes, args.stage, args.if_match, args.load, args.reason, args.edits, also)
         out(result, render.render_write)
     elif cmd == "mount":
         out(ws.mount(_cwd_path(args.path), args.alias, args.precedence, args.role,

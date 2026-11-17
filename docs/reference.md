@@ -77,7 +77,8 @@ workspace/
 │   └── .apply_journal.json  # exists only while an apply() batch is in flight
 ├── .history/          # durable, engine-owned change metadata; not a cache
 │   ├── changes.jsonl  # proposals, applied/discarded changes and baked versions
-│   └── .pending.json  # exists only during a recoverable history/content transaction
+│   ├── .pending.json  # exists only during a recoverable history/content transaction
+│   └── .batch.json    # exists only while a write with `also` runs: what to put back if it fails
 └── .cache/            # disposable: index.sqlite + workspace.lock
 ```
 
@@ -127,8 +128,8 @@ the highest-precedence mount; written **inside a card**, it resolves only within
 | :-- | :-- | :-- |
 | A (MCP) | `manifest(limit=20, offset=0, max_folders_per_mount=10, include_overview=False, include_always=True)` | mounts, roles, counts, 160-char descriptions, bounded folder lists, always-loaded cards; over MCP also `instructions`, the usage text |
 | A (MCP) | `search(query, source=None, tags=None, k=10, offset=0, max_neighbors=3, follow_supersedes=True)` | `score = -bm25(10,5,3,2,1) > 0`; supersession redirect; 240-char summaries; over MCP `limit` is accepted for `k` |
-| A (MCP) | `read(address, follow_supersedes=True, max_backlinks=10, backlinks_offset=0, max_extensions=5, extensions_offset=0)` | forwarding, extends composition, shadows, backlinks, `sha256` |
-| A (MCP) | `write(id, op="create"\|"replace"\|"append"\|"delete", content, summary, title, tags, aliases, extends, supersedes, stage=None, if_match=None, load=None, reason=None)` | overlay only; cycle checks; verified TOML round-trip; `replace` / `append` of a card that lives only in a mounted slice save an edited copy that supersedes it (`forked_from`); `affected_backlinks` / `affected_extensions` when it supersedes or deletes; changes to always-loaded cards are staged |
+| A (MCP) | `read(address, follow_supersedes=True, max_backlinks=10, backlinks_offset=0, max_extensions=5, extensions_offset=0)` | forwarding, extends composition, shadows, backlinks, `sha256`; a list of addresses returns `cards`, each card or its error in the order asked |
+| A (MCP) | `write(id, op="create"\|"replace"\|"patch"\|"append"\|"delete", content, summary, title, tags, aliases, extends, supersedes, stage=None, if_match=None, load=None, reason=None, edits=None, also=None)` | overlay only; cycle checks; verified TOML round-trip; `patch` swaps only the text its `edits` quote; `also` saves further writes in the same transaction; `replace` / `patch` / `append` of a card that lives only in a mounted slice save an edited copy that supersedes it (`forked_from`); `affected_backlinks` / `affected_extensions` when it supersedes or deletes; changes to always-loaded cards are staged |
 | A | `boot()` | resolved always-loaded cards; CLI `boot` emits the full startup payload, `--cards-only` emits card content |
 | B | `mount(path, alias, precedence, role, retire_overlay=True)` / `unmount(alias)` | updates `mounts.toml` and the index; retires overlay copies the slice holds unchanged |
 | B | `status()` | all mounts, pending review files and conflicts, dirty slices and unassigned overlay cards; `clean` when nothing is pending and no slice is dirty |
@@ -244,10 +245,62 @@ never silently rebased: if `B` is superseded, `read(B)` reports `unrebased_exten
 baseline of a baseline counts), `missing_baselines` names a reference on it that no longer resolves
 (a deleted baseline), and `search()` previews carry both.
 
+### Changing part of a card
+
+`replace` with `content` swaps the whole body, so a statement the caller leaves out is gone. `patch`
+changes only what it names:
+
+```bash
+mindslice write team/lead --op patch --edit "Standup at 09:30." "Standup at 10:00." --reason "Moved by the team."
+```
+
+```python
+ws.write("team/lead", op="patch", edits=[{"old": "Standup at 09:30.", "new": "Standup at 10:00."}])
+```
+
+Each `old` is quoted from the card's summary or body as `read()` returns them and must occur exactly
+once there when its turn comes (edits apply in order). One that is missing or occurs more often fails
+the whole write with `precondition_failed` (`edit` is its position, `occurrences` the count): quote
+more of the surrounding text, or read the card again if it changed. The frontmatter is not searched;
+`title`, `tags`, `aliases`, `extends`, `supersedes`, `load` and `summary` are passed as with
+`replace`. `if_match` is optional, since an exact `old` already ties the edit to the text it was
+written against.
+
+### Several writes in one call
+
+A move, a split, or a change together with the repairs it calls for is several writes that only make
+sense together. `also` lists the further ones:
+
+```python
+ws.write("new/place", summary="Where the thing lives.", content=["It lives in room 4."], reason="Moved under new/.",
+         also=[{"id": "old/place", "op": "delete"},
+               {"id": "index", "op": "patch", "edits": [{"old": "[[old/place]]", "new": "[[new/place]]"}]}])
+```
+
+```bash
+mindslice write new/place --summary "Where the thing lives." --also moves.json   # a JSON list of such objects; '-' = stdin
+```
+
+They run in order after the call's own write, under one lock, and each behaves exactly like a
+separate `write()` that sees the ones before it (a member that changes the always-loaded context is
+staged for approval like any such write). All of them are saved or none: if a member fails, every file
+is put back, no history event is recorded, and the error carries `failed_write` (`index`, with 0 the
+call's own write, and `id`). The results of the further writes come back under `also`, in order. A
+member takes the call's `reason` unless it has its own, and `stage` is the call's. The
+`affected_backlinks` / `affected_extensions` of every member are read from the state the whole batch
+leaves, so what a later member repaired is not reported. In `--also` files, references are written as
+in the API (`@alias/path`), without the CLI shorthand.
+
+`read` takes several addresses the same way (`mindslice read a b c`, `ws.read(["a", "b", "c"])`, a
+list for `address` over MCP) and returns `{"cards": [...], "total": n}`: each card in the order asked,
+and for an address that cannot be read an entry with `requested` and the error's fields, while the
+others are still returned.
+
 ### Editing a card that lives in a slice
 
 Mounted slices are read-only, and after a bake the overlay copy of a card is gone: the card is
-`@slice/path` now. `write(path, op="replace" | "append")` still works with the same id. When the
+`@slice/path` now. `write(path, op="replace" | "patch" | "append")` still works with the same id
+(a `patch` quotes the card as `read()` shows it). When the
 overlay (and staging) has no card at that path and a mounted slice does, the engine edits a copy of
 the card `read(path)` selects and saves it in the overlay:
 
@@ -450,7 +503,8 @@ file records metadata, not old card bodies, so it is not a content rollback stor
 - Reads take `LOCK_SH` and writes take `LOCK_EX` (`fcntl.flock`) on `.cache/workspace.lock`.
 - Before every operation, the engine re-indexes files whose `(mtime_ns, size)` changed. That covers
   editor saves, creations, renames and deletions. It also finishes any interrupted `apply()` it finds
-  (`staging/.apply_journal.json`) or history transaction (`.history/.pending.json`), upgrading to
+  (`staging/.apply_journal.json`) or history transaction (`.history/.pending.json`), and undoes a
+  multi-write batch a crash cut short (`.history/.batch.json`), upgrading to
   `LOCK_EX` only when needed. An edit that keeps both
   mtime and size identical is invisible to this cheap check; `validate(rebuild_index=True)` catches it.
 - File writes are atomic (temp file, `fsync`, `os.replace`). `apply()` removes the journal last, so a
@@ -462,7 +516,10 @@ file records metadata, not old card bodies, so it is not a content rollback stor
   carries its events in the existing apply journal. Recovery deduplicates by event ID, repairs an
   interrupted final JSONL line and removes the journal last. A history transaction with externally
   changed files (or missing/changed baked output) stops with `history_error`, preserving the files
-  and journal for inspection. Complete malformed log records also stop writes. The temporary
+  and journal for inspection. A `write` with `also` changes its files as its members run, so it first
+  saves their previous content in `.history/.batch.json`; a failed member, or the next open after a
+  crash, puts them back (stopping with `history_error` at a file changed since), and a batch that
+  completed becomes one ordinary recovery journal before that file is removed. Complete malformed log records also stop writes. The temporary
   recovery journal can contain intended file contents; the permanent JSONL log contains metadata.
 
 ## Slice lifecycle
