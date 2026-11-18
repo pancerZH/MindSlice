@@ -14,6 +14,7 @@ import json
 import os
 import uuid
 from contextlib import contextmanager
+from dataclasses import dataclass, field
 from datetime import datetime, timezone
 from pathlib import Path
 from typing import Any, Iterator
@@ -69,6 +70,15 @@ def _put(path: Path, text: str | None, prune_root: str | None) -> None:
         atomic_write_text(path, text)
 
 
+@dataclass
+class _Parsed:
+    file: tuple[int, int]  # st_dev, st_ino of the log
+    offset: int = 0  # bytes of complete records
+    last: bytes = b""  # the last complete record, to notice a log rewritten in place
+    events: list[dict[str, Any]] = field(default_factory=list)
+    ids: dict[str, dict[str, Any]] = field(default_factory=dict)
+
+
 class ChangeHistory:
     def __init__(self, root: Path) -> None:
         self.root = root
@@ -76,18 +86,37 @@ class ChangeHistory:
         self.journal_path = root / ".pending.json"
         self.batch_path = root / ".batch.json"
         self._batch: dict[str, Any] | None = None  # an open batch(): files it touched and events it holds back
+        self._parsed: _Parsed | None = None  # what _read() has parsed so far
 
     def has_journal(self) -> bool:
         """Something to recover: a pending journal, or the batch journal of a process that died mid-batch."""
         return self.journal_path.exists() or (self._batch is None and self.batch_path.exists())
 
     def _read(self) -> tuple[list[dict[str, Any]], int]:
+        """The complete records and their length in bytes.
+
+        Records an earlier call parsed are kept while the log is the same file and still holds them where they
+        were, so a long-lived process (the MCP server) parses only what was appended since.
+        """
         try:
-            data = self.path.read_bytes()
+            stream = self.path.open("rb")
         except FileNotFoundError:
+            self._parsed = None
             return [], 0
-        events = []
-        offset = 0
+        with stream:
+            stat = os.fstat(stream.fileno())
+            file = (stat.st_dev, stat.st_ino)
+            known = self._parsed
+            if known is not None and (known.file != file or known.offset > stat.st_size):
+                known = None
+            if known is not None:
+                stream.seek(known.offset - len(known.last))
+                if stream.read(len(known.last)) != known.last:
+                    known = None  # rewritten in place
+            known = known or _Parsed(file)
+            stream.seek(known.offset)
+            data = stream.read()
+        new, offset, last = [], known.offset, known.last
         for line in data.splitlines(keepends=True):
             if not line.endswith(b"\n"):
                 break  # an interrupted last append; replay rewrites it from the durable journal
@@ -97,29 +126,35 @@ class ChangeHistory:
                     raise ValueError("missing event_id")
             except (ValueError, UnicodeDecodeError) as exc:
                 raise HistoryError(f"invalid history record at byte {offset}: {self.path}", path=str(self.path)) from exc
-            events.append(item)
+            new.append(item)
             offset += len(line)
-        return events, offset
+            last = line
+        known.events += new
+        known.ids.update((e["event_id"], e) for e in new)
+        known.offset, known.last = offset, last
+        self._parsed = known
+        return known.events, offset
 
     def events(self) -> list[dict[str, Any]]:
-        return self._read()[0]
+        return list(self._read()[0])
 
     def append(self, events: list[dict[str, Any]]) -> None:
         if not events:
             return
-        existing, complete_bytes = self._read()
-        seen = {e["event_id"]: e for e in existing}
+        _, complete_bytes = self._read()
+        recorded = self._parsed.ids if self._parsed else {}
+        added: dict[str, dict[str, Any]] = {}
         self.root.mkdir(parents=True, exist_ok=True)
         with self.path.open("a+b") as stream:
             stream.truncate(complete_bytes)
             for item in events:
-                old = seen.get(item["event_id"])
+                old = added.get(item["event_id"]) or recorded.get(item["event_id"])
                 if old is not None:
                     if old != item:
                         raise HistoryError("history event ID collision", event_id=item["event_id"])
                     continue
                 stream.write((json.dumps(item, ensure_ascii=False, separators=(",", ":")) + "\n").encode("utf-8"))
-                seen[item["event_id"]] = item
+                added[item["event_id"]] = item
             stream.flush()
             os.fsync(stream.fileno())
         fsync_dir(self.root)

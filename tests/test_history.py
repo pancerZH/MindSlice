@@ -7,6 +7,8 @@ import os
 import shutil
 import subprocess
 import sys
+import tempfile
+import unittest
 import zipfile
 from pathlib import Path
 from unittest.mock import patch
@@ -14,6 +16,8 @@ from unittest.mock import patch
 from mindslice import ApplyConflictError, HistoryError, InvalidArgumentsError, NotFoundError, Workspace
 from mindslice.model.card import parse_card
 from mindslice.interfaces.mcp_server import MCPServer
+from mindslice.storage.fsutil import atomic_write_text
+from mindslice.storage.history import ChangeHistory, event
 
 from .helpers import WorkspaceTestCase, card_text
 from .test_interfaces import run_cli
@@ -299,3 +303,44 @@ with Workspace(sys.argv[1]) as ws:
             self.ws.read("note")
         self.ws.apply()
         self.assertEqual(self.ws.read("note")["summary"], "Recovered proposal.")
+
+
+class HistoryLogReadTests(unittest.TestCase):
+    """A long-lived reader parses only what was appended, and notices a log that changed any other way."""
+
+    def setUp(self):
+        self.root = Path(tempfile.mkdtemp())
+        self.addCleanup(shutil.rmtree, self.root)
+        self.reader = ChangeHistory(self.root)
+        self.other = ChangeHistory(self.root)  # another process writing the same log
+
+    def ids(self):
+        return [e["event_id"] for e in self.reader.events()]
+
+    def test_appends_from_another_process_are_seen_and_not_duplicated(self):
+        first, second = event("noted", n=1), event("noted", n=2)
+        self.reader.append([first])
+        self.assertEqual(self.ids(), [first["event_id"]])
+        self.other.append([second])
+        self.assertEqual(self.ids(), [first["event_id"], second["event_id"]])
+        self.reader.append([second])  # a replayed journal whose events another process already wrote
+        self.assertEqual(self.ids(), [first["event_id"], second["event_id"]])
+        self.assertEqual(len(self.reader.path.read_text().splitlines()), 2)
+
+    def test_a_log_rewritten_in_place_replaced_or_shortened_is_read_again(self):
+        old = [event("noted", n=i) for i in range(3)]
+        self.reader.append(old)
+        self.assertEqual(len(self.ids()), 3)
+        lines = self.reader.path.read_bytes().splitlines(keepends=True)
+        swapped = json.loads(lines[-1]) | {"event_id": "f" * 32}
+        with self.reader.path.open("r+b") as stream:  # same file, same size, different last record
+            stream.seek(sum(map(len, lines[:-1])))
+            stream.write(json.dumps(swapped, separators=(",", ":")).encode() + b"\n")
+        self.assertEqual(self.ids()[-1], "f" * 32)
+        new = event("noted", n=9)
+        atomic_write_text(self.reader.path, json.dumps(new) + "\n" + json.dumps(event("noted", n=10)) + "\n")
+        self.assertEqual(self.ids()[0], new["event_id"])
+        self.reader.path.write_text(json.dumps(new) + "\n")
+        self.assertEqual(self.ids(), [new["event_id"]])
+        self.reader.path.unlink()
+        self.assertEqual(self.ids(), [])
