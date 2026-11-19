@@ -79,6 +79,33 @@ class RollbackTests(WorkspaceTestCase):
         with self.assertRaises(RecoveryError):
             self.ws.rollback('other')
 
+    def test_target_inside_internal_storage_is_refused(self):
+        first, _ = self.versions()
+        for storage in (self.ws.history.root, self.ws.cache_dir):
+            copy = storage / 'kb-copy'
+            shutil.copytree(first, copy)
+            with self.assertRaises(RecoveryError) as caught:
+                self.ws.rollback('kb', copy, dry_run=True)
+            self.assertIn('internal workspace storage', caught.exception.message)
+
+    def test_with_several_slices_rollback_uses_its_own_predecessor_and_keeps_the_others(self):
+        self.ws.write('k/a', summary='KB one.')
+        kb_first = Path(self.ws.bake('kb', prefix='k/')['path'])
+        self.ws.write('k/a', summary='KB two.')
+        self.ws.bake('kb')
+        # The most recent bake belongs to another slice.
+        self.ws.write('o/x', summary='Other one.')
+        self.ws.bake('other', prefix='o/')
+        self.ws.write('o/x', summary='Other two.')
+        other_second = Path(self.ws.bake('other')['path'])
+        plan = self.ws.rollback('kb', dry_run=True)
+        self.assertEqual(plan['path'], str(kb_first))
+        self.assertTrue(self.ws.rollback('kb', revision=plan['revision'])['rolled_back'])
+        self.assertEqual(self.ws.table().get('@kb').root, kb_first)
+        self.assertEqual(self.ws.table().get('@other').root, other_second)
+        self.assertEqual(self.ws.read('@kb/k/a')['summary'], 'KB one.')
+        self.assertEqual(self.ws.read('@other/o/x')['summary'], 'Other two.')
+
     def test_failed_history_append_recovers_pointer_once(self):
         first, _ = self.versions()
         with patch.object(self.ws.history, 'append', side_effect=OSError('interrupted')):
@@ -86,6 +113,7 @@ class RollbackTests(WorkspaceTestCase):
                 self.ws.rollback('kb')
         with Workspace(self.root) as recovered:
             recovered.status()
+            self.assertEqual(recovered.last_recovery, {'recovered': True, 'history': True})
             self.assertEqual(recovered.table().get('@kb').root, first)
             self.assertEqual(len([e for e in recovered.history.events() if e['event'] == 'rolled_back']), 1)
 

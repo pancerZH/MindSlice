@@ -196,6 +196,7 @@ class BatchTests(WorkspaceTestCase):
         self.assertFalse(self.overlay_file("old/place").exists())
         self.assertTrue(self.ws.history.has_journal())
         self.assertEqual(self.ws.read("index")["links"], [{"ref": "old/place", "address": "@overlay/old/place"}])
+        self.assertEqual(self.ws.last_recovery, {"recovered": True, "history": True})
         self.assertEqual({p: p.read_bytes() for p in self.root.joinpath("overlay").rglob("*.md")}, files)
         self.assertEqual(self.events(), events)
         self.assertFalse(self.ws.history.has_journal())
