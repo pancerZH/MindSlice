@@ -23,6 +23,10 @@ Following [`skills/mindslice-setup/SKILL.md`](../skills/mindslice-setup/SKILL.md
 To disconnect or uninstall later, paste:
 `Read https://raw.githubusercontent.com/pancerZH/MindSlice/main/skills/mindslice-setup/uninstall.md and revert my MindSlice setup` (the agent will ask whether to keep or delete your memory workspace folder).
 
+**Prefer a plugin?** [MindSlice-plugin](https://github.com/pancerZH/MindSlice-plugin) packages MindSlice for
+Claude Code, Codex, Antigravity and DeepSeek Harness (engine, MCP server and startup hooks). Install it as its
+README describes instead of the steps above.
+
 ## Manual installation
 
 ```bash

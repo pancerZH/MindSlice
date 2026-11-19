@@ -49,6 +49,9 @@ Forge is an optional document-conversion tool. It creates a new workspace using 
 MindSlice handles storage, retrieval, mounting and memory evolution without needing Forge or an LLM.
 The [builder skill](https://github.com/pancerZH/MindSlice/blob/main/skills/slice-builder/SKILL.md) guides conversion and integration with an existing workspace.
 
+Prefer a plugin? [MindSlice-plugin](https://github.com/pancerZH/MindSlice-plugin) packages MindSlice for
+Claude Code, Codex, Antigravity and DeepSeek Harness, with the engine, MCP server and startup hooks included.
+
 Prefer manual setup? With Python 3.12+ and [pipx](https://pipx.pypa.io/) (or [uv](https://docs.astral.sh/uv/)) installed:
 
 ```bash
