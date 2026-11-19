@@ -5,6 +5,7 @@ from pathlib import Path
 from unittest.mock import patch
 
 from mindslice import RecoveryError, Workspace
+from mindslice.model.card import sha256_bytes
 from mindslice.storage import snapshots
 from mindslice.storage.config import dump_mounts, Mount, MountTable
 
@@ -116,6 +117,22 @@ class RollbackTests(WorkspaceTestCase):
             self.assertEqual(recovered.last_recovery, {'recovered': True, 'history': True})
             self.assertEqual(recovered.table().get('@kb').root, first)
             self.assertEqual(len([e for e in recovered.history.events() if e['event'] == 'rolled_back']), 1)
+
+    def test_history_and_staging_journals_left_together_are_both_recovered(self):
+        first, _ = self.versions()
+        self.ws.write('b', summary='Staged.', stage=True)
+        staged = sha256_bytes(self.ws.staging.file('b').read_bytes())
+        with patch.object(self.ws.history, 'append', side_effect=OSError('interrupted')):
+            with self.assertRaises(OSError):
+                self.ws.rollback('kb')
+        # As an apply interrupted in another process would leave it.
+        self.ws.staging.write_journal({'version': 1, 'overlay_root': str(self.root / 'overlay'), 'actions': [
+            {'op': 'move', 'id': 'b', 'base_sha256': None, 'sha256': staged, 'change': 'create'}]})
+        with Workspace(self.root) as recovered:
+            recovered.status()
+            self.assertEqual(recovered.last_recovery['created'], ['@overlay/b'])
+            self.assertEqual(recovered.table().get('@kb').root, first)
+            self.assertEqual(recovered.read('b')['summary'], 'Staged.')
 
     def test_cli_requires_confirmation_and_supports_preview_and_yes(self):
         first, second = self.versions()

@@ -486,7 +486,8 @@ class RobustnessTests(WorkspaceTestCase):
         self.ws.staging.journal_path.write_bytes(b"{not json")
         self.ws.search("anything")
         self.assertFalse(self.ws.staging.journal_path.exists())
-        self.assertIn("corrupt_journal", self.ws.last_recovery)
+        self.assertFalse(self.ws.last_recovery["recovered"])
+        self.assertEqual(Path(self.ws.last_recovery["corrupt_journal"]).read_bytes(), b"{not json")
         self.assertEqual([i["id"] for i in self.ws.diff()["items"]], ["x"])  # staging intact
 
     def test_readme_python_example(self):

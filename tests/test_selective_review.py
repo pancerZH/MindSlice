@@ -198,10 +198,68 @@ class SelectiveReviewTests(WorkspaceTestCase):
             self.assertEqual((event["change_id"], event["before_sha256"], event["after_sha256"]),
                              (change_ids[path], before[path], sha256_bytes(self.overlay_file(path).read_bytes())))
 
+    def test_apply_recovery_reports_actions_recorded_before_the_crash(self):
+        for path in ("a", "b", "c"):
+            self.ws.write(path, summary=f"Original {path}.")
+        self.stage("a", op="replace")
+        self.ws.write("b", op="delete", stage=True)
+        self.stage("c", op="replace")
+        # "a" and the deletion of "b" are recorded; "c" is moved, and the crash comes while recording it.
+        with patch.object(self.ws.history, "append", side_effect=self.fail_on_call(self.ws.history.append, 3)):
+            with self.assertRaises(OSError):
+                self.ws.apply()
+        self.ws.status()
+        report = self.ws.last_recovery
+        self.assertEqual({k: report[k] for k in ("applied", "created", "modified", "deleted", "skipped")},
+                         {"applied": 3, "created": [], "modified": ["@overlay/a", "@overlay/c"],
+                          "deleted": ["@overlay/b"], "skipped": []})
+        self.assertFalse(self.overlay_file("b").exists())
+        self.assertEqual(len([e for e in self.ws.history.events() if e["event"] == "applied"
+                              and e.get("origin") == "apply"]), 3)
+
+    def test_apply_recovery_skips_each_action_changed_meanwhile_and_finishes_the_rest(self):
+        for path in ("a", "b", "d", "e"):
+            self.ws.write(path, summary=f"Original {path}.")
+        for path in ("a", "b"):
+            self.stage(path, op="replace")
+        self.stage("c")
+        self.ws.write("d", op="delete", stage=True)
+        self.stage("e", op="replace")
+        with patch.object(staging, "durable_move", side_effect=OSError("interrupted")):
+            with self.assertRaises(OSError):
+                self.ws.apply()
+        self.put_overlay("a", card_text("A", "Edited while the apply was interrupted."))
+        self.ws.staging.file("b").write_text(card_text("B", "Proposal edited meanwhile."), encoding="utf-8")
+        self.ws.staging.file("c").unlink()
+        self.put_overlay("d", card_text("D", "Edited while the apply was interrupted."))
+        self.ws.status()
+        report = self.ws.last_recovery
+        self.assertEqual(report["skipped"], [
+            {"address": "@overlay/a", "reason": "overlay changed during recovery; staged file kept"},
+            {"address": "@overlay/b", "reason": "staged file changed during recovery; kept"},
+            {"address": "@overlay/c", "reason": "applied content missing or changed; history not confirmed"},
+            {"address": "@overlay/d", "reason": "overlay changed during recovery; delete kept staged"}])
+        self.assertEqual((report["applied"], report["modified"]), (1, ["@overlay/e"]))
+        self.assertEqual(self.ws.read("e")["summary"], "Proposal for e.")
+        self.assertEqual(set(self.ws.staging.load_manifest()), {"a", "b", "c", "d"})
+
+    def test_apply_recovery_finishes_a_cross_device_move_cut_short_after_the_copy(self):
+        self.ws.write("a", summary="Original a.")
+        self.stage("a", op="replace")
+        with patch.object(staging, "durable_move", side_effect=OSError("interrupted")):
+            with self.assertRaises(OSError):
+                self.ws.apply()
+        # durable_move across devices copies first and removes the staged file last.
+        self.overlay_file("a").write_bytes(self.ws.staging.file("a").read_bytes())
+        self.ws.status()
+        self.assertEqual((self.ws.last_recovery["modified"], self.ws.last_recovery["skipped"]), (["@overlay/a"], []))
+        self.assertEqual(self.ws.staging.entries(), {})
+        self.assertEqual(self.ws.read("a")["summary"], "Proposal for a.")
+
     def test_reject_recovery_finishes_every_action_after_one_already_done(self):
         change_ids = {p: self.stage(p)["change_id"] for p in ("a", "b", "c")}
-        # The rejection of "a" is recorded; the crash comes while recording "b".
-        with patch.object(self.ws.history, "append", side_effect=self.fail_on_call(self.ws.history.append, 2)):
+        # The rejections of "a" and "b" are recorded; the crash comes while recording "c".
+        with patch.object(self.ws.history, "append", side_effect=self.fail_on_call(self.ws.history.append, 3)):
             with self.assertRaises(OSError):
                 self.ws.review([], ["a", "b", "c"], revision=self.ws.diff()["revision"])
         self.ws.status()
@@ -217,14 +275,14 @@ class SelectiveReviewTests(WorkspaceTestCase):
         with patch.object(self.ws.history, "append", side_effect=OSError("interrupted")):
             with self.assertRaises(OSError):
                 self.ws.review([], ["a", "b"], revision=self.ws.diff()["revision"])
-        edited = card_text("B", "Edited while the review was interrupted.")
-        self.ws.staging.file("b").write_text(edited, encoding="utf-8")
+        edited = card_text("A", "Edited while the review was interrupted.")
+        self.ws.staging.file("a").write_text(edited, encoding="utf-8")
         self.ws.status()
         report = self.ws.last_recovery
-        self.assertEqual(report["discarded_ids"], ["a"])
-        self.assertEqual(report["skipped"], [{"address": "@overlay/b", "reason": "staged file changed during recovery; kept"}])
-        self.assertEqual(set(self.ws.staging.entries()), {"b"})
-        self.assertEqual(self.ws.staging.file("b").read_text(encoding="utf-8"), edited)
+        self.assertEqual(report["discarded_ids"], ["b"])
+        self.assertEqual(report["skipped"], [{"address": "@overlay/a", "reason": "staged file changed during recovery; kept"}])
+        self.assertEqual(set(self.ws.staging.entries()), {"a"})
+        self.assertEqual(self.ws.staging.file("a").read_text(encoding="utf-8"), edited)
 
     def test_journal_without_history_events_gets_them_from_the_manifest(self):
         self.ws.write("a", summary="Original a.")
@@ -240,6 +298,34 @@ class SelectiveReviewTests(WorkspaceTestCase):
         self.assertEqual({k: event[k] for k in ("address", "op", "change_id", "before_sha256", "after_sha256")},
                          {"address": "@overlay/a", "op": "move", "change_id": change_id,
                           "before_sha256": before, "after_sha256": staged})
+
+    def journal_without_events(self, path, staged):
+        self.ws.staging.write_journal({"version": 1, "overlay_root": str(self.ws.table().overlay.root), "actions": [
+            {"op": "move", "id": path, "base_sha256": None, "sha256": staged, "change": "create"}]})
+
+    def test_journal_without_events_or_change_ids_records_a_fresh_change(self):
+        self.stage("a")
+        manifest = self.ws.staging.load_manifest()
+        manifest["a"].pop("change_ids")
+        self.ws.staging.save_manifest(manifest)
+        staged = sha256_bytes(self.ws.staging.file("a").read_bytes())
+        self.journal_without_events("a", staged)
+        self.ws.status()
+        [event] = [e for e in self.ws.history.events() if e["event"] == "applied"]
+        self.assertEqual({k: event[k] for k in ("address", "op", "before_sha256", "after_sha256", "origin", "reason")},
+                         {"address": "@overlay/a", "op": "move", "before_sha256": None, "after_sha256": staged,
+                          "origin": "apply", "reason": None})
+        self.assertNotIn("transition_id", event)
+
+    def test_recovery_interrupted_after_recording_rebuilt_events_does_not_record_them_again(self):
+        change_id = self.stage("a")["change_id"]
+        self.journal_without_events("a", sha256_bytes(self.ws.staging.file("a").read_bytes()))
+        with patch.object(self.ws, "_sync", side_effect=OSError("interrupted")):
+            with self.assertRaises(OSError):
+                self.ws.status()
+        self.ws.status()
+        self.assertEqual(self.ws.last_recovery["created"], ["@overlay/a"])
+        self.assertEqual([e["change_id"] for e in self.ws.history.events() if e["event"] == "applied"], [change_id])
 
     def test_cli_selection_and_interactive_accept_reject_leave(self):
         for path in ("a", "b", "c"):

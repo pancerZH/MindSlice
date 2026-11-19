@@ -201,6 +201,14 @@ class HistoryRecoveryTests(WorkspaceTestCase):
         self.ws.read("note")
         self.assertEqual(len(self.ws.history.events()), 1)
 
+    def test_history_journal_with_a_malformed_structure_is_preserved(self):
+        self.ws.write("note", summary="Existing.")
+        for journal in ({"version": 1, "actions": {}, "events": []}, {"version": 1, "actions": [], "events": {}}):
+            self.ws.history.journal_path.write_text(json.dumps(journal), encoding="utf-8")
+            with self.assertRaises(HistoryError):
+                self.ws.status()
+            self.assertEqual(json.loads(self.ws.history.journal_path.read_text(encoding="utf-8")), journal)
+
     def test_torn_last_log_line_is_recovered_from_journal(self):
         self.ws.write("base", summary="Existing event.")
         with patch.object(self.ws.history, "append", side_effect=OSError("interrupted append")):
