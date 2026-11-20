@@ -71,7 +71,7 @@ Lineage is what keeps stale facts behind current ones, and only the writer can d
   for each one you can edit: rewrite a card that still states the old value as current, or that
   links to a card named after the old value; rebase an extension that still holds
   (`--op replace --extends <replacement>`), and supersede or delete one whose premise is gone. A
-  link to a slot (`[[team/lead]]`) can stay. Items marked `read_only` live in base slices:
+  link to a slot (`[[@overlay/team/lead]]`) can stay. Items marked `read_only` live in base slices:
   supersede one from `@overlay` only if it states the old value as current (`read()` already flags
   extensions with `baseline_superseded_by`). The engine lists; it never edits them for you.
 
@@ -124,7 +124,7 @@ references can require keeping overlay copies. Successful baking need not mean a
    the archive as `output` and the absolute mounted directory as `path`. Return these and
    `previous_path` to the caller so it can retain a version pointer.
 6. **Review retirement**: bake removes the overlay copies and rewrites references from cards that stay
-   (`[[team/lead]]` -> `[[@team/team/lead]]`). Check `retired_overlay_cards`, `rebased_references`,
+   (`[[@overlay/team/lead]]` -> `[[@team/team/lead]]`). Check `retired_overlay_cards`, `rebased_references`,
    `shadowing_overlay_cards` (copies needed by staged cards) and `broken_references` (read-only slices).
 
 **For an existing mount**, `mindslice bake @team --dry-run` shows which overlay cards would move (by

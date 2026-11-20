@@ -121,6 +121,9 @@ Add `load = "always"` to a card that every session should read at start (see
 
 Address forms: `@alias/path` targets one mount. A bare `path` passed **to the API** resolves to
 the highest-precedence mount; written **inside a card**, it resolves only within that card's own slice.
+Agents write every link and lineage reference with `write()` in one form, the full `@alias/path` that
+`search` and `read` return (`@overlay/...` for overlay cards too); `bake` stores references to cards of
+the same slice slice-relative.
 
 ## The primitives
 
@@ -278,7 +281,7 @@ sense together. `also` lists the further ones:
 ```python
 ws.write("new/place", summary="Where the thing lives.", content=["It lives in room 4."], reason="Moved under new/.",
          also=[{"id": "old/place", "op": "delete"},
-               {"id": "index", "op": "patch", "edits": [{"old": "[[old/place]]", "new": "[[new/place]]"}]}])
+               {"id": "index", "op": "patch", "edits": [{"old": "[[@overlay/old/place]]", "new": "[[@overlay/new/place]]"}]}])
 ```
 
 ```bash

@@ -152,7 +152,7 @@ TOOLS: list[dict[str, Any]] = [
                        "outlive values); if that id is taken by the card being superseded, add the date of the change "
                        "(\"team/lead-2026-11\")"},
                 "op": {"type": "string", "enum": ["create", "replace", "patch", "append", "delete"], "default": "create"},
-                "content": {"type": ["string", "array"], "items": {"type": "string"}, "description": "card body (Markdown), or bullet statements for append; qualify cross-slice wikilinks as [[@alias/path]] (same-@overlay links can use [[path]])"},
+                "content": {"type": ["string", "array"], "items": {"type": "string"}, "description": "card body (Markdown), or bullet statements for append; write each link as [[@alias/path]], the full address search/read give, @overlay cards included"},
                 "edits": {"type": "array", "items": {"type": "object", "properties": {"old": {"type": "string"}, "new": {"type": "string"}},
                                                      "required": ["old", "new"], "additionalProperties": False},
                           "description": "op=patch: text swaps applied in order; each old is quoted exactly from the card's current "
@@ -203,7 +203,7 @@ INSTRUCTIONS = (
     "the scope, conditions and evidence; do not invent detail to fill a card. "
     "Write with write() into @overlay, one focused "
     "sub-topic per card: a person, a decision, an ongoing thread and the current state of the work each get their "
-    "own card, linked with [[path]] ([[@alias/path]] across slices), not one card collecting a whole session. Put each fact on "
+    "own card, linked as [[@alias/path]] (the full address, always), not one card collecting a whole session. Put each fact on "
     "the card of the subject it is about; a "
     "current-state card says only where things stand now and links to the rest. Keep every card true and "
     "complete: replace the statements that are now wrong instead of adding the "
