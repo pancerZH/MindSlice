@@ -12,6 +12,7 @@ import tomllib
 import unittest
 from contextlib import contextmanager
 from pathlib import Path
+from unittest.mock import patch
 
 from mindslice import (
     AlreadyExistsError,
@@ -186,6 +187,57 @@ class FreshnessTests(WorkspaceTestCase):
         res = self.ws.validate(rebuild_index=True)
         self.assertEqual(res["rebuilt_index"]["added"], 1)
         self.assertEqual(self.ws.search("gamma")["total_matches"], 1)
+
+    def test_planning_a_bake_rehashes_same_mtime_and_size_edits(self):
+        file = self.put_overlay("x", card_text("X", "alpha words here."))
+        self.assertEqual(self.ws.search("alpha")["total_matches"], 1)
+        st = file.stat()
+        file.write_text(card_text("X", "gamma words here."), encoding="utf-8")  # same size
+        os.utime(file, ns=(st.st_atime_ns, st.st_mtime_ns))
+        self.ws.plan_bake()
+        self.assertEqual(self.ws.search("gamma")["total_matches"], 1)
+        self.assertEqual(self.ws.search("alpha")["total_matches"], 0)
+
+    def test_sync_counts_each_kind_of_change(self):
+        # Top-level files are scanned before those in sub/, so a stop after the first
+        # unchanged or touched file would miss the edits below.
+        for path in ("a", "b", "c", "sub/d", "sub/e"):
+            self.put_overlay(path, card_text(path.title(), f"Card {path} text."))
+
+        def sync():
+            return self.ws._sync(self.ws.table()).to_dict()
+
+        zero = {"added": 0, "updated": 0, "removed": 0, "touched": 0, "mounts_changed": False}
+        self.assertEqual(sync()["added"], 5)
+        self.assertEqual(sync(), zero)
+        bump_mtime(self.overlay_file("a"))  # touched: same content
+        bump_mtime(self.overlay_file("b"))
+        for path in ("sub/d", "sub/e"):
+            self.put_overlay(path, card_text(path.title(), f"Card {path} text, edited."))
+        self.assertEqual(sync(), zero | {"updated": 2, "touched": 2})
+        self.assertEqual(sync(), zero)  # touched files have their new stat recorded
+        self.overlay_file("a").unlink()
+        self.overlay_file("b").unlink()
+        self.assertEqual(sync(), zero | {"removed": 2})
+
+    def test_mount_pointed_at_another_folder_is_reindexed(self):
+        old = self.mount_slice("kb-v1", {"rule": card_text("Rule", "alpha words here.")}, "@kb", 50, "curated")
+        self.assertEqual(self.ws.search("alpha")["total_matches"], 1)
+        new = self.make_slice("kb-v2", {"rule": card_text("Rule", "gamma words here.")})  # same size
+        st = (old / "rule.md").stat()
+        os.utime(new / "rule.md", ns=(st.st_atime_ns, st.st_mtime_ns))
+        mounts = self.root / "mounts.toml"
+        mounts.write_text(mounts.read_text().replace("kb-v1.slice", "kb-v2.slice"), encoding="utf-8")
+        self.assertEqual(self.ws.search("gamma")["total_matches"], 1)
+        self.assertEqual(self.ws.search("alpha")["total_matches"], 0)
+
+    def test_failed_sync_rolls_back(self):
+        self.put_overlay("x", card_text("X", "alpha words here."))
+        with patch.object(self.ws.index, "_upsert_card", side_effect=RuntimeError("boom")):
+            with self.assertRaisesRegex(RuntimeError, "boom"):
+                self.ws._sync(self.ws.table())
+        self.assertFalse(self.ws.index.conn.in_transaction)
+        self.assertEqual(self.ws.search("alpha")["total_matches"], 1)
 
     def test_index_is_disposable_and_telemetry_survives_rebuild(self):
         self.ws.write("x", summary="Durable fact about otters.")
@@ -458,6 +510,13 @@ class MountTests(WorkspaceTestCase):
         self.assertEqual(self.ws.search("concise")["total_matches"], 0)
         with self.assertRaises(NotFoundError):
             self.ws.unmount("@persona")
+
+    def test_mount_indexes_only_the_new_slice(self):
+        self.ws.write("x", summary="Overlay card.")
+        root = self.make_slice("persona", {"tone": card_text("Tone", "Be concise."),
+                                           "style": card_text("Style", "Use plain words.")}, alias="@persona")
+        self.assertEqual(self.ws.mount(root, precedence=10)["sync"],
+                         {"added": 2, "updated": 0, "removed": 0, "touched": 0, "mounts_changed": True})
 
     def test_workspace_discovery(self):
         (self.root / "overlay/deep/er").mkdir(parents=True)
