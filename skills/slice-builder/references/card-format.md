@@ -36,10 +36,14 @@ Rules:
    `[[links]]` outlive values: a link to a value-named card keeps stating the old value after it
    changes. When maintaining an existing overlay requires a separate replacement id, use a stable
    qualifier such as the change date (`team/lead-2026-11`), never the new value. Link to the slot
-   (`[[team/lead]]`): `read()` follows `supersedes` from it to the current card.
-6. **Links**: `[[path]]` or `[[path|label]]`. Without an `@alias/` prefix a link resolves *only
-   inside the same slice* - never into other mounts. Use `[[@persona/tone]]` to reach across slices
-   and declare that slice in `slice.toml` `dependencies`.
+   card (`team/lead`): `read()` follows `supersedes` from it to the current card.
+6. **Links**: `[[target]]` or `[[target|label]]`; how you write the card decides the form:
+   - With `write()` (into `@overlay`): always the full address `search`/`read` return,
+     `[[@alias/path]]`, `@overlay` cards included.
+   - In a file written directly into a slice directory: link cards of the same slice by path
+     (`[[architecture/http-middleware]]`), so the slice still works mounted under another alias,
+     and other slices as `[[@persona/tone]]`, declared in `slice.toml` `dependencies`. There a link
+     without `@alias/` resolves *only inside the same slice*, never into other mounts.
 7. Never put secrets, tokens, machine-specific absolute paths or session noise in cards.
 8. **`load = "always"`** (optional, after `title`) marks a card every session reads at start, with
    no query: an agent persona, the user's reply language, standing instructions. Use it sparingly
