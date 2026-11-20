@@ -204,7 +204,8 @@ class BakeTests(WorkspaceTestCase):
         res = self.ws.bake("@team", drop=["sub/only", "keep/a"], description="Team\n  notes")
         new = self.root / "slices" / "team-notes-2.slice"
         self.assertEqual(res["path"], str(new))
-        self.assertEqual(list(snapshot(new)), ["keep/b.md", "keep/c.md", "slice.toml"])
+        self.assertEqual(sorted(f.relative_to(new).as_posix() for f in new.rglob("*") if f.is_file()),
+                         ["keep/b.md", "keep/c.md", "slice.toml"])
         self.assertFalse((new / "sub").exists())  # the folder the drop emptied
         manifest = load_slice_manifest(new)
         self.assertEqual((manifest.name, manifest.description), ("team-notes", "Team notes"))
