@@ -229,13 +229,7 @@ def prospective_successors(
     index, overlay_alias: str, overrides: dict[str, ParsedCard | None]
 ) -> tuple[dict[str, list[str]], dict[str, MountCatalog]]:
     """Lineage successor map (``extends`` + ``supersedes``) with overlay overrides applied."""
-    cats = index.catalogs()
-    ocat = cats.setdefault(overlay_alias, MountCatalog())
-    for path, parsed in overrides.items():
-        ocat.remove(path)
-    for path, parsed in overrides.items():
-        if parsed is not None:
-            ocat.add(path, parsed.aliases)
+    cats = index.catalogs(overlay_alias=overlay_alias, overrides=overrides)
     refs: list[tuple[str, str, str]] = []
     for row in index.lineage_edges():
         if row["src_mount"] == overlay_alias and row["src_path"] in overrides:

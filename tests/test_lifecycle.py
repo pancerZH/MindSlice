@@ -224,6 +224,18 @@ class RetireImportedCopiesTests(WorkspaceTestCase):
         self.assertTrue(all(l["address"] for l in todo["links"]))
         self.assertTrue(self.ws.validate()["ok"])
 
+    def test_relative_link_which_would_lose_its_target_keeps_overlay(self):
+        (self.imported / "api/jwt-ttl.md").unlink()
+        self.ws.mount(self.imported, alias="@api")
+        self.assertTrue(self.overlay_file("api/edge").exists())
+        self.assertEqual(self.ws.read("api/edge")["links"][0]["address"], "@overlay/api/jwt-ttl")
+
+    def test_new_staged_referrer_keeps_overlay(self):
+        self.ws.write("draft", summary="See [[@overlay/api/jwt-ttl]].", stage=True)
+        self.ws.mount(self.imported, alias="@api")
+        self.ws.apply(["draft"])
+        self.assertEqual(self.ws.read("draft")["links"][0]["address"], "@overlay/api/jwt-ttl")
+
     def test_edited_and_staged_copies_are_kept(self):
         self.ws.write("api/edge", op="append", content="- A new edge case.")
         self.ws.write("notes/todo", op="append", content="- [[api/jwt-ttl]] again", stage=True)

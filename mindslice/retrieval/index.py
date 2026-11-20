@@ -22,7 +22,7 @@ from pathlib import Path
 from typing import Any, Iterable, Sequence
 
 from ..model.addressing import MountCatalog, resolve_ref
-from ..model.card import PARSER_VERSION, parse_card, preview_text, sha256_bytes
+from ..model.card import PARSER_VERSION, ParsedCard, parse_card, preview_text, sha256_bytes
 from ..storage.config import OVERVIEW_PATH, Mount, MountTable
 from ..storage.fsutil import iter_markdown
 from .lexical import QueryPlan, analyze_query, analyzer_signature, fold, index_text
@@ -394,12 +394,19 @@ class Index:
             [(mount, path, kind, i, raw) for kind, i, raw in refs],
         )
 
-    def catalogs(self) -> dict[str, MountCatalog]:
+    def catalogs(self, *, overlay_alias: str | None = None,
+                 overrides: dict[str, ParsedCard | None] | None = None) -> dict[str, MountCatalog]:
         cats: dict[str, MountCatalog] = {}
         for row in self.conn.execute("SELECT alias FROM mounts"):
             cats[row[0]] = MountCatalog()
         for row in self.conn.execute("SELECT mount, path, aliases FROM cards ORDER BY mount, path"):
-            cats.setdefault(row[0], MountCatalog()).add(row[1], json.loads(row[2]))
+            if row[0] != overlay_alias or not overrides or row[1] not in overrides:
+                cats.setdefault(row[0], MountCatalog()).add(row[1], json.loads(row[2]))
+        if overlay_alias is not None and overrides:
+            overlay = cats.setdefault(overlay_alias, MountCatalog())
+            for path, parsed in overrides.items():
+                if parsed is not None:
+                    overlay.add(path, parsed.aliases)
         return cats
 
     def _resolve_all_links(self) -> None:

@@ -136,7 +136,8 @@ def retire_copies(ws: "Workspace", table, alias: str) -> dict[str, Any]:
     precedence) would shadow it and turn every ``supersedes`` they carry into competing replacements.
     An overlay card is retired when the export transform of it is exactly the slice's card at the
     same path: nothing is lost, the slice holds it. It is kept (and reported) when it differs (edited
-    since, or not an exported copy), when it has a staged change, or when a staged card references it.
+    since, or not an exported copy), when it has a staged change, when a staged card references it, or
+    when one of its references would resolve to another target from the slice.
     References to a retired card from overlay cards that stay are rewritten to its new address
     (``[[db/pool]]`` -> ``[[@db/db/pool]]``), so links and lineage keep their targets; references from
     read-only mounts can't be rewritten and are reported. Runs under the caller's ``LOCK_EX``; the
@@ -192,21 +193,58 @@ def retire_overlay_paths(ws: "Workspace", table, alias: str, retired: list[str],
             out += [(kind, r["src_mount"], r["src_path"]) for r in idx.inbound(kind, overlay.alias, path)]
         return out
 
+    # Staged creates and newly introduced links do not occur in the live index.
+    staged_refs = {}
+    overrides = ws.staging.prospective_overrides(overlay.root)
+    prospective = idx.catalogs(overlay_alias=overlay.alias, overrides=overrides) if overrides else cats
+    for source, parsed in overrides.items():
+        if parsed is None:
+            continue
+        for raw in (*parsed.extends, *parsed.supersedes, *parsed.wikilink_targets()):
+            for catalog in (cats, prospective):
+                ref = resolve_ref(raw, overlay.alias, catalog)
+                if ref.resolved and ref.mount == overlay.alias:
+                    staged_refs.setdefault(ref.path, format_address(overlay.alias, source))
+
+    def equivalent_links(path, moving):
+        for kind in ("extends", "supersedes", "wikilink"):
+            before = idx.outbound(overlay.alias, path, kind)
+            after = idx.outbound(alias, path, kind)
+            if len(before) != len(after):
+                return False
+            for old, new in zip(before, after):
+                if not old["resolved"]:
+                    if new["resolved"]:
+                        return False
+                    continue
+                mount, target = old["dst_mount"], old["dst_path"]
+                if mount == overlay.alias and target in moving:
+                    mount = alias
+                if not new["resolved"] or (new["dst_mount"], new["dst_path"]) != (mount, target):
+                    return False
+        return True
+
+    moving = set(retired)
     blocked = True
     while blocked:  # a staged card that references a copy keeps it (rewriting the overlay file would conflict)
         blocked = False
-        for path in list(retired):
+        for path in sorted(moving):
             stager = next((f"{m}/{p}" for _, m, p in referrers(path)
-                           if m == overlay.alias and p in staged and p not in retired), None)
+                           if m == overlay.alias and p in staged and p not in moving), None)
+            stager = stager or staged_refs.get(path)
             if stager:
-                retired.remove(path)
+                moving.remove(path)
                 kept.append({"address": format_address(overlay.alias, path), "reason": f"referenced by staged {stager}"})
                 blocked = True
-    retired_set = set(retired)
+            elif own_transaction and not equivalent_links(path, moving):
+                moving.remove(path)
+                kept.append({"address": format_address(overlay.alias, path), "reason": f"references differ in {alias}"})
+                blocked = True
+    retired = [p for p in retired if p in moving]
 
     def mapper(raw: str) -> str:
         res = resolve_ref(raw, overlay.alias, cats)
-        if res.resolved and res.mount == overlay.alias and res.path in retired_set:
+        if res.resolved and res.mount == overlay.alias and res.path in moving:
             return format_address(alias, res.path)
         return raw
 
@@ -217,7 +255,7 @@ def retire_overlay_paths(ws: "Workspace", table, alias: str, retired: list[str],
         target = format_address(overlay.alias, path)
         for kind, src_mount, src_path in referrers(path):
             if src_mount == overlay.alias:
-                if src_path not in retired_set:
+                if src_path not in moving:
                     to_rewrite.add(src_path)
                 continue
             for link in idx.outbound(src_mount, src_path, kind):
