@@ -12,6 +12,10 @@ from unittest.mock import patch
 
 from mindslice import BakeConflictError, Workspace
 from mindslice.baking import bake_batch
+from mindslice.errors import InvalidArgumentsError
+from mindslice.model.card import parse_card
+from mindslice.storage.config import load_slice_manifest
+from mindslice.storage.history import file_sha
 from .helpers import WorkspaceTestCase, card_text
 from .test_interfaces import run_cli
 
@@ -132,6 +136,131 @@ class BatchBakeTests(WorkspaceTestCase):
         result = self.ws.bake(plan=plan)
         self.assertEqual(result['remaining_overlay_cards'], ['note'])
         self.assertTrue(self.ws.validate()['ok'])
+
+    def test_assignments_must_name_overlay_cards_and_each_item_describes_its_card(self):
+        self.project({'api/auth': card_text('Auth', 'Original.')})
+        self.ws.write('api/tokens', summary='Token rules.', extends=['@project/api/auth', '@ghost/x'])
+        for bad in ({'missing': 'project'}, {1: 'project'}):
+            with self.subTest(bad=bad), self.assertRaises(InvalidArgumentsError):
+                self.ws.plan_bake(bad, resume=False)
+        item = self.ws.plan_bake(resume=False)['cards'][0]
+        self.assertEqual({k: item[k] for k in ('id', 'address', 'sha256', 'summary', 'candidates', 'destination', 'state')},
+                         {'id': 'api/tokens', 'address': '@overlay/api/tokens',
+                          'sha256': file_sha(self.overlay_file('api/tokens')), 'summary': 'Token rules.',
+                          'candidates': ['@project'], 'destination': '@project', 'state': 'assigned'})
+
+    def test_copies_kept_in_overlay_say_why(self):
+        for path, summary in (('a/linked', 'See [[a/chained]].'), ('a/chained', 'Needed by a/linked.'),
+                              ('a/pointed', 'Named by a pending card.'), ('a/drafted', 'Named in staged text.'),
+                              ('api', 'Revised api.')):
+            self.ws.write(path, summary=summary)
+        self.ws.write('pending', summary='See [[a/pointed]].')
+        self.ws.write('pending', op='append', content='- Draft.', stage=True)
+        self.ws.write('draft', summary='Draft.')
+        self.ws.write('draft', op='append', content='- See [[a/drafted]].', stage=True)
+        self.project({'api': card_text('Api', 'Api.')})
+        self.mount_slice('other', {'ref': card_text('Ref', 'See [[@overlay/a/linked]] and [[@project/api]].')},
+                         '@other', 40, 'baseline')
+        assignments = dict.fromkeys(('a/linked', 'a/chained', 'a/pointed', 'a/drafted'), 'alpha') | {'api': 'project'}
+        plan = self.ws.plan_bake(assignments, resume=False)
+        self.assertEqual(plan['retained_overlay_cards'], [
+            {'address': '@overlay/a/chained', 'reason': 'required by retained overlay copy'},
+            {'address': '@overlay/a/drafted', 'reason': 'referenced by staged content'},
+            {'address': '@overlay/a/linked', 'reason': 'referenced by read-only @other'},
+            {'address': '@overlay/a/pointed', 'reason': 'referenced by pending overlay card'}])
+
+    def test_baked_baseline_and_deferred_references_follow_the_new_addresses(self):
+        self.mount_slice('project-kb', {
+            'api/auth': card_text('Auth', 'Original.'), 'api/legacy': card_text('Legacy', 'Old.'),
+            'index': card_text('Index', 'See [[api/auth]] and [[soon]].'),  # [[soon]] resolves once this bake adds it
+            'map': card_text('Map', 'See [[@overlay/api/new]].'), 'notes/2026/plan': card_text('Plan', 'Nested.')},
+            '@project', 60, 'curated')
+        (self.root / 'slices/project-kb.slice/.git').mkdir()
+        (self.root / 'slices/project-kb.slice/.git/HEAD').write_text('ref', encoding='utf-8')
+        self.ws.write('api/auth', summary='Revised; see [[api/new]].',
+                      supersedes=['@project/api/auth', '@project/api/legacy'])
+        self.ws.write('api/new', summary='New; see [[api/auth]].')  # links both ways are not a lineage cycle
+        self.ws.write('soon', summary='Now it exists.')
+        self.ws.write('research/deep/dive', summary='Research notes.')
+        self.ws.write('zz/diary', summary='Read [[api/new]].')
+        plan = self.ws.plan_bake({'api/auth': 'project', 'api/new': 'project', 'soon': 'project',
+                                  'research/deep/dive': 'research', 'zz/diary': None}, resume=False)
+        self.assertTrue(plan['ready'], plan['blockers'])
+        new = self.root / 'slices/project-kb-2.slice'
+        self.assertEqual([(s['alias'], s['action'], s['path'], s['rebased_baseline_cards']) for s in plan['slices']],
+                         [('@project', 'update', str(new), ['@project/map']),
+                          ('@research', 'create', str(self.root / 'slices/research.slice'), [])])
+        self.assertEqual(plan['rebased_references'], ['zz/diary'])
+        diary_before = file_sha(self.overlay_file('zz/diary'))
+        result = self.ws.bake(plan=plan)
+
+        self.assertEqual(parse_card((new / 'api/auth.md').read_text()).supersedes, ['api/legacy'])
+        self.assertIn('[[api/auth]]', (new / 'api/new.md').read_text())
+        self.assertIn('[[api/new]]', (new / 'map.md').read_text())
+        self.assertFalse((new / '.git').exists())
+        self.assertTrue((new / 'notes/2026/plan.md').is_file())
+        self.assertIn('[[@project/api/new]]', self.overlay_file('zz/diary').read_text())
+        self.assertTrue((self.root / 'slices/research.slice/research/deep/dive.md').is_file())
+        self.assertFalse((self.root / 'overlay/research').exists())  # retired cards leave no empty folders
+        table = self.ws.table()
+        self.assertEqual([(a, table.get(a).precedence, table.get(a).role) for a in ('@project', '@research')],
+                         [('@project', 60, 'curated'), ('@research', 50, 'baseline')])
+        manifest = load_slice_manifest(self.root / 'slices/research.slice')
+        self.assertEqual((manifest.name, manifest.alias, manifest.version, manifest.description),
+                         ('research', '@research', '0.1.0', 'Baked from @overlay'))
+
+        events = self.ws.history.events()
+        rebase = next(e for e in events if e.get('op') == 'rebase')
+        self.assertEqual({k: rebase[k] for k in ('event', 'address', 'origin', 'reason', 'before_sha256', 'after_sha256')},
+                         {'event': 'applied', 'address': '@overlay/zz/diary', 'origin': 'engine',
+                          'reason': 'Rebase references after workspace bake',
+                          'before_sha256': diary_before, 'after_sha256': file_sha(self.overlay_file('zz/diary'))})
+        baked = {e['event_id']: e for e in events if e['event'] == 'baked'}
+        fields = ('alias', 'path', 'output', 'previous_path', 'version')
+        for record in result['baked']:
+            event = baked[record['history_event_id']]
+            self.assertEqual({k: event[k] for k in fields}, {k: record[k] for k in fields})
+            self.assertEqual([c['target'] for c in event['cards']],
+                             [f"{record['alias']}/{p}" for p in record['cards']])
+        self.assertEqual(baked[result['baked'][1]['history_event_id']]['retired_overlay_cards'],
+                         ['@overlay/research/deep/dive'])
+
+    def test_a_mounted_folder_without_manifest_is_named_after_the_folder(self):
+        root = self.root / 'slices/team-notes.slice'
+        root.mkdir(parents=True)
+        (root / 'rule.md').write_text(card_text('Rule', 'A rule.'), encoding='utf-8')
+        self.ws.mount(root, alias='@team', precedence=20)
+        self.ws.write('extra', summary='Extra rule.')
+        result = self.ws.bake(plan=self.ws.plan_bake({'extra': 'team'}, resume=False))
+        self.assertEqual(load_slice_manifest(Path(result['baked'][0]['path'])).name, 'team-notes')
+
+    def test_a_reviewed_plan_must_match_this_workspace_and_its_files(self):
+        self.ws.write('a', summary='A.')
+        self.ws.write('b', summary='B.')
+        plan = self.ws.plan_bake({'a': 'one', 'b': None}, resume=False)
+        for bad in (dict(plan, schema_version=2), dict(plan, workspace=str(self.tmp / 'elsewhere')), []):
+            with self.subTest(bad=bad), self.assertRaises(InvalidArgumentsError):
+                self.ws.bake(plan=bad)
+        self.assertEqual(self.ws.bake(plan=plan, dry_run=True)['slices'], plan['slices'])
+        self.overlay_file('b').rename(self.overlay_file('c'))  # same content under another name
+        with self.assertRaises(BakeConflictError) as cm:
+            self.ws.bake(plan=plan)
+        self.assertEqual(cm.exception.details['code'], 'stale_bake_plan')
+
+    def test_saved_plan_with_any_malformed_part_is_refused(self):
+        self.ws.write('a', summary='A.')
+        plan = self.ws.plan_bake({'a': 'one'}, resume=False)
+        card = plan['cards'][0]
+        path = self.tmp / 'plan.json'
+        for value in ([], dict(plan, schema_version=2), dict(plan, assignments=[]), dict(plan, cards={}),
+                      dict(plan, slices={}), dict(plan, workspace=None), dict(plan, revision=None), dict(plan, cards=[None]),
+                      dict(plan, cards=[dict(card, id=None)]), dict(plan, cards=[dict(card, sha256=None)]),
+                      dict(plan, assignments={'a': 5})):
+            path.write_text(json.dumps(value), encoding='utf-8')
+            with self.subTest(value=value), self.assertRaises(InvalidArgumentsError):
+                bake_batch.load_plan(path)
+        path.write_text(json.dumps(plan), encoding='utf-8')
+        self.assertEqual(bake_batch.load_plan(path), plan)
 
     def test_self_extension_and_broken_reference_block_before_output(self):
         self.project({'rule':card_text('Rule', 'Original.')})

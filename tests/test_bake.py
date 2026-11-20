@@ -8,6 +8,7 @@ from mindslice import AlreadyExistsError, BakeConflictError, MountError, NotFoun
 from mindslice.errors import InvalidArgumentsError
 from mindslice.model.card import parse_card
 from mindslice.storage.config import load_slice_manifest
+from mindslice.storage.history import file_sha
 
 from .helpers import WorkspaceTestCase, card_text
 from .test_interfaces import run_cli
@@ -140,6 +141,75 @@ class BakeTests(WorkspaceTestCase):
         with self.assertRaisesRegex(InvalidArgumentsError, "--prefix is required"):
             self.ws.bake("@nope")
 
+    def test_tags_and_prefix_select_overlay_cards_but_never_the_overview(self):
+        self.ws.write("style/emoji", summary="Emoji are fine.", tags=["fun"])
+        self.ws.write("stylebook", summary="Unrelated house style.", tags=["fun"])
+        self.put_overlay("overview", card_text("Overview", "The overlay's overview.", tags=["fun"]))
+
+        def cards(alias="@persona", **options):
+            return self.ws.bake(alias, dry_run=True, **options)["cards"]
+
+        self.assertEqual(cards(tags="fun"), ["style/emoji", "stylebook"])  # one tag may be a plain string
+        for prefix in ("style/", "./style/", "/style/"):
+            with self.subTest(prefix=prefix):
+                self.assertEqual(cards(prefix=prefix), ["style/emoji"])
+        self.assertEqual(cards("@new", prefix="", tags=["fun"]), ["style/emoji", "stylebook"])
+
+    def test_update_rewrites_references_and_keeps_declared_dependencies(self):
+        self.ws.write("style/emoji", summary="Emoji rules.", aliases=["emoji rules"], extends=["@persona/glossary"])
+        self.ws.write("api/auth", summary="The persona's view of auth.", content="- See [[@kb/api/auth]].",
+                      extends=["@persona/tone"])
+        self.ws.write("tone", summary="Mira is warm.", content="- Follow [[emoji rules]].",
+                      supersedes=["@persona/tone", "@persona/glossary"])
+        res = self.ws.bake("@persona")
+        self.assertEqual(res["dependencies_added"], ["@kb"])
+        self.assertEqual(res["validation"], {"ok": True, "errors": [], "warnings": 0})
+        self.assertIn("[[style/emoji]]", (self.baked / "tone.md").read_text())  # the alias becomes the path
+        self.assertIn("[[@kb/api/auth]]", (self.baked / "api/auth.md").read_text())  # same path, another slice
+        self.assertEqual(self.slice_card("tone").supersedes, ["glossary"])  # only the self-reference goes
+        self.ws.write("api/tokens", summary="Token notes.", content="- See [[@kb/api/auth]].", extends=["@persona/tone"])
+        self.assertEqual(self.ws.bake("@persona")["dependencies_added"], [])
+        self.assertEqual(load_slice_manifest(self.baked).dependencies, ["@kb"])
+
+    def test_bake_event_records_each_card_and_the_changes_it_carries(self):
+        self.ws.write("emoji", summary="Mira may use emoji.", extends=["@persona/tone"])
+        self.ws.write("stickers", summary="And stickers.", extends=["@persona/tone"])
+        self.put_overlay("gifs", card_text("Gifs", "Written by hand.", extends=["@persona/tone"]))  # no recorded change
+        stickers = self.overlay_file("stickers")
+        stickers.write_text(stickers.read_text() + "\n- Edited by hand.\n", encoding="utf-8")  # past its recorded change
+        emoji = next(e["change_id"] for e in self.ws.history.events() if e.get("address") == "@overlay/emoji")
+        res = self.ws.bake("@persona")
+        baked = self.ws.history.events()[-1]
+        self.assertEqual({k: baked.get(k) for k in ("event", "event_id", "alias", "path", "output", "previous_path",
+                                                    "version", "dropped")},
+                         {"event": "baked", "event_id": res["history_event_id"], "alias": "@persona",
+                          "path": str(self.baked), "output": res["output"], "previous_path": str(self.persona),
+                          "version": "1.0.1", "dropped": None})
+        self.assertEqual([(c["source"], c["target"], c["change_ids"]) for c in baked["cards"]],
+                         [("@overlay/emoji", "@persona/emoji", [emoji]), ("@overlay/gifs", "@persona/gifs", []),
+                          ("@overlay/stickers", "@persona/stickers", [])])
+        self.assertEqual(baked["cards"][0]["after_sha256"], file_sha(self.baked / "emoji.md"))
+        self.assertEqual((baked["change_ids"], baked["retired_overlay_cards"]), ([emoji], res["retired_overlay_cards"]))
+
+    def test_update_of_a_folder_without_manifest_keeps_its_name_and_leaves_internal_files_behind(self):
+        root = self.root / "slices" / "team-notes.slice"
+        files = {"sub/only.md": card_text("Only", "Alone in sub."), "keep/a.md": card_text("A", "Dropped."),
+                 "keep/b.md": card_text("B", "Stays."), ".git/HEAD": "ref", ".history/changes.jsonl": "{}",
+                 ".bake-plan.json": "{}"}
+        for path, text in files.items():
+            (root / path).parent.mkdir(parents=True, exist_ok=True)
+            (root / path).write_text(text, encoding="utf-8")
+        self.ws.mount(root, alias="@team", precedence=20)
+        self.ws.write("keep/c", summary="New. See [[nowhere]].", extends=["@team/keep/b"])
+        res = self.ws.bake("@team", drop=["sub/only", "keep/a"], description="Team\n  notes")
+        new = self.root / "slices" / "team-notes-2.slice"
+        self.assertEqual(res["path"], str(new))
+        self.assertEqual(list(snapshot(new)), ["keep/b.md", "keep/c.md", "slice.toml"])
+        self.assertFalse((new / "sub").exists())  # the folder the drop emptied
+        manifest = load_slice_manifest(new)
+        self.assertEqual((manifest.name, manifest.description), ("team-notes", "Team notes"))
+        self.assertIn("[[nowhere]]", (new / "keep/c.md").read_text())  # a dangling link is copied as written
+
     def test_always_loaded_card_keeps_loading_from_the_slice(self):
         self.ws.write("prefs/lang", summary="Reply in Chinese.", load="always", stage=False)
         self.ws.bake("@persona", prefix="prefs/")
@@ -246,6 +316,24 @@ class BakeDropTests(WorkspaceTestCase):
         self.assertEqual(res["dropped"], ["@kb/old"])
         self.assertEqual((self.mounted, snapshot(self.kb)), (self.kb, self.original))
 
+    def test_every_dropped_card_is_checked(self):
+        (self.kb / "b.md").write_text(card_text("B", "Refines old.", extends=["old"]), encoding="utf-8")
+        res = self.ws.bake("@kb", drop=["old", "b"], dry_run=True)  # b refines old, but goes too
+        self.assertEqual(res["dropped"], ["@kb/old", "@kb/b"])
+        other = self.ws.table().get("@other").root
+        (other / "ext.md").write_text(card_text("Ext", "Refines old.", extends=["@kb/old"]), encoding="utf-8")
+        self.ws.write("notes", summary="Rewritten pointers.")
+        with self.assertRaises(BakeConflictError) as cm:
+            self.ws.bake("@kb", drop=["notes", "old", "b"], dry_run=True)
+        conflicts = cm.exception.details["conflicts"]
+        self.assertEqual([c["address"] for c in conflicts], ["@kb/notes", "@other/ext"])
+        self.assertTrue(conflicts[1]["reason"].startswith("extends @kb/old"), conflicts[1])
+
+    def test_clearing_supersedes_keeps_the_entries_of_cards_that_stay(self):
+        (self.kb / "new.md").write_text(card_text("New", "The new fact.", supersedes=["old", "keep"]), encoding="utf-8")
+        self.ws.bake("@kb", drop=["old"])
+        self.assertEqual(parse_card((self.mounted / "new.md").read_text()).supersedes, ["keep"])
+
     def test_deleting_a_slice_card_points_the_agent_at_the_user_run_drop(self):
         res = self.ws.write("old", op="delete")
         self.assertEqual(res["warnings"], ["@overlay/old does not exist; @kb/old is in a read-only slice, so only the "
@@ -303,6 +391,18 @@ class BakeCreationTests(WorkspaceTestCase):
         self.assertEqual(updated["replaced"], ["@python/python/tools"])
         self.assertEqual(self.ws.read("@python/python/tools")["summary"], "Use ruff and mypy.")
         self.assertIn("Use ruff.", (output / "python/tools.md").read_text())
+
+    def test_new_slice_manifest_nested_paths_and_an_empty_output_folder(self):
+        self.ws.write("python/lint/strict", summary="Strict lint rules.")
+        output = self.tmp / "out/deep/python.slice"
+        self.ws.bake("@python", output, prefix="python/")
+        manifest = load_slice_manifest(output)
+        self.assertEqual((manifest.name, manifest.alias, manifest.version, manifest.description),
+                         ("python", "@python", "0.1.0", "Baked from @overlay (prefix=python/)"))
+        self.assertTrue((output / "python/lint/strict.md").is_file())
+        empty = self.tmp / "empty.slice"
+        empty.mkdir()
+        self.assertEqual(self.ws.bake("@other", empty, prefix="other")["path"], str(empty))
 
     def test_empty_prefix_explicitly_selects_all_cards(self):
         res = self.ws.bake("@all", prefix="")
