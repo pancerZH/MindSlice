@@ -6,6 +6,7 @@ from unittest.mock import patch
 from mindslice import Workspace
 from mindslice.errors import InvalidArgumentsError, NotFoundError, PreconditionFailedError
 from mindslice.interfaces.mcp_server import MCPServer
+from mindslice.operations.writer import BATCH_FIELDS, write_many
 
 from .helpers import WorkspaceTestCase, card_text
 from .test_interfaces import run_cli
@@ -137,6 +138,49 @@ class BatchTests(WorkspaceTestCase):
     def test_what_is_left_to_repair_is_still_reported(self):
         result = self.ws.write("new/place", summary="Where the thing lives.", also=[{"id": "old/place", "op": "delete"}])
         self.assertEqual(result["also"][0]["affected_backlinks"], [{"address": "@overlay/index", "links_to": "@overlay/old/place"}])
+
+    def test_impact_is_read_again_for_every_member_after_the_batch(self):
+        link = {"address": "@overlay/index", "links_to": "@overlay/old/place"}
+        result = self.ws.write("gone", summary="Temporary.", also=[
+            {"id": "gone", "op": "delete"},  # a delete first: the members after it are still read
+            {"id": "new/place", "summary": "Where it lives now.", "supersedes": ["old/place"]}])
+        self.assertEqual((result["also"][1]["affected_backlinks"], result["also"][1]["total_affected_backlinks"]), ([link], 1))
+        staged = self.ws.write("draft", summary="See [[old/place]].", stage=True, also=[
+            {"id": "newer/place", "summary": "Staged move.", "supersedes": ["old/place"]}])
+        self.assertEqual(sorted(b["address"] for b in staged["also"][0]["affected_backlinks"]),
+                         ["@overlay/draft", "@overlay/index"])
+        # A later member takes the supersedes back: the earlier result no longer reports what it retired.
+        undone = self.ws.write("third/place", summary="Third.", supersedes=["old/place"],
+                               also=[{"id": "third/place", "op": "replace", "supersedes": []}])
+        self.assertNotIn("affected_backlinks", undone)
+
+    def test_a_staged_delete_counts_staged_referrers_in_a_batch_and_on_retry(self):
+        self.ws.write("draft", summary="Pending link to [[old/place]].", stage=True)
+        both = ["@overlay/draft", "@overlay/index"]
+        result = self.ws.write("other", summary="Other.", stage=True, also=[{"id": "old/place", "op": "delete"}])
+        self.assertEqual(sorted(b["address"] for b in result["also"][0]["affected_backlinks"]), both)
+        retry = self.ws.write("old/place", op="delete", stage=True)
+        self.assertFalse(retry["changed"])
+        self.assertEqual(sorted(b["address"] for b in retry["affected_backlinks"]), both)
+
+    def test_batch_argument_errors_name_the_member(self):
+        allowed = ", ".join(BATCH_FIELDS)
+        for also, problem, failed in (([{"id": "b", "zzz": 1, "bogus": 2}], "unknown argument(s) 'bogus', 'zzz'",
+                                        {"index": 1, "id": "b"}),
+                                       ([{"op": "delete"}], "missing 'id'", {"index": 1, "id": None})):
+            with self.assertRaises(InvalidArgumentsError) as caught:
+                self.ws.write("first", summary="First.", also=also)
+            self.assertEqual(caught.exception.message, f"write 1 of the batch: {problem}. Allowed: {allowed}.")
+            self.assertEqual(caught.exception.details["failed_write"], failed)
+        with self.assertRaises(InvalidArgumentsError) as caught:
+            write_many(self.ws, "x")
+        self.assertEqual(caught.exception.message, "a batch is a list of writes, each an object with write()'s arguments")
+        with self.assertRaises(InvalidArgumentsError) as caught:  # a TypeError inside a member
+            self.ws.write("first", summary="First.", also=[{"id": "second", "content": 5}])
+        self.assertEqual(caught.exception.message, "write 1 of the batch (second) failed, so none of them was saved: "
+                                                   "content must be a string or a list of statements")
+        self.assertEqual(caught.exception.details["failed_write"], {"index": 1, "id": "second"})
+        self.assertFalse(self.overlay_file("first").exists())
 
     def test_a_failed_member_leaves_nothing_behind(self):
         files = {p: p.read_bytes() for p in self.root.joinpath("overlay").rglob("*.md")}

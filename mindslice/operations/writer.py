@@ -354,6 +354,8 @@ def write_impact(ws: "Workspace", table, path: str, parsed: ParsedCard | None, *
     cats: dict[str, MountCatalog] | None = None
     if stage and not dangling:
         overrides = ws.staging.prospective_overrides(overlay.root)
+        if deleting and path in overrides and overrides[path] is None:
+            del overrides[path]  # the delete is staged already (a retry, or a batch read after it): read it as before
         _, cats = prospective_successors(ws.index, overlay.alias, overrides)
     if deleting:
         targets = [address]
