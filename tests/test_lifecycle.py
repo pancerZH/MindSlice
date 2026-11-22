@@ -9,6 +9,8 @@ import unittest
 from mindslice.operations.impact import MAX_AFFECTED
 from mindslice.interfaces.mcp_server import MCPServer
 
+from mindslice.storage.history import file_sha
+
 from .helpers import WorkspaceTestCase, card_text
 from .test_interfaces import run_cli
 
@@ -107,6 +109,57 @@ class WriteImpactTests(WorkspaceTestCase):
         self.assertFalse(out["isError"])
         self.assertEqual(payload["total_affected_extensions"], 1)
 
+
+class WriteImpactSourcesTests(WorkspaceTestCase):
+    """Which state a write's impact is read from: the live index for live writes, staging included for staged ones."""
+
+    def setUp(self) -> None:
+        super().setUp()
+        self.ws.write("old", summary="Old.")
+        self.ws.write("other", summary="Other.")
+        self.ws.write("index", summary="See [[old]] and [[other]].")
+
+    def test_only_what_the_write_supersedes_counts(self):
+        result = self.ws.write("new", summary="New.", content=["Unlike [[other]]."], supersedes=["old"])
+        self.assertEqual((result["affected_backlinks"], result["total_affected_backlinks"]),
+                         ([{"address": "@overlay/index", "links_to": "@overlay/old"}], 1))
+
+    def test_a_live_write_ignores_staged_referrers(self):
+        self.ws.write("draft", summary="Pending link to [[old]].", stage=True)
+        result = self.ws.write("new", summary="New.", supersedes=["old"])
+        self.assertEqual([b["address"] for b in result["affected_backlinks"]], ["@overlay/index"])
+
+    def test_a_staged_write_resolves_against_staging(self):
+        self.ws.write("planned", summary="Exists only in staging.", stage=True)
+        self.ws.write("plan-index", summary="See [[planned]].", stage=True)
+        result = self.ws.write("replacement", summary="Replaces the planned card.", supersedes=["planned"], stage=True)
+        self.assertEqual(result["affected_backlinks"], [{"address": "@overlay/plan-index", "links_to": "@overlay/planned"}])
+
+    def test_a_staged_delete_reads_staged_referrers(self):
+        self.ws.write("draft", summary="Pending link to [[old]].", stage=True)
+        result = self.ws.write("old", op="delete", stage=True)
+        self.assertEqual(sorted(b["address"] for b in result["affected_backlinks"]), ["@overlay/draft", "@overlay/index"])
+
+    def test_an_unchanged_retry_reports_the_same(self):
+        self.ws.write("draft", summary="Pending link to [[old]].", stage=True)
+        first = self.ws.write("new", summary="New.", supersedes=["old"], stage=True)
+        again = self.ws.write("new", summary="New.", supersedes=["old"], stage=True)
+        self.assertEqual((again["changed"], again["sha256"]), (False, first["sha256"]))
+        self.assertEqual(again["affected_backlinks"], first["affected_backlinks"])
+        self.assertEqual(sorted(b["address"] for b in again["affected_backlinks"]), ["@overlay/draft", "@overlay/index"])
+
+    def test_deleting_what_the_overlay_does_not_hold(self):
+        result = self.ws.write("absent", op="delete")
+        self.assertEqual((result["changed"], result["sha256"], result["warnings"]),
+                         (False, None, ["@overlay/absent does not exist; nothing to delete"]))
+        root = self.tmp / "lib.slice"
+        (root / "a").mkdir(parents=True)
+        (root / "a" / "b.md").write_text(card_text("B", "In a slice."))
+        self.ws.mount(root, alias="lib")
+        result = self.ws.write("a/b", op="delete")
+        self.assertEqual(result["warnings"], [
+            "@overlay/a/b does not exist; @lib/a/b is in a read-only slice, so only the user can remove it, "
+            "with `mindslice bake @lib --drop a/b`: tell the user"])
 
 class ZeroConversionMountTests(WorkspaceTestCase):
     """A folder of ordinary Markdown mounts as is."""
@@ -216,6 +269,12 @@ class RetireImportedCopiesTests(WorkspaceTestCase):
             ("wikilink", "@overlay/api/edge", "@api/api/edge"),
             ("wikilink", "api/jwt-ttl", "@api/api/jwt-ttl"),
         ])
+        *rebases, retired = self.ws.history.events()[-2:]
+        self.assertEqual([(e["event"], e["address"], e["op"], e["origin"], e["reason"]) for e in rebases],
+                         [("applied", "@overlay/notes/todo", "rebase", "engine", "Rebase references to cards moved into @api")])
+        self.assertEqual(rebases[0]["after_sha256"], file_sha(self.overlay_file("notes/todo")))
+        self.assertEqual((retired["event"], retired["alias"], retired["path"], retired["retired_overlay_cards"]),
+                         ("retired", "@api", str(self.imported), res["retired_overlay_cards"]))
         # One replacement, not two competing ones.
         read = self.ws.read("@project/api/auth-flow")
         self.assertEqual((read["address"], read["status"]), ("@api/api/jwt-ttl", "active"))
@@ -263,3 +322,121 @@ class RetireImportedCopiesTests(WorkspaceTestCase):
 
 if __name__ == "__main__":
     unittest.main()
+
+
+class RetireCopyRulesTests(WorkspaceTestCase):
+    """retire_copies / retire_overlay_paths, one rule per scenario."""
+
+    def copies(self, *paths, **replacements):
+        """The slice text of overlay cards, as exported (``@overlay/x`` -> ``x``)."""
+        return {p: replacements.get(p.replace("/", "_"), self.overlay_file(p).read_text().replace("[[@overlay/", "[["))
+                for p in paths}
+
+    def test_each_copy_is_judged_on_its_own(self):
+        self.ws.write("a", summary="A.")
+        self.ws.write("a", op="replace", summary="A, pending.", stage=True)
+        self.ws.write("b", summary="B.")
+        self.ws.write("c", summary="C.", content=["See [[@overlay/d]]."])
+        self.ws.write("d", summary="D.")
+        root = self.make_slice("imp", self.copies("a", "b", "c", "d", b=card_text("B", "Another B.")), alias="@imp")
+        result = self.ws.mount(root, alias="imp")
+        self.assertEqual(result["retired_overlay_cards"], ["@overlay/c", "@overlay/d"])  # c only matches as exported
+        self.assertEqual(result["shadowing_overlay_cards"], [
+            {"address": "@overlay/a", "reason": "staged change pending"},
+            {"address": "@overlay/b", "reason": "differs from @imp/b"}])
+
+    def test_a_copy_held_back_by_a_staged_referrer_holds_back_the_copies_linking_to_it(self):
+        self.ws.write("a", summary="A.", content=["See [[b]]."])
+        self.ws.write("b", summary="B.")
+        self.ws.write("user", summary="Uses [[b]].")
+        self.ws.write("user", op="replace", summary="No longer uses it.", stage=True)  # its live file still links b
+        root = self.make_slice("imp", self.copies("a", "b"), alias="@imp")
+        result = self.ws.mount(root, alias="imp")
+        self.assertNotIn("retired_overlay_cards", result)
+        self.assertEqual(result["shadowing_overlay_cards"], [
+            {"address": "@overlay/a", "reason": "references differ in @imp"},
+            {"address": "@overlay/b", "reason": "referenced by staged @overlay/user"}])
+        self.assertEqual(self.ws.read("a")["links"], [{"ref": "b", "address": "@overlay/b"}])
+
+    def test_a_link_that_would_land_on_another_card_keeps_the_copy(self):
+        self.ws.write("a", summary="A.", content=["See [[x]]."])
+        self.ws.write("x", summary="Overlay x.")
+        root = self.make_slice("imp", self.copies("a", "x", x=card_text("X", "The slice's own x.")), alias="@imp")
+        result = self.ws.mount(root, alias="imp")
+        self.assertNotIn("retired_overlay_cards", result)
+        self.assertEqual(result["shadowing_overlay_cards"], [
+            {"address": "@overlay/a", "reason": "references differ in @imp"},
+            {"address": "@overlay/x", "reason": "differs from @imp/x"}])
+
+    def test_a_copy_that_falls_out_takes_the_copies_linking_to_it_along(self):
+        self.ws.write("a", summary="A.", content=["See [[b]]."])
+        self.ws.write("b", summary="B.", content=["See [[c]]."])
+        self.ws.write("c", summary="C.")
+        root = self.make_slice("imp", self.copies("a", "b", "c", c=card_text("C", "The slice's own c.")), alias="@imp")
+        result = self.ws.mount(root, alias="imp")
+        self.assertNotIn("retired_overlay_cards", result)
+        self.assertEqual(result["shadowing_overlay_cards"], [
+            {"address": "@overlay/a", "reason": "references differ in @imp"},
+            {"address": "@overlay/b", "reason": "references differ in @imp"},
+            {"address": "@overlay/c", "reason": "differs from @imp/c"}])
+
+    def test_staged_cards_hold_back_only_the_overlay_copies_they_name(self):
+        other = self.make_slice("other", {"o": card_text("O", "Other.")}, alias="@other")
+        self.ws.mount(other, alias="other")
+        self.ws.write("b", summary="B.")
+        self.ws.write("o", summary="Overlay o.")
+        self.ws.write("draft", summary="Needs [[b]] and [[@other/o]].", stage=True)
+        root = self.make_slice("imp", self.copies("b", "o"), alias="@imp")
+        result = self.ws.mount(root, alias="imp")
+        self.assertEqual(result["retired_overlay_cards"], ["@overlay/o"])
+        self.assertEqual(result["shadowing_overlay_cards"],
+                         [{"address": "@overlay/b", "reason": "referenced by staged @overlay/draft"}])
+
+    def test_links_that_would_start_resolving_keep_the_copy(self):
+        self.ws.write("a", summary="A.", content=["See [[ghost]]."])  # resolves nowhere in the overlay
+        self.ws.write("e", summary="E.", content=["See [[nothere]] and [[x]]."])  # unresolved in both, then differs
+        self.ws.write("x", summary="Overlay x.")
+        root = self.make_slice("imp", {**self.copies("a", "e"), "ghost": card_text("Ghost", "Now it exists."),
+                                       "x": card_text("X", "The slice's own x.")}, alias="@imp")
+        result = self.ws.mount(root, alias="imp")
+        self.assertEqual(result["shadowing_overlay_cards"], [
+            {"address": "@overlay/a", "reason": "references differ in @imp"},
+            {"address": "@overlay/e", "reason": "references differ in @imp"},
+            {"address": "@overlay/x", "reason": "differs from @imp/x"}])
+
+    def test_rewrites_record_both_shas_and_broken_references_are_sorted(self):
+        other = self.make_slice("other", {"u": card_text("U", "Extends it.", extends=["@overlay/deep/a"]),
+                                          "t": card_text("T", "Links it: [[@overlay/deep/a]].")}, alias="@other")
+        self.ws.write("deep/a", summary="A.")
+        self.ws.mount(other, alias="other")
+        self.put_overlay("b-bad", "+++\ntitle = \n+++\n\nSee [[deep/a]].\n")  # cannot be rewritten
+        self.ws.write("stay", summary="See [[deep/a]].")
+        before = file_sha(self.overlay_file("stay"))
+        root = self.make_slice("imp", self.copies("deep/a"), alias="@imp")
+        result = self.ws.mount(root, alias="imp")
+        self.assertEqual(result["retired_overlay_cards"], ["@overlay/deep/a"])
+        self.assertFalse((self.root / "overlay" / "deep").exists())  # the emptied folder goes too
+        self.assertEqual(result["broken_references"], [
+            {"address": "@other/t", "kind": "wikilink", "ref": "@overlay/deep/a"},
+            {"address": "@other/u", "kind": "extends", "ref": "@overlay/deep/a"},
+            {"address": "@overlay/b-bad", "kind": "wikilink", "ref": "deep/a"}])
+        [rebase] = [e for e in self.ws.history.events() if e.get("op") == "rebase"]
+        self.assertEqual((rebase["address"], rebase["before_sha256"], rebase["after_sha256"]),
+                         ("@overlay/stay", before, file_sha(self.overlay_file("stay"))))
+
+    def test_references_to_a_retired_copy_from_cards_that_stay(self):
+        other = self.make_slice("other", {
+            "o": card_text("O", "Other."), "a": card_text("A elsewhere", "Not the overlay's a."),
+            "t": card_text("T", "Read-only.", ["See [[@overlay/a]] and [[@other/o]]."])}, alias="@other")
+        self.ws.mount(other, alias="other")
+        self.ws.write("a", summary="A.")
+        self.ws.write("stay1", summary="Extends only.", extends=["a"])
+        self.ws.write("stay2", summary="Links.", content=["[[a]] [[@other/o]] [[@other/a]]"])
+        root = self.make_slice("imp", self.copies("a"), alias="@imp")
+        result = self.ws.mount(root, alias="imp")
+        self.assertEqual(result["retired_overlay_cards"], ["@overlay/a"])
+        self.assertEqual(sorted((r["address"], r["kind"], r["ref"], r["to"]) for r in result["rebased_references"]), [
+            ("@overlay/stay1", "extends", "a", "@imp/a"), ("@overlay/stay2", "wikilink", "a", "@imp/a")])
+        self.assertEqual(result["broken_references"], [{"address": "@other/t", "kind": "wikilink", "ref": "@overlay/a"}])
+        self.assertEqual(self.ws.read("stay1")["extends"], ["@imp/a"])
+        self.assertIn("[[@imp/a]] [[@other/o]] [[@other/a]]", self.overlay_file("stay2").read_text())

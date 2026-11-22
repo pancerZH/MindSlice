@@ -15,7 +15,8 @@ from mindslice.model.addressing import (
     resolve_ref,
     rewrite_wikilinks,
 )
-from mindslice.model.card import append_statements, parse_card, preview_text, split_lead, statement_blocks
+from mindslice.model.card import (append_statements, parse_card, parse_yaml_subset, preview_text, split_lead,
+                                  statement_blocks)
 from mindslice.errors import FrontmatterError, InvalidAddressError
 
 from .helpers import card_text
@@ -163,6 +164,79 @@ class PlainMarkdownTests(unittest.TestCase):
         self.assertEqual(split_lead("- only\n- bullets"), ("", "- only\n- bullets"))
         native = parse_card(card_text("T") + "\n# Heading\n\nProse.\n")
         self.assertEqual(native.index_parts()[0], "")  # native cards keep the summary-under-frontmatter rule
+
+
+
+def yaml(text):
+    return parse_yaml_subset(text.split("\n"))
+
+
+class YamlSubsetTests(unittest.TestCase):
+    """The legacy ``---`` frontmatter subset, one rule per case."""
+
+    def test_comments_after_quoted_values(self):
+        self.assertEqual(yaml('title: "say \\"hi\\" # not" # c'), ({"title": 'say "hi" # not'}, []))
+        self.assertEqual(yaml("title: 'it''s # here' # c"), ({"title": "it's # here"}, []))
+        self.assertEqual(yaml('title: "a" b'), ({"title": '"a" b'}, []))  # text after the quote: not a quoted scalar
+        self.assertEqual(yaml('title: "abc # x'), ({"title": '"abc # x'}, []))  # never closed: kept whole
+        self.assertEqual(yaml("tags: a#b"), ({"tags": ["a#b"]}, []))  # a comment needs a space before the #
+        self.assertEqual(yaml("title: a # b # c"), ({"title": "a"}, []))  # the first comment marker wins
+        self.assertEqual(yaml("x: |   # keep\n  a\n  b"), ({"x": "a\nb"}, []))  # a block indicator may carry a comment
+        self.assertEqual(yaml('title: "\\x"'), ({"title": "\\x"}, []))  # not valid JSON: the text between the quotes
+
+    def test_quotes_inside_quoted_values(self):
+        for text, value in (("title: 'a' # it's", "a"), ('title: "" # c', ""), ("title: '''' # c", "'"),
+                            ("title: 'abc # x", "'abc # x"), ("title: 'a''b' # it's", "a'b"), ("title: 'a''' # c", "a'"),
+                            ('title: "a\\"b" # say "x"', 'a"b'), ('title: "a\\"" # c', 'a"'), ('title: "a"b # c', '"a"b # c')):
+            self.assertEqual(yaml(text), ({"title": value}, []), text)
+
+    def test_a_skipped_field_does_not_end_the_block(self):
+        for text, warning in (("aliases: [a, [b]]", "YAML field 'aliases' is not a flat list; ignored"),
+                              ("inline: {a: 1}", "YAML field 'inline' is a mapping; ignored"),
+                              ("k:\n  sub: 1", "YAML field 'k' is a nested mapping; ignored")):
+            self.assertEqual(yaml(text + "\ntitle: T"), ({"title": "T"}, [warning]), text)
+
+    def test_fences(self):
+        empty = parse_card("---\n---\n\nBody.\n")
+        self.assertEqual((empty.frontmatter_format, empty.frontmatter, empty.after), ("yaml", {}, "\nBody.\n"))
+        spaced = parse_card("---  \ntitle: x\n---   \nFirst line.\n")  # trailing spaces after the fences
+        self.assertEqual((spaced.frontmatter_format, spaced.title, spaced.after), ("yaml", "x", "First line.\n"))
+
+    def test_fields_after_blank_lines_and_comments(self):
+        self.assertEqual(yaml("a: 1\n\n# note\n  # indented comment\nb: 2"), ({"a": "1", "b": "2"}, []))
+        self.assertEqual(yaml("k\t:  v  "), ({"k": "v"}, []))
+        self.assertEqual(yaml("key_1-x: v"), ({"key_1-x": "v"}, []))
+
+    def test_lines_that_end_the_block(self):
+        for text in ("  title: x", "title:x", "-key: v"):
+            self.assertIsNone(yaml(text), text)
+
+    def test_flow_lists(self):
+        self.assertEqual(yaml("aliases: [one,\n  two,\n  three]  # c\nb: x"),
+                         ({"aliases": ["one", "two", "three"], "b": "x"}, []))
+        self.assertEqual(yaml("aliases: [a, ~, null, '']"), ({"aliases": ["a", ""]}, []))
+        for text in ("aliases: [a, [b]]", "aliases: [a, {b: 1}]", "aliases: [a, b"):
+            fields, warnings = yaml(text)
+            self.assertEqual(fields, {}, text)
+            self.assertEqual(warnings, ["YAML field 'aliases' is not a flat list; ignored"], text)
+
+    def test_block_scalars_keep_or_fold_lines(self):
+        self.assertEqual(yaml("x: |\n  one\n\n  two\n\ny: 1"), ({"x": "one\n\ntwo", "y": "1"}, []))
+        self.assertEqual(yaml("x: >\n  one\n\n  two\n\ny: 1"), ({"x": "one two", "y": "1"}, []))
+        self.assertEqual(yaml("x: |-\n  a\n  b"), ({"x": "a\nb"}, []))
+        self.assertEqual(yaml("x: >+\n  a\n  b"), ({"x": "a b"}, []))
+
+    def test_block_lists_and_nulls(self):
+        self.assertEqual(yaml("aliases:\n- a\n-\n  - b\n# c\n- ~\nnext: v"), ({"aliases": ["a", "b"], "next": "v"}, []))
+        self.assertEqual(yaml("tags:\n  - ~"), ({"tags": []}, []))
+        self.assertEqual(yaml("empty:\nnext: v"), ({"next": "v"}, []))
+        self.assertEqual(yaml("k:\n  sub: 1\n  - a"), ({}, ["YAML field 'k' is a nested mapping; ignored"]))
+        self.assertEqual(yaml("title: ~\nsummary: null"), ({}, []))
+
+    def test_list_fields_given_as_scalars(self):
+        self.assertEqual(yaml("tags: a, b ,, c"), ({"tags": ["a", "b", "c"]}, []))
+        self.assertEqual(yaml("aliases: one, two"), ({"aliases": ["one, two"]}, []))
+        self.assertEqual(yaml("extends: base"), ({"extends": ["base"]}, []))
 
 
 class AddressingTests(unittest.TestCase):

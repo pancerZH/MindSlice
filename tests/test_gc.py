@@ -2,6 +2,7 @@
 import json
 import shutil
 from pathlib import Path
+from unittest.mock import patch
 
 from mindslice import RecoveryError
 from mindslice.storage.history import file_action
@@ -78,7 +79,7 @@ class GcTests(WorkspaceTestCase):
             (directory / 'tree' / 'a.md').write_text('# A\n', encoding='utf-8')
         (self.root / 'overlay' / '.git').mkdir()
         kept = [self.root / 'overlay' / '.notes', self.root / 'overlay' / '.card.md.short.tmp',
-                self.root / 'overlay' / '.git' / '.index.lock.ab12cd34.tmp', self.root / 'slices' / 'notes.zip',
+                self.root / 'overlay' / '.git' / '.index.lock.ab12cd34.tmp', self.root / 'slices' / 'a-notes.zip',  # a file sorts before the old version
                 self.root / '.history' / '.batch.json.txt', self.ws.cache_dir / '.clients.json.ab12cd34.tmp',
                 self.root / 'slices' / '.DS_Store']
         for path in kept:
@@ -135,6 +136,33 @@ class GcTests(WorkspaceTestCase):
         self.assertEqual(render_gc({'dry_run': True, 'old_versions': [], 'temporary': [],
                                     'kept_unmounted': [{'path': '/w/slices/b.slice', 'alias': '@b'}], 'bytes': 0}),
                          'Kept unmounted slice (@b): /w/slices/b.slice\nNothing to remove.\n')
+
+    def test_the_patterns_match_the_names_writers_give_their_temporary_files(self):
+        import tempfile
+        from mindslice.operations.gc import TEMP_FILE, TEMP_SLICE
+        made = []
+
+        def recording(real):
+            def wrapper(*args, **kwargs):
+                result = real(*args, **kwargs)
+                made.append(Path(result[1] if isinstance(result, tuple) else result))
+                return result
+            return wrapper
+
+        with patch('mindslice.storage.fsutil.tempfile.mkstemp', recording(tempfile.mkstemp)), \
+                patch('mindslice.baking.bake.tempfile.mkdtemp', recording(tempfile.mkdtemp)), \
+                patch('mindslice.baking.bake_batch.tempfile.mkdtemp', recording(tempfile.mkdtemp)), \
+                patch('mindslice.baking.archive.tempfile.mkstemp', recording(tempfile.mkstemp)):
+            self.ws.write('a', summary='One.')
+            self.ws.bake('kb', prefix='')  # named bake
+            self.ws.bake('kb', self.root / 'slices' / 'kb.zip', drop=['a'])  # archive output
+            self.ws.write('b', summary='Two.')
+            self.ws.bake(plan=self.ws.plan_bake({'b': 'kb'}, resume=False))  # workspace bake
+        in_slices = [p for p in made if p.parent == self.root / 'slices']
+        others = [p for p in made if p.parent != self.root / 'slices' and self.root in p.parents]
+        self.assertTrue(in_slices and others)
+        self.assertEqual([p.name for p in in_slices if not TEMP_SLICE.fullmatch(p.name)], [])
+        self.assertEqual([p.name for p in others if not TEMP_FILE.fullmatch(p.name)], [])
 
     def test_an_interrupted_transaction_is_finished_first(self):
         target = self.root / 'overlay' / 'late.md'

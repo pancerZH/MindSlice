@@ -245,6 +245,18 @@ class HistoryRecoveryTests(WorkspaceTestCase):
             self.ws.write("note", op="replace", summary="Must not be written.")
         self.assertEqual(self.overlay_file("note").read_bytes(), before)
 
+    def test_write_events_record_their_origin_and_shas(self):
+        first = self.ws.write("a", summary="One.", reason="Start.")
+        second = self.ws.write("a", op="patch", edits=[{"old": "One.", "new": "Two."}], reason="Fix.")
+        staged = self.ws.write("b", summary="Later.", reason="Wait.", stage=True)
+        events = [e for e in self.ws.history.events() if e.get("change_id")]
+        self.assertEqual([(e["event"], e["address"], e["op"], e["origin"], e["reason"], e["before_sha256"], e["after_sha256"])
+                          for e in events],
+                         [("applied", "@overlay/a", "create", "write", "Start.", None, first["sha256"]),
+                          ("applied", "@overlay/a", "patch", "write", "Fix.", first["sha256"], second["sha256"]),
+                          ("proposed", "@overlay/b", "create", "write", "Wait.", None, staged["sha256"])])
+        self.assertEqual([e["change_id"] for e in events], [first["change_id"], second["change_id"], staged["change_id"]])
+
     def test_apply_log_failure_is_replayed_with_the_original_change_ids(self):
         proposal = self.ws.write("note", summary="Approved content.", stage=True, reason="User request.")
         with patch.object(self.ws.history, "append", side_effect=OSError("log failure")):

@@ -415,3 +415,132 @@ class BackupTests(WorkspaceTestCase):
             # Windows also uses the read-only flag when deleting temporary fixtures.
             for file in self.tmp.rglob('a.md'):
                 file.chmod(0o644)
+
+
+class BackupManifestValidationTests(WorkspaceTestCase):
+    """Every refusal of _load_backup and restore, each on its own copy of one valid backup."""
+
+    def setUp(self):
+        super().setUp()
+        external = self.tmp/'external'
+        external.mkdir()
+        (external/'m.md').write_text(card_text('Manual', 'Shared.'))
+        self.ws.mount(external, alias='ext')
+        self.ws.write('a', summary='A.')
+        self.backup = self.tmp/'backup'
+        self.ws.backup(self.backup)
+        self.cases = 0
+
+    def refused(self, message, edit=None, files=None):
+        """Copy the backup, apply ``edit`` to its manifest and ``files`` to its tree, and expect ``message``."""
+        self.cases += 1
+        case = self.tmp/f'case{self.cases}'
+        shutil.copytree(self.backup, case)
+        data = json.loads((case/'backup.json').read_text())
+        if files:
+            files(case)
+            data.update(snapshots.inventory(case, ('backup.json',)))
+        if edit:
+            edit(data)
+        (case/'backup.json').write_text(json.dumps(data))
+        target = self.tmp/f'restored{self.cases}'
+        with self.assertRaises(RecoveryError) as raised:
+            Workspace.restore(case, target)
+        self.assertIn(message, raised.exception.message)
+        self.assertFalse(target.exists())
+        self.assertEqual([p.name for p in target.parent.iterdir() if p.name.startswith('.mindslice-restore-')], [])
+
+    def test_the_unchanged_backup_restores(self):
+        self.assertTrue(Path(Workspace.restore(self.backup, self.tmp/'fine')['workspace']).is_dir())
+
+    def unreadable(self, text, message):
+        case = self.tmp/f'unreadable{len(text)}'
+        shutil.copytree(self.backup, case)
+        (case/'backup.json').write_text(text)
+        with self.assertRaises(RecoveryError) as raised:
+            Workspace.restore(case, self.tmp/'x')
+        self.assertIn(message, raised.exception.message)
+
+    def test_manifest_format_and_inventory(self):
+        self.unreadable('{not json', 'cannot read backup manifest')
+        self.unreadable('[]', 'unsupported backup format')
+        self.refused('unsupported backup format', lambda d: d.update(format='other'))
+        self.refused('unsupported backup format', lambda d: d.update(version=2))
+        self.refused('invalid backup inventory', lambda d: d.update(files=[]))
+        self.refused('invalid backup inventory', lambda d: d.update(directories={}))
+        first = lambda d: next(iter(d['files'].values()))
+        self.refused('invalid file checksum', lambda d: first(d).update(sha256=1))
+        self.refused('invalid file checksum', lambda d: first(d).update(size='0'))
+        self.refused('invalid file checksum', lambda d: d['files'].update({next(iter(d['files'])): 'x'}))
+
+    def test_required_files_and_unfinished_transactions(self):
+        self.refused('no workspace mount table', files=lambda c: (c/'workspace/mounts.toml').unlink())
+        for journal in ('staging/.apply_journal.json', '.history/.pending.json', '.history/.batch.json'):
+            self.refused('unfinished transaction', files=lambda c, j=journal: (c/'workspace'/j).write_text('{}'))
+
+    def test_source_roots(self):
+        self.refused('invalid backup source mapping', lambda d: d.update(roots=[]))
+        self.refused('invalid backup source mapping', lambda d: d.update(mounts={}))
+        self.refused('one workspace and unique external roots',
+                     lambda d: d['roots'].update({k: 'workspace' for k in d['roots']}))
+        self.refused('one workspace and unique external roots', lambda d: d['roots'].update({'/elsewhere': 'external/1'}))
+        self.refused('one workspace and unique external roots',
+                     lambda d: d.update(roots={k: v for k, v in d['roots'].items() if v != 'workspace'}))
+        external = lambda d: next(k for k, v in d['roots'].items() if v != 'workspace')
+        self.refused('invalid stored source path', lambda d: d['roots'].update({external(d): 'external/1/deeper'}))
+        self.refused('invalid stored source path', lambda d: d['roots'].update({external(d): 'other/1'}))
+        self.refused('missing stored source directory', lambda d: d['roots'].update({external(d): 'external/2'}))
+
+    def test_mount_records(self):
+        self.refused('invalid mount record', lambda d: d['mounts'].append('@x'))
+        self.refused('mount points outside stored sources', lambda d: d['mounts'][1].update(stored='workspace2/x'))
+        self.refused('mount points outside stored sources', lambda d: d['mounts'][1].update(stored='external/1/missing'))
+        self.refused('exactly one overlay', lambda d: d['mounts'][1].update(kind='overlay'))
+        self.refused('exactly one overlay', lambda d: d['mounts'][0].update(kind='slice'))
+        self.refused('exactly one overlay', lambda d: d['mounts'][1].update(kind='folder'))
+        self.refused('invalid backup metadata', lambda d: d['mounts'][1].pop('alias'))
+
+    def test_unsafe_manifest_paths(self):
+        for bad in ('', 'a\\b', 'c:x', 'a\x00b', 7):
+            self.refused('invalid path in backup manifest', lambda d, b=bad: d['directories'].append(b))
+        for bad in ('/abs', 'a//b', './a', 'a/./b', 'a/..', 'a/'):
+            self.refused('unsafe path in backup manifest', lambda d, b=bad: d['directories'].append(b))
+        self.refused('unsafe path in backup manifest', lambda d: d['files'].update({'../x': {'sha256': 'x', 'size': 0}}))
+        self.refused('unsafe path in backup manifest', lambda d: d['mounts'][1].update(stored='external/1/../2'))
+
+    def test_destination_that_is_a_link_or_inside_a_source(self):
+        link = self.tmp/'dangling'
+        link.symlink_to(self.tmp/'nowhere')
+        with self.assertRaises(RecoveryError) as raised:
+            Workspace.restore(self.backup, link)
+        self.assertIn('destination already exists', raised.exception.message)
+        self.assertFalse((self.tmp/'nowhere').exists())
+        with self.assertRaises(RecoveryError) as raised:
+            Workspace.restore(self.backup, self.backup/'workspace'/'inside')
+        self.assertIn('outside the source directories', raised.exception.message)
+
+    def test_a_linked_manifest_and_a_mount_between_roots(self):
+        self.refused('mount points outside stored sources', lambda d: d['mounts'][1].update(stored='external'))
+        case = self.tmp/'linked-manifest'
+        shutil.copytree(self.backup, case)
+        (case/'backup.json').rename(self.tmp/'real.json')
+        (case/'backup.json').symlink_to(self.tmp/'real.json')
+        with self.assertRaises(RecoveryError) as raised:
+            Workspace.restore(case, self.tmp/'x')
+        self.assertIn('must not be symlinks', raised.exception.message)
+
+    def test_restore_result_and_event(self):
+        target = self.tmp/'new'/'parents'/'restored'
+        result = Workspace.restore(self.backup, target)
+        self.assertEqual((result['workspace'], result['backup'], result['unavailable_versions']),
+                         (str(target), str(self.backup), []))
+        self.assertEqual(result['mounts'], [
+            {'path': str(target/'overlay'), 'alias': '@overlay', 'precedence': 100, 'role': 'runtime'},
+            {'path': str(target/'.restored-mounts'/'1'), 'alias': '@ext', 'precedence': 50, 'role': 'baseline'}])
+        self.assertEqual(sorted(p.name for p in target.parent.iterdir()), ['restored'])  # no temporary directory left
+        restored = Workspace(target)
+        last = restored.history.events()[-1]
+        self.assertEqual((last['event'], last['backup'], last['path']), ('restored', str(self.backup), str(target)))
+        self.assertEqual(last['path_map'], {str(self.root): '.', str(self.tmp/'external'): '.restored-mounts/1'})
+        self.assertEqual(restored.read('@ext/m')['summary'], 'Shared.')
+        restored.close()

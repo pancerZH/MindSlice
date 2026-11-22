@@ -3,6 +3,7 @@
 from __future__ import annotations
 
 import json
+from pathlib import Path
 
 from mindslice import AlreadyExistsError, BakeConflictError, MountError, NotFoundError, UnresolvedExportDependencyError
 from mindslice.errors import InvalidArgumentsError
@@ -555,3 +556,41 @@ class BakeArchiveTests(WorkspaceTestCase):
         self.assertEqual(self.ws.table().get("@base").root, old)
         self.assertTrue(self.overlay_file("extra").exists())
         self.assertFalse((self.root / "slices/base-2.slice").exists())
+
+
+class BakeReferenceTests(WorkspaceTestCase):
+    def test_closure_reports_every_reference_it_cannot_follow(self):
+        other = self.tmp / "other.slice"
+        other.mkdir()
+        (other / "o.md").write_text(card_text("O", "Other."))
+        self.ws.mount(other, alias="other")
+        links = "[[@/bad]] [[nowhere]] [[@other/missing.md]] [[@other/o]] [[keep/b]] [[out/c]] [[out/d]]"
+        self.ws.write("keep/a", summary="A.", content=[links])
+        self.ws.write("keep/b", summary="B.")
+        self.ws.write("out/c", summary="C.")
+        self.ws.write("out/d", summary="D.")
+        with self.assertRaises(UnresolvedExportDependencyError) as caught:
+            self.ws.bake("kb", prefix="keep/", dry_run=True)
+        self.assertEqual(caught.exception.message, "export references 2 excluded @overlay card(s): @overlay/out/c, "
+                                                   "@overlay/out/d (pass include_deps=True to pull them in)")
+        self.assertEqual(caught.exception.details["missing"], [
+            {"source": "@overlay/keep/a", "field": "wikilink", "ref": ref, "target": f"@overlay/{ref}"}
+            for ref in ("out/c", "out/d")])
+        result = self.ws.bake("kb", prefix="keep/", include_deps=True)
+        self.assertEqual(result["warnings"], [
+            "keep/a: wikilink reference '@/bad' is not a valid address; copied verbatim",
+            "keep/a: wikilink reference 'nowhere' does not resolve in @overlay; copied verbatim",
+            "keep/a: wikilink reference '@other/missing.md' does not resolve in @other"])
+        self.assertEqual((result["included_dependencies"], result["dependencies_added"]), (["out/c", "out/d"], ["@other"]))
+        self.assertIn(f"- {links}\n", (Path(result["path"]) / "keep/a.md").read_text())  # unresolved refs copied verbatim
+
+    def test_a_slice_mounted_inside_the_overlay_is_not_baked_with_it(self):
+        vendor = self.root / "overlay" / "vendor"
+        vendor.mkdir(parents=True)
+        (vendor / "v.md").write_text(card_text("V", "Vendored."))
+        self.ws.mount(vendor, alias="vendor")
+        self.ws.write("mine", summary="Mine.")
+        result = self.ws.bake("kb", prefix="")
+        self.assertEqual(sorted(p.relative_to(result["path"]).as_posix() for p in Path(result["path"]).rglob("*.md")),
+                         ["mine.md"])
+        self.assertTrue((vendor / "v.md").is_file())
