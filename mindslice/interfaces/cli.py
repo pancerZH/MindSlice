@@ -114,6 +114,9 @@ def build_parser() -> argparse.ArgumentParser:
     s.add_argument("source", help="backup directory")
     s.add_argument("--output", required=True, help="new workspace directory; never overwrites an existing directory")
 
+    s = sub.add_parser("gc", help="delete older versions of mounted slices and leftovers of interrupted writes")
+    s.add_argument("--dry-run", action="store_true", help="list what would be deleted, delete nothing")
+
     s = sub.add_parser("manifest", help="paginated mount and folder map for memory navigation")
     s.add_argument("--limit", type=int, default=20)
     s.add_argument("--offset", type=int, default=0)
@@ -318,6 +321,9 @@ def _dispatch(ws: Workspace, args: argparse.Namespace) -> int:
                 return 0
         result = ws.rollback(args.alias, plan["path"], revision=plan["revision"])
         out(result, lambda r: "Slice pointer switched.\n" + render_rollback(r))
+    elif cmd == "gc":
+        from ..operations.gc import render_gc
+        out(ws.gc(args.dry_run), render_gc)
     elif cmd == "manifest":
         out(ws.manifest(args.limit, args.offset, args.max_folders_per_mount, args.include_overview,
                         args.include_always), render.render_manifest)

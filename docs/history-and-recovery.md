@@ -75,6 +75,28 @@ Existing unrelated validation warnings remain visible.
 Old directories must still exist. The history log is not evidence that their original contents
 remain unchanged; the preview checks the actual files currently at the target path.
 
+## Delete old versions and leftovers
+
+```bash
+mindslice gc --dry-run
+mindslice gc
+```
+
+Each bake leaves the previous version's directory in `slices/`, which is what rollback returns to.
+`gc` deletes every directory in `slices/` that is not mounted but whose `slice.toml` names an alias
+mounted from another directory: older versions, and the output of a bake killed before it was mounted.
+After that, rollback has no predecessor to switch to. It keeps unmounted slices whose alias nothing
+serves (unmounted on purpose; listed under `kept_unmounted`), folders without a `slice.toml` alias,
+and every directory that is mounted (under any alias), holds a mount or lies inside one. A directory
+another workspace mounts from this `slices/` folder is not protected.
+
+It also deletes the temporary files and directories a killed process can leave: hidden
+`.<name>.<random>.tmp` files in the workspace root, `overlay/`, `staging/` and `.history/`, and the
+hidden staging directories and files that bake and archive output leave in `slices/`. It holds the
+exclusive lock and finishes interrupted transactions first, and every writer creates these only
+under that lock, so none of them can belong to a running operation. `.cache/` is left alone.
+Change history and backups are not touched.
+
 ## Back up a complete workspace
 
 ```bash

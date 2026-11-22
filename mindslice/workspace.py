@@ -256,6 +256,11 @@ class Workspace:
         from .storage.snapshots import restore
         return restore(source, destination)
 
+    def gc(self, dry_run: bool = False) -> dict[str, Any]:
+        """Delete older versions of mounted slices in ``slices/`` and leftovers of interrupted writes."""
+        from .operations.gc import gc
+        return gc(self, dry_run)
+
     def mount(self, path: str | os.PathLike[str], alias: str | None = None, precedence: int = 50,
               role: str = "baseline", retire_overlay: bool = True) -> dict[str, Any]:
         """Mount a read-only slice directory.

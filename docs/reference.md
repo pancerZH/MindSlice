@@ -70,7 +70,7 @@ for the structured result, or `--compact` for single-line JSON. Errors go to std
 workspace/
 ├── mounts.toml        # mount table: path, @alias, precedence, role
 ├── .bake-plan.json    # saved workspace bake review; excluded from exports
-├── slices/            # read-only base slices (*.slice/ directories)
+├── slices/            # read-only base slices (*.slice/ directories); `gc` deletes older versions
 ├── overlay/           # the only runtime write target (@overlay, precedence 100, role "runtime")
 ├── staging/           # prospective final state for overlay/ (never indexed until apply())
 │   ├── .manifest.json       # base_sha256 preconditions + delete tombstones
@@ -140,6 +140,7 @@ the same slice slice-relative.
 | B | `explain(address, follow_supersedes=True, max_extensions=5, extensions_offset=0)` | read selection, lineage, physical sources and verified reasons; does not increment read telemetry |
 | B | `rollback(alias, path=None, dry_run=False, revision=None)` | switch a slice pointer to a recorded predecessor or explicit directory; overlay/staging preserved; revision checks a reviewed preview |
 | B | `backup(output)` / `Workspace.restore(source, destination)` | verified directory snapshot and restore to a new workspace, including external mounts and available recorded versions |
+| B | `gc(dry_run=False)` | delete older versions of mounted slices in `slices/` and leftovers of interrupted writes; `dry_run` only lists them |
 | B | `validate(slice_path=None, rebuild_index=False)` | lints from disk; rebuild re-hashes everything |
 | B | `bake(alias=None, output_path=None, prefix=None, tags=None, include_deps=False, dry_run=False, plan=None)` | omitted alias executes a workspace plan; named new targets require `prefix`; old folders stay untouched |
 | B | `plan_bake(assignments=None, resume=True)` | propose all overlay destinations; exact card IDs map to aliases or null (defer) |
@@ -155,6 +156,7 @@ output; whether stdout is a terminal never changes the format. Recovery commands
 `restore BACKUP --output NEW_WORKSPACE`.
 Rollback supports `--to DIRECTORY`, `--dry-run` and `--yes`; it requires confirmation before
 changing a mount. Backup and restore require new destinations and never overwrite existing ones.
+`gc` deletes the older slice versions rollback would return to, and `gc --dry-run` lists them first.
 The MCP server still exposes only its four online memory tools. See
 [history and recovery](history-and-recovery.md) for semantics, limitations and examples.
 
@@ -683,7 +685,8 @@ while a card extends a dropped card (rebase or merge it first) or supersedes it 
 version (bake it in the same run), since either edge would be left dangling. Links to a dropped card
 are allowed and reported as `dangling_links`; `validate` lists them for a later repair. The `baked`
 history event records `dropped`. The previous directory still holds the card (that is what
-`rollback` returns to), so forgetting a fact completely also means removing old directories and backups.
+`rollback` returns to), so forgetting a fact completely also means removing old directories (`gc`) and
+backups.
 
 For sharing, `--output python.zip`, `python.tar.gz` or `python.tgz` additionally writes a deterministic
 archive of the complete baked slice. The mountable directory is created under `<workspace>/slices/`;

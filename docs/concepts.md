@@ -43,9 +43,10 @@ When the changes are ready to keep or share, `bake`:
 3. Builds new slice directories and switches the workspace's mounts to those versions.
 4. Returns the new physical paths, so external callers can record version pointers.
 
-The old directories remain available to mount again. This restores a slice baseline;
-it does not undo unrelated overlay changes. The engine records write reasons and lifecycle
-events in the workspace's `.history/changes.jsonl`, separately from exported card content.
+The old directories remain available to mount again until `mindslice gc` deletes them. This
+restores a slice baseline; it does not undo unrelated overlay changes. The engine records write
+reasons and lifecycle events in the workspace's `.history/changes.jsonl`, separately from exported
+card content.
 See [review and bake](workflow.md) for the complete workflow.
 
 ## How this fits hot/cold memory and LLM Wiki
