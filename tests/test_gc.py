@@ -89,8 +89,8 @@ class GcTests(WorkspaceTestCase):
         self.assertEqual(preview['old_versions'], [{'path': str(self.root / 'slices' / 'kb.slice'), 'alias': '@kb'}])
         self.assertEqual(preview['kept_unmounted'], [])
         old = self.root / 'slices' / 'kb.slice'
-        expected = len('partial') * len(leftovers) + len('# A\n') * len(staged_dirs)
-        expected += sum(p.stat().st_size for p in old.rglob('*') if p.is_file())
+        files = leftovers + [d / 'tree' / 'a.md' for d in staged_dirs] + [p for p in old.rglob('*') if p.is_file()]
+        expected = sum(p.stat().st_size for p in files)  # write_text writes \r\n on Windows
         self.assertEqual(preview['bytes'], expected)
         self.assertTrue(all(p.exists() for p in leftovers + staged_dirs))
         self.ws.gc()

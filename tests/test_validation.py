@@ -159,7 +159,7 @@ class ValidationReportTests(WorkspaceTestCase):
                            extends=["@other/only-other"]),
         }, 'name = "solo"\ndependencies = ["@ghost"]\n')
         report = self.ws.validate(solo)
-        file = solo / "s.md"
+        file = solo.resolve() / "s.md"  # the report names the resolved directory
         self.assertEqual(report["errors"], [])
         self.assertEqual(report["warnings"], [
             warning("undeclared_dependency", "extends reference '@other/only-other' targets @other, which is not "
