@@ -17,6 +17,7 @@ from ..model.card import (
     compose_after,
     normalize_newlines,
     parse_card,
+    qualify_refs,
     render_card,
     reassemble,
     sha256_bytes,
@@ -38,7 +39,6 @@ from ..storage.history import change, file_action
 from ..storage.card_io import read_card_file
 from .impact import inbound_impact, supersede_targets
 from ..model.lineage import cycle_through
-from ..baking.slice_transfer import rewrite_refs
 
 if TYPE_CHECKING:  # pragma: no cover
     from ..workspace import Workspace
@@ -304,23 +304,6 @@ def mounted_base(ws: "Workspace", table, path: str) -> tuple[str, str, str] | No
     return None
 
 
-def fork_seed(text: str, base_address: str, cats: dict[str, MountCatalog]) -> str:
-    """A mounted card's text as it reads from ``@overlay``: its slice-relative references made qualified.
-
-    Inside a slice ``[[other]]`` means the slice's own card; copied to the overlay unchanged it would point
-    at an overlay card of that name instead.
-    """
-    alias = base_address.partition("/")[0]
-
-    def qualify(raw: str) -> str:
-        if raw.strip().startswith("@"):
-            return raw
-        res = resolve_ref(raw, alias, cats)
-        return res.address if res.resolved and res.address else raw
-
-    return rewrite_refs(text, parse_card(text), qualify)
-
-
 def _superseding(text: str, path: str, base_address: str, overlay_alias: str, cats: dict[str, MountCatalog]) -> str:
     """``text`` with ``base_address`` among its ``supersedes``, so hits and reads of the base forward to it."""
     parsed = parse_card(text)
@@ -484,14 +467,20 @@ def write(
                 staging.stage_delete(path, overlay.root, audit=ws.history)  # clears stale entries, if any
             return result
 
-        seed = fork_seed(base[1], base[0], ws.index.catalogs()) if base is not None else current
+        # A slice card is copied with its slice-relative references qualified, as read() shows it.
+        base_mount = base[0].partition("/")[0] if base is not None else None
+        cats = ws.index.catalogs() if base is not None else None
+        seed = qualify_refs(base[1], base_mount, cats) if base is not None else current
         source = seed
         if op == "patch":
-            # The caller quotes the card as read() returns it: for a slice card, its text before the copy's
-            # references are qualified.
-            source = apply_edits(base[1] if base is not None else current, edits, address)
-            if base is not None:
-                source = fork_seed(source, base[0], ws.index.catalogs())
+            # The caller quotes the card as read() returns it; a quote of the slice file's own text (its
+            # references unqualified) still applies.
+            try:
+                source = apply_edits(seed, edits, address)
+            except PreconditionFailedError:
+                if base is None or seed == base[1]:
+                    raise
+                source = qualify_refs(apply_edits(base[1], edits, address), base_mount, cats)
         new_text, info = build_text(
             "replace" if op == "patch" else op, path, source, content=content, summary=summary, title=title,
             tags=tags_l, aliases=aliases_l, extends=extends_l, supersedes=supersedes_l, load=load,

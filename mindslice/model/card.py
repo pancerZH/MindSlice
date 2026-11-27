@@ -35,10 +35,10 @@ import json
 import re
 import tomllib
 from dataclasses import dataclass, field
-from typing import Any, Iterable
+from typing import Any, Callable, Iterable
 
 from . import tomlfmt
-from .addressing import extract_wikilinks
+from .addressing import MountCatalog, extract_wikilinks, resolve_ref, rewrite_wikilinks
 from .text import normalize
 from ..errors import FrontmatterError
 
@@ -639,3 +639,37 @@ def reassemble(parsed: ParsedCard, original: str, fields: dict[str, Any] | None,
         fm = parsed.raw_frontmatter if fields is None else dump_frontmatter(fields)
         text = f"+++\n{fm}+++\n" + ("\n" + new_after if new_after else "")
     return text if text.endswith("\n") or not text else text + "\n"
+
+
+def rewrite_refs(text: str, parsed: ParsedCard, mapper: Callable[[str], str]) -> str:
+    """``text`` with every ``extends`` / ``supersedes`` / ``[[wikilink]]`` reference passed through ``mapper``.
+
+    Parts no reference touches are kept byte for byte (``reassemble``).
+    """
+    new_ext = [mapper(r) for r in parsed.extends]
+    new_sup = [mapper(r) for r in parsed.supersedes]
+    fields = None
+    if new_ext != parsed.extends or new_sup != parsed.supersedes:
+        fields = dict(parsed.frontmatter)
+        fields["extends"], fields["supersedes"] = new_ext, new_sup
+    link_map = {t: mapper(t) for t in parsed.wikilink_targets()}
+    link_map = {k: v for k, v in link_map.items() if k != v}
+    new_after = rewrite_wikilinks(parsed.after, link_map) if link_map else None
+    return reassemble(parsed, text, fields, new_after)
+
+
+def qualify_refs(text: str, mount: str, cats: dict[str, MountCatalog]) -> str:
+    """The text of a card in ``mount`` with its mount-relative references written as ``@mount/path``.
+
+    Inside a slice ``[[other]]`` means the slice's own card. Copied anywhere else unchanged (into the
+    overlay by a write, or by an agent quoting what read() showed it) it would point at a card of that name
+    there instead. References that do not resolve in ``mount`` are kept as written.
+    """
+
+    def qualify(raw: str) -> str:
+        if raw.strip().startswith("@"):
+            return raw
+        res = resolve_ref(raw, mount, cats)
+        return res.address if res.resolved and res.address else raw
+
+    return rewrite_refs(text, parse_card(text), qualify)

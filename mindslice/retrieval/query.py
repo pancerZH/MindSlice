@@ -6,7 +6,7 @@ import json
 from typing import TYPE_CHECKING, Any, Iterable, Sequence
 
 from ..model.addressing import format_address, normalize_alias, parse_address
-from ..model.card import KNOWN_FIELDS, LOAD_ALWAYS, SUMMARY_PREVIEW_CHARS, parse_card, truncate
+from ..model.card import KNOWN_FIELDS, LOAD_ALWAYS, SUMMARY_PREVIEW_CHARS, parse_card, qualify_refs, truncate
 from ..storage.config import DESCRIPTION_CHARS, OVERVIEW_PATH, MountTable, load_slice_manifest
 from ..errors import InvalidAddressError, MindSliceError, NotFoundError
 from ..model.lineage import FollowSpec, LineageView, TrustPolicy
@@ -166,6 +166,7 @@ class _Ctx:
         self.lv = LineageView(self.idx, TrustPolicy(follow))
         self._rows: dict[str, Any] = {}
         self._outbound: dict[str, list[Any]] = {}
+        self._cats = None
 
     def row(self, address: str):
         if address not in self._rows:
@@ -252,7 +253,14 @@ class _Ctx:
         text, sha = read_card_file(mount.root / f"{row['path']}.md")
         if text is None:
             raise NotFoundError(f"{address} vanished from disk", address=address)
-        parsed = parse_card(text)
+        shown = text
+        if row["mount"] != self.table.overlay.alias:
+            # A slice card's [[x]] means its own slice's x; shown as @slice/x it stays right wherever the
+            # reader copies it, and it is the text a write to this path starts from (sha256 stays the file's).
+            if self._cats is None:
+                self._cats = self.idx.catalogs()
+            shown = qualify_refs(text, row["mount"], self._cats)
+        parsed = parse_card(shown)
         payload: dict[str, Any] = {
             "address": address,
             "mount": row["mount"],

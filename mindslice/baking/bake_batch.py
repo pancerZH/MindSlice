@@ -16,13 +16,13 @@ from typing import TYPE_CHECKING
 
 from ..model.addressing import MountCatalog, format_address, normalize_alias, resolve_ref
 from .bake import bump_version, default_output
-from ..model.card import normalize_newlines, parse_card, sha256_bytes
+from ..model.card import normalize_newlines, parse_card, rewrite_refs, sha256_bytes
 from ..storage.config import MOUNTS_FILE, SLICE_FILE, Mount, MountTable, SliceManifest, dump_mounts, dump_slice_manifest, load_slice_manifest, portable_path
 from ..errors import BakeConflictError, InvalidArgumentsError
 from ..storage.fsutil import atomic_write_text, fsync_dir, fsync_file, iter_markdown
 from ..storage.history import change, event, file_action, file_sha
 from ..model.lineage import strongly_connected_cycles
-from .slice_transfer import overlay_cards, rewrite_refs
+from .slice_transfer import overlay_cards
 from ..operations.staging import _diff_overlay, _diff_staging
 from ..storage.card_io import read_card_file
 from ..model.card import reassemble

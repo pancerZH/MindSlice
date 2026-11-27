@@ -70,6 +70,24 @@ class MountedEditTests(WorkspaceTestCase):
             self.ws.write("plot/state", op="append", content=["x"], if_match="0" * 64)
         self.assertTrue(self.ws.write("plot/state", op="append", content=["x"], if_match=sha)["changed"])
 
+    def test_read_shows_a_slice_cards_own_links_qualified(self):
+        card = self.ws.read("@story/plot/state")
+        # Inside the slice [[plot/people]] means its own card; shown that way it would mislead wherever it is copied.
+        self.assertIn("see [[@story/plot/people]]", card["body"])
+        self.assertEqual(card["links"], [{"ref": "plot/people", "address": "@story/plot/people"}])
+        self.mount_slice("lore", {"a": card_text("A", "Lore.", ["see [[b]] and [[nowhere]]"]), "b": card_text("B", "More lore.")},
+                         "@lore", 40, "curated")
+        self.assertIn("see [[@lore/b]] and [[nowhere]]", self.ws.read("@lore/a")["body"])  # a dangling link stays as written
+        self.ws.write("notes/y", title="Y", summary="Another note.")
+        self.ws.write("notes/x", title="X", summary="A note.", content=["see [[notes/y]]"])
+        self.assertIn("see [[notes/y]]", self.ws.read("notes/x")["body"])  # overlay cards are shown as stored
+
+    def test_a_replace_built_from_what_read_showed_keeps_its_links(self):
+        body = self.ws.read("plot/state")["body"]
+        self.ws.write("plot/state", op="replace", content=body.rstrip("\n") + "\n- fact two\n")
+        self.assertIn("- see [[@story/plot/people]]\n", self.overlay_file("plot/state").read_text(encoding="utf-8"))
+        self.assertEqual(self.ws.read("plot/state")["links"], [{"ref": "@story/plot/people", "address": "@story/plot/people"}])
+
     def test_explicit_supersedes_keeps_the_base_too(self):
         self.ws.write("plot/old", summary="An older note.")
         self.ws.write("plot/state", op="replace", supersedes=["@overlay/plot/old"])

@@ -12,10 +12,10 @@ resolved against ``@overlay`` (source-first), then classified:
 
 from __future__ import annotations
 
-from typing import TYPE_CHECKING, Any, Callable, Sequence
+from typing import TYPE_CHECKING, Any, Sequence
 
-from ..model.addressing import MountCatalog, format_address, resolve_ref, rewrite_wikilinks
-from ..model.card import ParsedCard, normalize_newlines, parse_card
+from ..model.addressing import MountCatalog, format_address, resolve_ref
+from ..model.card import ParsedCard, normalize_newlines, parse_card, rewrite_refs
 from ..errors import UnresolvedExportDependencyError
 from ..storage.fsutil import iter_markdown
 from ..storage.history import change, event, file_action
@@ -24,23 +24,6 @@ from ..model.card import reassemble
 
 if TYPE_CHECKING:  # pragma: no cover
     from ..workspace import Workspace
-
-
-def rewrite_refs(text: str, parsed: ParsedCard, mapper: Callable[[str], str]) -> str:
-    """``text`` with every ``extends`` / ``supersedes`` / ``[[wikilink]]`` reference passed through ``mapper``.
-
-    Parts no reference touches are kept byte for byte (``reassemble``).
-    """
-    new_ext = [mapper(r) for r in parsed.extends]
-    new_sup = [mapper(r) for r in parsed.supersedes]
-    fields = None
-    if new_ext != parsed.extends or new_sup != parsed.supersedes:
-        fields = dict(parsed.frontmatter)
-        fields["extends"], fields["supersedes"] = new_ext, new_sup
-    link_map = {t: mapper(t) for t in parsed.wikilink_targets()}
-    link_map = {k: v for k, v in link_map.items() if k != v}
-    new_after = rewrite_wikilinks(parsed.after, link_map) if link_map else None
-    return reassemble(parsed, text, fields, new_after)
 
 
 def export_text(text: str, parsed: ParsedCard, overlay_alias: str, cats: dict[str, MountCatalog]) -> str:

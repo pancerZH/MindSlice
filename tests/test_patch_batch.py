@@ -78,15 +78,25 @@ class PatchTests(WorkspaceTestCase):
         }, "@story", 50, "curated")
         original = (root / "plot" / "state.md").read_bytes()
         body = self.ws.read("plot/state")["body"]
-        self.assertIn("see [[plot/people]] for names", body)
-        result = self.ws.write("plot/state", op="patch",
-                               edits=[{"old": "see [[plot/people]] for names", "new": "see [[plot/people]] for the cast"}])
+        self.assertIn("see [[@story/plot/people]] for names", body)  # its own slice's card, said so
+        result = self.ws.write("plot/state", op="patch", edits=[
+            {"old": "see [[@story/plot/people]] for names", "new": "see [[@story/plot/people]] for the cast"}])
         self.assertEqual((result["address"], result["forked_from"]), ("@overlay/plot/state", "@story/plot/state"))
         text = self.overlay_file("plot/state").read_text(encoding="utf-8")
         self.assertIn("- see [[@story/plot/people]] for the cast\n", text)
         self.assertIn("- fact one\n", text)
         self.assertIn('supersedes = ["@story/plot/state"]', text)
         self.assertEqual((root / "plot" / "state.md").read_bytes(), original)
+
+    def test_patch_of_a_slice_card_also_takes_a_quote_of_the_file(self):
+        self.mount_slice("story", {
+            "plot/state": card_text("State", "Session one state.", ["see [[plot/people]] for names"]),
+            "plot/people": card_text("People", "Who is who.", ["Lu is a courier"]),
+        }, "@story", 50, "curated")
+        self.ws.write("plot/state", op="patch", edits=[{"old": "[[plot/people]] for names", "new": "[[plot/people]] for the cast"}])
+        self.assertIn("- see [[@story/plot/people]] for the cast\n", self.overlay_file("plot/state").read_text(encoding="utf-8"))
+        with self.assertRaises(PreconditionFailedError):
+            self.ws.write("plot/state", op="patch", edits=[{"old": "not in the card", "new": "x"}])
 
 
 class BatchTests(WorkspaceTestCase):

@@ -176,7 +176,7 @@ def _b_boot(a: Agent) -> None:
     expect_eq({f["name"] for f in project["folders"]}, {"api", "deploy", "observability"}, "project folders")
     zh = next(x for x in m["mounts"] if x["alias"] == "@zh")
     expect_eq((zh["description"], zh["card_count"]), ("团队的中文运维知识库。", 3), "Chinese slice summary")
-    expect("[[api/auth-flow]]" in a.read("@project/overview")["body"], "overview points at the entry card")
+    expect("[[@project/api/auth-flow]]" in a.read("@project/overview")["body"], "overview points at the entry card")
 
 
 def _b_admin_exception(a: Agent) -> None:

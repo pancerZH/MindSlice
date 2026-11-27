@@ -131,7 +131,7 @@ the same slice slice-relative.
 | :-- | :-- | :-- |
 | A (MCP) | `manifest(limit=20, offset=0, max_folders_per_mount=10, include_overview=False, include_always=True)` | mounts, roles, counts, 160-char descriptions, bounded folder lists, always-loaded cards; over MCP also `instructions`, the usage text |
 | A (MCP) | `search(query, source=None, tags=None, k=10, offset=0, max_neighbors=3, follow_supersedes=True)` | `score = -bm25(10,5,3,2,1) > 0`; supersession redirect; 240-char summaries; over MCP `limit` is accepted for `k` |
-| A (MCP) | `read(address, follow_supersedes=True, max_backlinks=10, backlinks_offset=0, max_extensions=5, extensions_offset=0)` | forwarding, extends composition, shadows, backlinks, `sha256`; a list of addresses returns `cards`, each card or its error in the order asked |
+| A (MCP) | `read(address, follow_supersedes=True, max_backlinks=10, backlinks_offset=0, max_extensions=5, extensions_offset=0)` | forwarding, extends composition, shadows, backlinks, `sha256`; a slice card's slice-relative references shown qualified; a list of addresses returns `cards`, each card or its error in the order asked |
 | A (MCP) | `write(id, op="create"\|"replace"\|"patch"\|"append"\|"delete", content, summary, title, tags, aliases, extends, supersedes, stage=None, if_match=None, load=None, reason=None, edits=None, also=None)` | overlay only; cycle checks; verified TOML round-trip; `patch` swaps only the text its `edits` quote; `also` saves further writes in the same transaction; `replace` / `patch` / `append` of a card that lives only in a mounted slice save an edited copy that supersedes it (`forked_from`); `affected_backlinks` / `affected_extensions` when it supersedes or deletes; changes to always-loaded cards are staged |
 | A | `boot()` | resolved always-loaded cards; CLI `boot` emits the full startup payload, `--cards-only` emits card content |
 | B | `mount(path, alias, precedence, role, retire_overlay=True)` / `unmount(alias)` | updates `mounts.toml` and the index; retires overlay copies the slice holds unchanged |
@@ -308,8 +308,11 @@ others are still returned.
 ### Editing a card that lives in a slice
 
 Mounted slices are read-only, and after a bake the overlay copy of a card is gone: the card is
-`@slice/path` now. `write(path, op="replace" | "patch" | "append")` still works with the same id
-(a `patch` quotes the card as `read()` shows it). When the
+`@slice/path` now. `read()` shows such a card with its slice-relative references already qualified
+(`[[people]]` -> `[[@story/people]]`; `sha256` is still the file's), so text copied out of it keeps
+pointing at the same cards wherever it is written. `write(path, op="replace" | "patch" | "append")`
+still works with the same id (a `patch` quotes the card as `read()` shows it; a quote of the slice
+file's own text applies too). When the
 overlay (and staging) has no card at that path and a mounted slice does, the engine edits a copy of
 the card `read(path)` selects and saves it in the overlay:
 

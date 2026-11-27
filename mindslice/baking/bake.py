@@ -63,9 +63,9 @@ from ..errors import AlreadyExistsError, BakeConflictError, InvalidAddressError,
 from ..storage.fsutil import fsync_dir
 from ..storage.history import event, file_action, file_sha
 from ..model.text import fold
-from .slice_transfer import dependency_closure, export_text, overlay_cards, retire_overlay_paths, rewrite_refs
+from .slice_transfer import dependency_closure, export_text, overlay_cards, retire_overlay_paths
 from ..operations.validation import validate_slice_dir
-from ..model.card import reassemble
+from ..model.card import reassemble, rewrite_refs
 
 if TYPE_CHECKING:  # pragma: no cover
     from ..workspace import Workspace
